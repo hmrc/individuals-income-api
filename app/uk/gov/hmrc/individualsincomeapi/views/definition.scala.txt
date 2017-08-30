@@ -1,0 +1,34 @@
+@import play.api.libs.json.Json
+@(privilegedWhitelistedApplicationIds: Seq[String], standardWhitelistedApplicationIds: Seq[String])
+{
+  "scopes": [
+    {
+      "key": "read:individuals-income",
+      "name": "access all individuals income information",
+      "description": "Access personal and employment-based income information for all individuals"
+    },
+    {
+      "key":"read:individual-income",
+      "name":"access income information",
+      "description":"Access personal and employment-based income information",
+      "confidenceLevel": 200
+    }
+  ],
+  "api": {
+    "name": "Individuals Income",
+    "description": "Individuals Income API",
+    "context": "individuals/income",
+    "versions": [
+      {
+        "version": "P1",
+        "status": "PUBLISHED",
+        "access" : {"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(privilegedWhitelistedApplicationIds)}
+      },
+      {
+        "version": "1",
+        "status": "PROTOTYPED",
+        "access" : {"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(standardWhitelistedApplicationIds)}
+      }
+    ]
+  }
+}
