@@ -1,0 +1,3 @@
+# microservice privileged sandbox specific routes
+
+GET         /match/:matchId                    @uk.gov.hmrc.individualsincomeapi.controllers.SandboxMatchCitizenController.matchCitizen(matchId: java.lang.String)
