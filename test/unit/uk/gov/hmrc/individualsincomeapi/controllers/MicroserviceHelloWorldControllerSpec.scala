@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi
+package unit.uk.gov.hmrc.individualsincomeapi.controllers
 
 import play.api.http.Status
 import play.api.test.FakeRequest
-import play.api.http.Status
-import play.api.test.FakeRequest
 import uk.gov.hmrc.individualsincomeapi.controllers.MicroserviceHelloWorld
-import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.play.test.WithFakeApplication
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 
