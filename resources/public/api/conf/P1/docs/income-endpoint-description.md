@@ -1,0 +1,2 @@
+<p>This endpoint returns an individual's PAYE income data for the requested time period.</p>
+<p>The fromDate and toDate are inclusive i.e. the data returned are for the time period that includes the fromDate and the toDate. The toDate is optional; the default is today's date.</p>

@@ -20,7 +20,7 @@ import com.typesafe.config.Config
 import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.individualsincomeapi.{MicroserviceAuditConnector, MicroserviceAuthConnector, WSHttp}
-import uk.gov.hmrc.individualsincomeapi.domain.ErrorInternalServer
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest}
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.AuthParamsControllerConfig
 import uk.gov.hmrc.play.auth.microservice.filters.AuthorisationFilter
@@ -30,12 +30,15 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.filters.LoggingFilter
 import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import net.ceedubs.ficus.Ficus._
+import play.api.libs.json.Json
 import play.api.mvc.{RequestHeader, Result}
 import play.api.{Application, Configuration, Logger, Play}
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
+import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.errorInvalidRequestFormat
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
+import scala.util.Try
 
 
 object ControllerConfiguration extends ControllerConfig {
@@ -92,6 +95,16 @@ object MicroserviceGlobal extends DefaultMicroserviceGlobal  with ServiceLocator
   override def onError(request: RequestHeader, ex: Throwable): Future[Result] = {
     Logger.error("An unexpected error occured", ex)
     successful(ErrorInternalServer.toHttpResponse)
+  }
+
+  override def onBadRequest(request: RequestHeader, error: String): Future[Result] = {
+
+    val maybeInvalidRequest = Try(Json.parse(error).as[ErrorInvalidRequest]).toOption
+
+    maybeInvalidRequest match {
+      case Some(errorResponse) => successful(errorResponse.toHttpResponse)
+      case _ => successful(ErrorInvalidRequest("Invalid Request").toHttpResponse)
+    }
   }
 
 }

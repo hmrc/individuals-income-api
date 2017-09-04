@@ -26,10 +26,20 @@ object JsonFormatters {
     def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)
   }
 
+  implicit val errorInvalidRequestFormat = new Format[ErrorInvalidRequest] {
+    def reads(json: JsValue): JsResult[ErrorInvalidRequest] = JsSuccess(
+      ErrorInvalidRequest((json \ "message").as[String])
+    )
+
+    def writes(error: ErrorInvalidRequest): JsValue =
+      Json.obj("code" -> error.errorCode, "message" -> error.message)
+  }
+
   implicit val uuidJsonFormat = new Format[UUID] {
     override def writes(uuid: UUID) = JsString(uuid.toString)
 
     override def reads(json: JsValue) = JsSuccess(UUID.fromString(json.asInstanceOf[JsString].value))
   }
 
+  implicit val paymentJsonFormat = Json.format[Payment]
 }
