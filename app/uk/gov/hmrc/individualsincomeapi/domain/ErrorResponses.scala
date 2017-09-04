@@ -34,3 +34,4 @@ case object ErrorInternalServer extends ErrorResponse(INTERNAL_SERVER_ERROR, "IN
 case object ErrorNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource can not be found")
 
 class MatchNotFoundException extends RuntimeException
+class ValidationException(message: String) extends RuntimeException(message)

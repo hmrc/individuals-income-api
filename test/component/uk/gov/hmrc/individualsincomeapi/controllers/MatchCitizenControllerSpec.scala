@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package component.uk.gov.hmrc.individualsincomeapi
+package component.uk.gov.hmrc.individualsincomeapi.controllers
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
-
-import scalaj.http.Http
 import play.api.http.Status.OK
 import play.api.libs.json.Json
+
+import scalaj.http.Http
 
 class MatchCitizenControllerSpec extends BaseSpec {
 

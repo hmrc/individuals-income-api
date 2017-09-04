@@ -52,6 +52,10 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
     Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader)
   }
 
+  protected def errorResponse(message: String) = {
+    s"""{"code":"INVALID_REQUEST","message":"$message"}"""
+  }
+
   override protected def beforeEach(): Unit = {
     mocks.foreach(m => if (!m.server.isRunning) m.server.start())
   }

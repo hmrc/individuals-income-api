@@ -1,5 +1,6 @@
 import play.core.PlayVersion
 import play.sbt.PlayImport._
+import play.sbt.routes.RoutesKeys.routesImport
 import sbt._
 
 object MicroServiceBuild extends Build with MicroService {
@@ -7,6 +8,7 @@ object MicroServiceBuild extends Build with MicroService {
   val appName = "individuals-income-api"
 
   override lazy val appDependencies: Seq[ModuleID] = compile ++ test()
+  override lazy val playSettings : Seq[Setting[_]] = Seq(routesImport ++= Seq("uk.gov.hmrc.domain._", "uk.gov.hmrc.individualsincomeapi.domain._", "uk.gov.hmrc.individualsincomeapi.Binders._"))
 
   val compile = Seq(
     ws,

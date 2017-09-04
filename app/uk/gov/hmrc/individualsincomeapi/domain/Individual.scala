@@ -18,16 +18,62 @@ package uk.gov.hmrc.individualsincomeapi.domain
 
 import java.util.UUID
 
-import uk.gov.hmrc.domain.Nino
+import org.joda.time.LocalDate.parse
+import org.joda.time.{Interval, LocalDate}
+import uk.gov.hmrc.domain.{EmpRef, Nino}
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
+
+case class Individual(matchId: UUID,
+                      nino: String,
+                      firstName: String,
+                      lastName: String,
+                      dateOfBirth: LocalDate,
+                      income: Seq[Payment])
+
+case class Payment(taxablePayment: Double,
+                   paymentDate: LocalDate,
+                   employerPayeReference: Option[EmpRef] = None,
+                   monthPayNumber: Option[Int] = None,
+                   weekPayNumber: Option[Int] = None) {
+
+  def isPaidWithin(interval: Interval): Boolean =
+    interval.contains(paymentDate.toDateTimeAtStartOfDay)
+
+}
+
 object SandboxIncomeData {
-  val sandboxNino = Nino("NA000799C")
-  val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
+
+  def findByMatchId(matchId: UUID) = individuals.find(_.matchId == matchId)
 
   def matchedCitizen(matchId: UUID) = matchId match {
     case `sandboxMatchId` => Some(MatchedCitizen(sandboxMatchId, sandboxNino))
     case _ => None
   }
+
+  private lazy val individuals = Seq(amanda())
+
+  val sandboxNino = Nino("NA000799C")
+
+  val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
+
+  val acmeEmployerReference = EmpRef.fromIdentifiers("123/AI45678")
+
+  val disneyEmployerReference = EmpRef.fromIdentifiers("123/DI45678")
+
+  private def amanda() = Individual(
+    sandboxMatchId,
+    sandboxNino.nino,
+    "Amanda",
+    "Joseph",
+    parse("1960-01-15"),
+    Seq(
+      Payment(1000.50, parse("2016-01-28"), Some(acmeEmployerReference), monthPayNumber = Some(10)),
+      Payment(1000.50, parse("2016-02-28"), Some(acmeEmployerReference), monthPayNumber = Some(11)),
+      Payment(1000.50, parse("2016-03-28"), Some(acmeEmployerReference), monthPayNumber = Some(12)),
+      Payment(1000.25, parse("2016-04-28"), Some(acmeEmployerReference), monthPayNumber = Some(1)),
+      Payment(1000.25, parse("2016-05-28"), Some(acmeEmployerReference), monthPayNumber = Some(2)),
+      Payment(500.25, parse("2017-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
+      Payment(500.25, parse("2017-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))))
 }

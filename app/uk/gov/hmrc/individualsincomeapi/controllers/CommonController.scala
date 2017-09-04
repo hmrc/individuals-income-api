@@ -18,8 +18,11 @@ package uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
-import play.api.mvc.Result
+import org.joda.time.DateTime
+import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, MatchNotFoundException}
+import uk.gov.hmrc.individualsincomeapi.util.Dates
+import uk.gov.hmrc.individualsincomeapi.util.Dates._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 
 import scala.concurrent.Future
@@ -32,6 +35,13 @@ trait CommonController extends BaseController {
       case Success(uuid) => f(uuid)
       case _ => Future.successful(ErrorNotFound.toHttpResponse)
     }
+  }
+
+  private def getQueryParam[T](name: String)(implicit request: Request[T]) = request.queryString.get(name).flatMap(_.headOption)
+
+  private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {
+    val urlWithFromDate = s"$url?fromDate=${toFormattedLocalDate(from)}"
+    getQueryParam("toDate").map(x => s"$urlWithFromDate&toDate=$x").getOrElse(urlWithFromDate)
   }
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {

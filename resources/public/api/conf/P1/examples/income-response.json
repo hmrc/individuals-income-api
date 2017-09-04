@@ -1,0 +1,53 @@
+{
+  "_links": {
+    "self": {
+      "href": "/individuals/income/paye/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430?fromDate=2016-01-01&toDate=2017-03-01"
+    }
+  },
+  "_embedded": {
+    "income": [
+      {
+        "employerPayeReference": "123/DI45678",
+        "taxablePayment": 500.25,
+        "paymentDate": "2017-02-16",
+        "weekPayNumber": 46
+      },
+      {
+        "employerPayeReference": "123/DI45678",
+        "taxablePayment": 500.25,
+        "paymentDate": "2017-02-09",
+        "weekPayNumber": 45
+      },
+      {
+        "employerPayeReference": "123/AI45678",
+        "taxablePayment": 1000.25,
+        "paymentDate": "2016-05-28",
+        "monthPayNumber": 2
+      },
+      {
+        "employerPayeReference": "123/AI45678",
+        "taxablePayment": 1000.25,
+        "paymentDate": "2016-04-28",
+        "monthPayNumber": 1
+      },
+      {
+        "employerPayeReference": "123/AI45678",
+        "taxablePayment": 1000.5,
+        "paymentDate": "2016-03-28",
+        "monthPayNumber": 12
+      },
+      {
+        "employerPayeReference": "123/AI45678",
+        "taxablePayment": 1000.5,
+        "paymentDate": "2016-02-28",
+        "monthPayNumber": 11
+      },
+      {
+        "employerPayeReference": "123/AI45678",
+        "taxablePayment": 1000.5,
+        "paymentDate": "2016-01-28",
+        "monthPayNumber": 10
+      }
+    ]
+  }
+}

@@ -47,6 +47,57 @@ uses:
               example: !include examples/match.json
               type: !include schemas/match.json
 
+  /paye/match/{matchId}:
+      uriParameters:
+        matchId:
+          description: A short-lived UUID, typically valid for several hours
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+
+      get:
+        displayName: Retrieve Income history
+        description: !include docs/income-endpoint-description.md
+        is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/income-request.md
+        (annotations.scope): "read:individuals-income"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income" ] } ]
+        queryParameters:
+          fromDate:
+            description: The date from when data are requested
+            type: string
+            required: true
+            example: 2016-01-01
+          toDate:
+            description: The date until when data are requested
+            type: string
+            required: false
+            example: 2017-03-01
+        responses:
+          200:
+            description: The individual PAYE income for the given period
+            body:
+              application/json:
+                example: !include examples/income-response.json
+                type: !include schemas/income-response.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  BadRequest:
+                    description: Invalid request
+                    value:
+                      code: INVALID_REQUEST
+          404:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  NotFound:
+                    description: Not found
+                    value:
+                      code: NOT_FOUND
+
 /hello-world:
    get:
      displayName: Hello world
