@@ -22,22 +22,28 @@ import play.api.hal.Hal._
 import play.api.hal.HalLink
 import play.api.mvc.hal._
 import play.api.mvc.Action
+import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
+import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
 import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, SandboxCitizenMatchingService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingService) extends CommonController {
+abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingService) extends CommonController with PrivilegedAuthentication {
   def matchCitizen(matchId: String) = Action.async { implicit request =>
-    withUuid(matchId) { matchUuid =>
-      citizenMatchingService.matchCitizen(matchUuid) map { matchedCitizen =>
-        val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
-        val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
-        Ok(links(payeLink, selfLink))
-      }
-    } recover recovery
+    requiresPrivilegedAuthentication {
+      withUuid(matchId) { matchUuid =>
+        citizenMatchingService.matchCitizen(matchUuid) map { matchedCitizen =>
+          val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
+          val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
+          Ok(links(payeLink, selfLink))
+        }
+      } recover recovery
+    }
   }
 }
 
 @Singleton
-class SandboxMatchCitizenController @Inject() (citizenMatchingService: SandboxCitizenMatchingService)
-  extends MatchCitizenController(citizenMatchingService)
+class SandboxMatchCitizenController @Inject() (citizenMatchingService: SandboxCitizenMatchingService, val authConnector: ServiceAuthConnector)
+  extends MatchCitizenController(citizenMatchingService) {
+  override val environment = SANDBOX
+}
