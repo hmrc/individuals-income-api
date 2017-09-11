@@ -30,8 +30,8 @@ abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingSer
   def matchCitizen(matchId: String) = Action.async { implicit request =>
     withUuid(matchId) { matchUuid =>
       citizenMatchingService.matchCitizen(matchUuid) map { matchedCitizen =>
-        val payeLink = HalLink("paye", s"/individuals/income/paye/match/$matchId{?fromDate,toDate}", title = Some("View individual's income per employment"))
-        val selfLink = HalLink("self", s"/individuals/income/match/$matchId")
+        val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
+        val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
         Ok(links(payeLink, selfLink))
       }
     } recover recovery

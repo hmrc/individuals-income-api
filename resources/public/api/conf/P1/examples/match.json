@@ -1,11 +1,11 @@
 {
   "_links": {
     "paye": {
-      "href": "/individuals/income/paye/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430{?fromDate,toDate}",
+      "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}",
       "title": "View individual's income per employment"
     },
     "self": {
-      "href": "/individuals/income/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+      "href": "/individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
     }
   }
 }

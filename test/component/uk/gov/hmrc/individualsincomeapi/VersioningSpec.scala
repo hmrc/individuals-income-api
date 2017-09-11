@@ -42,7 +42,7 @@ class VersioningSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
       When("A request to the match citizen endpoint is made with version P1 accept header")
-      val response = invokeWithHeaders(s"/sandbox/match/$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP1)
+      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP1)
 
       Then("The response status should be 200 (Ok)")
       response.code shouldBe OK
@@ -54,11 +54,11 @@ class VersioningSpec extends BaseSpec {
          {
              "_links": {
                  "paye": {
-                     "href": "/individuals/income/paye/match/$sandboxMatchId{?fromDate,toDate}",
+                     "href": "/individuals/income/paye?matchId=$sandboxMatchId{&fromDate,toDate}",
                      "title": "View individual's income per employment"
                  },
                  "self": {
-                     "href": "/individuals/income/match/$sandboxMatchId"
+                     "href": "/individuals/income/?matchId=$sandboxMatchId"
                  }
              }
          }""")
@@ -69,7 +69,7 @@ class VersioningSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
       When("A request to the match citizen endpoint is made without an accept header")
-      val response = invokeWithHeaders(s"/sandbox/match/$sandboxMatchId", AUTHORIZATION -> authToken)
+      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken)
 
       Then("The response status should be 404 (Not Found)")
       response.code shouldBe NOT_FOUND
@@ -80,7 +80,7 @@ class VersioningSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
       When("A request to the match citizen endpoint is made with version 1 accept header")
-      val response = invokeWithHeaders(s"/sandbox/match/$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderV1)
+      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderV1)
 
       Then("The response status should be 404 (Not Found)")
       response.code shouldBe NOT_FOUND
@@ -91,7 +91,7 @@ class VersioningSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
       When("A request to the match citizen endpoint is made with version 10.0 accept header")
-      val response = invokeWithHeaders(s"/sandbox/match/$sandboxMatchId", AUTHORIZATION -> authToken, ACCEPT -> "application/vnd.hmrc.10.0+json")
+      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, ACCEPT -> "application/vnd.hmrc.10.0+json")
 
       Then("The response status should be 404 (Not Found)")
       response.code shouldBe NOT_FOUND

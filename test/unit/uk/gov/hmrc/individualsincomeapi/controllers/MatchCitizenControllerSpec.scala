@@ -19,9 +19,9 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 import java.util.UUID
 
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mock.MockitoSugar
 import org.mockito.Matchers.{any, refEq}
 import org.mockito.BDDMockito.given
+import org.scalatest.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import play.api.http.Status._
@@ -61,11 +61,11 @@ class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFu
          {
              "_links": {
                  "paye": {
-                     "href": "/individuals/income/paye/match/$matchId{?fromDate,toDate}",
+                     "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
                      "title": "View individual's income per employment"
                  },
                  "self": {
-                     "href": "/individuals/income/match/$matchId"
+                     "href": "/individuals/income/?matchId=$matchId"
                  }
              }
          }""")

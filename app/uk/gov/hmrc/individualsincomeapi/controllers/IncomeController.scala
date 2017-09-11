@@ -34,7 +34,7 @@ abstract class IncomeController(incomeService: IncomeService) extends CommonCont
   def income(matchId: String, interval: Interval) = Action.async { implicit request =>
     withUuid(matchId) { matchUuid =>
       incomeService.fetchIncomeByMatchId(matchUuid, interval) map { income =>
-        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye/match/$matchId", interval.getStart))
+        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
         val incomeJsObject = obj("income" -> toJson(income))
         val embeddedJsObject = obj("_embedded" -> incomeJsObject)
         Ok(state(embeddedJsObject) ++ halLink)

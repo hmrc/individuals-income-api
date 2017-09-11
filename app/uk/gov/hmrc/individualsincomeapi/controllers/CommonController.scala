@@ -21,7 +21,6 @@ import java.util.UUID
 import org.joda.time.DateTime
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, MatchNotFoundException}
-import uk.gov.hmrc.individualsincomeapi.util.Dates
 import uk.gov.hmrc.individualsincomeapi.util.Dates._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 
@@ -40,7 +39,7 @@ trait CommonController extends BaseController {
   private def getQueryParam[T](name: String)(implicit request: Request[T]) = request.queryString.get(name).flatMap(_.headOption)
 
   private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {
-    val urlWithFromDate = s"$url?fromDate=${toFormattedLocalDate(from)}"
+    val urlWithFromDate = s"$url&fromDate=${toFormattedLocalDate(from)}"
     getQueryParam("toDate").map(x => s"$urlWithFromDate&toDate=$x").getOrElse(urlWithFromDate)
   }
 
