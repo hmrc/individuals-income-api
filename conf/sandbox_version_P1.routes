@@ -1,4 +1,4 @@
 # microservice privileged sandbox specific routes
 
-GET         /match/:matchId                    @uk.gov.hmrc.individualsincomeapi.controllers.SandboxMatchCitizenController.matchCitizen(matchId: java.lang.String)
-GET         /paye/match/:matchId               @uk.gov.hmrc.individualsincomeapi.controllers.SandboxIncomeController.income(matchId: java.lang.String, interval: org.joda.time.Interval)
+GET        /            @uk.gov.hmrc.individualsincomeapi.controllers.SandboxMatchCitizenController.matchCitizen(matchId: java.lang.String)
+GET        /paye        @uk.gov.hmrc.individualsincomeapi.controllers.SandboxIncomeController.income(matchId: java.lang.String, interval: org.joda.time.Interval)

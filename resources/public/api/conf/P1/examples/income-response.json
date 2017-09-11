@@ -1,7 +1,7 @@
 {
   "_links": {
     "self": {
-      "href": "/individuals/income/paye/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430?fromDate=2016-01-01&toDate=2017-03-01"
+      "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2016-01-01&toDate=2017-03-01"
     }
   },
   "_embedded": {

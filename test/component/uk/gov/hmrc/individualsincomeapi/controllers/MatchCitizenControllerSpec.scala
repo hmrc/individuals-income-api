@@ -28,7 +28,7 @@ class MatchCitizenControllerSpec extends BaseSpec {
 
     scenario("Valid request to the sandbox implementation") {
       When("I request the match citizen entry point to the API")
-      val response = Http(s"$serviceUrl/sandbox/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430")
+      val response = Http(s"$serviceUrl/sandbox?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430")
         .headers(requestHeaders(acceptHeaderP1)).asString
 
       Then("The response status should be 200 (OK)")
@@ -38,11 +38,11 @@ class MatchCitizenControllerSpec extends BaseSpec {
           s"""{
              "_links": {
                  "paye": {
-                     "href": "/individuals/income/paye/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430{?fromDate,toDate}",
+                     "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}",
                      "title": "View individual's income per employment"
                  },
                  "self": {
-                     "href": "/individuals/income/match/57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+                     "href": "/individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
                  }
              }
          }""")
