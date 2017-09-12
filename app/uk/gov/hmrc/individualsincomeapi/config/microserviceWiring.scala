@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi
+package uk.gov.hmrc.individualsincomeapi.config
 
+import javax.inject.{Inject, Singleton}
+
+import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.auth.microservice.connectors.AuthConnector
@@ -31,6 +34,12 @@ object MicroserviceAuditConnector extends AuditConnector with RunMode {
   override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
 
-object MicroserviceAuthConnector extends AuthConnector with ServicesConfig {
-  override val authBaseUrl = baseUrl("auth")
+@Singleton
+class WSHttp @Inject()() extends WSGet with WSPut with WSPost with WSDelete with WSPatch with AppName {
+  override val hooks: Seq[HttpHook] = NoneRequired
+}
+
+@Singleton
+class ServiceAuthConnector @Inject()(val http: WSHttp) extends PlayAuthConnector with ServicesConfig {
+  override lazy val serviceUrl: String = baseUrl("auth")
 }

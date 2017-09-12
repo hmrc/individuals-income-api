@@ -24,24 +24,31 @@ import play.api.hal.HalLink
 import play.api.mvc.hal._
 import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.Action
+import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
+import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
 import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(incomeService: IncomeService) extends CommonController {
+abstract class IncomeController(incomeService: IncomeService) extends CommonController with PrivilegedAuthentication {
 
   def income(matchId: String, interval: Interval) = Action.async { implicit request =>
-    withUuid(matchId) { matchUuid =>
-      incomeService.fetchIncomeByMatchId(matchUuid, interval) map { income =>
-        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
-        val incomeJsObject = obj("income" -> toJson(income))
-        val embeddedJsObject = obj("_embedded" -> incomeJsObject)
-        Ok(state(embeddedJsObject) ++ halLink)
-      } recover recovery
+    requiresPrivilegedAuthentication {
+      withUuid(matchId) { matchUuid =>
+        incomeService.fetchIncomeByMatchId(matchUuid, interval) map { income =>
+          val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+          val incomeJsObject = obj("income" -> toJson(income))
+          val embeddedJsObject = obj("_embedded" -> incomeJsObject)
+          Ok(state(embeddedJsObject) ++ halLink)
+        } recover recovery
+      }
     }
   }
 }
 
 @Singleton
-class SandboxIncomeController @Inject()(sandboxIncomeService: SandboxIncomeService) extends IncomeController(sandboxIncomeService)
+class SandboxIncomeController @Inject()(sandboxIncomeService: SandboxIncomeService, val authConnector: ServiceAuthConnector)
+  extends IncomeController(sandboxIncomeService) {
+  override val environment = SANDBOX
+}

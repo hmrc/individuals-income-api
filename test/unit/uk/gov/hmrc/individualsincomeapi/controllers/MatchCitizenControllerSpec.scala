@@ -21,11 +21,13 @@ import java.util.UUID
 import org.scalatest.concurrent.ScalaFutures
 import org.mockito.Matchers.{any, refEq}
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.verifyZeroInteractions
 import org.scalatest.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import play.api.http.Status._
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxMatchCitizenController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
@@ -44,7 +46,9 @@ class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFu
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
-    val sandboxController = new SandboxMatchCitizenController(mockSandboxCitizenMatchingService)
+    val mockAuthConnector = mock[ServiceAuthConnector]
+
+    val sandboxController = new SandboxMatchCitizenController(mockSandboxCitizenMatchingService, mockAuthConnector)
   }
 
   "sandbox match citizen function" should {
@@ -79,5 +83,15 @@ class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFu
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse("""{"code" : "NOT_FOUND", "message" : "The resource can not be found"}""")
     }
+
+    "not require bearer token authentication" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(successful(matchedCitizen))
+
+      val result = await(sandboxController.matchCitizen(matchId.toString)(fakeRequest))
+
+      status(result) shouldBe OK
+      verifyZeroInteractions(mockAuthConnector)
+    }
+
   }
 }
