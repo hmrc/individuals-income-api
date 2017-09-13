@@ -58,7 +58,7 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
 
   val environment: String
 
-  def requiresPrivilegedAuthentication(body: Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
+  def requiresPrivilegedAuthentication(body: => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
     if (environment == SANDBOX) body
     else authorised(Enrolment("read:individuals-income"))(body)
   }
