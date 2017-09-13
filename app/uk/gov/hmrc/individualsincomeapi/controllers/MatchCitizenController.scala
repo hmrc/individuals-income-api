@@ -23,8 +23,8 @@ import play.api.hal.HalLink
 import play.api.mvc.hal._
 import play.api.mvc.Action
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
-import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, SandboxCitizenMatchingService}
+import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
+import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -32,7 +32,7 @@ abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingSer
   def matchCitizen(matchId: String) = Action.async { implicit request =>
     requiresPrivilegedAuthentication {
       withUuid(matchId) { matchUuid =>
-        citizenMatchingService.matchCitizen(matchUuid) map { matchedCitizen =>
+        citizenMatchingService.matchCitizen(matchUuid) map { _ =>
           val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
           val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
           Ok(links(payeLink, selfLink))
@@ -43,7 +43,13 @@ abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingSer
 }
 
 @Singleton
-class SandboxMatchCitizenController @Inject() (citizenMatchingService: SandboxCitizenMatchingService, val authConnector: ServiceAuthConnector)
+class SandboxMatchCitizenController @Inject()(citizenMatchingService: SandboxCitizenMatchingService, val authConnector: ServiceAuthConnector)
   extends MatchCitizenController(citizenMatchingService) {
   override val environment = SANDBOX
+}
+
+@Singleton
+class LiveMatchCitizenController @Inject()(citizenMatchingService: LiveCitizenMatchingService, val authConnector: ServiceAuthConnector)
+  extends MatchCitizenController(citizenMatchingService) {
+  override val environment = PRODUCTION
 }

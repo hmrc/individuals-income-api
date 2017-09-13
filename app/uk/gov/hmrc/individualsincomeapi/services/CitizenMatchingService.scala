@@ -17,8 +17,9 @@
 package uk.gov.hmrc.individualsincomeapi.services
 
 import java.util.UUID
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
+import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen, SandboxIncomeData}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -37,4 +38,11 @@ class SandboxCitizenMatchingService extends CitizenMatchingService {
       case None => failed(new MatchNotFoundException)
     }
   }
+}
+
+@Singleton
+class LiveCitizenMatchingService @Inject()(individualsMatchingApiConnector: IndividualsMatchingApiConnector) extends CitizenMatchingService {
+
+  override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier) = individualsMatchingApiConnector.resolve(matchId)
+
 }

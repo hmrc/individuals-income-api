@@ -42,4 +42,5 @@ object JsonFormatters {
   }
 
   implicit val paymentJsonFormat = Json.format[Payment]
+  implicit val matchedCitizenJsonFormat = Json.format[MatchedCitizen]
 }
