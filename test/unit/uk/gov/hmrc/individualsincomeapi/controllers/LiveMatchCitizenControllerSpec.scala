@@ -59,7 +59,7 @@ class LiveMatchCitizenControllerSpec extends PlaySpec with Results with MockitoS
     "return a 404 (not found) when a match id does not match live data" in new Setup {
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier])).thenReturn(failed(new MatchNotFoundException))
 
-      val eventualResult = liveMatchCitizenController.matchCitizen(randomMatchId.toString).apply(FakeRequest())
+      val eventualResult = liveMatchCitizenController.matchCitizen(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) mustBe NOT_FOUND
       contentAsJson(eventualResult) mustBe parse(
@@ -74,7 +74,7 @@ class LiveMatchCitizenControllerSpec extends PlaySpec with Results with MockitoS
     "return a 200 (ok) when a match id matches live data" in new Setup {
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier])).thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
 
-      val eventualResult = liveMatchCitizenController.matchCitizen(randomMatchId.toString).apply(FakeRequest())
+      val eventualResult = liveMatchCitizenController.matchCitizen(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) mustBe OK
       contentAsJson(eventualResult) mustBe parse(
@@ -96,7 +96,7 @@ class LiveMatchCitizenControllerSpec extends PlaySpec with Results with MockitoS
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any())).willReturn(failed(new InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveMatchCitizenController.matchCitizen(randomMatchId.toString).apply(FakeRequest()))}
+      intercept[InsufficientEnrolments]{await(liveMatchCitizenController.matchCitizen(randomMatchId).apply(FakeRequest()))}
       verifyZeroInteractions(mockLiveCitizenMatchingService)
     }
 

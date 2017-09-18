@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.individualsincomeapi
 
-import uk.gov.hmrc.individualsincomeapi.util.IntervalQueryStringBinder
+import uk.gov.hmrc.individualsincomeapi.util.{IntervalQueryStringBinder, MatchUuidQueryStringBinder}
 
 package object Binders {
+  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
   implicit val intervalQueryStringBinder = new IntervalQueryStringBinder
 }
