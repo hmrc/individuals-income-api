@@ -56,7 +56,7 @@ class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFu
     "return 200 (OK) for a valid matchId" in new Setup {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(successful(matchedCitizen))
 
-      val result = await(sandboxController.matchCitizen(matchId.toString)(fakeRequest))
+      val result = await(sandboxController.matchCitizen(matchId)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe
@@ -78,7 +78,7 @@ class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFu
     "return 400 (Not Found) for an invalid matchId" in new Setup {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(failed(new MatchNotFoundException))
 
-      val result = await(sandboxController.matchCitizen(matchId.toString)(fakeRequest))
+      val result = await(sandboxController.matchCitizen(matchId)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse("""{"code" : "NOT_FOUND", "message" : "The resource can not be found"}""")
@@ -87,7 +87,7 @@ class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFu
     "not require bearer token authentication" in new Setup {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(successful(matchedCitizen))
 
-      val result = await(sandboxController.matchCitizen(matchId.toString)(fakeRequest))
+      val result = await(sandboxController.matchCitizen(matchId)(fakeRequest))
 
       status(result) shouldBe OK
       verifyZeroInteractions(mockAuthConnector)

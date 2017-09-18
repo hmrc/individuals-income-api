@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
-import java.util.UUID
-
 import org.joda.time.DateTime
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.auth.core.AuthorisedFunctions
@@ -29,16 +27,8 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.microservice.controller.BaseController
 
 import scala.concurrent.Future
-import scala.util.{Success, Try}
 
 trait CommonController extends BaseController {
-
-  protected def withUuid(uuidString: String)(f: UUID => Future[Result]): Future[Result] = {
-    Try(UUID.fromString(uuidString)) match {
-      case Success(uuid) => f(uuid)
-      case _ => Future.successful(ErrorNotFound.toHttpResponse)
-    }
-  }
 
   private def getQueryParam[T](name: String)(implicit request: Request[T]) = request.queryString.get(name).flatMap(_.headOption)
 

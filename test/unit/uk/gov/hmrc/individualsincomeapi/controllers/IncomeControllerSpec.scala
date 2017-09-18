@@ -36,7 +36,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future.failed
 
-class IncomeControllerSpec extends UnitSpec with MockitoSugar  with WithFakeApplication {
+class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
   implicit lazy val materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
@@ -58,7 +58,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar  with WithFakeAppl
     "return 200 (OK) when matching succeeds and service returns payments" in new Setup {
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(payments)
 
-      val result = await(sandboxIncomeController.income(matchId.toString, interval)(fakeRequest))
+      val result = await(sandboxIncomeController.income(matchId, interval)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(expectedPayload(fakeRequest.uri))
@@ -67,7 +67,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar  with WithFakeAppl
     "return 200 (OK) when matching succeeds and service returns no payments" in new Setup {
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(Seq.empty)
 
-      val result = await(sandboxIncomeController.income(matchId.toString, interval)(fakeRequest))
+      val result = await(sandboxIncomeController.income(matchId, interval)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(expectedPayload(fakeRequest.uri, Seq.empty))
@@ -78,7 +78,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar  with WithFakeAppl
 
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(payments)
 
-      val result = await(sandboxIncomeController.income(matchId.toString, interval)(fakeRequest))
+      val result = await(sandboxIncomeController.income(matchId, interval)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(expectedPayload(fakeRequest.uri))
@@ -87,14 +87,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar  with WithFakeAppl
     "return 404 (Not Found) for an invalid matchId" in new Setup {
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(sandboxIncomeController.income(matchId.toString, interval)(fakeRequest))
-
-      status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "return 404 (Not Found) for a malformed matchId" in new Setup {
-      val result = await(sandboxIncomeController.income("malformedMatchId", interval)(fakeRequest))
+      val result = await(sandboxIncomeController.income(matchId, interval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
@@ -103,7 +96,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar  with WithFakeAppl
     "not require bearer token authentication" in new Setup {
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(Seq.empty)
 
-      val result = await(sandboxIncomeController.income(matchId.toString, interval)(fakeRequest))
+      val result = await(sandboxIncomeController.income(matchId, interval)(fakeRequest))
 
       status(result) shouldBe OK
       verifyZeroInteractions(mockAuthConnector)

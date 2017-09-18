@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
 import org.joda.time.Interval
@@ -33,16 +34,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class IncomeController(incomeService: IncomeService) extends CommonController with PrivilegedAuthentication {
 
-  def income(matchId: String, interval: Interval) = Action.async { implicit request =>
+  def income(matchId: UUID, interval: Interval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication {
-      withUuid(matchId) { matchUuid =>
-        incomeService.fetchIncomeByMatchId(matchUuid, interval) map { income =>
-          val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
-          val incomeJsObject = obj("income" -> toJson(income))
-          val embeddedJsObject = obj("_embedded" -> incomeJsObject)
-          Ok(state(embeddedJsObject) ++ halLink)
-        } recover recovery
-      }
+      incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
+        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+        val incomeJsObject = obj("income" -> toJson(income))
+        val embeddedJsObject = obj("_embedded" -> incomeJsObject)
+        Ok(state(embeddedJsObject) ++ halLink)
+      } recover recovery
     }
   }
 }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
 import play.api.hal.Hal._
@@ -29,16 +30,14 @@ import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCi
 import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingService) extends CommonController with PrivilegedAuthentication {
-  def matchCitizen(matchId: String) = Action.async { implicit request =>
+  def matchCitizen(matchId: UUID) = Action.async { implicit request =>
     requiresPrivilegedAuthentication {
-      withUuid(matchId) { matchUuid =>
-        citizenMatchingService.matchCitizen(matchUuid) map { _ =>
-          val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
-          val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
-          Ok(links(payeLink, selfLink))
-        }
-      } recover recovery
-    }
+      citizenMatchingService.matchCitizen(matchId) map { _ =>
+        val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
+        val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
+        Ok(links(payeLink, selfLink))
+      }
+    } recover recovery
   }
 }
 

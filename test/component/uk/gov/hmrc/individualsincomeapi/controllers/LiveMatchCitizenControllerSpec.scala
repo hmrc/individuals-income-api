@@ -30,7 +30,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
 
     val matchId = UUID.randomUUID().toString
 
-    def invokeRootEndpoint = Http(s"$serviceUrl/?matchId=$matchId").timeout(10000, 10000).headers(requestHeaders(acceptHeaderP1)).asString
+    def invokeEndpoint(endpoint: String) = Http(endpoint).timeout(10000, 10000).headers(requestHeaders(acceptHeaderP1)).asString
 
     def assertResponseIs(httpResponse: HttpResponse[String], expectedResponseCode: Int, expectedResponseBody: String) = {
       httpResponse.code shouldBe expectedResponseCode
@@ -42,7 +42,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken)
 
       When("the root entry point to the API is invoked")
-      val response = invokeRootEndpoint
+      val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
       Then("the response status should be 401 (unauthorized)")
       assertResponseIs(response, UNAUTHORIZED,
@@ -54,12 +54,46 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
         """)
     }
 
+    scenario("missing match id") {
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+
+      When("the root entry point to the API is invoked with a missing match id")
+      val response = invokeEndpoint(serviceUrl)
+
+      Then("the response status should be 400 (bad request)")
+      assertResponseIs(response, BAD_REQUEST,
+        """
+          {
+             "code" : "INVALID_REQUEST",
+             "message" : "matchId is required"
+          }
+        """)
+    }
+
+    scenario("malformed match id") {
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+
+      When("the root entry point to the API is invoked with a malformed match id")
+      val response = invokeEndpoint(s"$serviceUrl/?matchId=malformed-match-id-value")
+
+      Then("the response status should be 400 (bad request)")
+      assertResponseIs(response, BAD_REQUEST,
+        """
+          {
+             "code" : "INVALID_REQUEST",
+             "message" : "matchId format is invalid"
+          }
+        """)
+    }
+
     scenario("invalid match id") {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
       When("the root entry point to the API is invoked with an invalid match id")
-      val response = invokeRootEndpoint
+      val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
       Then("the response status should be 404 (not found)")
       assertResponseIs(response, NOT_FOUND,
@@ -85,7 +119,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
         """)
 
       When("the root entry point to the API is invoked with a valid match id")
-      val response = invokeRootEndpoint
+      val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
       Then("the response status should be 200 (ok)")
       assertResponseIs(response, OK,
