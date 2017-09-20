@@ -1,3 +1,4 @@
 # microservice specific routes
 
-GET        /              @uk.gov.hmrc.individualsincomeapi.controllers.LiveMatchCitizenController.matchCitizen(matchId: java.util.UUID)
+GET        /            @uk.gov.hmrc.individualsincomeapi.controllers.LiveMatchCitizenController.matchCitizen(matchId: java.util.UUID)
+GET        /paye        @uk.gov.hmrc.individualsincomeapi.controllers.LiveIncomeController.income(matchId: java.util.UUID, interval: org.joda.time.Interval)

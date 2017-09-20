@@ -26,8 +26,8 @@ import play.api.mvc.hal._
 import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.Action
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
-import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.controllers.Environment._
+import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -47,7 +47,11 @@ abstract class IncomeController(incomeService: IncomeService) extends CommonCont
 }
 
 @Singleton
-class SandboxIncomeController @Inject()(sandboxIncomeService: SandboxIncomeService, val authConnector: ServiceAuthConnector)
-  extends IncomeController(sandboxIncomeService) {
+class LiveIncomeController @Inject()(liveIncomeService: LiveIncomeService, val authConnector: ServiceAuthConnector) extends IncomeController(liveIncomeService) {
+  override val environment = PRODUCTION
+}
+
+@Singleton
+class SandboxIncomeController @Inject()(sandboxIncomeService: SandboxIncomeService, val authConnector: ServiceAuthConnector) extends IncomeController(sandboxIncomeService) {
   override val environment = SANDBOX
 }
