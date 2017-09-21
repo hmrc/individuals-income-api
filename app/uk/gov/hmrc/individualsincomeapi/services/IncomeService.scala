@@ -17,20 +17,32 @@
 package uk.gov.hmrc.individualsincomeapi.services
 
 import java.util.UUID
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import org.joda.time.{Interval, LocalDate}
+import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
+import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployments, MatchNotFoundException, Payment}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
   def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]]
+}
+
+@Singleton
+class LiveIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector, desConnector: DesConnector) extends IncomeService {
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]] = {
+    for {
+      ninoMatch <- matchingConnector.resolve(matchId)
+      desEmployments <- desConnector.fetchEmployments(ninoMatch.nino, interval)
+    } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
+  }
 }
 
 @Singleton

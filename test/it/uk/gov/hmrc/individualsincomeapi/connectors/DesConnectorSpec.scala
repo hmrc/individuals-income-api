@@ -1,0 +1,166 @@
+/*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package it.uk.gov.hmrc.individualsincomeapi.connectors
+
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import org.joda.time.LocalDate
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mockito.MockitoSugar
+import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
+import uk.gov.hmrc.individualsincomeapi.domain.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment}
+import uk.gov.hmrc.play.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
+
+class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApplication with MockitoSugar with Dates {
+  val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
+  val stubHost = "localhost"
+  val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
+  val desAuthorizationToken = "DES_TOKEN"
+  val desEnvironment = "DES_ENVIRONMENT"
+
+  override lazy val fakeApplication = new GuiceApplicationBuilder()
+    .bindings(bindModules:_*)
+    .configure(
+      "microservice.services.des.host" -> "localhost",
+      "microservice.services.des.port" -> "11122",
+      "microservice.services.des.authorization-token" -> desAuthorizationToken,
+      "microservice.services.des.environment" -> desEnvironment
+    ).build()
+
+  trait Setup {
+    implicit val hc = HeaderCarrier()
+
+    val underTest = fakeApplication.injector.instanceOf[DesConnector]
+  }
+
+  override def beforeEach() {
+    wireMockServer.start()
+    configureFor(stubHost, stubPort)
+  }
+
+  override def afterEach() {
+    wireMockServer.stop()
+  }
+
+  val desAddress = DesAddress(
+    line1 = "Acme House",
+    postalCode = "AI22 9LL",
+    line2 = Some("23 Acme Street"),
+    line3 = Some("Richmond"),
+    line4 = Some("Surrey"),
+    line5 = Some("UK"))
+  val desPayments = Seq(
+    DesPayment(
+      paymentDate = LocalDate.parse("2016-11-28"),
+      totalPayInPeriod = 100,
+      weekPayNumber = None,
+      monthPayNumber = Some(8)),
+    DesPayment(
+      paymentDate = LocalDate.parse("2016-12-06"),
+      totalPayInPeriod = 50,
+      weekPayNumber = Some(49),
+      monthPayNumber = None)
+  )
+  val desEmployment = DesEmployment(
+    employerName = Some("Acme Inc"),
+    employerAddress = Some(desAddress),
+    employerDistrictNumber = Some("123"),
+    employerSchemeReference = Some("AI45678"),
+    employmentStartDate = Some(LocalDate.parse("2016-01-01")),
+    employmentLeavingDate = Some(LocalDate.parse("2016-06-30")),
+    employmentPayFrequency = Some(DesEmploymentPayFrequency.M1),
+    payments = desPayments)
+
+  "fetchEmployments" should {
+    val nino = Nino("NA000799C")
+    val fromDate = "2016-01-01"
+    val toDate = "2017-03-01"
+    val interval = toInterval(fromDate, toDate)
+
+    "return the employments" in new Setup {
+      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
+        .withQueryParam("from", equalTo(fromDate))
+        .withQueryParam("to", equalTo(toDate))
+        .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
+        .withHeader("Environment", equalTo(desEnvironment))
+        .willReturn(aResponse().withStatus(200).withBody(
+          """
+             {
+               "employments": [
+                 {
+                   "employerName":"Acme Inc",
+                   "employerAddress": {
+                     "line1": "Acme House",
+                     "line2": "23 Acme Street",
+                     "line3": "Richmond",
+                     "line4": "Surrey",
+                     "line5": "UK",
+                     "postalCode": "AI22 9LL"
+                   },
+                   "employerDistrictNumber": "123",
+                   "employerSchemeReference": "AI45678",
+                   "employmentStartDate": "2016-01-01",
+                   "employmentLeavingDate": "2016-06-30",
+                   "employmentPayFrequency": "M1",
+                   "payments": [
+                     {
+                       "paymentDate": "2016-11-28",
+                       "totalPayInPeriod": 100,
+                       "monthPayNumber": 8
+                     },
+                     {
+                       "paymentDate": "2016-12-06",
+                       "totalPayInPeriod": 50,
+                       "weekPayNumber": 49
+                     }
+                   ]
+                 }
+               ]
+             }
+          """
+        )))
+
+      val result = await(underTest.fetchEmployments(nino, interval))
+
+      result shouldBe Seq(desEmployment)
+    }
+
+    "return an empty list when there is no employments" in new Setup {
+      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
+        .withQueryParam("from", equalTo("2016-01-01"))
+        .withQueryParam("to", equalTo("2017-03-01"))
+        .willReturn(aResponse().withStatus(404)))
+
+      val result = await(underTest.fetchEmployments(nino, interval))
+
+      result shouldBe Seq.empty
+    }
+
+    "fail when DES returns an error" in new Setup {
+      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
+        .willReturn(aResponse().withStatus(500)))
+
+      intercept[Upstream5xxResponse]{await(underTest.fetchEmployments(nino, interval))}
+    }
+
+  }
+}
