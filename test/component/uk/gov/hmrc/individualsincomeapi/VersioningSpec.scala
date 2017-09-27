@@ -37,11 +37,11 @@ class VersioningSpec extends BaseSpec {
 
   feature("Versioning") {
 
-    scenario("Requests with an accept header version P1") {
+    scenario("Requests with an accept header version P1.0") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
-      When("A request to the match citizen endpoint is made with version P1 accept header")
+      When("A request to the match citizen endpoint is made with version P1.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP1)
 
       Then("The response status should be 200 (Ok)")
@@ -64,7 +64,7 @@ class VersioningSpec extends BaseSpec {
          }""")
     }
 
-    scenario("Requests without an accept header default to version 1") {
+    scenario("Requests without an accept header default to version 1.0") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
@@ -75,11 +75,11 @@ class VersioningSpec extends BaseSpec {
       response.code shouldBe NOT_FOUND
     }
 
-    scenario("Requests with an accept header version 1 are correctly forwarded") {
+    scenario("Requests with an accept header version 1.0 are correctly forwarded") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken)
 
-      When("A request to the match citizen endpoint is made with version 1 accept header")
+      When("A request to the match citizen endpoint is made with version 1.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderV1)
 
       Then("The response status should be 404 (Not Found)")
