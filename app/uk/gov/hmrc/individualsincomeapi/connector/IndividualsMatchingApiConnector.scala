@@ -23,10 +23,10 @@ import uk.gov.hmrc.individualsincomeapi.config.WSHttp
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.matchedCitizenJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, NotFoundException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, NotFoundException}
 
 @Singleton
 class IndividualsMatchingApiConnector extends ServicesConfig {

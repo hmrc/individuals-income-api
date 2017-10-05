@@ -24,11 +24,13 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment}
-import uk.gov.hmrc.play.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApplication with MockitoSugar with Dates {
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
