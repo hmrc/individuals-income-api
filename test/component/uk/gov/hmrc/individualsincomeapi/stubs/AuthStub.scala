@@ -22,7 +22,7 @@ import play.api.http.HeaderNames.AUTHORIZATION
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.JsArray
 import play.api.libs.json.Json._
-import uk.gov.hmrc.auth.core.authorise.Enrolment
+import uk.gov.hmrc.auth.core.Enrolment
 
 object AuthStub extends MockHost(22000) {
 

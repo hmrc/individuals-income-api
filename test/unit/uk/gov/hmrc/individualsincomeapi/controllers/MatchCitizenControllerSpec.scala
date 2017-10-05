@@ -31,11 +31,11 @@ import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxMatchCitizenController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future.successful
 import scala.concurrent.Future.failed
+import uk.gov.hmrc.http.HeaderCarrier
 
 class MatchCitizenControllerSpec extends UnitSpec with MockitoSugar with ScalaFutures with WithFakeApplication {
   implicit lazy val materializer = fakeApplication.materializer

@@ -18,13 +18,13 @@ package uk.gov.hmrc.individualsincomeapi.controllers
 
 import org.joda.time.DateTime
 import play.api.mvc.{Request, Result}
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
-import uk.gov.hmrc.auth.core.authorise.Enrolment
+import uk.gov.hmrc.auth.core.{AuthorisedFunctions, Enrolment}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, MatchNotFoundException}
 import uk.gov.hmrc.individualsincomeapi.util.Dates._
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.microservice.controller.BaseController
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 

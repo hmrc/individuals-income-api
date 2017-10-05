@@ -54,7 +54,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeAppli
     val liveIncomeController = new LiveIncomeController(mockIncomeService, mockAuthConnector)
     val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, mockAuthConnector)
 
-    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any())).willReturn(successful(()))
+    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
 
   "Income controller income function" should {

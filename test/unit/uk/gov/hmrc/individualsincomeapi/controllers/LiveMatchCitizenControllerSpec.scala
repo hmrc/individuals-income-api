@@ -28,17 +28,15 @@ import play.api.libs.json.Json.parse
 import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
-import uk.gov.hmrc.auth.core.InsufficientEnrolments
-import uk.gov.hmrc.auth.core.authorise.Enrolment
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
+import uk.gov.hmrc.auth.core.{Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveMatchCitizenController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 class LiveMatchCitizenControllerSpec extends PlaySpec with Results with MockitoSugar {
@@ -48,7 +46,7 @@ class LiveMatchCitizenControllerSpec extends PlaySpec with Results with MockitoS
     val mockAuthConnector = mock[ServiceAuthConnector]
     val liveMatchCitizenController = new LiveMatchCitizenController(mockLiveCitizenMatchingService, mockAuthConnector)
 
-    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any())).willReturn(successful(()))
+    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
     implicit val hc = HeaderCarrier()
   }
 
@@ -94,7 +92,7 @@ class LiveMatchCitizenControllerSpec extends PlaySpec with Results with MockitoS
     }
 
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any())).willReturn(failed(new InsufficientEnrolments()))
+      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any())).willReturn(failed(new InsufficientEnrolments()))
 
       intercept[InsufficientEnrolments]{await(liveMatchCitizenController.matchCitizen(randomMatchId).apply(FakeRequest()))}
       verifyZeroInteractions(mockLiveCitizenMatchingService)

@@ -26,8 +26,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.play.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.http.{ HeaderCarrier, Upstream5xxResponse }
 
 class IndividualsMatchingApiConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApplication {
 
