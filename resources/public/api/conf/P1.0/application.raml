@@ -33,6 +33,12 @@ uses:
       (annotations.sandboxData): !include sandbox/match.md
       (annotations.scope): "read:individuals-income"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income" ] } ]
+      headers:
+        Authorization:
+          description: OAuth 2.0 Bearer Token with the read:individuals-income scope.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours
@@ -54,6 +60,12 @@ uses:
       (annotations.sandboxData): !include sandbox/income-request.md
       (annotations.scope): "read:individuals-income"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income" ] } ]
+      headers:
+        Authorization:
+          description: OAuth 2.0 Bearer Token with the read:individuals-income scope.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours
