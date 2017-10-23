@@ -25,6 +25,7 @@ import play.api.test.Helpers._
 import scalaj.http.{Http, HttpResponse}
 
 class LiveMatchCitizenControllerSpec extends BaseSpec {
+  val incomeScope = "read:individuals-income"
 
   feature("Root (hateoas) entry point is accessible") {
 
@@ -39,7 +40,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
 
     scenario("invalid token") {
       Given("an invalid token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("the root entry point to the API is invoked")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
@@ -56,7 +57,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
 
     scenario("missing match id") {
       Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("the root entry point to the API is invoked with a missing match id")
       val response = invokeEndpoint(serviceUrl)
@@ -73,7 +74,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
 
     scenario("malformed match id") {
       Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("the root entry point to the API is invoked with a malformed match id")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=malformed-match-id-value")
@@ -90,7 +91,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
 
     scenario("invalid match id") {
       Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("the root entry point to the API is invoked with an invalid match id")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
@@ -107,7 +108,7 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
 
     scenario("valid request to the live implementation") {
       Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK,

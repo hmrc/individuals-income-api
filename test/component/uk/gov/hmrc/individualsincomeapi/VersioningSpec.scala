@@ -34,12 +34,13 @@ class VersioningSpec extends BaseSpec {
     "microservice.services.auth.port" -> AuthStub.port,
     "run.mode" -> "It"
   ).build()
+  val incomeScope = "read:individuals-income"
 
   feature("Versioning") {
 
     scenario("Requests with an accept header version P1.0") {
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("A request to the match citizen endpoint is made with version P1.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP1)
@@ -66,7 +67,7 @@ class VersioningSpec extends BaseSpec {
 
     scenario("Requests without an accept header default to version 1.0") {
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("A request to the match citizen endpoint is made without an accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken)
@@ -77,7 +78,7 @@ class VersioningSpec extends BaseSpec {
 
     scenario("Requests with an accept header version 1.0 are correctly forwarded") {
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("A request to the match citizen endpoint is made with version 1.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderV1)
@@ -88,7 +89,7 @@ class VersioningSpec extends BaseSpec {
 
     scenario("Requests with an accept header with an invalid version") {
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("A request to the match citizen endpoint is made with version 10.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, ACCEPT -> "application/vnd.hmrc.10.0+json")

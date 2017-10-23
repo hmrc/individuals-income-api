@@ -4,7 +4,12 @@
   "scopes": [
     {
       "key": "read:individuals-income",
-      "name": "access all individuals income information",
+      "name": "access individuals income information",
+      "description": "Access income information for all individuals"
+    },
+    {
+      "key": "read:individuals-income-paye",
+      "name": "access all individuals paye income information",
       "description": "Access personal and employment-based income information for all individuals"
     },
     {

@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingService) extends CommonController with PrivilegedAuthentication {
   def matchCitizen(matchId: UUID) = Action.async { implicit request =>
-    requiresPrivilegedAuthentication {
+    requiresPrivilegedAuthentication("read:individuals-income") {
       citizenMatchingService.matchCitizen(matchId) map { _ =>
         val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
