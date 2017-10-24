@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 abstract class IncomeController(incomeService: IncomeService) extends CommonController with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval) = Action.async { implicit request =>
-    requiresPrivilegedAuthentication {
+    requiresPrivilegedAuthentication("read:individuals-income-paye") {
       incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
         val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
         val incomeJsObject = obj("income" -> toJson(income))

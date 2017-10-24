@@ -33,13 +33,14 @@ class IndividualIncomeSpec extends BaseSpec {
   val nino = "CS700100A"
   val fromDate = "2016-04-01"
   val toDate = "2017-01-01"
+  val payeIncomeScope = "read:individuals-income-paye"
 
   feature("Live individual income") {
 
     scenario("Individual has employment income") {
 
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK,
@@ -105,7 +106,7 @@ class IndividualIncomeSpec extends BaseSpec {
     scenario("Individual has no employment income") {
 
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK,

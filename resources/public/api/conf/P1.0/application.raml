@@ -58,11 +58,11 @@ uses:
       description: !include docs/income-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-request.md
-      (annotations.scope): "read:individuals-income"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income" ] } ]
+      (annotations.scope): "read:individuals-income-paye"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income-paye" ] } ]
       headers:
         Authorization:
-          description: OAuth 2.0 Bearer Token with the read:individuals-income scope.
+          description: OAuth 2.0 Bearer Token with the read:individuals-income-paye scope.
           type: string
           required: true
           example: Bearer <BEARER_TOKEN>

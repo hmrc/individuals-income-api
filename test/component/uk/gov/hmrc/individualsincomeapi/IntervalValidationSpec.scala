@@ -36,6 +36,7 @@ class IntervalValidationSpec extends BaseSpec {
   val fromDate = "2016-04-01"
   val today = DateTimeUtils.now.toString(Dates.localDatePattern)
   val yesterday = DateTimeUtils.now.minusDays(1).toString(Dates.localDatePattern)
+  val payeIncomeScope = "read:individuals-income-paye"
 
   feature("Date interval query parameter validation") {
 
@@ -94,7 +95,7 @@ class IntervalValidationSpec extends BaseSpec {
     scenario("toDate defaults to today's date when it is not provided") {
 
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK,
