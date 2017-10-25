@@ -17,19 +17,19 @@
 package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
-import uk.gov.hmrc.individualsincomeapi.util.Dates
-import uk.gov.hmrc.time.DateTimeUtils
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 
 import scalaj.http.Http
 
 class TaxYearIntervalValidationSpec extends BaseSpec {
 
   val fromYear = "2015-16"
-  val today = DateTimeUtils.now.toString(Dates.localDatePattern)
+  val today = new LocalDate(DateTime.now(), DateTimeZone.forID("Europe/London"))
 
   feature("Tax Year Interval query parameter validation") {
 
@@ -83,6 +83,20 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       And("The correct error message is returned")
       response.body shouldBe errorResponse("Invalid time period requested")
+    }
+
+    scenario("fromTaxYear earlier than maximum allowed") {
+
+      When("I request individual income with fromTaxYear 7 years before the current tax year")
+      val fromTaxYear = TaxYear.fromEndYear(today.getYear - 8)
+      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 400 (Bad Request)")
+      response.code shouldBe BAD_REQUEST
+
+      And("The correct error message is returned")
+      response.body shouldBe errorResponse("fromTaxYear earlier than maximum allowed")
     }
 
     scenario("toTaxYear defaults to today's date when it is not provided") {

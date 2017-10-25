@@ -33,7 +33,7 @@
          <td>From tax year requested is earlier than available data</td>
          <td>
            <p>fromTaxYear earlier than current tax year minus 7</p>
-           <p>e.g. fromTaxYear=2010-11</p>
+           <p>e.g. fromTaxYear=2008-09</p>
          </td>
          <td>
            <p>400 (Bad Request)</p>

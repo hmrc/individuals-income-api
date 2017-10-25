@@ -13,6 +13,11 @@
       "description": "Access personal and employment-based income information for all individuals"
     },
     {
+      "key": "read:individuals-income-sa",
+      "name": "access all individuals SA information",
+      "description": "Access self-assessment information for all individuals"
+    },
+    {
       "key":"read:individual-income",
       "name":"access income information",
       "description":"Access personal and employment-based income information",

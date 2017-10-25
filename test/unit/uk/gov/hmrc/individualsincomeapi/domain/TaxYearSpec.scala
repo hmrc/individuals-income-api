@@ -16,15 +16,20 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain
 
-import org.scalatest.Matchers
+import org.joda.time.{DateTimeUtils, LocalDate}
+import org.scalatest.{BeforeAndAfterEach, Matchers}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.play.test.UnitSpec
 
-class TaxYearSpec extends UnitSpec with Matchers {
+class TaxYearSpec extends UnitSpec with Matchers with BeforeAndAfterEach {
 
   val validTaxYears = Seq("2014-15", "2013-14", "2016-17", "2019-20", "2099-00")
 
   val invalidTaxYears = Seq("2014", "201314", "2016-1X", "A2014-15", "2015-17", "2013-18", "2015-14", "2015-15")
+
+  override def afterEach: Unit = {
+    DateTimeUtils.setCurrentMillisSystem()
+  }
 
   "isValid" should {
 
@@ -54,4 +59,28 @@ class TaxYearSpec extends UnitSpec with Matchers {
       }
     }
   }
+
+  "fromEndYear" should {
+    "return the correct tax year from an end year" in {
+      TaxYear.fromEndYear(2017) shouldBe TaxYear("2016-17")
+      TaxYear.fromEndYear(2009) shouldBe TaxYear("2008-09")
+      TaxYear.fromEndYear(2000) shouldBe TaxYear("1999-00")
+      TaxYear.fromEndYear(1999) shouldBe TaxYear("1998-99")
+    }
+  }
+
+  "TaxYear.current()" should {
+    "return tax year 2015-16 when date is before 2016-04-05" in {
+      DateTimeUtils.setCurrentMillisFixed(LocalDate.parse("2016-04-05").toDate.getTime)
+
+      TaxYear.current() shouldBe TaxYear("2015-16")
+    }
+
+    "return tax year 2016-17 when date is after 2016-04-06" in {
+      DateTimeUtils.setCurrentMillisFixed(LocalDate.parse("2016-04-06").toDate.getTime)
+
+      TaxYear.current() shouldBe TaxYear("2016-17")
+    }
+  }
+
 }
