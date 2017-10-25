@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Income",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI to this resource",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "self-employments": {
+          "type": "object",
+          "description": "The income from self-employments",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "employments": {
+          "type": "object",
+          "description": "The income from employments",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "_embedded": {
+      "type": "object",
+      "properties": {
+        "income": {
+          "type": "array",
+          "description": "List of self-assessments in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax Year",
+                "example": "2015-16"
+              },
+              "annualReturns": {
+                "type": "array",
+                "description": "Self-assessment returns for the year",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "receivedDate": {
+                      "type": "string",
+                      "description": "Self Assessment received date",
+                      "example": "2014-06-06"
+                    }
+                  },
+                  "required": [
+                    "receivedDate"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "annualReturns"
+            ]
+          }
+        }
+      },
+      "required": [
+        "income"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "_embedded"
+  ]
+}

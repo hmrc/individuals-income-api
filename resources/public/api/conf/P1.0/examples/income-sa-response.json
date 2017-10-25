@@ -1,0 +1,33 @@
+{
+  "_links": {
+    "self": {
+      "href": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "self-employments": {
+      "href": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "employments": {
+      "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    }
+  },
+  "_embedded": {
+    "income": [
+      {
+        "taxYear": "2014-15",
+        "annualReturns": [
+          {
+            "receivedDate": "2015-10-06"
+          }
+        ]
+      },
+      {
+        "taxYear": "2013-14",
+        "annualReturns": [
+          {
+            "receivedDate": "2014-06-06"
+          }
+        ]
+      }
+    ]
+  }
+}

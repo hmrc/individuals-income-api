@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi
+package uk.gov.hmrc.individualsincomeapi.domain
 
-import uk.gov.hmrc.individualsincomeapi.util.{IntervalQueryStringBinder, MatchUuidQueryStringBinder, TaxYearIntervalQueryStringBinder}
+import org.joda.time.LocalDate
 
-package object Binders {
-  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
-  implicit val intervalQueryStringBinder = new IntervalQueryStringBinder
-  implicit val taxYearIntervalQueryStringBinder = new TaxYearIntervalQueryStringBinder
+case class SaReturn(taxYear: TaxYear, annualReturns: Seq[AnnualReturn])
+
+object SaReturn {
+  def apply(desSaIncome: DesSAIncome): SaReturn = {
+    SaReturn(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.receivedDate) map AnnualReturn)
+  }
 }
+
+case class AnnualReturn(receivedDate: LocalDate)

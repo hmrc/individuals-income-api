@@ -21,11 +21,11 @@ import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
-import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, MatchNotFoundException}
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, MatchNotFoundException, TaxYear}
 import uk.gov.hmrc.individualsincomeapi.util.Dates._
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait CommonController extends BaseController {
@@ -35,6 +35,14 @@ trait CommonController extends BaseController {
   private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {
     val urlWithFromDate = s"$url&fromDate=${toFormattedLocalDate(from)}"
     getQueryParam("toDate").map(x => s"$urlWithFromDate&toDate=$x").getOrElse(urlWithFromDate)
+  }
+
+  private[controllers] def urlWithTaxYearInterval[T](url: String)(implicit request: Request[T]) = {
+    (getQueryParam("fromTaxYear"), getQueryParam("toTaxYear")) match {
+      case (Some(fromTaxYear), Some(toTaxYear)) => s"$url&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear"
+      case (Some(fromTaxYear), None) => s"$url&fromTaxYear=$fromTaxYear"
+      case _ => url
+    }
   }
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
