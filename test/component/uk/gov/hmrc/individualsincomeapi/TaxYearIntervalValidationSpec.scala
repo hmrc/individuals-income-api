@@ -99,7 +99,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromTaxYear earlier than maximum allowed")
     }
 
-    scenario("toTaxYear defaults to today's date when it is not provided") {
+    scenario("toTaxYear defaults to the current tax year when it is not provided") {
 
       When("I request individual income for the existing matchId without a toTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14")

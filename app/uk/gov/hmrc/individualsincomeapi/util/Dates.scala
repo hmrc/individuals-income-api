@@ -18,13 +18,14 @@ package uk.gov.hmrc.individualsincomeapi.util
 
 import org.joda.time.{DateTime, Interval, LocalDate}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval, ValidationException}
+import uk.gov.hmrc.play.config.ServicesConfig
 
-object Dates {
+object Dates extends ServicesConfig {
 
   val localDatePattern = "yyyy-MM-dd"
 
   private val desDataInceptionDate = LocalDate.parse("2013-03-31")
-  private val selfAssessmentYearHistory = 7
+  private val selfAssessmentYearHistory = getConfInt("self-assessment.historyInYears", 7)
 
   def toFormattedLocalDate(date: DateTime) = date.toLocalDate.toString(localDatePattern)
 
