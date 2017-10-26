@@ -18,12 +18,20 @@ package uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.LocalDate
 
-case class SaReturn(taxYear: TaxYear, annualReturns: Seq[AnnualReturn])
+case class SaAnnualReturns(taxYear: TaxYear, annualReturns: Seq[SaReturn])
+case class SaReturn(receivedDate: LocalDate)
 
-object SaReturn {
-  def apply(desSaIncome: DesSAIncome): SaReturn = {
-    SaReturn(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.receivedDate) map AnnualReturn)
+object SaAnnualReturns {
+  def apply(desSaIncome: DesSAIncome): SaAnnualReturns = {
+    SaAnnualReturns(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.receivedDate) map SaReturn)
   }
 }
 
-case class AnnualReturn(receivedDate: LocalDate)
+case class SaAnnualEmployments(taxYear: TaxYear, employments: Seq[SaEmploymentsIncome])
+case class SaEmploymentsIncome(employmentIncome: Double)
+
+object SaAnnualEmployments {
+  def apply(desSaIncome: DesSAIncome): SaAnnualEmployments = {
+    SaAnnualEmployments(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.incomeFromAllEmployments.getOrElse(0.0)) map SaEmploymentsIncome)
+  }
+}

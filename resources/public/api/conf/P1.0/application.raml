@@ -108,7 +108,7 @@ uses:
                     code: NOT_FOUND
   /sa:
     get:
-      displayName: Retrieve SA Income history
+      displayName: Retrieve SA history
       description: !include docs/income-sa-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-sa-request.md
@@ -142,6 +142,60 @@ uses:
             application/json:
               example: !include examples/income-sa-response.json
               type: !include schemas/income-sa-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+  /sa/employments:
+    get:
+      displayName: Retrieve SA Employment Income history
+      description: !include docs/income-sa-employments-endpoint-description.md
+      is: [headers.acceptHeader]
+      (annotations.sandboxData): !include sandbox/income-sa-employments-request.md
+      (annotations.scope): "read:individuals-income-sa-employments"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income-sa-employments" ] } ]
+      headers:
+        Authorization:
+          description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-employments scope.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
+      queryParameters:
+        matchId:
+          description: A short-lived UUID, typically valid for several hours
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        fromTaxYear:
+          description: The tax year from when data are requested
+          type: string
+          required: true
+          example: 2013-14
+        toTaxYear:
+          description: The tax year until when data are requested
+          type: string
+          required: false
+          example: 2015-16
+      responses:
+        200:
+          description: The individual SA employments income for the given period
+          body:
+            application/json:
+              example: !include examples/income-sa-employments-response.json
+              type: !include schemas/income-sa-employments-response.json
         400:
           body:
             application/json:

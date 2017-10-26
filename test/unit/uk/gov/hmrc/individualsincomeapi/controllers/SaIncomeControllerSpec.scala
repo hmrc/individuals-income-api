@@ -43,7 +43,7 @@ class SaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApp
   val fromTaxYear = TaxYear("2015-16")
   val toTaxYear = TaxYear("2016-17")
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
-  val saReturns = Seq(SaReturn(TaxYear("2015-16"), Seq(AnnualReturn(LocalDate.parse("2016-06-01")))))
+  val saReturns = Seq(SaAnnualReturns(TaxYear("2015-16"), Seq(SaReturn(LocalDate.parse("2016-06-01")))))
 
   trait Setup {
     val mockAuthConnector = mock[ServiceAuthConnector]

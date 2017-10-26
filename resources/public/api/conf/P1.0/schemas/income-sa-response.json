@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Income",
+  "description": "SA History",
   "type": "object",
   "properties": {
     "_links": {
@@ -47,7 +47,7 @@
         }
       },
       "required": [
-        "self"
+        "self", "self-employments", "employments"
       ]
     },
     "_embedded": {

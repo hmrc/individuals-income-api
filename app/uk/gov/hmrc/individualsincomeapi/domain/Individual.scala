@@ -50,7 +50,8 @@ case class DesSAIncome(taxYear: String,
   def isIn(taxYearInterval: TaxYearInterval) = taxYear.toInt >= taxYearInterval.fromTaxYear.endYr && taxYear.toInt <= taxYearInterval.toTaxYear.endYr
 }
 
-case class DesSAReturn(receivedDate: LocalDate)
+case class DesSAReturn(receivedDate: LocalDate,
+                       incomeFromAllEmployments: Option[Double] = None)
 
 object SandboxIncomeData {
 
