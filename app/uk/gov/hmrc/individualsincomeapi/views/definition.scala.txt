@@ -4,18 +4,23 @@
   "scopes": [
     {
       "key": "read:individuals-income",
-      "name": "access individuals income information",
+      "name": "access income information for all individuals",
       "description": "Access income information for all individuals"
     },
     {
       "key": "read:individuals-income-paye",
-      "name": "access all individuals paye income information",
-      "description": "Access personal and employment-based income information for all individuals"
+      "name": "access PAYE income information for all individuals",
+      "description": "Access PAYE income information for all individuals"
     },
     {
       "key": "read:individuals-income-sa",
-      "name": "access all individuals SA information",
+      "name": "access self-assessment information for all individuals",
       "description": "Access self-assessment information for all individuals"
+    },
+    {
+      "key": "read:individuals-income-sa-employments",
+      "name": "access self-assessment employments income information for all individuals",
+      "description": "Access self-assessment employments income information for all individuals"
     },
     {
       "key":"read:individual-income",

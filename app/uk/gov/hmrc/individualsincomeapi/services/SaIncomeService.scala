@@ -44,7 +44,7 @@ class SandboxSaIncomeService extends SaIncomeService {
     }
   }
 
-  override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+  override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) =>
         val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse

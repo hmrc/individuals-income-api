@@ -87,7 +87,7 @@ object SandboxIncomeData {
       Payment(500.25, parse("2017-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
       Payment(500.25, parse("2017-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))),
     Seq(
-      DesSAIncome("2014", Seq(DesSAReturn(parse("2014-06-06")))),
+      DesSAIncome("2014", Seq(DesSAReturn(parse("2014-06-06"), Some(5000)))),
       DesSAIncome("2015", Seq(DesSAReturn(parse("2015-10-06"))))
     )
   )

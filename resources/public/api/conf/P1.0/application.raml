@@ -108,7 +108,7 @@ uses:
                     code: NOT_FOUND
   /sa:
     get:
-      displayName: Retrieve SA history
+      displayName: Retrieve Self-Assessment history
       description: !include docs/income-sa-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-sa-request.md
@@ -162,7 +162,7 @@ uses:
                     code: NOT_FOUND
   /sa/employments:
     get:
-      displayName: Retrieve SA Employment Income history
+      displayName: Retrieve Self-Assessment Employment Income history
       description: !include docs/income-sa-employments-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-sa-employments-request.md
