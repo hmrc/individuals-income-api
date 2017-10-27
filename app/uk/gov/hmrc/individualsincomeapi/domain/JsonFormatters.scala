@@ -43,6 +43,11 @@ object JsonFormatters {
     override def reads(json: JsValue) = JsSuccess(UUID.fromString(json.asInstanceOf[JsString].value))
   }
 
+  implicit val formatTaxYear = new Format[TaxYear] {
+    override def reads(json: JsValue): JsResult[TaxYear] = JsSuccess(TaxYear(json.asInstanceOf[JsString].value))
+    override def writes(taxYear: TaxYear): JsValue = JsString(taxYear.formattedTaxYear)
+  }
+
   implicit val paymentJsonFormat = Json.format[Payment]
   implicit val matchedCitizenJsonFormat = Json.format[MatchedCitizen]
 
@@ -51,6 +56,9 @@ object JsonFormatters {
   implicit val desEmploymentPayFrequencyJsonFormat = EnumJson.enumFormat(DesEmploymentPayFrequency)
   implicit val desEmploymentJsonFormat = Json.format[DesEmployment]
   implicit val desEmploymentsJsonFormat = Json.format[DesEmployments]
+
+  implicit val formatAnnualReturn = Json.format[AnnualReturn]
+  implicit val formatSaReturn = Json.format[SaReturn]
 }
 
 object EnumJson {

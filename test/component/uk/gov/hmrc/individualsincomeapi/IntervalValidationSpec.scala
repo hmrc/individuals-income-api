@@ -34,8 +34,8 @@ class IntervalValidationSpec extends BaseSpec {
   val matchId = UUID.randomUUID.toString
   val nino = "CS700100A"
   val fromDate = "2016-04-01"
-  val today = DateTimeUtils.now.toString(Dates.localDatePattern)
-  val yesterday = DateTimeUtils.now.minusDays(1).toString(Dates.localDatePattern)
+  lazy val today = DateTimeUtils.now.toString(Dates.localDatePattern)
+  lazy val yesterday = DateTimeUtils.now.minusDays(1).toString(Dates.localDatePattern)
   val payeIncomeScope = "read:individuals-income-paye"
 
   feature("Date interval query parameter validation") {
