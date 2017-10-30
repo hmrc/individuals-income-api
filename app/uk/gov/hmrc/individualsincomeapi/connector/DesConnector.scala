@@ -22,7 +22,7 @@ import org.joda.time.Interval
 import play.api.Configuration
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.config.WSHttp
-import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments}
+import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -49,4 +49,16 @@ class DesConnector @Inject()(configuration: Configuration) extends ServicesConfi
       case _: NotFoundException => Seq.empty
     }
   }
+
+  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
+    val fromTaxYear = taxYearInterval.fromTaxYear.endYr
+    val toTaxYear = taxYearInterval.toTaxYear.endYr
+    val header = hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken"))).withExtraHeaders("Environment" -> desEnvironment, "Source" -> "MDTP")
+
+    http.GET[Seq[DesSAIncome]](s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear")(
+      implicitly[HttpReads[Seq[DesSAIncome]]], header, ec) recover {
+      case _: NotFoundException => Seq.empty
+    }
+  }
+
 }

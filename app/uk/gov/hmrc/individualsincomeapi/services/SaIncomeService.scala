@@ -17,14 +17,16 @@
 package uk.gov.hmrc.individualsincomeapi.services
 
 import java.util.UUID
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.domain._
 
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SaIncomeService {
   def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualReturns]]
@@ -51,5 +53,20 @@ class SandboxSaIncomeService extends SaIncomeService {
         successful(selectedSaReturns map (r => SaAnnualEmployments(r)))
       case None => failed(new MatchNotFoundException)
     }
+  }
+}
+
+@Singleton
+class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector, desConnector: DesConnector) extends SaIncomeService {
+
+  override def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualReturns]] = {
+    for {
+      ninoMatch <- matchingConnector.resolve(matchId)
+      desSaIncomes <- desConnector.fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualReturns(r))
+  }
+
+  override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
+    ???
   }
 }

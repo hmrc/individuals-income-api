@@ -44,15 +44,6 @@ case class Payment(taxablePayment: Double,
 
 }
 
-case class DesSAIncome(taxYear: String,
-                       returnList: Seq[DesSAReturn]) {
-
-  def isIn(taxYearInterval: TaxYearInterval) = taxYear.toInt >= taxYearInterval.fromTaxYear.endYr && taxYear.toInt <= taxYearInterval.toTaxYear.endYr
-}
-
-case class DesSAReturn(receivedDate: LocalDate,
-                       incomeFromAllEmployments: Option[Double] = None)
-
 object SandboxIncomeData {
 
   def findByMatchId(matchId: UUID) = individuals.find(_.matchId == matchId)

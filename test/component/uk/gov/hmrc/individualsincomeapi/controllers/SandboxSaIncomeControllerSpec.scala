@@ -27,7 +27,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 
 import scalaj.http.Http
 
-class SaIncomeControllerSpec extends BaseSpec {
+class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   val matchId = UUID.randomUUID().toString
   val fromTaxYear = TaxYear("2013-14")

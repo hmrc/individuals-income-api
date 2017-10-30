@@ -26,7 +26,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
-import uk.gov.hmrc.individualsincomeapi.domain.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment}
+import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
@@ -164,5 +164,55 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
       intercept[Upstream5xxResponse]{await(underTest.fetchEmployments(nino, interval))}
     }
 
+  }
+
+  "fetchSelfAssessmentIncome" should {
+    val nino = Nino("NA000799C")
+    val startYear = "2016"
+    val endYear = "2017"
+    val interval = TaxYearInterval(TaxYear("2015-16"), TaxYear("2016-17"))
+
+    "return the self-assessment returns" in new Setup {
+      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
+        .withQueryParam("startYear", equalTo(startYear))
+        .withQueryParam("endYear", equalTo(endYear))
+        .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
+        .withHeader("Environment", equalTo(desEnvironment))
+        .willReturn(aResponse().withStatus(200).withBody(
+          """
+             [{
+               "taxYear": "2016",
+               "returnList": [
+                 {
+                  "receivedDate": "2016-06-06",
+                  "incomeFromAllEmployments": 166.55
+                 }
+               ]
+             }]
+          """
+        )))
+
+      val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
+
+      result shouldBe Seq(DesSAIncome("2016", Seq(DesSAReturn(LocalDate.parse("2016-06-06"), Some(166.55)))))
+    }
+
+    "return an empty list when there is no self-assessment returns" in new Setup {
+      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
+        .withQueryParam("startYear", equalTo(startYear))
+        .withQueryParam("endYear", equalTo(endYear))
+        .willReturn(aResponse().withStatus(404)))
+
+      val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
+
+      result shouldBe Seq.empty
+    }
+
+    "fail when DES returns an error" in new Setup {
+      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
+        .willReturn(aResponse().withStatus(500)))
+
+      intercept[Upstream5xxResponse]{await(underTest.fetchSelfAssessmentIncome(nino, interval))}
+    }
   }
 }

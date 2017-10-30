@@ -19,7 +19,8 @@ package component.uk.gov.hmrc.individualsincomeapi.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.DesEmployments
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployments, DesSAIncome, TaxYear}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 
 object DesStub extends MockHost(23000) {
@@ -37,4 +38,19 @@ object DesStub extends MockHost(23000) {
       .withQueryParam("to", equalTo(toDate))
       .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
   }
+
+  def searchSelfAssessmentIncomeForPeriodReturns(nino: Nino, startYear: TaxYear, endYear: TaxYear, desSAIncomes: Seq[DesSAIncome]) = {
+    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
+      .withQueryParam("startYear", equalTo(startYear.endYr.toString))
+      .withQueryParam("endYear", equalTo(endYear.endYr.toString))
+      .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desSAIncomes).toString())))
+  }
+
+  def searchSelfAssessmentIncomeForPeriodReturnsNoDataFor(nino: String, startYear: String, endYear: String) = {
+    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
+      .withQueryParam("startYear", equalTo(startYear))
+      .withQueryParam("endYear", equalTo(endYear))
+      .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
+  }
+
 }
