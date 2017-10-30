@@ -27,17 +27,28 @@ import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 trait SaIncomeService {
-  def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaReturn]]
+  def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualReturns]]
+
+  def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]]
 }
 
 @Singleton
 class SandboxSaIncomeService extends SaIncomeService {
 
-  override def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaReturn]] = {
+  override def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualReturns]] = {
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) =>
         val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
-        successful(selectedSaReturns map (r => SaReturn(r)))
+        successful(selectedSaReturns map (r => SaAnnualReturns(r)))
+      case None => failed(new MatchNotFoundException)
+    }
+  }
+
+  override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
+    findByMatchId(matchId).map(_.saIncome) match {
+      case Some(saIncomes) =>
+        val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
+        successful(selectedSaReturns map (r => SaAnnualEmployments(r)))
       case None => failed(new MatchNotFoundException)
     }
   }

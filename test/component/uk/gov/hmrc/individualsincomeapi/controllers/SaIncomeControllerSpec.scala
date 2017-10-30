@@ -35,7 +35,7 @@ class SaIncomeControllerSpec extends BaseSpec {
 
   feature("Sandbox individual income") {
 
-    scenario("Valid request to the sandbox implementation") {
+    scenario("SA root endpoint for the sandbox implementation") {
 
       When("I request the self-assessments for Sandbox")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
@@ -75,5 +75,45 @@ class SaIncomeControllerSpec extends BaseSpec {
              }
            """)
     }
+
+    scenario("Employments Income endpoint for the sandbox implementation") {
+
+      When("I request the SA employments for Sandbox")
+      val response = Http(s"$serviceUrl/sandbox/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 200 (OK)")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+             {
+               "_links": {
+                 "self": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+               },
+               "_embedded": {
+                 "income": [
+                   {
+                     "taxYear": "2014-15",
+                     "employments": [
+                       {
+                         "employmentIncome": 0
+                       }
+                     ]
+                   },
+                   {
+                     "taxYear": "2013-14",
+                     "employments": [
+                       {
+                         "employmentIncome": 5000
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+           """)
+    }
+
   }
 }
