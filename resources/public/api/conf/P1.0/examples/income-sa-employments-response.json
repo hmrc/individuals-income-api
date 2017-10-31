@@ -8,7 +8,11 @@
     "income": [
       {
         "taxYear": "2014-15",
-        "employments": []
+        "employments": [
+          {
+            "employmentIncome": 0
+          }
+        ]
       },
       {
         "taxYear": "2013-14",
