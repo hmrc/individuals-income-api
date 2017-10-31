@@ -64,3 +64,8 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
 class SandboxSaIncomeController @Inject()(sandboxSaIncomeService: SandboxSaIncomeService, val authConnector: ServiceAuthConnector) extends SaIncomeController(sandboxSaIncomeService) {
   override val environment = SANDBOX
 }
+
+@Singleton
+class LiveSaIncomeController @Inject()(liveSaIncomeService: LiveSaIncomeService, val authConnector: ServiceAuthConnector) extends SaIncomeController(liveSaIncomeService) {
+  override val environment = PRODUCTION
+}
