@@ -117,6 +117,28 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
   }
 
+  "LiveIncomeService.fetchEmploymentsIncomeByMatchId" should {
+    "return the employments income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchEmploymentsIncomeByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(1555.55))),
+        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(0.0)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchEmploymentsIncomeByMatchId(liveMatchId, taxYearInterval))
+      }
+    }
+  }
+
   "SandboxSaIncomeService.fetchEmploymentsIncomeByMatchId" should {
     "return the employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(sandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))

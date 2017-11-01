@@ -67,6 +67,9 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
   }
 
   override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
-    ???
+    for {
+      ninoMatch <- matchingConnector.resolve(matchId)
+      desSaIncomes <- desConnector.fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualEmployments(r))
   }
 }
