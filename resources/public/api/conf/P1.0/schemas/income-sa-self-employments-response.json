@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "SA Self Employments Income",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI to this resource",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "_embedded": {
+      "type": "object",
+      "properties": {
+        "income": {
+          "type": "array",
+          "description": "List of self-assessment returned in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax Year",
+                "example": "2013-14"
+              },
+              "selfEmployments": {
+                "type": "array",
+                "description": "Self Employments Income for the tax year",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "selfEmploymentStartDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Self Employment Start Date",
+                      "example": "2010-04-01"
+                    },
+                    "selfEmploymentIncome": {
+                      "type": "number",
+                      "description": "Self Employment income",
+                      "example": "5000"
+                    }
+                  },
+                  "required": [
+                    "selfEmploymentIncome"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "selfEmployments"
+            ]
+          }
+        }
+      },
+      "required": [
+        "income"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "_embedded"
+  ]
+}
