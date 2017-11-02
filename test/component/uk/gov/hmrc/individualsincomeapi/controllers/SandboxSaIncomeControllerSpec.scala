@@ -115,5 +115,44 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
+    scenario("Self Employments Income endpoint for the sandbox implementation") {
+
+      When("I request the SA self employments for Sandbox")
+      val response = Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 200 (OK)")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+             {
+               "_links": {
+                 "self": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+               },
+               "_embedded": {
+                 "income": [
+                   {
+                     "taxYear": "2014-15",
+                     "selfEmployments": [
+                       {
+                         "selfEmploymentIncome": 0
+                       }
+                     ]
+                   },
+                   {
+                     "taxYear": "2013-14",
+                     "selfEmployments": [
+                       {
+                         "selfEmploymentStartDate": "2010-04-01",
+                         "selfEmploymentIncome": 10500
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+           """)
+    }
   }
 }

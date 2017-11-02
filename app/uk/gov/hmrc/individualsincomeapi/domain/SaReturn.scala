@@ -35,3 +35,14 @@ object SaAnnualEmployments {
     SaAnnualEmployments(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.incomeFromAllEmployments.getOrElse(0.0)) map SaEmploymentsIncome)
   }
 }
+
+case class SaAnnualSelfEmployments(taxYear: TaxYear, selfEmployments: Seq[SaSelfEmploymentsIncome])
+case class SaSelfEmploymentsIncome(selfEmploymentStartDate: Option[LocalDate], selfEmploymentIncome: Double)
+
+object SaAnnualSelfEmployments {
+  def apply(desSAIncome: DesSAIncome): SaAnnualSelfEmployments = {
+    SaAnnualSelfEmployments(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(x => SaSelfEmploymentsIncome(x.selfEmploymentStartDate, x.selfEmploymentIncome.getOrElse(0.0))))
+  }
+}
