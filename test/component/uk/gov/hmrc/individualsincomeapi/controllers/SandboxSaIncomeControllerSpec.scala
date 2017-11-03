@@ -52,11 +52,11 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                  "employments": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
                  "self-employments": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
-               "_embedded": {
-                 "income": [
+               "selfAssessment": {
+                 "taxReturns": [
                    {
                      "taxYear": "2014-15",
-                     "annualReturns": [
+                     "submissions": [
                        {
                          "receivedDate": "2015-10-06"
                        }
@@ -64,7 +64,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                    },
                    {
                      "taxYear": "2013-14",
-                     "annualReturns": [
+                     "submissions": [
                        {
                          "receivedDate": "2014-06-06"
                        }
@@ -91,8 +91,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "_links": {
                  "self": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
-               "_embedded": {
-                 "income": [
+               "selfAssessment": {
+                 "taxReturns": [
                    {
                      "taxYear": "2014-15",
                      "employments": [
@@ -130,8 +130,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "_links": {
                  "self": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
-               "_embedded": {
-                 "income": [
+               "selfAssessment": {
+                 "taxReturns": [
                    {
                      "taxYear": "2014-15",
                      "selfEmployments": [

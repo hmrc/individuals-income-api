@@ -24,7 +24,7 @@
         "self"
       ]
     },
-    "_embedded": {
+    "paye": {
       "type": "object",
       "properties": {
         "income": {
@@ -74,6 +74,6 @@
   },
   "required": [
     "_links",
-    "_embedded"
+    "paye"
   ]
 }

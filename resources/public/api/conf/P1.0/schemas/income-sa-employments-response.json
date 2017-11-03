@@ -24,23 +24,23 @@
         "self"
       ]
     },
-    "_embedded": {
+    "selfAssessment": {
       "type": "object",
       "properties": {
-        "income": {
+        "taxReturns": {
           "type": "array",
-          "description": "List of self-assessment returned in the requested period",
+          "description": "List of self-assessments tax returns in the requested period",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax Year",
+                "description": "Tax year",
                 "example": "2013-14"
               },
               "employments": {
                 "type": "array",
-                "description": "Employments Income for the tax year",
+                "description": "Employments income for the tax year",
                 "items": {
                   "type": "object",
                   "properties": {
@@ -64,12 +64,12 @@
         }
       },
       "required": [
-        "income"
+        "taxReturns"
       ]
     }
   },
   "required": [
     "_links",
-    "_embedded"
+    "selfAssessment"
   ]
 }

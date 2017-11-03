@@ -123,10 +123,8 @@ class IntervalValidationSpec extends BaseSpec {
                    "href":"/individuals/income/paye?matchId=$matchId&fromDate=$fromDate"
                  }
                },
-               "_embedded":
-               {
-                 "income":
-                 [
+               "paye": {
+                 "income":[
                    {
                      "taxablePayment":100.5,
                      "paymentDate":"$yesterday"

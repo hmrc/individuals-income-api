@@ -57,7 +57,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "LiveSaIncomeController.saReturns" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
-    val saReturns = Seq(SaAnnualReturns(TaxYear("2015-16"), Seq(SaReturn(LocalDate.parse("2016-06-01")))))
+    val saReturns = Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(LocalDate.parse("2016-06-01")))))
 
     "return 200 (OK) with the self assessment returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -147,7 +147,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
   }
 
-  private def expectedSaRootPayload(requestParameters: String, saReturns: Seq[SaAnnualReturns]) = {
+  private def expectedSaRootPayload(requestParameters: String, saReturns: Seq[SaTaxReturn]) = {
     s"""
        {
          "_links": {
@@ -155,8 +155,8 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
            "employments": {"href": "/individuals/income/sa/employments?$requestParameters"},
            "self-employments": {"href": "/individuals/income/sa/self-employments?$requestParameters"}
          },
-         "_embedded": {
-           "income": ${Json.toJson(saReturns)}
+         "selfAssessment": {
+           "taxReturns": ${Json.toJson(saReturns)}
          }
        }
       """
@@ -168,8 +168,8 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
          "_links": {
            "self": {"href": "$fakeRequest"}
          },
-         "_embedded": {
-           "income": $income
+         "selfAssessment": {
+           "taxReturns": $income
          }
        }
       """

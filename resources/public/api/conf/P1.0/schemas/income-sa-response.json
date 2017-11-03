@@ -50,29 +50,29 @@
         "self", "self-employments", "employments"
       ]
     },
-    "_embedded": {
+    "selfAssessment": {
       "type": "object",
       "properties": {
-        "income": {
+        "taxReturns": {
           "type": "array",
-          "description": "List of self-assessments in the requested period",
+          "description": "List of self-assessments tax returns in the requested period",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax Year",
+                "description": "Tax year",
                 "example": "2015-16"
               },
-              "annualReturns": {
+              "submissions": {
                 "type": "array",
-                "description": "Self-assessment returns for the year",
+                "description": "Tax return submissions for the year",
                 "items": {
                   "type": "object",
                   "properties": {
                     "receivedDate": {
                       "type": "string",
-                      "description": "Self Assessment received date",
+                      "description": "Tax return received date",
                       "example": "2014-06-06"
                     }
                   },
@@ -84,18 +84,18 @@
             },
             "required": [
               "taxYear",
-              "annualReturns"
+              "submissions"
             ]
           }
         }
       },
       "required": [
-        "income"
+        "taxReturns"
       ]
     }
   },
   "required": [
     "_links",
-    "_embedded"
+    "selfAssessment"
   ]
 }

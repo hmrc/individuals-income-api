@@ -12,11 +12,18 @@
     <tbody>
     <tr>
       <td>Happy path</td>
-      <td>The matchId is valid</td>
+      <td><p>matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430</p></td>
       <td>
         <p>200 (OK)</p>
         <p>Payload as response example above</p>
       </td>
+    </tr>
+    <tr>
+        <td>Missing matchId</td>
+        <td>matchId query parameter missing</td>
+        <td><p>400 (Bad Request)</p>
+        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
+        </td>
     </tr>
     <tr>
       <td>Invalid matchId</td>

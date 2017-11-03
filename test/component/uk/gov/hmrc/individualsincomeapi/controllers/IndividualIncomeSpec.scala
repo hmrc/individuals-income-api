@@ -71,7 +71,7 @@ class IndividualIncomeSpec extends BaseSpec {
                    "href": "/individuals/income/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate"
                  }
                },
-               "_embedded": {
+               "paye": {
                  "income": [
                    {
                      "taxablePayment": 500.25,
@@ -130,7 +130,7 @@ class IndividualIncomeSpec extends BaseSpec {
                    "href": "/individuals/income/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate"
                  }
                },
-               "_embedded": {
+               "paye": {
                  "income": []
                }
              }
@@ -157,7 +157,7 @@ class IndividualIncomeSpec extends BaseSpec {
                    "href": "/individuals/income/paye?matchId=$sandboxMatchId&fromDate=$fromDate&toDate=$toDate"
                  }
                },
-               "_embedded": {
+               "paye": {
                  "income": [
                    {
                      "taxablePayment": 1000.25,

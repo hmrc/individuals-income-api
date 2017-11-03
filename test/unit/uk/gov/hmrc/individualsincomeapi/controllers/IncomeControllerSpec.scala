@@ -113,7 +113,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeAppli
          "_links": {
            "self": {"href": "$uri"}
          },
-         "_embedded": {
+         "paye": {
            "income": ${Json.toJson(payments)}
          }
        }
