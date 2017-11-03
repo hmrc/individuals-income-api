@@ -10,11 +10,11 @@
       "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
     }
   },
-  "_embedded": {
-    "income": [
+  "selfAssessment": {
+    "taxReturns": [
       {
         "taxYear": "2014-15",
-        "annualReturns": [
+        "submissions": [
           {
             "receivedDate": "2015-10-06"
           }
@@ -22,7 +22,7 @@
       },
       {
         "taxYear": "2013-14",
-        "annualReturns": [
+        "submissions": [
           {
             "receivedDate": "2014-06-06"
           }

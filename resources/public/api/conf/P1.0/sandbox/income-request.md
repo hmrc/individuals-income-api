@@ -12,8 +12,15 @@
     <tbody>
     <tr>
         <td><p>Happy path</p></td>
-        <td><p>fromDate=2016-01-01</p><p>toDate=2017-03-01</p></td>
+        <td><p>matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430</p><p>fromDate=2016-01-01</p><p>toDate=2017-03-01</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
+    </tr>
+    <tr>
+        <td>Missing matchId</td>
+        <td>matchId query parameter missing</td>
+        <td><p>400 (Bad Request)</p>
+        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
+        </td>
     </tr>
     <tr>
         <td>Missing fromDate</td>

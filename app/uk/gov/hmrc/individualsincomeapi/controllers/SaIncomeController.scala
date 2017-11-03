@@ -40,9 +40,9 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
         val selfEmploymentsLink = HalLink("self-employments", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
         val employmentsLink = HalLink("employments", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
-        val saReturnsJsObject = obj("income" -> toJson(saReturns))
-        val embeddedJsObject = obj("_embedded" -> saReturnsJsObject)
-        Ok(state(embeddedJsObject) ++ selfLink ++ selfEmploymentsLink ++ employmentsLink)
+        val taxReturnsJsObject = obj("taxReturns" -> toJson(saReturns))
+        val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
+        Ok(state(selfAssessmentJsObject) ++ selfLink ++ selfEmploymentsLink ++ employmentsLink)
       } recover recovery
     }
   }
@@ -51,20 +51,20 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
     requiresPrivilegedAuthentication("read:individuals-income-sa-employments") {
       saIncomeService.fetchEmploymentsIncomeByMatchId(matchId, taxYearInterval) map { employmentsIncome =>
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
-        val saReturnsJsObject = obj("income" -> toJson(employmentsIncome))
-        val embeddedJsObject = obj("_embedded" -> saReturnsJsObject)
-        Ok(state(embeddedJsObject) ++ selfLink)
+        val taxReturnsJsObject = obj("taxReturns" -> toJson(employmentsIncome))
+        val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
+        Ok(state(selfAssessmentJsObject) ++ selfLink)
       } recover recovery
     }
   }
 
   def selfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa-self-employments") {
-      saIncomeService.fetchSelfEmploymentsIncomeByMatchId(matchId, taxYearInterval) map { employmentsIncome =>
+      saIncomeService.fetchSelfEmploymentsIncomeByMatchId(matchId, taxYearInterval) map { selfEmploymentsIncome =>
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
-        val saReturnsJsObject = obj("income" -> toJson(employmentsIncome))
-        val embeddedJsObject = obj("_embedded" -> saReturnsJsObject)
-        Ok(state(embeddedJsObject) ++ selfLink)
+        val taxReturnsJsObject = obj("taxReturns" -> toJson(selfEmploymentsIncome))
+        val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
+        Ok(state(selfAssessmentJsObject) ++ selfLink)
       } recover recovery
     }
   }

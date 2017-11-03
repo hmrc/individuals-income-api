@@ -41,7 +41,7 @@ uses:
           example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
-          description: A short-lived UUID, typically valid for several hours
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
       responses:
@@ -51,10 +51,27 @@ uses:
             application/json:
               example: !include examples/match.json
               type: !include schemas/match.json
-
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
   /paye:
     get:
-      displayName: Retrieve PAYE Income history
+      displayName: Retrieve PAYE income history
       description: !include docs/income-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-request.md
@@ -68,7 +85,7 @@ uses:
           example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
-          description: A short-lived UUID, typically valid for several hours
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         fromDate:
@@ -108,7 +125,7 @@ uses:
                     code: NOT_FOUND
   /sa:
     get:
-      displayName: Retrieve Self-Assessment history
+      displayName: Retrieve self-assessment tax returns history
       description: !include docs/income-sa-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-sa-request.md
@@ -122,7 +139,7 @@ uses:
           example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
-          description: A short-lived UUID, typically valid for several hours
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         fromTaxYear:
@@ -162,7 +179,7 @@ uses:
                     code: NOT_FOUND
   /sa/employments:
     get:
-      displayName: Retrieve Self-Assessment Employment Income history
+      displayName: Retrieve employments income from self-assessment
       description: !include docs/income-sa-employments-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-sa-employments-request.md
@@ -176,7 +193,7 @@ uses:
           example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
-          description: A short-lived UUID, typically valid for several hours
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         fromTaxYear:
@@ -216,7 +233,7 @@ uses:
                     code: NOT_FOUND
   /sa/self-employments:
     get:
-      displayName: Retrieve Self-Assessment Self Employment Income history
+      displayName: Retrieve self-employments income from self-assessment
       description: !include docs/income-sa-self-employments-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-sa-self-employments-request.md
@@ -230,7 +247,7 @@ uses:
           example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
-          description: A short-lived UUID, typically valid for several hours
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         fromTaxYear:

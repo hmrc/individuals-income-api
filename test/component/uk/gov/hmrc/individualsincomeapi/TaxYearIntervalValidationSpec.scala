@@ -109,7 +109,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.code shouldBe OK
 
       And("The response contains the self-assessment for the period")
-      (Json.parse(response.body) \ "_embedded" \ "income" \\ "taxYear").map(_.as[String]) shouldBe Seq("2014-15", "2013-14")
+      (Json.parse(response.body) \ "selfAssessment" \ "taxReturns" \\ "taxYear").map(_.as[String]) shouldBe Seq("2014-15", "2013-14")
     }
   }
 }
