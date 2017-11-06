@@ -37,12 +37,12 @@ object SaAnnualEmployments {
 }
 
 case class SaAnnualSelfEmployments(taxYear: TaxYear, selfEmployments: Seq[SaSelfEmploymentsIncome])
-case class SaSelfEmploymentsIncome(selfEmploymentStartDate: Option[LocalDate], selfEmploymentIncome: Double)
+case class SaSelfEmploymentsIncome(selfEmploymentProfit: Double)
 
 object SaAnnualSelfEmployments {
   def apply(desSAIncome: DesSAIncome): SaAnnualSelfEmployments = {
     SaAnnualSelfEmployments(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(x => SaSelfEmploymentsIncome(x.selfEmploymentStartDate, x.selfEmploymentIncome.getOrElse(0.0))))
+      desSAIncome.returnList.map(x => SaSelfEmploymentsIncome(x.profitFromSelfEmployment.getOrElse(0.0))))
   }
 }

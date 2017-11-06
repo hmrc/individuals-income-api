@@ -44,20 +44,14 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "selfEmploymentStartDate": {
-                      "type": "string",
-                      "format": "date",
-                      "description": "Self-employment start date",
-                      "example": "2010-04-01"
-                    },
-                    "selfEmploymentIncome": {
+                     "selfEmploymentProfit": {
                       "type": "number",
-                      "description": "Self-employment income",
+                      "description": "Self-employment profit",
                       "example": "5000"
                     }
                   },
                   "required": [
-                    "selfEmploymentIncome"
+                    "selfEmploymentProfit"
                   ]
                 }
               }
