@@ -48,7 +48,7 @@ class VersioningSpec extends BaseSpec {
       Then("The response status should be 200 (Ok)")
       response.code shouldBe OK
 
-      And("The response body should be for api version 2.0")
+      And("The response body should be for api version P1.0")
       Json.parse(response.body) shouldBe
         Json.parse(
           s"""
@@ -57,6 +57,10 @@ class VersioningSpec extends BaseSpec {
                  "paye": {
                      "href": "/individuals/income/paye?matchId=$sandboxMatchId{&fromDate,toDate}",
                      "title": "View individual's income per employment"
+                 },
+                 "selfAssessment": {
+                   "href": "/individuals/income/sa?matchId=$sandboxMatchId{&fromTaxYear,toTaxYear}",
+                   "title": "View individual's self-assessment income"
                  },
                  "self": {
                      "href": "/individuals/income/?matchId=$sandboxMatchId"

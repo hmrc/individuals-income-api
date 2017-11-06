@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 
 import scalaj.http.{Http, HttpResponse}
 
-class LiveMatchCitizenControllerSpec extends BaseSpec {
+class LiveRootControllerSpec extends BaseSpec {
   val incomeScope = "read:individuals-income"
 
   feature("Root (hateoas) entry point is accessible") {
@@ -130,6 +130,10 @@ class LiveMatchCitizenControllerSpec extends BaseSpec {
               "paye":{
                 "href":"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
                 "title":"View individual's income per employment"
+              },
+              "selfAssessment":{
+                "href":"/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                "title":"View individual's self-assessment income"
               },
               "self":{
                 "href":"/individuals/income/?matchId=$matchId"
