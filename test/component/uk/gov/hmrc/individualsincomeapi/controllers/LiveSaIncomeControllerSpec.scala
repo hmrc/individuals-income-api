@@ -40,7 +40,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       taxYear = "2014",
       returnList = Seq(DesSAReturn(
         receivedDate = LocalDate.parse("2014-11-05"),
-        incomeFromAllEmployments = Some(1545.55))))
+        incomeFromAllEmployments = Some(1545.55),
+        profitFromSelfEmployment = Some(2535.55))))
   )
 
   feature("SA root endpoint") {
@@ -153,5 +154,60 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       response.code shouldBe UNAUTHORIZED
       Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
+  }
+
+
+  feature("SA self employments endpoint") {
+    scenario("Fetch Self Assessment self employments") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-self-employments")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-self-employments")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the user")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, desIncomes)
+
+      When("I request the self employments")
+      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 200 (OK) with the self employments")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+           {
+             "_links": {
+               "self": {"href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+             },
+             "selfAssessment": {
+               "taxReturns": [
+                 {
+                   "taxYear": "2013-14",
+                   "selfEmployments": [
+                     {
+                       "selfEmploymentProfit": 2535.55
+                     }
+                   ]
+                 }
+               ]
+             }
+           }
+         """)
+    }
+  }
+
+  scenario("Invalid token") {
+    Given("A token WITHOUT the scope read:individuals-income-sa-self-employments")
+    AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-self-employments")
+
+    When("I request the employments")
+    val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+      .headers(requestHeaders(acceptHeaderP1)).asString
+
+    Then("The response status should be 401 (Unauthorized)")
+    response.code shouldBe UNAUTHORIZED
+    Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
   }
 }

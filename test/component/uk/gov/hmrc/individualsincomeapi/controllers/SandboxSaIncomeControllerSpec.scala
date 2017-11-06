@@ -136,7 +136,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2014-15",
                      "selfEmployments": [
                        {
-                         "selfEmploymentIncome": 0
+                         "selfEmploymentProfit": 0
                        }
                      ]
                    },
@@ -144,8 +144,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "selfEmployments": [
                        {
-                         "selfEmploymentStartDate": "2010-04-01",
-                         "selfEmploymentIncome": 10500
+                          "selfEmploymentProfit": 10500
                        }
                      ]
                    }

@@ -45,13 +45,15 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       returnList = Seq(
       DesSAReturn(
         receivedDate = LocalDate.parse("2015-10-06"),
-        incomeFromAllEmployments = None))),
+        incomeFromAllEmployments = None,
+        profitFromSelfEmployment = None))),
     DesSAIncome(
       taxYear = "2016",
       returnList = Seq(
         DesSAReturn(
           receivedDate = LocalDate.parse("2016-06-06"),
-          incomeFromAllEmployments = Some(1555.55))))
+          incomeFromAllEmployments = Some(1555.55),
+          profitFromSelfEmployment = Some(2500.55))))
   )
 
   trait Setup {
@@ -170,13 +172,35 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
   }
 
+  "LiveIncomeService.fetchSelfEmploymentsIncomeByMatchId" should {
+    "return the self employments income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(2500.55))),
+        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(0.0)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(liveMatchId, taxYearInterval))
+      }
+    }
+  }
+
   "SandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId" should {
     "return the self employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(sandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
 
       result shouldBe Seq(
-        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(None, 0.0))),
-        SaAnnualSelfEmployments(TaxYear("2013-14"), Seq(SaSelfEmploymentsIncome(Some(LocalDate.parse("2010-04-01")), 10500)))
+        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(0.0))),
+        SaAnnualSelfEmployments(TaxYear("2013-14"), Seq(SaSelfEmploymentsIncome(10500)))
       )
     }
 

@@ -147,6 +147,52 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
   }
 
+  "LiveSaIncomeController.selfEmploymentsIncome" should {
+    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
+    val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(9000.55))))
+
+    "return 200 (OK) with the employments income returns for the period" in new Setup {
+      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saIncomes))
+
+      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequest.uri, Json.toJson(saIncomes)))
+    }
+
+    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+      val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
+      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
+
+      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saIncomes))
+
+      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saIncomes)))
+    }
+
+    "return 404 (Not Found) for an invalid matchId" in new Setup {
+      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(failed(new MatchNotFoundException()))
+
+      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe NOT_FOUND
+      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+    }
+
+    "require read:individuals-income-sa-self-employments privileged scope" in new Setup {
+      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-self-employments")), refEq(EmptyRetrieval))(any(), any()))
+        .willReturn(failed(InsufficientEnrolments()))
+
+      intercept[InsufficientEnrolments]{await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))}
+      verifyZeroInteractions(mockLiveSaIncomeService)
+    }
+  }
+
   private def expectedSaRootPayload(requestParameters: String, saReturns: Seq[SaTaxReturn]) = {
     s"""
        {

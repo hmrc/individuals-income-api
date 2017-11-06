@@ -154,7 +154,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
 
   "SandboxSaIncomeController.selfEmploymentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
-    val selfEmploymentIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(Some(parse("2010-04-01")), 10500))))
+    val selfEmploymentIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(10500))))
 
     "return 200 (OK) with the self employments income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
