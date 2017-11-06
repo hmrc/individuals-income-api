@@ -30,7 +30,7 @@ uses:
       displayName: Entry point
       description: This is the entry point to the API and returns one or more links.
       is: [headers.acceptHeader]
-      (annotations.sandboxData): !include sandbox/match.md
+      (annotations.sandboxData): !include sandbox/root.md
       (annotations.scope): "read:individuals-income"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income" ] } ]
       headers:
@@ -49,8 +49,8 @@ uses:
           description: The resources available for a matched individual
           body:
             application/json:
-              example: !include examples/match.json
-              type: !include schemas/match.json
+              example: !include examples/root.json
+              type: !include schemas/root.json
         400:
           body:
             application/json:

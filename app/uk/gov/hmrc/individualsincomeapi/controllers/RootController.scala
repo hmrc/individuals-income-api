@@ -29,26 +29,27 @@ import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCi
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class MatchCitizenController(citizenMatchingService: CitizenMatchingService) extends CommonController with PrivilegedAuthentication {
-  def matchCitizen(matchId: UUID) = Action.async { implicit request =>
+abstract class RootController(citizenMatchingService: CitizenMatchingService) extends CommonController with PrivilegedAuthentication {
+  def root(matchId: UUID) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income") {
       citizenMatchingService.matchCitizen(matchId) map { _ =>
         val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
+        val saLink = HalLink("selfAssessment", s"/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}", title = Some("View individual's self-assessment income"))
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
-        Ok(links(payeLink, selfLink))
+        Ok(links(saLink, payeLink, selfLink))
       }
     } recover recovery
   }
 }
 
 @Singleton
-class SandboxMatchCitizenController @Inject()(citizenMatchingService: SandboxCitizenMatchingService, val authConnector: ServiceAuthConnector)
-  extends MatchCitizenController(citizenMatchingService) {
+class SandboxRootController @Inject()(citizenMatchingService: SandboxCitizenMatchingService, val authConnector: ServiceAuthConnector)
+  extends RootController(citizenMatchingService) {
   override val environment = SANDBOX
 }
 
 @Singleton
-class LiveMatchCitizenController @Inject()(citizenMatchingService: LiveCitizenMatchingService, val authConnector: ServiceAuthConnector)
-  extends MatchCitizenController(citizenMatchingService) {
+class LiveRootController @Inject()(citizenMatchingService: LiveCitizenMatchingService, val authConnector: ServiceAuthConnector)
+  extends RootController(citizenMatchingService) {
   override val environment = PRODUCTION
 }
