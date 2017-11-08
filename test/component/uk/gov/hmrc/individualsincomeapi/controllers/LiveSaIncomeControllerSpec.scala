@@ -41,7 +41,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       returnList = Seq(DesSAReturn(
         receivedDate = LocalDate.parse("2014-11-05"),
         incomeFromAllEmployments = Some(1545.55),
-        profitFromSelfEmployment = Some(2535.55))))
+        profitFromSelfEmployment = Some(2535.55),
+        incomeFromSelfEmployment = Some(35500.55))))
   )
 
   feature("SA root endpoint") {
@@ -188,6 +189,47 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                    "selfEmployments": [
                      {
                        "selfEmploymentProfit": 2535.55
+                     }
+                   ]
+                 }
+               ]
+             }
+           }
+         """)
+    }
+  }
+
+  feature("SA summary endpoint") {
+    scenario("Fetch Self Assessment summary") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-summary")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-summary")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the individual")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, desIncomes)
+
+      When("I request the sa summary")
+      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 200 (OK) with the self employments")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+           {
+             "_links": {
+               "self": {"href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+             },
+             "selfAssessment": {
+               "taxReturns": [
+                 {
+                   "taxYear": "2013-14",
+                   "summary": [
+                     {
+                       "totalIncome": 35500.55
                      }
                    ]
                  }
