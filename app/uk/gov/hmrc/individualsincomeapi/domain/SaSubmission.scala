@@ -46,3 +46,14 @@ object SaAnnualSelfEmployments {
       desSAIncome.returnList.map(x => SaSelfEmploymentsIncome(x.profitFromSelfEmployment.getOrElse(0.0))))
   }
 }
+
+case class SaTaxReturnSummaries(taxYear: TaxYear, summary: Seq[SaTaxReturnSummary])
+case class SaTaxReturnSummary(totalIncome: Double)
+
+object SaTaxReturnSummaries {
+  def apply(desSAIncome: DesSAIncome): SaTaxReturnSummaries = {
+    SaTaxReturnSummaries(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(x => SaTaxReturnSummary(x.incomeFromSelfEmployment.getOrElse(0.0))))
+  }
+}
