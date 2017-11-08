@@ -87,6 +87,10 @@ class LiveRootControllerSpec extends PlaySpec with Results with MockitoSugar {
                 "href":"/individuals/income/sa?matchId=$randomMatchId{&fromTaxYear,toTaxYear}",
                 "title":"View individual's self-assessment income"
               },
+              "summary": {
+                 "href": "/individuals/income/sa/summary?matchId=$randomMatchId{&fromTaxYear,toTaxYear}",
+                 "title": "View individual's self-assessment summary"
+              },
               "self":{
                 "href":"/individuals/income/?matchId=$randomMatchId"
               }

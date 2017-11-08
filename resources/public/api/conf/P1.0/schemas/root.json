@@ -36,6 +36,21 @@
           },
           "required": ["href", "title"]
         },
+        "summary": {
+          "type": "object",
+          "description": "The URI for the resource to get the individual's self-assessment summary",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "example": "View individual's self-assessment summary"
+            }
+          },
+          "required": ["href", "title"]
+        },
         "self": {
           "type": "object",
           "description": "HAL compliant. Refers to itself",
@@ -48,7 +63,7 @@
           "required": ["href"]
         }
       },
-      "required": ["paye", "selfAssessment", "self"]
+      "required": ["paye", "selfAssessment", "summary", "self"]
     }
   },
   "required": ["_links"]

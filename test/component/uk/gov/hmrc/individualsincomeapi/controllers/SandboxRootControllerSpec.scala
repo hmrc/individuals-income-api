@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 
 import scalaj.http.Http
 
-class RootControllerSpec extends BaseSpec {
+class SandboxRootControllerSpec extends BaseSpec {
 
   feature("Match citizen entry point (hateoas) is open and accessible") {
 
@@ -44,6 +44,10 @@ class RootControllerSpec extends BaseSpec {
                  "selfAssessment": {
                    "href": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                    "title": "View individual's self-assessment income"
+                 },
+                 "summary": {
+                   "href": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
+                   "title": "View individual's self-assessment summary"
                  },
                  "self": {
                      "href": "/individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"

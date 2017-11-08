@@ -72,6 +72,10 @@ class RootControllerSpec extends UnitSpec with MockitoSugar with ScalaFutures wi
                     "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
                     "title": "View individual's self-assessment income"
                  },
+                 "summary": {
+                    "href": "/individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                    "title": "View individual's self-assessment summary"
+                 },
                  "self": {
                      "href": "/individuals/income/?matchId=$matchId"
                  }

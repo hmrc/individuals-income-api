@@ -35,8 +35,9 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService) ex
       citizenMatchingService.matchCitizen(matchId) map { _ =>
         val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
         val saLink = HalLink("selfAssessment", s"/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}", title = Some("View individual's self-assessment income"))
+        val summaryLink = HalLink("summary", s"/individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}", title = Some("View individual's self-assessment summary"))
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
-        Ok(links(saLink, payeLink, selfLink))
+        Ok(links(saLink, payeLink, summaryLink, selfLink))
       }
     } recover recovery
   }
