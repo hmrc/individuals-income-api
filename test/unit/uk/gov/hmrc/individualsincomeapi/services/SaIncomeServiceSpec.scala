@@ -46,14 +46,16 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       DesSAReturn(
         receivedDate = LocalDate.parse("2015-10-06"),
         incomeFromAllEmployments = None,
-        profitFromSelfEmployment = None))),
+        profitFromSelfEmployment = None,
+        incomeFromSelfEmployment = Some(35000.55)))),
     DesSAIncome(
       taxYear = "2016",
       returnList = Seq(
         DesSAReturn(
           receivedDate = LocalDate.parse("2016-06-06"),
           incomeFromAllEmployments = Some(1555.55),
-          profitFromSelfEmployment = Some(2500.55))))
+          profitFromSelfEmployment = Some(2500.55),
+          incomeFromSelfEmployment = None)))
   )
 
   trait Setup {
@@ -212,6 +214,28 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
         await(sandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
+
+  "LiveIncomeService.fetchSaReturnsSummaryByMatchId" should {
+    "return sa tax return summaries by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSaReturnsSummaryByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(0.0))),
+        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(35000.55)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaReturnsSummaryByMatchId(liveMatchId, taxYearInterval))
       }
     }
   }
