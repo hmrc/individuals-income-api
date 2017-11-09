@@ -44,10 +44,23 @@
           "required": [
             "href"
           ]
+        },
+        "summary": {
+          "type": "object",
+          "description": "The self-assessment income summary",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
         }
       },
       "required": [
-        "self", "self-employments", "employments"
+        "self", "self-employments", "employments", "summary"
       ]
     },
     "selfAssessment": {

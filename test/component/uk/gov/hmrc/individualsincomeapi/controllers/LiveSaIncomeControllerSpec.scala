@@ -70,7 +70,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "_links": {
                  "self": {"href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
                  "employments": {"href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
-                 "self-employments": {"href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+                 "self-employments": {"href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
+                 "summary": {"href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
                "selfAssessment": {
                  "taxReturns": [

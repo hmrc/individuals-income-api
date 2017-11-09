@@ -8,6 +8,9 @@
     },
     "employments": {
       "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "summary": {
+      "href": "/individuals/income/sa/summary?&matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
     }
   },
   "selfAssessment": {
