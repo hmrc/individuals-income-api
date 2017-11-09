@@ -253,7 +253,8 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
          "_links": {
            "self": {"href": "/individuals/income/sa?$requestParameters"},
            "employments": {"href": "/individuals/income/sa/employments?$requestParameters"},
-           "self-employments": {"href": "/individuals/income/sa/self-employments?$requestParameters"}
+           "selfEmployments": {"href": "/individuals/income/sa/self-employments?$requestParameters"},
+           "summary": {"href": "/individuals/income/sa/summary?$requestParameters"}
          },
          "selfAssessment": {
            "taxReturns": ${Json.toJson(saReturns)}
