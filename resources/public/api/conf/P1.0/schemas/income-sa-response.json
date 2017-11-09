@@ -19,7 +19,7 @@
             "href"
           ]
         },
-        "self-employments": {
+        "selfEmployments": {
           "type": "object",
           "description": "The income from self-employments",
           "properties": {
@@ -60,7 +60,7 @@
         }
       },
       "required": [
-        "self", "self-employments", "employments", "summary"
+        "self", "selfEmployments", "employments", "summary"
       ]
     },
     "selfAssessment": {

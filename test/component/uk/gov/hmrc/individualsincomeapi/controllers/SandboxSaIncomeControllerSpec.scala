@@ -50,7 +50,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "_links": {
                  "self": {"href": "/individuals/income/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
                  "employments": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
-                 "self-employments": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
+                 "selfEmployments": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
                  "summary": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
                "selfAssessment": {

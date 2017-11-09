@@ -38,7 +38,7 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
     requiresPrivilegedAuthentication("read:individuals-income-sa") {
       saIncomeService.fetchSaReturnsByMatchId(matchId, taxYearInterval) map { saReturns =>
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
-        val selfEmploymentsLink = HalLink("self-employments", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
+        val selfEmploymentsLink = HalLink("selfEmployments", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
         val employmentsLink = HalLink("employments", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
         val summaryLink = HalLink("summary", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
         val taxReturnsJsObject = obj("taxReturns" -> toJson(saReturns))

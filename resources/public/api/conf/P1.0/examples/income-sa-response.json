@@ -3,7 +3,7 @@
     "self": {
       "href": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
     },
-    "self-employments": {
+    "selfEmployments": {
       "href": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
     },
     "employments": {
