@@ -47,7 +47,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         receivedDate = LocalDate.parse("2015-10-06"),
         incomeFromAllEmployments = None,
         profitFromSelfEmployment = None,
-        incomeFromSelfEmployment = Some(35000.55)))),
+        incomeFromSelfAssessment = Some(35000.55)))),
     DesSAIncome(
       taxYear = "2016",
       returnList = Seq(
@@ -55,7 +55,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
           receivedDate = LocalDate.parse("2016-06-06"),
           incomeFromAllEmployments = Some(1555.55),
           profitFromSelfEmployment = Some(2500.55),
-          incomeFromSelfEmployment = None)))
+          incomeFromSelfAssessment = None)))
   )
 
   trait Setup {
