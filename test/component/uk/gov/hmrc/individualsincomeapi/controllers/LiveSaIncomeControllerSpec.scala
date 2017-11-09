@@ -42,7 +42,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
         receivedDate = LocalDate.parse("2014-11-05"),
         incomeFromAllEmployments = Some(1545.55),
         profitFromSelfEmployment = Some(2535.55),
-        incomeFromSelfEmployment = Some(35500.55))))
+        incomeFromSelfAssessment = Some(35500.55))))
   )
 
   feature("SA root endpoint") {

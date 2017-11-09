@@ -54,6 +54,6 @@ object SaTaxReturnSummaries {
   def apply(desSAIncome: DesSAIncome): SaTaxReturnSummaries = {
     SaTaxReturnSummaries(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(x => SaTaxReturnSummary(x.incomeFromSelfEmployment.getOrElse(0.0))))
+      desSAIncome.returnList.map(x => SaTaxReturnSummary(x.incomeFromSelfAssessment.getOrElse(0.0))))
   }
 }
