@@ -99,6 +99,22 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromTaxYear earlier than maximum allowed")
     }
 
+    scenario("toTaxYear later than the current tax year") {
+
+      When("I request individual income with a toTaxYear later than the current tax year")
+      val currentEndYear = TaxYear.current().endYr
+      val fromTaxYear = TaxYear.fromEndYear(today.getYear - 3).formattedTaxYear
+      val toTaxYear = TaxYear.fromEndYear(currentEndYear + 1).formattedTaxYear
+      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 400 (Bad Request)")
+      response.code shouldBe BAD_REQUEST
+
+      And("The correct error message is returned")
+      response.body shouldBe errorResponse("toTaxYear is later than the current tax year")
+    }
+
     scenario("toTaxYear defaults to the current tax year when it is not provided") {
 
       When("I request individual income for the existing matchId without a toTaxYear")

@@ -42,6 +42,9 @@ object Dates extends ServicesConfig {
     if (fromTaxYear.startYr < TaxYear.current().startYr - selfAssessmentYearHistory)
       throw new ValidationException("fromTaxYear earlier than maximum allowed")
 
+    if (toTaxYear.endYr > TaxYear.current().endYr)
+      throw new ValidationException("toTaxYear is later than the current tax year")
+
     else TaxYearInterval(fromTaxYear, toTaxYear)
   }
 
