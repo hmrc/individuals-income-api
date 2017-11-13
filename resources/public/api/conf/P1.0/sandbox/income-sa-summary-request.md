@@ -31,16 +31,19 @@
     </tr>
     <tr>
          <td><p>toTaxYear earlier than fromTaxYear</p></td>
-         <td><p>Any valid tax year where toTaxYear is earlier than fromTaxYear</p>
-         <p>e.g. fromTaxYear=2016-17 toTaxYear=2015-16</p></td>
+         <td><p>e.g. fromTaxYear=2016-17 toTaxYear=2015-16</p></td>
          <td><p>400 (Bad Request)</p>
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Invalid time period requested&quot; }</p></td>
     </tr>
     <tr>
-         <td>From tax year requested is earlier than available data</td>
-         <td>
-           <p>fromTaxYear earlier than current tax year minus 7</p>
-           <p>e.g. fromTaxYear=2008-09</p>
+         <td><p>toTaxYear later than the current tax year</p></td>
+         <td><p>e.g. fromTaxYear=2016-17 toTaxYear=2098-99</p></td>
+         <td><p>400 (Bad Request)</p>
+         <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear is later than the current tax year&quot; }</p></td>
+    </tr>
+    <tr>
+         <td>From tax year requested is earlier than current tax year minus 7</td>
+         <td><p>e.g. fromTaxYear=2008-09</p>
          </td>
          <td>
            <p>400 (Bad Request)</p>

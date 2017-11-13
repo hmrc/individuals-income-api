@@ -49,7 +49,7 @@ class TaxYearSpec extends UnitSpec with Matchers with BeforeAndAfterEach {
   "TaxYear constructor" should {
     validTaxYears.foreach {
       taxYear => s"create a taxYear for a valid argument '$taxYear'" in {
-        TaxYear("2014-15").formattedTaxYear == taxYear
+        TaxYear(taxYear).formattedTaxYear == taxYear shouldBe true
       }
     }
 
