@@ -17,13 +17,28 @@
 package uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.LocalDate
+import uk.gov.hmrc.domain.SaUtr
+
+case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 
 case class SaTaxReturn(taxYear: TaxYear, submissions: Seq[SaSubmission])
-case class SaSubmission(receivedDate: LocalDate)
+case class SaSubmission(utr: SaUtr, receivedDate: LocalDate)
+case class SaRegistration(utr: SaUtr, registrationDate: LocalDate)
 
 object SaTaxReturn {
   def apply(desSaIncome: DesSAIncome): SaTaxReturn = {
-    SaTaxReturn(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.receivedDate) map SaSubmission)
+    SaTaxReturn(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(r => SaSubmission(r.utr, r.receivedDate)))
+  }
+}
+
+object SaFootprint {
+  implicit def dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
+
+  def apply(desSaIncomes: Seq[DesSAIncome]): SaFootprint = {
+    val saRegistrations = desSaIncomes.flatMap(_.returnList map (saReturn => SaRegistration(saReturn.utr, saReturn.caseStartDate))).toSet
+    val saReturns = desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaTaxReturn(r))
+
+    SaFootprint(saRegistrations.toSeq.sortBy(_.registrationDate).reverse, saReturns)
   }
 }
 

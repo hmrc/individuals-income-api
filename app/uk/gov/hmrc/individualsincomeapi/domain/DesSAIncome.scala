@@ -17,6 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.LocalDate
+import uk.gov.hmrc.domain.SaUtr
 
 case class DesSAIncome(taxYear: String,
                        returnList: Seq[DesSAReturn]) {
@@ -24,7 +25,9 @@ case class DesSAIncome(taxYear: String,
   def isIn(taxYearInterval: TaxYearInterval) = taxYear.toInt >= taxYearInterval.fromTaxYear.endYr && taxYear.toInt <= taxYearInterval.toTaxYear.endYr
 }
 
-case class DesSAReturn(receivedDate: LocalDate,
+case class DesSAReturn(caseStartDate: LocalDate,
+                       receivedDate: LocalDate,
+                       utr: SaUtr,
                        incomeFromAllEmployments: Option[Double] = None,
                        profitFromSelfEmployment: Option[Double] = None,
                        incomeFromSelfAssessment: Option[Double] = None)

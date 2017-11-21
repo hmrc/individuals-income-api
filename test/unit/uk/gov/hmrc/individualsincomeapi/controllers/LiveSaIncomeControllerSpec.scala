@@ -28,6 +28,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
@@ -41,6 +42,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
   implicit lazy val materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
+  val utr = SaUtr("2432552644")
   val fromTaxYear = TaxYear("2015-16")
   val toTaxYear = TaxYear("2016-17")
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
@@ -55,38 +57,40 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
 
-  "LiveSaIncomeController.saReturns" should {
+  "LiveSaIncomeController.saFootprint" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
-    val saReturns = Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(LocalDate.parse("2016-06-01")))))
+    val saFootprint = SaFootprint(
+      Seq(SaRegistration(utr, LocalDate.parse("2013-06-01"))),
+      Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, LocalDate.parse("2016-06-01"))))))
 
-    "return 200 (OK) with the self assessment returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturns))
+    "return 200 (OK) with the self assessment footprint for the period" in new Setup {
+      given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saFootprint))
 
-      val result = await(liveSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaRootPayload(requestParameters, saReturns))
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaFootprintPayload(requestParameters, saFootprint))
     }
 
     "return 200 (Ok) and the links without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturns))
+      given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saFootprint))
 
-      val result = await(liveSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaRootPayload(requestParametersWithoutToTaxYear, saReturns))
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaFootprintPayload(requestParametersWithoutToTaxYear, saFootprint))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
@@ -96,7 +100,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequest))}
+      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))}
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -239,7 +243,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
   }
 
-  private def expectedSaRootPayload(requestParameters: String, saReturns: Seq[SaTaxReturn]) = {
+  private def expectedSaFootprintPayload(requestParameters: String, saFootprint: SaFootprint) = {
     s"""
        {
          "_links": {
@@ -249,7 +253,8 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
            "summary": {"href": "/individuals/income/sa/summary?$requestParameters"}
          },
          "selfAssessment": {
-           "taxReturns": ${Json.toJson(saReturns)}
+           "registrations": ${Json.toJson(saFootprint.registrations)},
+           "taxReturns": ${Json.toJson(saFootprint.taxReturns)}
          }
        }
       """

@@ -23,7 +23,7 @@ import org.joda.time.LocalDate
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
@@ -184,6 +184,8 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
                "taxYear": "2016",
                "returnList": [
                  {
+                  "utr": "1234567890",
+                  "caseStartDate": "2011-05-05",
                   "receivedDate": "2016-06-06",
                   "incomeFromAllEmployments": 166.55
                  }
@@ -194,7 +196,12 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
 
       val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
-      result shouldBe Seq(DesSAIncome("2016", Seq(DesSAReturn(LocalDate.parse("2016-06-06"), Some(166.55)))))
+      result shouldBe Seq(DesSAIncome("2016", Seq(
+        DesSAReturn(
+          caseStartDate = LocalDate.parse("2011-05-05"),
+          receivedDate = LocalDate.parse("2016-06-06"),
+          utr = SaUtr("1234567890"),
+          Some(166.55)))))
     }
 
     "return an empty list when there is no self-assessment returns" in new Setup {

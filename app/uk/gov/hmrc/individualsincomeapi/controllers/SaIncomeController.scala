@@ -34,15 +34,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class SaIncomeController(saIncomeService: SaIncomeService) extends CommonController with PrivilegedAuthentication {
 
-  def saReturns(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
+  def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa") {
-      saIncomeService.fetchSaReturnsByMatchId(matchId, taxYearInterval) map { saReturns =>
+      saIncomeService.fetchSaFootprintByMatchId(matchId, taxYearInterval) map { saFootprint =>
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
         val selfEmploymentsLink = HalLink("selfEmployments", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
         val employmentsLink = HalLink("employments", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
         val summaryLink = HalLink("summary", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
-        val taxReturnsJsObject = obj("taxReturns" -> toJson(saReturns))
-        val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
+        val selfAssessmentJsObject = obj("selfAssessment" -> toJson(saFootprint))
         Ok(state(selfAssessmentJsObject) ++ selfLink ++ selfEmploymentsLink ++ employmentsLink ++ summaryLink)
       } recover recovery
     }
