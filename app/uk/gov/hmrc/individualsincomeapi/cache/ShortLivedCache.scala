@@ -24,26 +24,26 @@ import uk.gov.hmrc.cache.TimeToLive
 import uk.gov.hmrc.cache.model.Cache
 import uk.gov.hmrc.cache.repository.CacheRepository
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import uk.gov.hmrc.crypto.{Protected, _}
+import uk.gov.hmrc.crypto.{AesCrypto, Protected, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class ShortLivedCache @Inject()(val cacheRepository: CacheRepositoryHelper) extends TimeToLive {
+class ShortLivedCache @Inject()(val cacheRepository: CacheRepositoryHelper, crypto: Crypto) extends TimeToLive {
 
   def cache[T](id: String, key: String, value: T)(implicit formats: Format[T]): Future[Unit] = {
-    val jsonEncryptor = new JsonEncryptor()(Crypto, formats)
+    val jsonEncryptor = new JsonEncryptor()(crypto, formats)
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
     cacheRepository.repo.createOrUpdate(id, key, encryptedValue).map(_ => ())
   }
 
   def fetch[T](id: String, key: String)(implicit formats: Format[T]): Future[Option[T]] = {
-    val decryptor = new JsonDecryptor()(Crypto, formats)
+    val decryptor = new JsonDecryptor()(crypto, formats)
 
     cacheRepository.repo.findById(id) map {
       case Some(cache) => cache.data flatMap { json =>
-        ((json \ key)).toOption flatMap { jsValue =>
+        (json \ key).toOption flatMap { jsValue =>
           decryptor.reads(jsValue).asOpt map (_.decryptedValue)
         }
       }
@@ -58,9 +58,17 @@ class CacheRepositoryHelper @Inject()(configuration: Configuration) {
   lazy val repo = CacheRepository("shortLivedCache", cacheTtl, Cache.mongoFormats)
 }
 
-object Crypto extends CompositeSymmetricCrypto {
+@Singleton
+class Crypto @Inject()(configuration: Configuration) extends CompositeSymmetricCrypto {
+
   override protected val currentCrypto: Encrypter with Decrypter = new AesCrypto {
-    override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
+    override protected val encryptionKey: String = configuration.getString("json.encryption.key").getOrElse(throw new RuntimeException("Missing [json.encryption.key] configuration"))
   }
-  override protected val previousCryptos: Seq[Decrypter] = Seq.empty
+
+  override protected val previousCryptos = {
+    val previousEncryptionKeys = configuration.getStringSeq("json.encryption.previousKeys").getOrElse(Seq.empty)
+    previousEncryptionKeys.map(k => new AesCrypto {
+      override val encryptionKey = k
+    })
+  }
 }
