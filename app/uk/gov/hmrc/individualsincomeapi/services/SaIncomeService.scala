@@ -19,14 +19,17 @@ package uk.gov.hmrc.individualsincomeapi.services
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.cache.{SaCacheId, SaIncomeCacheService}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
+import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.domain._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SaIncomeService {
   def fetchSaFootprintByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint]
@@ -77,33 +80,38 @@ class SandboxSaIncomeService extends SaIncomeService {
 }
 
 @Singleton
-class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector, desConnector: DesConnector) extends SaIncomeService {
+class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector, desConnector: DesConnector, saIncomeCacheService: SaIncomeCacheService) extends SaIncomeService {
+
+  private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
+    val cacheId = SaCacheId(nino, taxYearInterval)
+    saIncomeCacheService.get[Seq[DesSAIncome]](cacheId, desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval))
+  }
 
   override def fetchSaFootprintByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- desConnector.fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield SaFootprint(desSaIncomes)
   }
 
   override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- desConnector.fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualEmployments(r))
   }
 
   override def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- desConnector.fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualSelfEmployments(r))
   }
 
   override def fetchSaReturnsSummaryByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturnSummaries]] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- desConnector.fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaTaxReturnSummaries(r))
   }
 }

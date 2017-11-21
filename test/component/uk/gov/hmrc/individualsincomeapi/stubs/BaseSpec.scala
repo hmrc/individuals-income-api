@@ -27,8 +27,11 @@ import play.api.Application
 import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
+import uk.gov.hmrc.individualsincomeapi.cache.ShortLivedCache
 
+import scala.concurrent.Await.result
 import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
   with GivenWhenThen {
@@ -40,12 +43,14 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
     "microservice.services.auth.port" -> AuthStub.port,
     "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
     "microservice.services.des.port" -> DesStub.port,
+    "mongodb.uri" -> "mongodb://localhost:27017/individuals-income-api-it",
     "run.mode" -> "It"
   ).build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
   val serviceUrl = s"http://localhost:$port"
   val mocks = Seq(AuthStub, IndividualsMatchingApiStub, DesStub)
+  val shortLivedCache = app.injector.instanceOf[ShortLivedCache]
   val authToken = "Bearer AUTH_TOKEN"
   val acceptHeaderV1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
   val acceptHeaderP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
@@ -60,6 +65,7 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   override protected def beforeEach(): Unit = {
     mocks.foreach(m => if (!m.server.isRunning) m.server.start())
+    result(shortLivedCache.cacheRepository.repo.drop, timeout)
   }
 
   override protected def afterEach(): Unit = {
@@ -68,6 +74,7 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   override def afterAll(): Unit = {
     mocks.foreach(_.server.stop())
+    result(shortLivedCache.cacheRepository.repo.drop, timeout)
   }
 }
 
