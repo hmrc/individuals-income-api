@@ -22,9 +22,8 @@ import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, Des
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
-import play.mvc.Http.Status
-import play.mvc.Http.Status.{FORBIDDEN, UNAUTHORIZED}
-import uk.gov.hmrc.domain.Nino
+import play.mvc.Http.Status.UNAUTHORIZED
+import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, TaxYear}
 
 import scalaj.http.Http
@@ -39,7 +38,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     DesSAIncome(
       taxYear = "2014",
       returnList = Seq(DesSAReturn(
+        caseStartDate = LocalDate.parse("2011-01-15"),
         receivedDate = LocalDate.parse("2014-11-05"),
+        utr = Some(SaUtr("2432552644")),
         incomeFromAllEmployments = Some(1545.55),
         profitFromSelfEmployment = Some(2535.55),
         incomeFromSelfAssessment = Some(35500.55))))
@@ -74,11 +75,18 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                  "summary": {"href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
                "selfAssessment": {
+                 "registrations": [
+                   {
+                     "utr": "2432552644",
+                     "registrationDate": "2011-01-15"
+                   }
+                 ],
                  "taxReturns": [
                    {
                      "taxYear": "2013-14",
                      "submissions": [
                        {
+                         "utr": "2432552644",
                          "receivedDate": "2014-11-05"
                        }
                      ]

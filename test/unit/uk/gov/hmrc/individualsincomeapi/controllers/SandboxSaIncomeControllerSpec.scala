@@ -27,6 +27,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
+import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
@@ -54,48 +55,51 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
 
-  "SandboxSaIncomeController.saReturns" should {
+  "SandboxSaIncomeController.saFootprint" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
-    val saReturns = Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(LocalDate.parse("2016-06-01")))))
+    val saFootprint = SaFootprint(
+      registrations = Seq(SaRegistration(Some(SaUtr("1234567890")), LocalDate.parse("2014-05-01"))),
+      taxReturns = Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(Some(SaUtr("1234567890")), LocalDate.parse("2016-06-01")))))
+    )
 
-    "return 200 (OK) with the self assessment returns for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturns))
+    "return 200 (OK) with the registration information and self assessment returns for the period" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saFootprint))
 
-      val result = await(sandboxSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaRootPayload(requestParameters, saReturns))
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaFootprintPayload(requestParameters, saFootprint))
     }
 
     "return 200 (Ok) and the links without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturns))
+      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saFootprint))
 
-      val result = await(sandboxSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaRootPayload(requestParametersWithoutToTaxYear, saReturns))
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaFootprintPayload(requestParametersWithoutToTaxYear, saFootprint))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(sandboxSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaReturnsByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturns))
+      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saFootprint))
 
-      val result = await(sandboxSaIncomeController.saReturns(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe OK
       verifyZeroInteractions(mockAuthConnector)
@@ -247,7 +251,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  private def expectedSaRootPayload(requestParameters: String, saReturns: Seq[SaTaxReturn]) = {
+  private def expectedSaFootprintPayload(requestParameters: String, saFootprint: SaFootprint) = {
     s"""
        {
          "_links": {
@@ -257,7 +261,8 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
            "summary": {"href": "/individuals/income/sa/summary?$requestParameters"}
          },
          "selfAssessment": {
-           "taxReturns": ${Json.toJson(saReturns)}
+           "registrations": ${Json.toJson(saFootprint.registrations)},
+           "taxReturns": ${Json.toJson(saFootprint.taxReturns)}
          }
        }
       """

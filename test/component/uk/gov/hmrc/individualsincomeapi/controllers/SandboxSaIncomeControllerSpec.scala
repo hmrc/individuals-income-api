@@ -54,11 +54,18 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                  "summary": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
                },
                "selfAssessment": {
+                 "registrations": [
+                   {
+                     "utr": "2432552635",
+                     "registrationDate": "2012-01-06"
+                   }
+                 ],
                  "taxReturns": [
                    {
                      "taxYear": "2014-15",
                      "submissions": [
                        {
+                         "utr": "2432552635",
                          "receivedDate": "2015-10-06"
                        }
                      ]
@@ -67,6 +74,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "submissions": [
                        {
+                         "utr": "2432552635",
                          "receivedDate": "2014-06-06"
                        }
                      ]

@@ -1,2 +1,2 @@
-<p>This endpoint returns an individual's self-assessment tax returns submission history for the requested time period.</p>
+<p>This endpoint returns an individual's self-assessment registration information and tax returns submission history for the requested time period.</p>
 <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear. The toTaxYear is optional; the default is the current tax year.</p>
