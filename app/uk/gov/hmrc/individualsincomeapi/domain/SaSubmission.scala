@@ -22,8 +22,8 @@ import uk.gov.hmrc.domain.SaUtr
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 
 case class SaTaxReturn(taxYear: TaxYear, submissions: Seq[SaSubmission])
-case class SaSubmission(utr: SaUtr, receivedDate: LocalDate)
-case class SaRegistration(utr: SaUtr, registrationDate: LocalDate)
+case class SaSubmission(utr: Option[SaUtr], receivedDate: LocalDate)
+case class SaRegistration(utr: Option[SaUtr], registrationDate: LocalDate)
 
 object SaTaxReturn {
   def apply(desSaIncome: DesSAIncome): SaTaxReturn = {

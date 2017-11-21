@@ -40,7 +40,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       returnList = Seq(DesSAReturn(
         caseStartDate = LocalDate.parse("2011-01-15"),
         receivedDate = LocalDate.parse("2014-11-05"),
-        utr = SaUtr("2432552644"),
+        utr = Some(SaUtr("2432552644")),
         incomeFromAllEmployments = Some(1545.55),
         profitFromSelfEmployment = Some(2535.55),
         incomeFromSelfAssessment = Some(35500.55))))

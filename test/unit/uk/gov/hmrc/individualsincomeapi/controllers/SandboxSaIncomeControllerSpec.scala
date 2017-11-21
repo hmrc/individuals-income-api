@@ -58,8 +58,8 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
   "SandboxSaIncomeController.saFootprint" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
     val saFootprint = SaFootprint(
-      registrations = Seq(SaRegistration(SaUtr("1234567890"), LocalDate.parse("2014-05-01"))),
-      taxReturns = Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(SaUtr("1234567890"), LocalDate.parse("2016-06-01")))))
+      registrations = Seq(SaRegistration(Some(SaUtr("1234567890")), LocalDate.parse("2014-05-01"))),
+      taxReturns = Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(Some(SaUtr("1234567890")), LocalDate.parse("2016-06-01")))))
     )
 
     "return 200 (OK) with the registration information and self assessment returns for the period" in new Setup {

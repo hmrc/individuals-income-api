@@ -60,8 +60,8 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
   "LiveSaIncomeController.saFootprint" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
     val saFootprint = SaFootprint(
-      Seq(SaRegistration(utr, LocalDate.parse("2013-06-01"))),
-      Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, LocalDate.parse("2016-06-01"))))))
+      Seq(SaRegistration(Some(utr), LocalDate.parse("2013-06-01"))),
+      Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(Some(utr), LocalDate.parse("2016-06-01"))))))
 
     "return 200 (OK) with the self assessment footprint for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
