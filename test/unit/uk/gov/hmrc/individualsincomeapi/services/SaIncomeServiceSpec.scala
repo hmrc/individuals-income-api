@@ -23,7 +23,7 @@ import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, refEq}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.{SaCacheId, SaIncomeCacheService, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
@@ -47,7 +47,9 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       taxYear = "2015",
       returnList = Seq(
       DesSAReturn(
+        caseStartDate = LocalDate.parse("2011-06-06"),
         receivedDate = LocalDate.parse("2015-10-06"),
+        utr = Some(SaUtr("1234567890")),
         incomeFromAllEmployments = None,
         profitFromSelfEmployment = None,
         incomeFromSelfAssessment = Some(35000.55)))),
@@ -55,7 +57,9 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       taxYear = "2016",
       returnList = Seq(
         DesSAReturn(
+          caseStartDate = LocalDate.parse("2011-06-06"),
           receivedDate = LocalDate.parse("2016-06-06"),
+          utr = Some(SaUtr("1234567890")),
           incomeFromAllEmployments = Some(1555.55),
           profitFromSelfEmployment = Some(2500.55),
           incomeFromSelfAssessment = None)))
@@ -72,56 +76,58 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService)
   }
 
-  "LiveIncomeService.fetchSaReturnsByMatchId" should {
-    "return the saReturns by tax year DESCENDING when the matchId is valid" in new Setup {
+  "LiveIncomeService.fetchSaFootprintByMatchId" should {
+    "return the saFootprint with saReturns sorted by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
       given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
-      val result = await(liveSaIncomeService.fetchSaReturnsByMatchId(liveMatchId, taxYearInterval))
+      val result = await(liveSaIncomeService.fetchSaFootprintByMatchId(liveMatchId, taxYearInterval))
 
-      result shouldBe Seq(
-        SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(LocalDate.parse("2016-06-06")))),
-        SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(LocalDate.parse("2015-10-06"))))
-      )
+      result shouldBe SaFootprint(
+        registrations = Seq(SaRegistration(Some(SaUtr("1234567890")), LocalDate.parse("2011-06-06"))),
+        taxReturns = Seq(
+          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(Some(SaUtr("1234567890")), LocalDate.parse("2016-06-06")))),
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(Some(SaUtr("1234567890")), LocalDate.parse("2015-10-06"))))
+      ))
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
-        await(liveSaIncomeService.fetchSaReturnsByMatchId(liveMatchId, taxYearInterval))
+        await(liveSaIncomeService.fetchSaFootprintByMatchId(liveMatchId, taxYearInterval))
       }
     }
   }
 
   "SandboxSaIncomeService.fetchSaReturnsByMatchId" should {
-    "return the saReturns by tax year DESCENDING when the matchId is valid" in new Setup {
-      val result = await(sandboxSaIncomeService.fetchSaReturnsByMatchId(sandboxMatchId, taxYearInterval))
+    "return the saFootprint with saReturns sorted by tax year DESCENDING when the matchId is valid" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaFootprintByMatchId(sandboxMatchId, taxYearInterval))
 
-      result shouldBe Seq(
-        SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(LocalDate.parse("2015-10-06")))),
-        SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(LocalDate.parse("2014-06-06"))))
-      )
+      result shouldBe SaFootprint(
+        registrations = Seq(SaRegistration(Some(SaUtr("2432552635")), LocalDate.parse("2012-01-06"))),
+        taxReturns = Seq(
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(Some(SaUtr("2432552635")), LocalDate.parse("2015-10-06")))),
+          SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(Some(SaUtr("2432552635")), LocalDate.parse("2014-06-06"))))
+      ))
     }
 
     "filter out returns not in the requested period" in new Setup {
-      val result = await(sandboxSaIncomeService.fetchSaReturnsByMatchId(sandboxMatchId, taxYearInterval.copy(toTaxYear = TaxYear("2013-14"))))
+      val result = await(sandboxSaIncomeService.fetchSaFootprintByMatchId(sandboxMatchId, taxYearInterval.copy(toTaxYear = TaxYear("2013-14"))))
 
-      result shouldBe Seq(
-        SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(LocalDate.parse("2014-06-06"))))
-      )
+      result.taxReturns shouldBe Seq(SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(Some(SaUtr("2432552635")), LocalDate.parse("2014-06-06")))))
     }
 
-    "return an empty list when no annual return exists for the requested period" in new Setup {
-      val result = await(sandboxSaIncomeService.fetchSaReturnsByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+    "return an empty footprint when no annual return exists for the requested period" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaFootprintByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
 
-      result shouldBe Seq()
+      result shouldBe SaFootprint(Seq.empty, Seq.empty)
     }
 
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
-        await(sandboxSaIncomeService.fetchSaReturnsByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+        await(sandboxSaIncomeService.fetchSaFootprintByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
       }
     }
   }

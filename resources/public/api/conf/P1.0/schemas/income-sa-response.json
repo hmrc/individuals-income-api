@@ -66,6 +66,28 @@
     "selfAssessment": {
       "type": "object",
       "properties": {
+        "registrations": {
+          "type": "array",
+          "description": "Self-assessment registrations",
+          "items": {
+            "type": "object",
+            "properties": {
+              "utr": {
+                "type": "string",
+                "description": "The 10 digit self-assessment unique tax reference",
+                "example": "2432552635"
+              },
+              "registrationDate": {
+                "type": "string",
+                "description": "Self-assessment registration date",
+                "example": "2012-01-06"
+              }
+            },
+            "required": [
+              "registrationDate"
+            ]
+          }
+        },
         "taxReturns": {
           "type": "array",
           "description": "List of self-assessments tax returns in the requested period",
@@ -83,6 +105,11 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "The 10 digit self-assessment unique tax reference",
+                      "example": "2432552635"
+                    },
                     "receivedDate": {
                       "type": "string",
                       "description": "Tax return received date",
@@ -103,6 +130,7 @@
         }
       },
       "required": [
+        "registrations",
         "taxReturns"
       ]
     }

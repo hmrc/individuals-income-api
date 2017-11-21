@@ -2,7 +2,7 @@
 
 GET        /                           @uk.gov.hmrc.individualsincomeapi.controllers.SandboxRootController.root(matchId: java.util.UUID)
 GET        /paye                       @uk.gov.hmrc.individualsincomeapi.controllers.SandboxIncomeController.income(matchId: java.util.UUID, interval: org.joda.time.Interval)
-GET        /sa                         @uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController.saReturns(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
+GET        /sa                         @uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController.saFootprint(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/employments             @uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController.employmentsIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/self-employments        @uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController.selfEmploymentsIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/summary                 @uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController.saReturnsSummary(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)

@@ -32,7 +32,7 @@ import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 trait SaIncomeService {
-  def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturn]]
+  def fetchSaFootprintByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint]
 
   def fetchSaReturnsSummaryByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturnSummaries]]
 
@@ -44,11 +44,9 @@ trait SaIncomeService {
 @Singleton
 class SandboxSaIncomeService extends SaIncomeService {
 
-  override def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturn]] = {
+  override def fetchSaFootprintByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint] = {
     findByMatchId(matchId).map(_.saIncome) match {
-      case Some(saIncomes) =>
-        val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
-        successful(selectedSaReturns map (r => SaTaxReturn(r)))
+      case Some(saIncomes) => successful(SaFootprint(saIncomes.filter(s => s.isIn(taxYearInterval))))
       case None => failed(new MatchNotFoundException)
     }
   }
@@ -89,11 +87,11 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
     saIncomeCacheService.get[Seq[DesSAIncome]](cacheId, desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval))
   }
 
-  override def fetchSaReturnsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturn]] = {
+  override def fetchSaFootprintByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
-    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaTaxReturn(r))
+    } yield SaFootprint(desSaIncomes)
   }
 
   override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
