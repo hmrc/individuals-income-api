@@ -10,6 +10,7 @@
         "taxYear": "2014-15",
         "selfEmployments": [
           {
+            "utr": "2432552635",
             "selfEmploymentProfit": 0
           }
         ]
@@ -18,6 +19,7 @@
         "taxYear": "2013-14",
         "selfEmployments": [
           {
+            "utr": "2432552635",
             "selfEmploymentProfit": 10500
           }
         ]

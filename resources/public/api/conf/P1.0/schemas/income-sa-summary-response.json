@@ -44,6 +44,11 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "The 10 digit self-assessment unique tax reference",
+                      "example": "2432552635"
+                    },
                     "totalIncome": {
                       "type": "number",
                       "description": "Income from self employment",

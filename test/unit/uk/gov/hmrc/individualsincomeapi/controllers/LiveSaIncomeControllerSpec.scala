@@ -107,7 +107,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "LiveSaIncomeController.saReturnsSummary" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
-    val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(30500.55))))
+    val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(Some(utr), 30500.55))))
 
     "return 200 (OK) when there are sa tax returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -153,7 +153,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "LiveSaIncomeController.employmentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
-    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(9000))))
+    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(Some(utr), 9000))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -199,7 +199,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "LiveSaIncomeController.selfEmploymentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
-    val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(9000.55))))
+    val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(Some(utr), 9000.55))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))

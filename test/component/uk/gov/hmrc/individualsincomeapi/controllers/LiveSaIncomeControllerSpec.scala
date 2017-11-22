@@ -142,6 +142,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "employments": [
                        {
+                         "utr":"2432552644",
                          "employmentIncome": 1545.55
                        }
                      ]
@@ -197,6 +198,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                    "taxYear": "2013-14",
                    "selfEmployments": [
                      {
+                       "utr":"2432552644",
                        "selfEmploymentProfit": 2535.55
                      }
                    ]
@@ -238,6 +240,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                    "taxYear": "2013-14",
                    "summary": [
                      {
+                       "utr":"2432552644",
                        "totalIncome": 35500.55
                      }
                    ]
