@@ -31,6 +31,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.SandboxSaIncomeService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
@@ -41,6 +42,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
   implicit lazy val materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
+  val utr = SaUtr("2432552644")
   val fromTaxYear = TaxYear("2015-16")
   val toTaxYear = TaxYear("2016-17")
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
@@ -109,7 +111,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
 
   "SandboxSaIncomeController.employmentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
-    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(9000))))
+    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(Some(utr), 9000))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -157,7 +159,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
 
   "SandboxSaIncomeController.selfEmploymentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
-    val selfEmploymentIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(10500))))
+    val selfEmploymentIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(Some(sandboxUtr), 10500))))
 
     "return 200 (OK) with the self employments income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -205,7 +207,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
 
   "SandboxSaIncomeService.saReturnsSummary" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
-    val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(20500))))
+    val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(Some(sandboxUtr), 20500))))
 
     "return 200 (OK) with the self tax return summaries for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))

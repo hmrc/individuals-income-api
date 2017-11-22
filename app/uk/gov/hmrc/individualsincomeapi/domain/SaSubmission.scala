@@ -43,32 +43,32 @@ object SaFootprint {
 }
 
 case class SaAnnualEmployments(taxYear: TaxYear, employments: Seq[SaEmploymentsIncome])
-case class SaEmploymentsIncome(employmentIncome: Double)
+case class SaEmploymentsIncome(utr: Option[SaUtr], employmentIncome: Double)
 
 object SaAnnualEmployments {
   def apply(desSaIncome: DesSAIncome): SaAnnualEmployments = {
-    SaAnnualEmployments(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(_.incomeFromAllEmployments.getOrElse(0.0)) map SaEmploymentsIncome)
+    SaAnnualEmployments(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(sa => SaEmploymentsIncome(sa.utr, sa.incomeFromAllEmployments.getOrElse(0.0))))
   }
 }
 
 case class SaAnnualSelfEmployments(taxYear: TaxYear, selfEmployments: Seq[SaSelfEmploymentsIncome])
-case class SaSelfEmploymentsIncome(selfEmploymentProfit: Double)
+case class SaSelfEmploymentsIncome(utr: Option[SaUtr], selfEmploymentProfit: Double)
 
 object SaAnnualSelfEmployments {
   def apply(desSAIncome: DesSAIncome): SaAnnualSelfEmployments = {
     SaAnnualSelfEmployments(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(x => SaSelfEmploymentsIncome(x.profitFromSelfEmployment.getOrElse(0.0))))
+      desSAIncome.returnList.map(sa => SaSelfEmploymentsIncome(sa.utr, sa.profitFromSelfEmployment.getOrElse(0.0))))
   }
 }
 
 case class SaTaxReturnSummaries(taxYear: TaxYear, summary: Seq[SaTaxReturnSummary])
-case class SaTaxReturnSummary(totalIncome: Double)
+case class SaTaxReturnSummary(utr: Option[SaUtr], totalIncome: Double)
 
 object SaTaxReturnSummaries {
   def apply(desSAIncome: DesSAIncome): SaTaxReturnSummaries = {
     SaTaxReturnSummaries(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(x => SaTaxReturnSummary(x.incomeFromSelfAssessment.getOrElse(0.0))))
+      desSAIncome.returnList.map(sa => SaTaxReturnSummary(sa.utr, sa.incomeFromSelfAssessment.getOrElse(0.0))))
   }
 }

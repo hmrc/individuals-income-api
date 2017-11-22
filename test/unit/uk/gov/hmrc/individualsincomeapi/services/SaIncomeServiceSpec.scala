@@ -27,6 +27,7 @@ import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.{SaCacheId, SaIncomeCacheService, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
+import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.{LiveSaIncomeService, SandboxSaIncomeService}
 import uk.gov.hmrc.play.test.UnitSpec
@@ -37,6 +38,7 @@ import scala.concurrent.Future.{failed, successful}
 
 class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
 
+  val utr = SaUtr("2432552644")
   val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
   val liveMatchId = UUID.randomUUID()
   val liveNino = Nino("AA100009B")
@@ -49,7 +51,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       DesSAReturn(
         caseStartDate = LocalDate.parse("2011-06-06"),
         receivedDate = LocalDate.parse("2015-10-06"),
-        utr = Some(SaUtr("1234567890")),
+        utr = Some(utr),
         incomeFromAllEmployments = None,
         profitFromSelfEmployment = None,
         incomeFromSelfAssessment = Some(35000.55)))),
@@ -59,7 +61,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         DesSAReturn(
           caseStartDate = LocalDate.parse("2011-06-06"),
           receivedDate = LocalDate.parse("2016-06-06"),
-          utr = Some(SaUtr("1234567890")),
+          utr = Some(utr),
           incomeFromAllEmployments = Some(1555.55),
           profitFromSelfEmployment = Some(2500.55),
           incomeFromSelfAssessment = None)))
@@ -85,10 +87,10 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(liveSaIncomeService.fetchSaFootprintByMatchId(liveMatchId, taxYearInterval))
 
       result shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(Some(SaUtr("1234567890")), LocalDate.parse("2011-06-06"))),
+        registrations = Seq(SaRegistration(Some(utr), LocalDate.parse("2011-06-06"))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(Some(SaUtr("1234567890")), LocalDate.parse("2016-06-06")))),
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(Some(SaUtr("1234567890")), LocalDate.parse("2015-10-06"))))
+          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(Some(utr), LocalDate.parse("2016-06-06")))),
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(Some(utr), LocalDate.parse("2015-10-06"))))
       ))
     }
 
@@ -141,8 +143,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(liveSaIncomeService.fetchEmploymentsIncomeByMatchId(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(1555.55))),
-        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(0.0)))
+        SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(Some(utr), 1555.55))),
+        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(Some(utr), 0.0)))
       )
     }
 
@@ -160,8 +162,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(sandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(0))),
-        SaAnnualEmployments(TaxYear("2013-14"), Seq(SaEmploymentsIncome(5000)))
+        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(Some(sandboxUtr), 0))),
+        SaAnnualEmployments(TaxYear("2013-14"), Seq(SaEmploymentsIncome(Some(sandboxUtr), 5000)))
       )
     }
 
@@ -169,7 +171,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(sandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(sandboxMatchId, taxYearInterval.copy(fromTaxYear = TaxYear("2014-15"))))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(0)))
+        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(Some(sandboxUtr), 0)))
       )
     }
 
@@ -195,8 +197,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(liveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(2500.55))),
-        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(0.0)))
+        SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(Some(utr), 2500.55))),
+        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(Some(utr), 0.0)))
       )
     }
 
@@ -214,8 +216,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(sandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
 
       result shouldBe Seq(
-        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(0.0))),
-        SaAnnualSelfEmployments(TaxYear("2013-14"), Seq(SaSelfEmploymentsIncome(10500)))
+        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(Some(sandboxUtr), 0.0))),
+        SaAnnualSelfEmployments(TaxYear("2013-14"), Seq(SaSelfEmploymentsIncome(Some(sandboxUtr), 10500)))
       )
     }
 
@@ -240,8 +242,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(liveSaIncomeService.fetchSaReturnsSummaryByMatchId(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(0.0))),
-        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(35000.55)))
+        SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(Some(utr), 0.0))),
+        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(Some(utr), 35000.55)))
       )
     }
 
@@ -259,8 +261,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(sandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
 
       result shouldBe Seq(
-        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(0.0))),
-        SaTaxReturnSummaries(TaxYear("2013-14"), Seq(SaTaxReturnSummary(30000)))
+        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(Some(sandboxUtr), 0.0))),
+        SaTaxReturnSummaries(TaxYear("2013-14"), Seq(SaTaxReturnSummary(Some(sandboxUtr), 30000)))
       )
     }
 

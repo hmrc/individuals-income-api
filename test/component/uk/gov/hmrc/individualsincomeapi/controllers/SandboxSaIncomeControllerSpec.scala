@@ -18,12 +18,11 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
-import org.joda.time.LocalDate
+import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments, DesPayment, TaxYear}
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.{sandboxMatchId, sandboxUtr}
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 
 import scalaj.http.Http
 
@@ -56,7 +55,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "registrations": [
                    {
-                     "utr": "2432552635",
+                     "utr": "$sandboxUtr",
                      "registrationDate": "2012-01-06"
                    }
                  ],
@@ -65,7 +64,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2014-15",
                      "submissions": [
                        {
-                         "utr": "2432552635",
+                         "utr": "$sandboxUtr",
                          "receivedDate": "2015-10-06"
                        }
                      ]
@@ -74,7 +73,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "submissions": [
                        {
-                         "utr": "2432552635",
+                         "utr": "$sandboxUtr",
                          "receivedDate": "2014-06-06"
                        }
                      ]
@@ -106,6 +105,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2014-15",
                      "employments": [
                        {
+                         "utr": "$sandboxUtr",
                          "employmentIncome": 0
                        }
                      ]
@@ -114,6 +114,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "employments": [
                        {
+                         "utr": "$sandboxUtr",
                          "employmentIncome": 5000
                        }
                      ]
@@ -145,6 +146,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2014-15",
                      "selfEmployments": [
                        {
+                         "utr": "$sandboxUtr",
                          "selfEmploymentProfit": 0
                        }
                      ]
@@ -153,6 +155,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "selfEmployments": [
                        {
+                          "utr": "$sandboxUtr",
                           "selfEmploymentProfit": 10500
                        }
                      ]
@@ -184,6 +187,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2014-15",
                      "summary": [
                        {
+                         "utr": "$sandboxUtr",
                          "totalIncome": 0
                        }
                      ]
@@ -192,6 +196,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "taxYear": "2013-14",
                      "summary": [
                        {
+                          "utr": "$sandboxUtr",
                           "totalIncome": 30000
                        }
                      ]
