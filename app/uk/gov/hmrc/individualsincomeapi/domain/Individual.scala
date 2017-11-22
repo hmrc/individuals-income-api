@@ -80,8 +80,8 @@ object SandboxIncomeData {
       Payment(500.25, parse("2017-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
       Payment(500.25, parse("2017-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))),
     Seq(
-      DesSAIncome("2014", Seq(DesSAReturn(parse("2012-01-06"), parse("2014-06-06"), Some(sandboxUtr), Some(5000), Some(10500), Some(30000)))),
-      DesSAIncome("2015", Seq(DesSAReturn(parse("2012-01-06"), parse("2015-10-06"), Some(sandboxUtr))))
+      DesSAIncome("2014", Seq(DesSAReturn(parse("2012-01-06"), parse("2014-06-06"), sandboxUtr, Some(5000), Some(10500), Some(30000)))),
+      DesSAIncome("2015", Seq(DesSAReturn(parse("2012-01-06"), parse("2015-10-06"), sandboxUtr)))
     )
   )
 }
