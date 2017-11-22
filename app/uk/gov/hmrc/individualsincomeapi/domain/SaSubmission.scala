@@ -22,8 +22,8 @@ import uk.gov.hmrc.domain.SaUtr
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 
 case class SaTaxReturn(taxYear: TaxYear, submissions: Seq[SaSubmission])
-case class SaSubmission(utr: Option[SaUtr], receivedDate: LocalDate)
-case class SaRegistration(utr: Option[SaUtr], registrationDate: LocalDate)
+case class SaSubmission(utr: SaUtr, receivedDate: LocalDate)
+case class SaRegistration(utr: SaUtr, registrationDate: LocalDate)
 
 object SaTaxReturn {
   def apply(desSaIncome: DesSAIncome): SaTaxReturn = {
@@ -43,7 +43,7 @@ object SaFootprint {
 }
 
 case class SaAnnualEmployments(taxYear: TaxYear, employments: Seq[SaEmploymentsIncome])
-case class SaEmploymentsIncome(utr: Option[SaUtr], employmentIncome: Double)
+case class SaEmploymentsIncome(utr: SaUtr, employmentIncome: Double)
 
 object SaAnnualEmployments {
   def apply(desSaIncome: DesSAIncome): SaAnnualEmployments = {
@@ -52,7 +52,7 @@ object SaAnnualEmployments {
 }
 
 case class SaAnnualSelfEmployments(taxYear: TaxYear, selfEmployments: Seq[SaSelfEmploymentsIncome])
-case class SaSelfEmploymentsIncome(utr: Option[SaUtr], selfEmploymentProfit: Double)
+case class SaSelfEmploymentsIncome(utr: SaUtr, selfEmploymentProfit: Double)
 
 object SaAnnualSelfEmployments {
   def apply(desSAIncome: DesSAIncome): SaAnnualSelfEmployments = {
@@ -63,7 +63,7 @@ object SaAnnualSelfEmployments {
 }
 
 case class SaTaxReturnSummaries(taxYear: TaxYear, summary: Seq[SaTaxReturnSummary])
-case class SaTaxReturnSummary(utr: Option[SaUtr], totalIncome: Double)
+case class SaTaxReturnSummary(utr: SaUtr, totalIncome: Double)
 
 object SaTaxReturnSummaries {
   def apply(desSAIncome: DesSAIncome): SaTaxReturnSummaries = {

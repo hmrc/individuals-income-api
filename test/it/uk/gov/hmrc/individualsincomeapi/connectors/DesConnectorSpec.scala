@@ -200,7 +200,7 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
         DesSAReturn(
           caseStartDate = LocalDate.parse("2011-05-05"),
           receivedDate = LocalDate.parse("2016-06-06"),
-          utr = Some(SaUtr("1234567890")),
+          utr = SaUtr("1234567890"),
           Some(166.55)))))
     }
 

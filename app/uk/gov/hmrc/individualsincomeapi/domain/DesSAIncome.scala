@@ -27,7 +27,7 @@ case class DesSAIncome(taxYear: String,
 
 case class DesSAReturn(caseStartDate: LocalDate,
                        receivedDate: LocalDate,
-                       utr: Option[SaUtr] = None,
+                       utr: SaUtr,
                        incomeFromAllEmployments: Option[Double] = None,
                        profitFromSelfEmployment: Option[Double] = None,
                        incomeFromSelfAssessment: Option[Double] = None)

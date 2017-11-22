@@ -84,6 +84,7 @@
               }
             },
             "required": [
+              "utr",
               "registrationDate"
             ]
           }
@@ -117,6 +118,7 @@
                     }
                   },
                   "required": [
+                    "utr",
                     "receivedDate"
                   ]
                 }
