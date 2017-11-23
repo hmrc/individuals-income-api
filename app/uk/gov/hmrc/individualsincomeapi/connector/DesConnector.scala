@@ -39,13 +39,17 @@ class DesConnector @Inject()(configuration: Configuration) extends ServicesConfi
   val desBearerToken = configuration.getString("microservice.services.des.authorization-token").getOrElse(throw new RuntimeException("DES authorization token must be defined"))
   val desEnvironment = configuration.getString("microservice.services.des.environment").getOrElse(throw new RuntimeException("DES environment must be defined"))
 
+  private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) = {
+    hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken")))
+      .withExtraHeaders(Seq("Environment" -> desEnvironment, "Source" -> "MDTP") ++ extraHeaders: _*)
+  }
+
   def fetchEmployments(nino: Nino, interval: Interval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesEmployment]] = {
     val fromDate = interval.getStart.toLocalDate
     val toDate = interval.getEnd.toLocalDate
-    val header = hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken"))).withExtraHeaders("Environment" -> desEnvironment, "Source" -> "MDTP")
 
     http.GET[DesEmployments](s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate")(
-      implicitly[HttpReads[DesEmployments]], header, ec) map (_.employments) recover {
+      implicitly[HttpReads[DesEmployments]], header(), ec) map (_.employments) recover {
       case _: NotFoundException => Seq.empty
     }
   }
@@ -53,10 +57,10 @@ class DesConnector @Inject()(configuration: Configuration) extends ServicesConfi
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
     val toTaxYear = taxYearInterval.toTaxYear.endYr
-    val header = hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken"))).withExtraHeaders("Environment" -> desEnvironment, "Source" -> "MDTP")
+    val originator = hc.headers.toMap.get("X-Client-ID").map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
 
     http.GET[Seq[DesSAIncome]](s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear")(
-      implicitly[HttpReads[Seq[DesSAIncome]]], header, ec) recover {
+      implicitly[HttpReads[Seq[DesSAIncome]]], header("OriginatorId" -> originator), ec) recover {
       case _: NotFoundException => Seq.empty
     }
   }
