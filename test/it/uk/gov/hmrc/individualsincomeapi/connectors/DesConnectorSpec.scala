@@ -38,6 +38,7 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val desAuthorizationToken = "DES_TOKEN"
   val desEnvironment = "DES_ENVIRONMENT"
+  val clientId = "CLIENT_ID"
 
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .bindings(bindModules:_*)
@@ -173,11 +174,14 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
     val interval = TaxYearInterval(TaxYear("2015-16"), TaxYear("2016-17"))
 
     "return the self-assessment returns" in new Setup {
+      override implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders("X-Client-ID" -> clientId)
+
       stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
         .withQueryParam("startYear", equalTo(startYear))
         .withQueryParam("endYear", equalTo(endYear))
         .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
         .withHeader("Environment", equalTo(desEnvironment))
+        .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
         .willReturn(aResponse().withStatus(200).withBody(
           """
              [{
