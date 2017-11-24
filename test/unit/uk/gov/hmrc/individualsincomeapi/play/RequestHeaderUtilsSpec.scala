@@ -16,6 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.play
 
+import java.util.UUID
+
 import org.scalatest.Matchers
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ACCEPT, GET}
@@ -52,6 +54,19 @@ class RequestHeaderUtilsSpec extends UnitSpec with Matchers {
       extractUriContext(FakeRequest(GET, "/")) shouldBe "/"
       extractUriContext(FakeRequest(GET, "/foo")) shouldBe "/foo"
       extractUriContext(FakeRequest(GET, "/foo/bar")) shouldBe "/foo"
+    }
+  }
+
+  "getClientIdHeader" should {
+    "extract the client id header from the request if present" in {
+      val clientId = UUID.randomUUID().toString
+      val fooRequest = FakeRequest(GET, "/")
+
+      getClientIdHeader(fooRequest.withHeaders(CLIENT_ID_HEADER -> clientId)) shouldBe (CLIENT_ID_HEADER -> clientId)
+    }
+
+    "generate a new header with the default value dash (-) if the header is not present" in {
+      getClientIdHeader(FakeRequest(GET, "/")) shouldBe (CLIENT_ID_HEADER -> "-")
     }
   }
 }

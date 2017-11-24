@@ -39,8 +39,9 @@ object DesStub extends MockHost(23000) {
       .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
   }
 
-  def searchSelfAssessmentIncomeForPeriodReturns(nino: Nino, startYear: TaxYear, endYear: TaxYear, desSAIncomes: Seq[DesSAIncome]) = {
+  def searchSelfAssessmentIncomeForPeriodReturns(nino: Nino, startYear: TaxYear, endYear: TaxYear, clientId: String, desSAIncomes: Seq[DesSAIncome]) = {
     mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
+      .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
       .withQueryParam("startYear", equalTo(startYear.endYr.toString))
       .withQueryParam("endYear", equalTo(endYear.endYr.toString))
       .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desSAIncomes).toString())))

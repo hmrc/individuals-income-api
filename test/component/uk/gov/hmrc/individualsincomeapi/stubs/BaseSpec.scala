@@ -52,6 +52,7 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
   val mocks = Seq(AuthStub, IndividualsMatchingApiStub, DesStub)
   val shortLivedCache = app.injector.instanceOf[ShortLivedCache]
   val authToken = "Bearer AUTH_TOKEN"
+  val clientId = "CLIENT_ID"
   val acceptHeaderV1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
   val acceptHeaderP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
 
