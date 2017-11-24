@@ -22,17 +22,21 @@ import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
-import play.api.mvc.Action
 import play.api.mvc.hal._
+import play.api.mvc.{Action, RequestHeader}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment._
-import uk.gov.hmrc.individualsincomeapi.services._
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
+import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.getClientIdHeader
+import uk.gov.hmrc.individualsincomeapi.services._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class SaIncomeController(saIncomeService: SaIncomeService) extends CommonController with PrivilegedAuthentication {
+
+  override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
 
   def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa") {

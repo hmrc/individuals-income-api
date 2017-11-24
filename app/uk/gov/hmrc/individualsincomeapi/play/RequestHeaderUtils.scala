@@ -21,6 +21,8 @@ import play.api.mvc.RequestHeader
 
 object RequestHeaderUtils {
 
+  val CLIENT_ID_HEADER = "X-Client-ID"
+
   private val acceptHeaderRegex = "application/vnd\\.hmrc\\.(.*)\\+json".r
 
   private val uriRegex = "(/[a-zA-Z0-9-_]*)/?.*$".r
@@ -35,6 +37,10 @@ object RequestHeaderUtils {
       uri = versionedUri(originalRequest.uri, version),
       path = versionedUri(originalRequest.path, version)
     )
+  }
+
+  def getClientIdHeader(requestHeader: RequestHeader) = {
+    CLIENT_ID_HEADER -> requestHeader.headers.get(CLIENT_ID_HEADER).getOrElse("-")
   }
 
   private def getVersion(originalRequest: RequestHeader) =

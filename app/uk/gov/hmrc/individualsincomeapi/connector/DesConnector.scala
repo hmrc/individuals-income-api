@@ -21,15 +21,16 @@ import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Configuration
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads, NotFoundException}
 import uk.gov.hmrc.individualsincomeapi.config.WSHttp
+import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads, NotFoundException}
-import uk.gov.hmrc.http.logging.Authorization
 
 @Singleton
 class DesConnector @Inject()(configuration: Configuration) extends ServicesConfig {
@@ -57,7 +58,7 @@ class DesConnector @Inject()(configuration: Configuration) extends ServicesConfi
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
     val toTaxYear = taxYearInterval.toTaxYear.endYr
-    val originator = hc.headers.toMap.get("X-Client-ID").map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
+    val originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
 
     http.GET[Seq[DesSAIncome]](s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear")(
       implicitly[HttpReads[Seq[DesSAIncome]]], header("OriginatorId" -> originator), ec) recover {

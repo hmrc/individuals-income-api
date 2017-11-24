@@ -56,11 +56,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
       And("DES will return self-assessment data for the user")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, desIncomes)
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the self-assessments")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(headers).asString
 
       Then("The response status should be 200 (OK) with the self-assessments")
       response.code shouldBe OK
@@ -121,11 +121,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
       And("DES will return self-assessment data for the user")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, desIncomes)
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the employments")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(headers).asString
 
       Then("The response status should be 200 (OK) with the employments")
       response.code shouldBe OK
@@ -177,11 +177,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
       And("DES will return self-assessment data for the user")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, desIncomes)
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the self employments")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(headers).asString
 
       Then("The response status should be 200 (OK) with the self employments")
       response.code shouldBe OK
@@ -219,11 +219,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
       And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, desIncomes)
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the sa summary")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(headers).asString
 
       Then("The response status should be 200 (OK) with the self employments")
       response.code shouldBe OK
@@ -264,4 +264,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     response.code shouldBe UNAUTHORIZED
     Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
   }
+
+  private def headers() = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
 }
