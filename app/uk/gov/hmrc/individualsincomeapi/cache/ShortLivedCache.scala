@@ -62,11 +62,11 @@ class CacheRepositoryHelper @Inject()(configuration: Configuration) {
 class Crypto @Inject()(configuration: Configuration) extends CompositeSymmetricCrypto {
 
   override protected val currentCrypto: Encrypter with Decrypter = new AesCrypto {
-    override protected val encryptionKey: String = configuration.getString("json.encryption.key").getOrElse(throw new RuntimeException("Missing [json.encryption.key] configuration"))
+    override protected val encryptionKey: String = configuration.getString("cache.encryption.key").getOrElse(throw new RuntimeException("Missing [json.encryption.key] configuration"))
   }
 
   override protected val previousCryptos = {
-    val previousEncryptionKeys = configuration.getStringSeq("json.encryption.previousKeys").getOrElse(Seq.empty)
+    val previousEncryptionKeys = configuration.getStringSeq("cache.encryption.previousKeys").getOrElse(Seq.empty)
     previousEncryptionKeys.map(k => new AesCrypto {
       override val encryptionKey = k
     })
