@@ -42,7 +42,7 @@
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear is later than the current tax year&quot; }</p></td>
     </tr>
     <tr>
-         <td>From tax year requested is earlier than current tax year minus 7</td>
+         <td>From tax year requested is earlier than current tax year minus 6</td>
          <td><p>e.g. fromTaxYear=2008-09</p>
          </td>
          <td>
