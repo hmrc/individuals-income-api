@@ -35,7 +35,7 @@ class ShortLivedCacheSpec extends UnitSpec with MongoSpecSupport with WithFakeAp
   val testValue = TestClass("one", "two")
 
   override lazy val fakeApplication = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> mongoUri, "mongo.cacheTtlInSeconds" -> cacheTtl)
+    .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
     .bindings(bindModules: _*)
     .build()
 
@@ -43,12 +43,12 @@ class ShortLivedCacheSpec extends UnitSpec with MongoSpecSupport with WithFakeAp
 
   override def beforeEach() {
     super.beforeEach()
-    await(shortLivedCache.cacheRepository.repo.drop)
+    await(shortLivedCache.repository.drop)
   }
 
   override def afterEach() {
     super.afterEach()
-    await(shortLivedCache.cacheRepository.repo.drop)
+    await(shortLivedCache.repository.drop)
   }
 
   "cache" should {
@@ -80,7 +80,7 @@ class ShortLivedCacheSpec extends UnitSpec with MongoSpecSupport with WithFakeAp
   }
 
   private def retrieveRawCachedValue(id: String, key: String) = {
-    val storedValue = await(shortLivedCache.cacheRepository.repo.findById(id)).get
+    val storedValue = await(shortLivedCache.repository.findById(id)).get
     (storedValue.data.get \ cachekey).get
   }
 }

@@ -30,18 +30,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class ShortLivedCache @Inject()(val cacheRepository: CacheRepositoryHelper, crypto: Crypto) extends TimeToLive {
+class ShortLivedCache @Inject()(val configuration: CacheConfiguration, crypto: Crypto) extends TimeToLive {
+
+  lazy val repository = CacheRepository("shortLivedCache", configuration.cacheTtl, Cache.mongoFormats)
 
   def cache[T](id: String, key: String, value: T)(implicit formats: Format[T]): Future[Unit] = {
     val jsonEncryptor = new JsonEncryptor()(crypto, formats)
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    cacheRepository.repo.createOrUpdate(id, key, encryptedValue).map(_ => ())
+    repository.createOrUpdate(id, key, encryptedValue).map(_ => ())
   }
 
   def fetch[T](id: String, key: String)(implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = new JsonDecryptor()(crypto, formats)
 
-    cacheRepository.repo.findById(id) map {
+    repository.findById(id) map {
       case Some(cache) => cache.data flatMap { json =>
         (json \ key).toOption flatMap { jsValue =>
           decryptor.reads(jsValue).asOpt map (_.decryptedValue)
@@ -53,9 +55,9 @@ class ShortLivedCache @Inject()(val cacheRepository: CacheRepositoryHelper, cryp
 }
 
 @Singleton
-class CacheRepositoryHelper @Inject()(configuration: Configuration) {
-  lazy val cacheTtl = configuration.getInt("mongo.cacheTtlInSeconds").getOrElse(60 * 15)
-  lazy val repo = CacheRepository("shortLivedCache", cacheTtl, Cache.mongoFormats)
+class CacheConfiguration @Inject()(configuration: Configuration) {
+  lazy val enabled = configuration.getBoolean("cache.enabled").getOrElse(true)
+  lazy val cacheTtl = configuration.getInt("cache.ttlInSeconds").getOrElse(60 * 15)
 }
 
 @Singleton

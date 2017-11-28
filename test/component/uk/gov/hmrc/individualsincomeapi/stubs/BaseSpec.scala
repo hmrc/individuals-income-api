@@ -30,8 +30,8 @@ import play.mvc.Http.MimeTypes.JSON
 import uk.gov.hmrc.individualsincomeapi.cache.ShortLivedCache
 
 import scala.concurrent.Await.result
-import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
   with GivenWhenThen {
@@ -66,7 +66,7 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   override protected def beforeEach(): Unit = {
     mocks.foreach(m => if (!m.server.isRunning) m.server.start())
-    result(shortLivedCache.cacheRepository.repo.drop, timeout)
+    result(shortLivedCache.repository.drop, timeout)
   }
 
   override protected def afterEach(): Unit = {
@@ -75,7 +75,7 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   override def afterAll(): Unit = {
     mocks.foreach(_.server.stop())
-    result(shortLivedCache.cacheRepository.repo.drop, timeout)
+    result(shortLivedCache.repository.drop, timeout)
   }
 }
 

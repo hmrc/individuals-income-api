@@ -18,7 +18,6 @@ package uk.gov.hmrc.individualsincomeapi.cache
 
 import javax.inject.{Inject, Singleton}
 
-import play.api.Logger
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
@@ -26,32 +25,36 @@ import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class CacheService(shortLivedCache: ShortLivedCache) {
+abstract class CacheService(shortLivedCache: ShortLivedCache, configuration: CacheConfiguration) {
 
   val key: String
 
   def get[T](cacheId: CacheId, fallbackFunction: => Future[T])(implicit formats: Format[T]): Future[T] = {
-    shortLivedCache.fetch[T](cacheId.id, key) flatMap {
+
+    if (configuration.enabled) shortLivedCache.fetch[T](cacheId.id, key) flatMap {
       case Some(value) =>
-        Logger.debug(s"Cache hit for id: [$cacheId] and key: [$key]")
         Future.successful(value)
       case None =>
-        Logger.debug(s"Cache miss for id: [$cacheId] and key: [$key]")
         fallbackFunction map { result =>
           shortLivedCache.cache[T](cacheId.id, key, result)
           result
         }
+    } else {
+      fallbackFunction
     }
   }
 }
 
 @Singleton
-class SaIncomeCacheService @Inject()(shortLivedCache: ShortLivedCache) extends CacheService(shortLivedCache) {
+class SaIncomeCacheService @Inject()(shortLivedCache: ShortLivedCache, configuration: CacheConfiguration)
+  extends CacheService(shortLivedCache, configuration) {
+
   override val key = "sa-income"
 }
 
 trait CacheId {
   val id: String
+
   override def toString = id
 }
 
