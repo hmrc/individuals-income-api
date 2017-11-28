@@ -25,7 +25,7 @@ object Dates extends ServicesConfig {
   val localDatePattern = "yyyy-MM-dd"
 
   private val desDataInceptionDate = LocalDate.parse("2013-03-31")
-  private val selfAssessmentYearHistory = getConfInt("self-assessment.historyInYears", 7)
+  private val selfAssessmentYearHistory = getConfInt("self-assessment.historyInYears", 6)
 
   def toFormattedLocalDate(date: DateTime) = date.toLocalDate.toString(localDatePattern)
 
