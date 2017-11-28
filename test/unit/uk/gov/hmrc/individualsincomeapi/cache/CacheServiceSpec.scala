@@ -19,11 +19,11 @@ package unit.uk.gov.hmrc.individualsincomeapi.cache
 import java.util.UUID
 
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.{verify, verifyZeroInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.cache.{CacheId, CacheService, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.cache.{CacheConfiguration, CacheId, CacheService, ShortLivedCache}
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future.successful
@@ -36,7 +36,9 @@ class CacheServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures {
 
   trait Setup {
     val mockShortLivedCache = mock[ShortLivedCache]
-    val cacheService = new TestCacheService(mockShortLivedCache)
+    val configuration = mock[CacheConfiguration]
+    val cacheService = new TestCacheService(mockShortLivedCache, configuration)
+    given(configuration.enabled).willReturn(true)
   }
 
   "cacheService.get" should {
@@ -50,10 +52,18 @@ class CacheServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures {
       await(cacheService.get[TestClass](cacheId, successful(newValue))) shouldBe newValue
       verify(mockShortLivedCache).cache[TestClass](cacheId.id, cacheService.key, newValue)
     }
+
+    "ignore the cache when caching is not enabled" in new Setup {
+      given(configuration.enabled).willReturn(false)
+      await(cacheService.get[TestClass](cacheId, successful(newValue))) shouldBe newValue
+      verifyZeroInteractions(mockShortLivedCache)
+    }
   }
 }
 
-class TestCacheService(shortLivedCache: ShortLivedCache) extends CacheService(shortLivedCache) {
+class TestCacheService(shortLivedCache: ShortLivedCache, configuration: CacheConfiguration)
+  extends CacheService(shortLivedCache, configuration) {
+
   override val key = "test-key"
 }
 

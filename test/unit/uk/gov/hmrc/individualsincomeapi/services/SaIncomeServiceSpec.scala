@@ -25,7 +25,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.cache.{SaCacheId, SaIncomeCacheService, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.cache.{CacheConfiguration, SaCacheId, SaIncomeCacheService, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
@@ -72,8 +72,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     val matchingConnector = mock[IndividualsMatchingApiConnector]
     val desConnector = mock[DesConnector]
     val shortLivedCache = mock[ShortLivedCache]
-    val saIncomeCacheService = new SaIncomeCacheService(shortLivedCache)
-
+    val configuration = mock[CacheConfiguration]
+    val saIncomeCacheService = new SaIncomeCacheService(shortLivedCache, configuration)
     val sandboxSaIncomeService = new SandboxSaIncomeService()
     val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService)
   }
