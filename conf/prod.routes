@@ -1,8 +1,6 @@
 # Add all the application routes to the app.routes file
 ->         /vP1.0/sandbox        sandbox_version_P1.Routes
-
 ->         /vP1.0                app_version_P1.Routes
-->         /v1.0                 app_version_1.Routes
 
 ->         /                     definition.Routes
 ->         /                     health.Routes
