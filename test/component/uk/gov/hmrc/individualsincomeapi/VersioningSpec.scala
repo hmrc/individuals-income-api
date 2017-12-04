@@ -18,10 +18,10 @@ package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec}
 import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.Helpers.{ACCEPT, AUTHORIZATION}
 import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import play.api.test.Helpers.{ACCEPT, AUTHORIZATION}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 
 import scalaj.http.{Http, HttpResponse}
@@ -49,9 +49,38 @@ class VersioningSpec extends BaseSpec {
       response.code shouldBe OK
 
       And("The response body should be for api version P1.0")
-      Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+      Json.parse(response.body) shouldBe validResponsePayload
+    }
+
+    scenario("Requests without an accept header default to version P1.0") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
+
+      When("A request to the match citizen endpoint is made without an accept header")
+      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken)
+
+      Then("The response status should be 200 (Ok)")
+      response.code shouldBe OK
+
+      And("The response body should be for api version P1.0")
+      Json.parse(response.body) shouldBe validResponsePayload
+    }
+
+    scenario("Requests with an accept header with an invalid version") {
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
+
+      When("A request to the match citizen endpoint is made with version 1.0 accept header")
+      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, ACCEPT -> "application/vnd.hmrc.1.0+json")
+
+      Then("The response status should be 404 (Not Found)")
+      response.code shouldBe NOT_FOUND
+    }
+  }
+
+  private def validResponsePayload = {
+    Json.parse(
+      s"""
          {
              "_links": {
                  "paye": {
@@ -67,40 +96,6 @@ class VersioningSpec extends BaseSpec {
                  }
              }
          }""")
-    }
-
-    scenario("Requests without an accept header default to version 1.0") {
-      Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
-
-      When("A request to the match citizen endpoint is made without an accept header")
-      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken)
-
-      Then("The response status should be 404 (Not Found)")
-      response.code shouldBe NOT_FOUND
-    }
-
-    scenario("Requests with an accept header version 1.0 are correctly forwarded") {
-      Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
-
-      When("A request to the match citizen endpoint is made with version 1.0 accept header")
-      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderV1)
-
-      Then("The response status should be 404 (Not Found)")
-      response.code shouldBe NOT_FOUND
-    }
-
-    scenario("Requests with an accept header with an invalid version") {
-      Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
-
-      When("A request to the match citizen endpoint is made with version 10.0 accept header")
-      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, ACCEPT -> "application/vnd.hmrc.10.0+json")
-
-      Then("The response status should be 404 (Not Found)")
-      response.code shouldBe NOT_FOUND
-    }
   }
 
   private def invokeWithHeaders(urlPath: String, headers: (String, String)*): HttpResponse[String] =
