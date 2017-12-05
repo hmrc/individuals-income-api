@@ -29,7 +29,7 @@
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of self-assessment tax returns summary in the requested period",
+          "description": "List of summaries of self-assessment tax returns in the requested period",
           "items": {
             "type": "object",
             "properties": {
