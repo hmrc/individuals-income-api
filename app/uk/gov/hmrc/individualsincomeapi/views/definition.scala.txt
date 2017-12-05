@@ -41,7 +41,7 @@
   ],
   "api": {
     "name": "Individuals Income",
-    "description": "Individuals Income API",
+    "description": "Retrieves income information for an individual",
     "context": "individuals/income",
     "versions": [
       {
