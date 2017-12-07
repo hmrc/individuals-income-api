@@ -54,7 +54,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         utr = utr,
         incomeFromAllEmployments = None,
         profitFromSelfEmployment = None,
-        incomeFromSelfAssessment = Some(35000.55)))),
+        incomeFromSelfAssessment = Some(35000.55),
+        incomeFromTrust = Some(2600.55)))),
     DesSAIncome(
       taxYear = "2016",
       returnList = Seq(
@@ -64,7 +65,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
           utr = utr,
           incomeFromAllEmployments = Some(1555.55),
           profitFromSelfEmployment = Some(2500.55),
-          incomeFromSelfAssessment = None)))
+          incomeFromSelfAssessment = None,
+          incomeFromTrust = None)))
   )
 
   trait Setup {
@@ -274,6 +276,29 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
         await(sandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
+
+  "LiveIncomeService.fetchSaTrustsByMatchId" should {
+    "return sa tax return trusts income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSaTrustsByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualTrusts(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(utr, 0.0))),
+        SaAnnualTrusts(TaxYear("2014-15"), Seq(SaAnnualTrustIncome(utr, 2600.55)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaTrustsByMatchId(liveMatchId, taxYearInterval))
       }
     }
   }

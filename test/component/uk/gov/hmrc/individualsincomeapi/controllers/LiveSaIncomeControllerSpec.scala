@@ -43,7 +43,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
         utr = SaUtr("2432552644"),
         incomeFromAllEmployments = Some(1545.55),
         profitFromSelfEmployment = Some(2535.55),
-        incomeFromSelfAssessment = Some(35500.55))))
+        incomeFromSelfAssessment = Some(35500.55),
+        incomeFromTrust = Some(10800.64))))
   )
 
   feature("SA root endpoint") {
@@ -242,6 +243,48 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                      {
                        "utr":"2432552644",
                        "totalIncome": 35500.55
+                     }
+                   ]
+                 }
+               ]
+             }
+           }
+         """)
+    }
+  }
+
+  feature("SA trusts endpoint") {
+    scenario("Fetch Self Assessment trusts income") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-trusts")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-trusts")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the individual")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+
+      When("I request the sa trusts income")
+      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(headers).asString
+
+      Then("The response status should be 200 (OK) with the trusts income")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+           {
+             "_links": {
+               "self": {"href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+             },
+             "selfAssessment": {
+               "taxReturns": [
+                 {
+                   "taxYear": "2013-14",
+                   "trusts": [
+                     {
+                       "utr":"2432552644",
+                       "trustIncome": 10800.64
                      }
                    ]
                  }
