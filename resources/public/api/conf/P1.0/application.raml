@@ -339,3 +339,57 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
+  /sa/trusts:
+    get:
+      displayName: Retrieve trusts income from self-assessment
+      description: !include docs/income-sa-trusts-endpoint-description.md
+      is: [headers.acceptHeader]
+      (annotations.sandboxData): !include sandbox/income-sa-trusts-request.md
+      (annotations.scope): "read:individuals-income-sa-trusts"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income-sa-trusts" ] } ]
+      headers:
+        Authorization:
+          description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-trusts scope.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
+      queryParameters:
+        matchId:
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        fromTaxYear:
+          description: The tax year from which data is requested
+          type: string
+          required: true
+          example: 2013-14
+        toTaxYear:
+          description: The tax year until when data is requested; if absent it defaults to the current tax year
+          type: string
+          required: false
+          example: 2015-16
+      responses:
+        200:
+          description: The individual SA trusts income for the given period
+          body:
+            application/json:
+              example: !include examples/income-sa-trusts-response.json
+              type: !include schemas/income-sa-trusts-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
