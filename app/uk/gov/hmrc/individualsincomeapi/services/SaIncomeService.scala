@@ -36,6 +36,8 @@ trait SaIncomeService {
 
   def fetchSaReturnsSummaryByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturnSummaries]]
 
+  def fetchSaTrustsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualTrusts]]
+
   def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]]
 
   def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualSelfEmployments]]
@@ -77,6 +79,15 @@ class SandboxSaIncomeService extends SaIncomeService {
       case None => failed(new MatchNotFoundException)
     }
   }
+
+  override def fetchSaTrustsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualTrusts]] = {
+    findByMatchId(matchId).map(_.saIncome) match {
+      case Some(saIncomes) =>
+        val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
+        successful(selectedSaReturns map (r => SaAnnualTrusts(r)))
+      case None => failed(new MatchNotFoundException)
+    }
+  }
 }
 
 @Singleton
@@ -114,4 +125,6 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaTaxReturnSummaries(r))
   }
+
+  override def fetchSaTrustsByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualTrusts]] = ???
 }
