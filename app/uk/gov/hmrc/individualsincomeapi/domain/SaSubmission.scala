@@ -73,14 +73,14 @@ object SaTaxReturnSummaries {
   }
 }
 
-case class SaAnnualTrusts(taxYear: TaxYear, trusts: Seq[SaAnnualTrust])
-case class SaAnnualTrust(utr: SaUtr, trustIncome: Double)
+case class SaAnnualTrusts(taxYear: TaxYear, trusts: Seq[SaAnnualTrustIncome])
+case class SaAnnualTrustIncome(utr: SaUtr, trustIncome: Double)
 
 object SaAnnualTrusts {
   def apply(desSAIncome: DesSAIncome): SaAnnualTrusts = {
     SaAnnualTrusts(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaAnnualTrust(sa.utr, sa.incomeFromTrust.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa => SaAnnualTrustIncome(sa.utr, sa.incomeFromTrust.getOrElse(0.0)))
     )
   }
 }

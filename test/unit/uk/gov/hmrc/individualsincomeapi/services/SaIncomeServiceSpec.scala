@@ -283,8 +283,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(sandboxSaIncomeService.fetchSaTrustsByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
 
       result shouldBe Seq(
-        SaAnnualTrusts(TaxYear("2014-15"), Seq(SaAnnualTrust(sandboxUtr, 0))),
-        SaAnnualTrusts(TaxYear("2013-14"), Seq(SaAnnualTrust(sandboxUtr, 2143.32)))
+        SaAnnualTrusts(TaxYear("2014-15"), Seq(SaAnnualTrustIncome(sandboxUtr, 0))),
+        SaAnnualTrusts(TaxYear("2013-14"), Seq(SaAnnualTrustIncome(sandboxUtr, 2143.32)))
       )
     }
 
