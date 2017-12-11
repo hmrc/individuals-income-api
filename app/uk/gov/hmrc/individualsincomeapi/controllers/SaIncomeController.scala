@@ -62,11 +62,22 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
     }
   }
 
-  def saTrusts(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
+  def saTrustsIncome(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa-trusts") {
-      saIncomeService.fetchSaTrustsByMatchId(matchId, taxYearInterval) map { saTrusts =>
+      saIncomeService.fetchSaTrustsIncomeByMatchId(matchId, taxYearInterval) map { saTrusts =>
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trusts?matchId=$matchId"))
         val taxReturnsJsObject = obj("taxReturns" -> toJson(saTrusts))
+        val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
+        Ok(state(selfAssessmentJsObject) ++ selfLink)
+      } recover recovery
+    }
+  }
+
+  def saForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
+    requiresPrivilegedAuthentication("read:individuals-income-sa-foreign") {
+      saIncomeService.fetchSaForeignIncomeByMatchId(matchId, taxYearInterval) map { saForeignIncomes =>
+        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
+        val taxReturnsJsObject = obj("taxReturns" -> toJson(saForeignIncomes))
         val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
         Ok(state(selfAssessmentJsObject) ++ selfLink)
       } recover recovery
