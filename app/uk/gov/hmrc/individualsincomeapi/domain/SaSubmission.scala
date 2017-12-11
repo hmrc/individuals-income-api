@@ -73,14 +73,27 @@ object SaTaxReturnSummaries {
   }
 }
 
-case class SaAnnualTrusts(taxYear: TaxYear, trusts: Seq[SaAnnualTrustIncome])
+case class SaAnnualTrustIncomes(taxYear: TaxYear, trusts: Seq[SaAnnualTrustIncome])
 case class SaAnnualTrustIncome(utr: SaUtr, trustIncome: Double)
 
-object SaAnnualTrusts {
-  def apply(desSAIncome: DesSAIncome): SaAnnualTrusts = {
-    SaAnnualTrusts(
+object SaAnnualTrustIncomes {
+  def apply(desSAIncome: DesSAIncome): SaAnnualTrustIncomes = {
+    SaAnnualTrustIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map(sa => SaAnnualTrustIncome(sa.utr, sa.incomeFromTrust.getOrElse(0.0)))
     )
   }
 }
+
+case class SaAnnualForeignIncomes(taxYear: TaxYear, foreign: Seq[SaAnnualForeignIncome])
+case class SaAnnualForeignIncome(utr: SaUtr, foreignIncome: Double)
+
+object SaAnnualForeignIncomes {
+  def apply(desSAIncome: DesSAIncome): SaAnnualForeignIncomes = {
+    SaAnnualForeignIncomes(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(sa => SaAnnualForeignIncome(sa.utr, sa.incomeFromForeign4Sources.getOrElse(0.0)))
+    )
+  }
+}
+
