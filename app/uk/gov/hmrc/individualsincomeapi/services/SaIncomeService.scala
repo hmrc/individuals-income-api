@@ -144,5 +144,10 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualTrustIncomes(r))
   }
 
-  override def fetchSaForeignIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualForeignIncomes]] = ???
+  override def fetchSaForeignIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualForeignIncomes]] = {
+    for {
+      ninoMatch <- matchingConnector.resolve(matchId)
+      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
+    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualForeignIncomes(r))
+  }
 }

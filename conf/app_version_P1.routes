@@ -7,3 +7,4 @@ GET        /sa/employments             @uk.gov.hmrc.individualsincomeapi.control
 GET        /sa/self-employments        @uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController.selfEmploymentsIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/summary                 @uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController.saReturnsSummary(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/trusts                  @uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController.saTrustsIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
+GET        /sa/foreign                 @uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController.saForeignIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)

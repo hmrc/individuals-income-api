@@ -32,6 +32,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.LiveSaIncomeService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
@@ -243,11 +244,11 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
   }
 
-  "LiveSaIncomeController.saTrusts" should {
+  "LiveSaIncomeController.saTrustsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
     val saIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(utr, 9000.55))))
 
-    "return 200 (OK) with the employments income returns for the period" in new Setup {
+    "return 200 (OK) with the trusts income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
@@ -285,6 +286,52 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
         .willReturn(failed(InsufficientEnrolments()))
 
       intercept[InsufficientEnrolments]{await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))}
+      verifyZeroInteractions(mockLiveSaIncomeService)
+    }
+  }
+
+  "LiveSaIncomeController.saForeignIncome" should {
+    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
+    val saForeignIncome = Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
+
+    "return 200 (OK) with the foreign income returns for the period" in new Setup {
+      given(mockLiveSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saForeignIncome))
+
+      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequest.uri, Json.toJson(saForeignIncome)))
+    }
+
+    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+      val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
+      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
+
+      given(mockLiveSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saForeignIncome))
+
+      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saForeignIncome)))
+    }
+
+    "return 404 (Not Found) for an invalid matchId" in new Setup {
+      given(mockLiveSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(failed(new MatchNotFoundException()))
+
+      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe NOT_FOUND
+      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+    }
+
+    "require read:individuals-income-sa-foreign privileged scope" in new Setup {
+      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-foreign")), refEq(EmptyRetrieval))(any(), any()))
+        .willReturn(failed(InsufficientEnrolments()))
+
+      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))}
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
