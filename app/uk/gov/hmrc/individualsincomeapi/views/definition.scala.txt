@@ -38,6 +38,16 @@
       "description": "Access self-assessment trusts information for all individuals"
     },
     {
+      "key": "read:individuals-income-sa-foreign",
+      "name": "access self-assessment foreign income information for all individuals",
+      "description": "Access self-assessment foreign income information for all individuals"
+    },
+    {
+      "key": "read:individuals-income-sa-partnerships",
+      "name": "access self-assessment partnerships income information for all individuals",
+      "description": "Access self-assessment partnerships income information for all individuals"
+    },
+    {
       "key":"read:individual-income",
       "name":"access income information",
       "description":"Access personal and employment-based income information",

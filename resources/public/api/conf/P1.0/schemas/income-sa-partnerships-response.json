@@ -49,15 +49,15 @@
                       "description": "The 10 digit self-assessment unique tax reference",
                       "example": "2432552635"
                     },
-                    "partnershipIncome": {
+                    "partnershipProfit": {
                       "type": "number",
-                      "description": "Partnership income",
+                      "description": "Partnership profit",
                       "example": "324.54"
                     }
                   },
                   "required": [
                     "utr",
-                    "partnershipIncome"
+                    "partnershipProfit"
                   ]
                 }
               }
