@@ -205,7 +205,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "SandboxSaIncomeService.saReturnsSummary" should {
+  "SandboxSaIncomeController.saReturnsSummary" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
     val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(sandboxUtr, 20500))))
 
@@ -253,7 +253,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "SandboxSaIncomeService.fetchSaTrustsIncomeByMatchId" should {
+  "SandboxSaIncomeController.saTrustsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
     val saTrustIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(sandboxUtr, 20500))))
 
@@ -301,7 +301,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "SandboxSaIncomeService.fetchSaForeignIncomeByMatchId" should {
+  "SandboxSaIncomeController.saForeignIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
     val saForeignIncomes = Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
@@ -343,6 +343,54 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
         .willReturn(successful(saForeignIncomes))
 
       val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+      verifyZeroInteractions(mockAuthConnector)
+    }
+  }
+
+  "SandboxSaIncomeController.saPartnershipsIncome" should {
+    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
+    val saPartnershipIncomes = Seq(SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 123.65))))
+
+    "return 200 (OK) with the self tax return partnerships income for the period" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saPartnershipIncomes))
+
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequest.uri, Json.toJson(saPartnershipIncomes)))
+    }
+
+    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+      val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
+      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
+
+      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saPartnershipIncomes))
+
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saPartnershipIncomes)))
+    }
+
+    "return 404 (Not Found) for an invalid matchId" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(failed(new MatchNotFoundException()))
+
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe NOT_FOUND
+      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+    }
+
+    "not require bearer token authentication for Sandbox" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(saPartnershipIncomes))
+
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe OK
       verifyZeroInteractions(mockAuthConnector)
