@@ -56,7 +56,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         profitFromSelfEmployment = None,
         incomeFromSelfAssessment = Some(35000.55),
         incomeFromTrust = Some(2600.55),
-        incomeFromForeign4Sources = Some(500.55)))),
+        incomeFromForeign4Sources = Some(500.55),
+        profitFromPartnerships = Some(555.55)))),
     DesSAIncome(
       taxYear = "2016",
       returnList = Seq(
@@ -368,6 +369,29 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
         await(sandboxSaIncomeService.fetchSaForeignIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
+
+  "LiveIncomeService.fetchSaPartnershipsIncomeByMatchId" should {
+    "return sa tax return partnership income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSaPartnershipsIncomeByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(utr, 0.0))),
+        SaAnnualPartnershipIncomes(TaxYear("2014-15"), Seq(SaAnnualPartnershipIncome(utr, 555.55)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaPartnershipsIncomeByMatchId(liveMatchId, taxYearInterval))
       }
     }
   }
