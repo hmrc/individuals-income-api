@@ -349,7 +349,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "SandboxSaIncomeController.saPartnershipIncome" should {
+  "SandboxSaIncomeController.saPartnershipsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
     val saPartnershipIncomes = Seq(SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 123.65))))
 
@@ -357,7 +357,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPartnershipIncomes))
 
-      val result = await(sandboxSaIncomeController.saPartnershipIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequest.uri, Json.toJson(saPartnershipIncomes)))
@@ -370,7 +370,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPartnershipIncomes))
 
-      val result = await(sandboxSaIncomeController.saPartnershipIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saPartnershipIncomes)))
@@ -380,7 +380,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(sandboxSaIncomeController.saPartnershipIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
@@ -390,7 +390,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPartnershipIncomes))
 
-      val result = await(sandboxSaIncomeController.saPartnershipIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe OK
       verifyZeroInteractions(mockAuthConnector)
