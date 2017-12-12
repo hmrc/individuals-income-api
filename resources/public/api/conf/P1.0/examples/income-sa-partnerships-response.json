@@ -11,7 +11,7 @@
         "partnerships": [
           {
             "utr": "2432552635",
-            "partnershipIncome": 0
+            "partnershipProfit": 0
           }
         ]
       },
@@ -20,7 +20,7 @@
         "partnerships": [
           {
             "utr": "2432552635",
-            "partnershipIncome": 324.54
+            "partnershipProfit": 324.54
           }
         ]
       }
