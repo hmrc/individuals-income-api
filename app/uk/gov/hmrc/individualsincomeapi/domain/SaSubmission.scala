@@ -97,3 +97,14 @@ object SaAnnualForeignIncomes {
   }
 }
 
+case class SaAnnualPartnershipIncomes(taxYear: TaxYear, partnerships: Seq[SaAnnualPartnershipIncome])
+case class SaAnnualPartnershipIncome(utr: SaUtr, partnershipProfit: Double)
+
+object SaAnnualPartnershipIncomes {
+  def apply(desSAIncome: DesSAIncome): SaAnnualPartnershipIncomes = {
+    SaAnnualPartnershipIncomes(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(sa => SaAnnualPartnershipIncome(sa.utr, sa.profitFromPartnerships.getOrElse(0.0)))
+    )
+  }
+}
