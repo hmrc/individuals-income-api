@@ -33,5 +33,8 @@ case class DesSAReturn(caseStartDate: LocalDate,
                        incomeFromSelfAssessment: Option[Double] = None,
                        incomeFromTrust: Option[Double] = None,
                        incomeFromForeign4Sources: Option[Double] = None,
-                       profitFromPartnerships: Option[Double] = None
+                       profitFromPartnerships: Option[Double] = None,
+                       incomeFromUkInterest: Option[Double] = None,
+                       incomeFromForeignDividends: Option[Double] = None,
+                       incomeFromInterestNDividendsFromUKCompaniesNTrusts: Option[Double] = None
                       )

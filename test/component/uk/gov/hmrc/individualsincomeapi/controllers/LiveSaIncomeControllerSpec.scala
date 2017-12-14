@@ -46,7 +46,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
         incomeFromSelfAssessment = Some(35500.55),
         incomeFromTrust = Some(10800.64),
         incomeFromForeign4Sources = Some(205.64),
-        profitFromPartnerships = Some(145.67))))
+        profitFromPartnerships = Some(145.67),
+        incomeFromUkInterest = Some(34.56),
+        incomeFromForeignDividends = Some(72.68),
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35)
+      )))
   )
 
   feature("SA root endpoint") {

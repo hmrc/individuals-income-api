@@ -328,4 +328,47 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 
+  scenario("SA interests and dividends endpoint for the sandbox implementation") {
+    When("I request the SA interests and dividends income for Sandbox")
+    val response = Http(s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+      .headers(requestHeaders(acceptHeaderP1)).asString
+
+    Then("The response status should be 200 (OK) with a valid payload")
+    response.code shouldBe OK
+    Json.parse(response.body) shouldBe
+      Json.parse(
+        s"""
+             {
+               "_links": {
+                 "self": {"href": "/individuals/income/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+               },
+               "selfAssessment": {
+                 "taxReturns": [
+                   {
+                     "taxYear": "2014-15",
+                     "interestsAndDividends": [
+                       {
+                         "utr": "$sandboxUtr",
+                         "ukInterestsIncome": 0,
+                         "foreignDividendsIncome": 0,
+                         "ukDividendsIncome": 0
+                       }
+                     ]
+                   },
+                   {
+                     "taxYear": "2013-14",
+                     "interestsAndDividends": [
+                       {
+                          "utr": "$sandboxUtr",
+                          "ukInterestsIncome": 12.46,
+                          "foreignDividendsIncome": 455.43,
+                          "ukDividendsIncome": 657.89
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+           """)
+  }
 }

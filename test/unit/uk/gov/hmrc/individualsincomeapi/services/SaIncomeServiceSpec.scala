@@ -57,7 +57,11 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         incomeFromSelfAssessment = Some(35000.55),
         incomeFromTrust = Some(2600.55),
         incomeFromForeign4Sources = Some(500.55),
-        profitFromPartnerships = Some(555.55)))),
+        profitFromPartnerships = Some(555.55),
+        incomeFromUkInterest = Some(43.56),
+        incomeFromForeignDividends = Some(72.57),
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32)
+      ))),
     DesSAIncome(
       taxYear = "2016",
       returnList = Seq(
@@ -69,7 +73,11 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
           profitFromSelfEmployment = Some(2500.55),
           incomeFromSelfAssessment = None,
           incomeFromTrust = None,
-          incomeFromForeign4Sources = None)))
+          incomeFromForeign4Sources = None,
+          incomeFromUkInterest = None,
+          incomeFromForeignDividends = None,
+          incomeFromInterestNDividendsFromUKCompaniesNTrusts = None
+        )))
   )
 
   trait Setup {
@@ -417,4 +425,27 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       }
     }
   }
+
+  "SandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId" should {
+    "return the sa interests and dividends income by tax year DESCENDING when the matchId is valid" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+
+      result shouldBe Seq(
+        SaAnnualInterestAndDividendIncomes(TaxYear("2014-15"), Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 0, 0, 0))),
+        SaAnnualInterestAndDividendIncomes(TaxYear("2013-14"), Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 12.46, 455.43, 657.89)))
+      )
+    }
+
+    "return an empty list when no sa tax returns exist for the requested period" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+      result shouldBe Seq.empty
+    }
+
+    "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
+      intercept[MatchNotFoundException] {
+        await(sandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
+
 }
