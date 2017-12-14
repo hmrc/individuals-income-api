@@ -454,5 +454,64 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
+  feature("SA interests and dividends income") {
+    scenario("Fetch Self Assessment interests and dividends income") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-interests-and-dividends")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-interests-and-dividends")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the individual")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+
+      When("I request the sa interests and dividends income")
+      val response = Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(headers).asString
+
+      Then("The response status should be 200 (OK) with the foreign income")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+            {
+              "_links": {
+                 "self": {
+                   "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"
+                 }
+               },
+               "selfAssessment": {
+                 "taxReturns": [
+                   {
+                     "taxYear": "2013-14",
+                     "interestsAndDividends": [
+                       {
+                         "utr": "2432552644",
+                         "ukInterestsIncome": 34.56,
+                         "foreignDividendsIncome": 72.68,
+                         "ukDividendsIncome": 90.35
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+         """)
+    }
+
+    scenario("Invalid token") {
+      Given("A token WITHOUT the scope read:individuals-income-sa-interests-and-dividends")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-interests-and-dividends")
+
+      When("I request the sa interests and dividends income")
+      val response = Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 401 (Unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+    }
+  }
+
   private def headers() = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
 }

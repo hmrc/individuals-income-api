@@ -426,6 +426,29 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
   }
 
+  "LiveIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId" should {
+    "return sa tax return interests and dividends income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualInterestAndDividendIncomes(TaxYear("2015-16"), Seq(SaAnnualInterestAndDividendIncome(utr, 0.0, 0.0, 0.0))),
+        SaAnnualInterestAndDividendIncomes(TaxYear("2014-15"), Seq(SaAnnualInterestAndDividendIncome(utr, 43.56, 72.57, 16.32)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(liveMatchId, taxYearInterval))
+      }
+    }
+  }
+
   "SandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId" should {
     "return the sa interests and dividends income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(sandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
