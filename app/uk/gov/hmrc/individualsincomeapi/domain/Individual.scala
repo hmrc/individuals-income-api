@@ -80,7 +80,20 @@ object SandboxIncomeData {
       Payment(500.25, parse("2017-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
       Payment(500.25, parse("2017-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))),
     Seq(
-      DesSAIncome("2014", Seq(DesSAReturn(parse("2012-01-06"), parse("2014-06-06"), sandboxUtr, Some(5000), Some(10500), Some(30000), Some(2143.32), Some(1054.65), Some(324.54)))),
+      DesSAIncome("2014", Seq(DesSAReturn(
+        caseStartDate = parse("2012-01-06"),
+        receivedDate = parse("2014-06-06"),
+        utr = sandboxUtr,
+        incomeFromAllEmployments = Some(5000),
+        profitFromSelfEmployment = Some(10500),
+        incomeFromSelfAssessment = Some(30000),
+        incomeFromTrust = Some(2143.32),
+        incomeFromForeign4Sources = Some(1054.65),
+        profitFromPartnerships = Some(324.54),
+        incomeFromUkInterest = Some(12.46),
+        incomeFromForeignDividends = Some(455.43),
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(657.89)
+      ))),
       DesSAIncome("2015", Seq(DesSAReturn(parse("2012-01-06"), parse("2015-10-06"), sandboxUtr)))
     )
   )

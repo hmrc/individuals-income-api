@@ -108,3 +108,20 @@ object SaAnnualPartnershipIncomes {
     )
   }
 }
+
+case class SaAnnualInterestAndDividendIncomes(taxYear: TaxYear, interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome])
+case class SaAnnualInterestAndDividendIncome(utr: SaUtr, ukInterestsIncome: Double, foreignDividendsIncome: Double, ukDividendsIncome: Double)
+
+object SaAnnualInterestAndDividendIncomes {
+  def apply(desSAIncome: DesSAIncome): SaAnnualInterestAndDividendIncomes = {
+    SaAnnualInterestAndDividendIncomes(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(sa =>
+        SaAnnualInterestAndDividendIncome(
+          sa.utr,
+          sa.incomeFromUkInterest.getOrElse(0.0),
+          sa.incomeFromForeignDividends.getOrElse(0.0),
+          sa.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)))
+    )
+  }
+}

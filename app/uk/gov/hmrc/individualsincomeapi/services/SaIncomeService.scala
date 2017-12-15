@@ -42,6 +42,8 @@ trait SaIncomeService {
 
   def fetchSaPartnershipsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualPartnershipIncomes]]
 
+  def fetchSaInterestsAndDividendsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualInterestAndDividendIncomes]]
+
   def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]]
 
   def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualSelfEmployments]]
@@ -49,6 +51,15 @@ trait SaIncomeService {
 
 @Singleton
 class SandboxSaIncomeService extends SaIncomeService {
+
+  private def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T): Future[Seq[T]] = {
+    findByMatchId(matchId).map(_.saIncome) match {
+      case Some(saIncomes) =>
+        val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
+        successful(selectedSaReturns map (r => transform(r)))
+      case None => failed(new MatchNotFoundException)
+    }
+  }
 
   override def fetchSaFootprintByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint] = {
     findByMatchId(matchId).map(_.saIncome) match {
@@ -81,13 +92,8 @@ class SandboxSaIncomeService extends SaIncomeService {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualPartnershipIncomes(desSAIncome))
   }
 
-  private def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T): Future[Seq[T]] = {
-    findByMatchId(matchId).map(_.saIncome) match {
-      case Some(saIncomes) =>
-        val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
-        successful(selectedSaReturns map (r => transform(r)))
-      case None => failed(new MatchNotFoundException)
-    }
+  override def fetchSaInterestsAndDividendsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualInterestAndDividendIncomes(desSAIncome))
   }
 }
 
@@ -107,39 +113,37 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
   }
 
   override def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
-    for {
-      ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
-    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualEmployments(r))
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualEmployments(desSAIncome))
   }
 
   override def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
-    for {
-      ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
-    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualSelfEmployments(r))
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualSelfEmployments(desSAIncome))
   }
 
   override def fetchSaReturnsSummaryByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTaxReturnSummaries]] = {
-    for {
-      ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
-    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaTaxReturnSummaries(r))
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaTaxReturnSummaries(desSAIncome))
   }
 
   override def fetchSaTrustsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualTrustIncomes]] = {
-    for {
-      ninoMatch <- matchingConnector.resolve(matchId)
-      desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
-    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualTrustIncomes(r))
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualTrustIncomes(desSAIncome))
   }
 
   override def fetchSaForeignIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualForeignIncomes]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualForeignIncomes(desSAIncome))
+  }
+
+  override def fetchSaPartnershipsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualPartnershipIncomes]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualPartnershipIncomes(desSAIncome))
+  }
+
+  override def fetchSaInterestsAndDividendsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualInterestAndDividendIncomes(desSAIncome))
+  }
+
+  private def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(implicit hc: HeaderCarrier): Future[Seq[T]] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
-    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => SaAnnualForeignIncomes(r))
+    } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => transform(r))
   }
-
-  override def fetchSaPartnershipsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualPartnershipIncomes]] = ???
 }

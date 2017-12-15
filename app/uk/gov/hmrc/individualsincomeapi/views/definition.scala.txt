@@ -48,6 +48,11 @@
       "description": "Access self-assessment partnerships income information for all individuals"
     },
     {
+      "key": "read:individuals-income-sa-interests-and-dividends",
+      "name": "access self-assessment interests and dividends income information for all individuals",
+      "description": "Access self-assessment interests and dividends income information for all individuals"
+    },
+    {
       "key":"read:individual-income",
       "name":"access income information",
       "description":"Access personal and employment-based income information",
