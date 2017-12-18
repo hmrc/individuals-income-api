@@ -41,12 +41,19 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
   def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa") {
       saIncomeService.fetchSaFootprintByMatchId(matchId, taxYearInterval) map { saFootprint =>
-        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
-        val selfEmploymentsLink = HalLink("selfEmployments", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
-        val employmentsLink = HalLink("employments", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
-        val summaryLink = HalLink("summary", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
-        val selfAssessmentJsObject = obj("selfAssessment" -> toJson(saFootprint))
-        Ok(state(selfAssessmentJsObject) ++ selfLink ++ selfEmploymentsLink ++ employmentsLink ++ summaryLink)
+        Ok(state(obj("selfAssessment" -> toJson(saFootprint)))
+          ++ HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
+          ++ HalLink("additionalInformation", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
+          ++ HalLink("employments", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
+          ++ HalLink("foreign", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
+          ++ HalLink("interestsAndDividends", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
+          ++ HalLink("other", urlWithTaxYearInterval(s"/individuals/income/sa/other?matchId=$matchId"))
+          ++ HalLink("partnerships", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
+          ++ HalLink("pensionsAndStateBenefits", urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId"))
+          ++ HalLink("selfEmployments", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
+          ++ HalLink("summary", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
+          ++ HalLink("trusts", urlWithTaxYearInterval(s"/individuals/income/sa/trusts?matchId=$matchId"))
+          ++ HalLink("ukProperties", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId")))
       } recover recovery
     }
   }
