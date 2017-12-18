@@ -61,7 +61,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         incomeFromUkInterest = Some(43.56),
         incomeFromForeignDividends = Some(72.57),
         incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32),
-        incomeFromProperty = Some(1276.67)
+        incomeFromProperty = Some(1276.67),
+        incomeFromPensions = Some(52.56)
       ))),
     DesSAIncome(
       taxYear = "2016",
@@ -78,7 +79,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
           incomeFromUkInterest = None,
           incomeFromForeignDividends = None,
           incomeFromInterestNDividendsFromUKCompaniesNTrusts = None,
-          incomeFromProperty = None
+          incomeFromProperty = None,
+          incomeFromPensions = None
         )))
   )
 
@@ -495,4 +497,25 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
   }
 
+  "SandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId" should {
+    "return the sa pensions and state benefits income by tax year DESCENDING when the matchId is valid" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+
+      result shouldBe Seq(
+        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2014-15"), Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 0))),
+        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2013-14"), Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 52.79)))
+      )
+    }
+
+    "return an empty list when no sa tax returns exist for the requested period" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+      result shouldBe Seq.empty
+    }
+
+    "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
+      intercept[MatchNotFoundException] {
+        await(sandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
 }

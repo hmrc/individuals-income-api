@@ -137,3 +137,18 @@ object SaAnnualInterestAndDividendIncomes {
     )
   }
 }
+
+case class SaAnnualPensionAndStateBenefitIncomes(taxYear: TaxYear, pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome])
+case class SaAnnualPensionAndStateBenefitIncome(utr: SaUtr, totalIncome: Double)
+
+object SaAnnualPensionAndStateBenefitIncomes {
+  def apply(desSAIncome: DesSAIncome): SaAnnualPensionAndStateBenefitIncomes = {
+    SaAnnualPensionAndStateBenefitIncomes(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(sa =>
+        SaAnnualPensionAndStateBenefitIncome(
+          sa.utr,
+          sa.incomeFromPensions.getOrElse(0.0)))
+    )
+  }
+}
