@@ -108,9 +108,9 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
 
   def saUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa-uk-properties") {
-      saIncomeService.fetchSaUkPropertiesIncomeByMatchId(matchId, taxYearInterval) map { saForeignIncomes =>
+      saIncomeService.fetchSaUkPropertiesIncomeByMatchId(matchId, taxYearInterval) map { saUkPropertiesIncomes =>
         val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
-        val taxReturnsJsObject = obj("taxReturns" -> toJson(saForeignIncomes))
+        val taxReturnsJsObject = obj("taxReturns" -> toJson(saUkPropertiesIncomes))
         val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
         Ok(state(selfAssessmentJsObject) ++ selfLink)
       } recover recovery
