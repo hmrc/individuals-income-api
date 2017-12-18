@@ -50,7 +50,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
         incomeFromUkInterest = Some(34.56),
         incomeFromForeignDividends = Some(72.68),
         incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
-        incomeFromPensions = Some(62.56)
+        incomeFromPensions = Some(62.56),
+        incomeFromProperty = Some(257.46)
       )))
   )
 
@@ -563,6 +564,63 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa pensions and state benefits income")
       val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 401 (Unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+    }
+  }
+
+  feature("SA UK properties income") {
+    scenario("Fetch Self Assessment UK properties income") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-uk-properties")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-uk-properties")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the individual")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+
+      When("I request the sa UK properties income income")
+      val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(headers).asString
+
+      Then("The response status should be 200 (OK) with the UK properties income")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+            {
+              "_links": {
+                 "self": {
+                   "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"
+                 }
+               },
+               "selfAssessment": {
+                 "taxReturns": [
+                   {
+                     "taxYear": "2013-14",
+                     "ukProperties": [
+                       {
+                         "utr": "2432552644",
+                         "totalProfit": 257.46
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+         """)
+    }
+
+    scenario("Invalid token") {
+      Given("A token WITHOUT the scope read:individuals-income-sa-uk-properties")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-uk-properties")
+
+      When("I request the sa UK properties income")
+      val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
         .headers(requestHeaders(acceptHeaderP1)).asString
 
       Then("The response status should be 401 (Unauthorized)")
