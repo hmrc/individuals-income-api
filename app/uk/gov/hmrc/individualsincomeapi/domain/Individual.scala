@@ -94,7 +94,9 @@ object SandboxIncomeData {
         incomeFromForeignDividends = Some(455.43),
         incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(657.89),
         incomeFromProperty = Some(1276.67),
-        incomeFromPensions = Some(52.79)
+        incomeFromPensions = Some(52.79),
+        incomeFromGainsOnLifePolicies = Some(44.54),
+        incomeFromSharesOptions = Some(52.34)
       ))),
       DesSAIncome("2015", Seq(DesSAReturn(parse("2012-01-06"), parse("2015-10-06"), sandboxUtr)))
     )

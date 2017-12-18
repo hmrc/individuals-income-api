@@ -51,6 +51,8 @@ trait SaIncomeService {
   def fetchEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]]
 
   def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualSelfEmployments]]
+
+  def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualAdditionalInformations]]
 }
 
 @Singleton
@@ -106,6 +108,10 @@ class SandboxSaIncomeService extends SaIncomeService {
 
   override def fetchSaUkPropertiesIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualUkPropertiesIncomes]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualUkPropertiesIncomes(desSAIncome))
+  }
+
+  override def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualAdditionalInformations(desSAIncome))
   }
 }
 
@@ -165,6 +171,10 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
 
   override def fetchSaUkPropertiesIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualUkPropertiesIncomes]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualUkPropertiesIncomes(desSAIncome))
+  }
+
+  override def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+    fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualAdditionalInformations(desSAIncome))
   }
 
 }

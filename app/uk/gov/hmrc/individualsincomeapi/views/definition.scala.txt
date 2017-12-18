@@ -18,6 +18,11 @@
       "description": "Access self-assessment information for all individuals"
     },
     {
+      "key": "read:individuals-income-sa-additional-information",
+      "name": "access self-assessment additional information for all individuals",
+      "description": "Access self-assessment additional information for all individuals"
+    },
+    {
       "key": "read:individuals-income-sa-employments",
       "name": "access self-assessment employments income information for all individuals",
       "description": "Access self-assessment employments income information for all individuals"
