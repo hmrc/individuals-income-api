@@ -49,7 +49,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
         profitFromPartnerships = Some(145.67),
         incomeFromUkInterest = Some(34.56),
         incomeFromForeignDividends = Some(72.68),
-        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35)
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
+        incomeFromPensions = Some(62.56)
       )))
   )
 
