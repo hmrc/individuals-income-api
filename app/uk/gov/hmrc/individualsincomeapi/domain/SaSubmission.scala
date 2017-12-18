@@ -109,6 +109,18 @@ object SaAnnualUkPropertiesIncomes {
   }
 }
 
+case class SaAnnualAdditionalInformations(taxYear: TaxYear, additionalInformation: Seq[SaAnnualAdditionalInformation])
+case class SaAnnualAdditionalInformation(utr: SaUtr, gainsOnLifePolicies: Double, sharesOptionsIncome: Double)
+
+object SaAnnualAdditionalInformations {
+  def apply(desSAIncome: DesSAIncome): SaAnnualAdditionalInformations = {
+    SaAnnualAdditionalInformations(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(sa => SaAnnualAdditionalInformation(sa.utr, sa.incomeFromGainsOnLifePolicies.getOrElse(0.0), sa.incomeFromSharesOptions.getOrElse(0.0)))
+    )
+  }
+}
+
 case class SaAnnualPartnershipIncomes(taxYear: TaxYear, partnerships: Seq[SaAnnualPartnershipIncome])
 case class SaAnnualPartnershipIncome(utr: SaUtr, partnershipProfit: Double)
 

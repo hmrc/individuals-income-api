@@ -177,6 +177,62 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
+
+  /sa/additional-information:
+    get:
+      displayName: Retrieve additional information from self-assessment
+      description: !include docs/income-sa-additional-information-endpoint-description.md
+      is: [headers.acceptHeader]
+      (annotations.sandboxData): !include sandbox/income-sa-request.md
+      (annotations.scope): "read:individuals-income-sa-additional-information"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:individuals-income-sa-additional-information" ] } ]
+      headers:
+        Authorization:
+          description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-additional-information scope.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
+      queryParameters:
+        matchId:
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        fromTaxYear:
+          description: The tax year from which data is requested
+          type: string
+          required: true
+          example: 2013-14
+        toTaxYear:
+          description: The tax year until when data is requested; if absent it defaults to the current tax year
+          type: string
+          required: false
+          example: 2015-16
+      responses:
+        200:
+          description: The individual SA additional information for the given period
+          body:
+            application/json:
+              example: !include examples/income-sa-additional-information-response.json
+              type: !include schemas/income-sa-additional-information-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+
   /sa/employments:
     get:
       displayName: Retrieve employments income from self-assessment

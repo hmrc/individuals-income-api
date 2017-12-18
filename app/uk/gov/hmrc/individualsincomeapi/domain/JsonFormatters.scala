@@ -91,6 +91,10 @@ object JsonFormatters {
 
   implicit val formatSaAnnualPensionAndStateBenefitIncome = Json.format[SaAnnualPensionAndStateBenefitIncome]
   implicit val formatSaAnnualPensionAndStateBenefitIncomes = Json.format[SaAnnualPensionAndStateBenefitIncomes]
+
+  implicit val formatSaAnnualAdditionalInformation = Json.format[SaAnnualAdditionalInformation]
+  implicit val formatSaAnnualAdditionalInformations = Json.format[SaAnnualAdditionalInformations]
+
 }
 
 object EnumJson {
