@@ -19,13 +19,13 @@
             "href"
           ]
         },
-        "selfEmployments": {
+        "additionalInformation": {
           "type": "object",
-          "description": "The income from self-employments",
+          "description": "Additional information",
           "properties": {
             "href": {
               "type": "string",
-              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
             }
           },
           "required": [
@@ -45,6 +45,84 @@
             "href"
           ]
         },
+        "foreign": {
+          "type": "object",
+          "description": "The foreign income",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "interestsAndDividends": {
+          "type": "object",
+          "description": "The income from interests and dividends",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "other": {
+          "type": "object",
+          "description": "Other income",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "partnerships": {
+          "type": "object",
+          "description": "The income from partnerships",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "pensionsAndStateBenefits": {
+          "type": "object",
+          "description": "The income from pensions and state benefits",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/pensions-and-state-benefits  ?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "selfEmployments": {
+          "type": "object",
+          "description": "The income from self-employments",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
         "summary": {
           "type": "object",
           "description": "The self-assessment income summary",
@@ -57,10 +135,36 @@
           "required": [
             "href"
           ]
+        },
+        "trusts": {
+          "type": "object",
+          "description": "The income from trusts",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "ukProperties": {
+          "type": "object",
+          "description": "The income from UK properties",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
         }
       },
       "required": [
-        "self", "selfEmployments", "employments", "summary"
+        "self", "additionalInformation", "employments", "foreign", "interestsAndDividends", "other", "partnerships", "pensionsAndStateBenefits", "selfEmployments", "summary", "trusts", "ukProperties"
       ]
     },
     "selfAssessment": {

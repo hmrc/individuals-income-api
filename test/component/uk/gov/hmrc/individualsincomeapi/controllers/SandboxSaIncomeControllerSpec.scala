@@ -41,16 +41,26 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderP1)).asString
 
       Then("The response status should be 200 (OK) with a valid payload")
+      val requestParameters = s"matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"
+
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
         Json.parse(
           s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
-                 "employments": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
-                 "selfEmployments": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"},
-                 "summary": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
+                 "self": {"href": "/individuals/income/sa?$requestParameters"},
+                 "additionalInformation": {"href": "/individuals/income/sa/additional-information?$requestParameters"},
+                 "employments": {"href": "/individuals/income/sa/employments?$requestParameters"},
+                 "foreign": {"href": "/individuals/income/sa/foreign?$requestParameters"},
+                 "interestsAndDividends": {"href": "/individuals/income/sa/interests-and-dividends?$requestParameters"},
+                 "other": {"href": "/individuals/income/sa/other?$requestParameters"},
+                 "partnerships": {"href": "/individuals/income/sa/partnerships?$requestParameters"},
+                 "pensionsAndStateBenefits": {"href": "/individuals/income/sa/pensions-and-state-benefits?$requestParameters"},
+                 "selfEmployments": {"href": "/individuals/income/sa/self-employments?$requestParameters"},
+                 "summary": {"href": "/individuals/income/sa/summary?$requestParameters"},
+                 "trusts": {"href": "/individuals/income/sa/trusts?$requestParameters"},
+                 "ukProperties": {"href": "/individuals/income/sa/uk-properties?$requestParameters"}
                },
                "selfAssessment": {
                  "registrations": [

@@ -387,9 +387,17 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
        {
          "_links": {
            "self": {"href": "/individuals/income/sa?$requestParameters"},
+           "additionalInformation": {"href": "/individuals/income/sa/additional-information?$requestParameters"},
            "employments": {"href": "/individuals/income/sa/employments?$requestParameters"},
+           "foreign": {"href": "/individuals/income/sa/foreign?$requestParameters"},
+           "interestsAndDividends": {"href": "/individuals/income/sa/interests-and-dividends?$requestParameters"},
+           "other": {"href": "/individuals/income/sa/other?$requestParameters"},
+           "partnerships": {"href": "/individuals/income/sa/partnerships?$requestParameters"},
+           "pensionsAndStateBenefits": {"href": "/individuals/income/sa/pensions-and-state-benefits?$requestParameters"},
            "selfEmployments": {"href": "/individuals/income/sa/self-employments?$requestParameters"},
-           "summary": {"href": "/individuals/income/sa/summary?$requestParameters"}
+           "summary": {"href": "/individuals/income/sa/summary?$requestParameters"},
+           "trusts": {"href": "/individuals/income/sa/trusts?$requestParameters"},
+           "ukProperties": {"href": "/individuals/income/sa/uk-properties?$requestParameters"}
          },
          "selfAssessment": {
            "registrations": ${Json.toJson(saFootprint.registrations)},
