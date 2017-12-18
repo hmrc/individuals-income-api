@@ -60,7 +60,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         profitFromPartnerships = Some(555.55),
         incomeFromUkInterest = Some(43.56),
         incomeFromForeignDividends = Some(72.57),
-        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32)
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32),
+        incomeFromProperty = Some(1276.67)
       ))),
     DesSAIncome(
       taxYear = "2016",
@@ -76,7 +77,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
           incomeFromForeign4Sources = None,
           incomeFromUkInterest = None,
           incomeFromForeignDividends = None,
-          incomeFromInterestNDividendsFromUKCompaniesNTrusts = None
+          incomeFromInterestNDividendsFromUKCompaniesNTrusts = None,
+          incomeFromProperty = None
         )))
   )
 
@@ -467,6 +469,28 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
         await(sandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
+
+  "SandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId" should {
+    "return the sa UK properties income by tax year DESCENDING when the matchId is valid" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+
+      result shouldBe Seq(
+        SaAnnualUkPropertiesIncomes(TaxYear("2014-15"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 0))),
+        SaAnnualUkPropertiesIncomes(TaxYear("2013-14"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67)))
+      )
+    }
+
+    "return an empty list when no sa tax returns exist for the requested period" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+      result shouldBe Seq.empty
+    }
+
+    "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
+      intercept[MatchNotFoundException] {
+        await(sandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
       }
     }
   }
