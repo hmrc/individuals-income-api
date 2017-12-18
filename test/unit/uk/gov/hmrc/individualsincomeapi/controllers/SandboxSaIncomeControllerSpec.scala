@@ -401,7 +401,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
     val saPensionsAndStateBenefitsIncomes = Seq(SaAnnualPensionAndStateBenefitIncomes(TaxYear("2015-16"), Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))))
 
-    "return 200 (OK) with the self tax return partnerships income for the period" in new Setup {
+    "return 200 (OK) with the self tax return pensions and state benefits income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
