@@ -497,6 +497,29 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
   }
 
+  "LiveIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId" should {
+    "return sa tax return pensions and state benefits income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2015-16"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 0.0))),
+        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2014-15"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 52.56)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(liveMatchId, taxYearInterval))
+      }
+    }
+  }
+
   "SandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId" should {
     "return the sa pensions and state benefits income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(sandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))

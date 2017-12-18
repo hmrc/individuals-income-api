@@ -514,5 +514,62 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
+  feature("SA pensions and state benefits income") {
+    scenario("Fetch Self Assessment pensions and state benefits income") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-pensions-and-state-benefits")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-pensions-and-state-benefits")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the individual")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+
+      When("I request the sa pensions and state benefits income")
+      val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(headers).asString
+
+      Then("The response status should be 200 (OK) with the foreign income")
+      response.code shouldBe OK
+      Json.parse(response.body) shouldBe
+        Json.parse(
+          s"""
+            {
+              "_links": {
+                 "self": {
+                   "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"
+                 }
+               },
+               "selfAssessment": {
+                 "taxReturns": [
+                   {
+                     "taxYear": "2013-14",
+                     "pensionsAndStateBenefits": [
+                       {
+                         "utr": "2432552644",
+                         "totalIncome": 62.56
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+         """)
+    }
+
+    scenario("Invalid token") {
+      Given("A token WITHOUT the scope read:individuals-income-sa-pensions-and-state-benefits")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-pensions-and-state-benefits")
+
+      When("I request the sa pensions and state benefits income")
+      val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 401 (Unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+    }
+  }
+
   private def headers() = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
 }
