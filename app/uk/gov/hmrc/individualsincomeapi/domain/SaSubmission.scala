@@ -164,3 +164,18 @@ object SaAnnualPensionAndStateBenefitIncomes {
     )
   }
 }
+
+case class SaAnnualOtherIncomes(taxYear: TaxYear, other: Seq[SaAnnualOtherIncome])
+case class SaAnnualOtherIncome(utr: SaUtr, otherIncome: Double)
+
+object SaAnnualOtherIncomes {
+  def apply(desSAIncome: DesSAIncome): SaAnnualOtherIncomes = {
+    SaAnnualOtherIncomes(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map(sa =>
+        SaAnnualOtherIncome(
+          sa.utr,
+          sa.incomeFromOther.getOrElse(0.0)))
+    )
+  }
+}

@@ -592,6 +592,55 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
+  "SandboxSaIncomeController.other" should {
+    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
+    val otherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"),
+      Seq(SaAnnualOtherIncome(sandboxUtr, 324.54))))
+
+    "return 200 (OK) with the other income for the period" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(otherIncome))
+
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequest.uri, Json.toJson(otherIncome)))
+    }
+
+    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+      val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
+      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
+
+      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(otherIncome))
+
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(otherIncome)))
+    }
+
+    "return 404 (Not Found) for an invalid matchId" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(failed(new MatchNotFoundException()))
+
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe NOT_FOUND
+      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+    }
+
+    "not require bearer token authentication for Sandbox" in new Setup {
+      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+        .willReturn(successful(otherIncome))
+
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+      verifyZeroInteractions(mockAuthConnector)
+    }
+  }
+
   private def expectedSaFootprintPayload(requestParameters: String, saFootprint: SaFootprint) = {
     s"""
        {
