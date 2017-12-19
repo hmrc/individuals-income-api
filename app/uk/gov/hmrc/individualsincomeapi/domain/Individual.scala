@@ -91,7 +91,7 @@ object SandboxIncomeData {
         incomeFromForeign4Sources = Some(1054.65),
         profitFromPartnerships = Some(324.54),
         incomeFromUkInterest = Some(12.46),
-        incomeFromForeignDividends = Some(455.43),
+        incomeFromForeignDividends = Some(25.86),
         incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(657.89),
         incomeFromProperty = Some(1276.67),
         incomeFromPensions = Some(52.79),

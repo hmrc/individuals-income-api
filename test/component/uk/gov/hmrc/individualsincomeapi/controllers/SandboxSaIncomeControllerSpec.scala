@@ -411,7 +411,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                        {
                           "utr": "$sandboxUtr",
                           "ukInterestsIncome": 12.46,
-                          "foreignDividendsIncome": 455.43,
+                          "foreignDividendsIncome": 25.86,
                           "ukDividendsIncome": 657.89
                        }
                      ]
