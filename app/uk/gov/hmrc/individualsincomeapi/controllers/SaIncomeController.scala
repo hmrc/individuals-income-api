@@ -146,6 +146,17 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
     }
   }
 
+  def saOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
+    requiresPrivilegedAuthentication("read:individuals-income-sa-other") {
+      saIncomeService.fetchSaOtherIncomeByMatchId(matchId, taxYearInterval) map { saOtherIncome =>
+        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/other?matchId=$matchId"))
+        val taxReturnsJsObject = obj("taxReturns" -> toJson(saOtherIncome))
+        val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
+        Ok(state(selfAssessmentJsObject) ++ selfLink)
+      } recover recovery
+    }
+  }
+
   def employmentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval) = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-sa-employments") {
       saIncomeService.fetchEmploymentsIncomeByMatchId(matchId, taxYearInterval) map { employmentsIncome =>

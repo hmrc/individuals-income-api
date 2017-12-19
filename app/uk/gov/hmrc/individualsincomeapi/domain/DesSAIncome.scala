@@ -40,5 +40,6 @@ case class DesSAReturn(caseStartDate: LocalDate,
                        incomeFromProperty: Option[Double] = None,
                        incomeFromPensions: Option[Double] = None,
                        incomeFromSharesOptions: Option[Double] = None,
-                       incomeFromGainsOnLifePolicies: Option[Double] = None
+                       incomeFromGainsOnLifePolicies: Option[Double] = None,
+                       incomeFromOther: Option[Double] = None
                       )

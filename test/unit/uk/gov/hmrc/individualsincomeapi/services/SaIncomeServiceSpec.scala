@@ -613,4 +613,26 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       }
     }
   }
+
+  "SandboxSaIncomeService.fetchSaOtherIncomeByMatchId" should {
+    "return the sa other income by tax year DESCENDING when the matchId is valid" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaOtherIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+
+      result shouldBe Seq(
+        SaAnnualOtherIncomes(TaxYear("2014-15"), Seq(SaAnnualOtherIncome(sandboxUtr, 0))),
+        SaAnnualOtherIncomes(TaxYear("2013-14"), Seq(SaAnnualOtherIncome(sandboxUtr, 324.54)))
+      )
+    }
+
+    "return an empty list when no sa tax returns exist for the requested period" in new Setup {
+      val result = await(sandboxSaIncomeService.fetchSaOtherIncomeByMatchId(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+      result shouldBe Seq.empty
+    }
+
+    "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
+      intercept[MatchNotFoundException] {
+        await(sandboxSaIncomeService.fetchSaOtherIncomeByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
 }
