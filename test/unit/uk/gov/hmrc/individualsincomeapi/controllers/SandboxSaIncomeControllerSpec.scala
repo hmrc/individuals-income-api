@@ -592,7 +592,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "SandboxSaIncomeController.other" should {
+  "SandboxSaIncomeController.saOtherIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
     val otherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"),
       Seq(SaAnnualOtherIncome(sandboxUtr, 324.54))))

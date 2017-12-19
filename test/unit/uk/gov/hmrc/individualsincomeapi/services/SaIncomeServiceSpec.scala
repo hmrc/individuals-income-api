@@ -64,7 +64,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         incomeFromProperty = Some(1276.67),
         incomeFromPensions = Some(52.56),
         incomeFromGainsOnLifePolicies = Some(45.20),
-        incomeFromSharesOptions = Some(12.45)
+        incomeFromSharesOptions = Some(12.45),
+        incomeFromOther = Some(134.56)
       ))),
     DesSAIncome(
       taxYear = "2016",
@@ -610,6 +611,29 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
         await(sandboxSaIncomeService.fetchSaAdditionalInformationByMatchId(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+      }
+    }
+  }
+
+  "LiveIncomeService.fetchSaOtherIncomeByMatchId" should {
+    "return sa tax return other income by tax year DESCENDING when the matchId is valid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
+
+      val result = await(liveSaIncomeService.fetchSaOtherIncomeByMatchId(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(
+        SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(utr, 0.0))),
+        SaAnnualOtherIncomes(TaxYear("2014-15"), Seq(SaAnnualOtherIncome(utr, 134.56)))
+      )
+    }
+
+    "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaOtherIncomeByMatchId(liveMatchId, taxYearInterval))
       }
     }
   }
