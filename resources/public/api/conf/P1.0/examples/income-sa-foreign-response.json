@@ -11,7 +11,7 @@
         "foreign": [
           {
             "utr": "2432552635",
-            "foreignIncome": 1054.65
+            "foreignIncome": 0
           }
         ]
       },
@@ -20,7 +20,7 @@
         "foreign": [
           {
             "utr": "2432552635",
-            "foreignIncome": 0
+            "foreignIncome": 1054.65
           }
         ]
       }

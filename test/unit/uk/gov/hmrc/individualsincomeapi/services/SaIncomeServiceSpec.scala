@@ -463,7 +463,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
 
       result shouldBe Seq(
         SaAnnualInterestAndDividendIncomes(TaxYear("2014-15"), Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 0, 0, 0))),
-        SaAnnualInterestAndDividendIncomes(TaxYear("2013-14"), Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 12.46, 455.43, 657.89)))
+        SaAnnualInterestAndDividendIncomes(TaxYear("2013-14"), Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 12.46, 25.86, 657.89)))
       )
     }
 

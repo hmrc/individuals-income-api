@@ -11,9 +11,9 @@
         "interestsAndDividends": [
           {
             "utr": "2432552635",
-            "ukInterestsIncome": 56.92,
-            "foreignDividendsIncome": 25.86,
-            "ukDividendsIncome": 23.74
+            "ukInterestsIncome": 0,
+            "foreignDividendsIncome": 0,
+            "ukDividendsIncome": 0
           }
         ]
       },
@@ -22,9 +22,9 @@
         "interestsAndDividends": [
           {
             "utr": "2432552635",
-            "ukInterestsIncome": 0,
-            "foreignDividendsIncome": 0,
-            "ukDividendsIncome": 0
+            "ukInterestsIncome": 12.46,
+            "foreignDividendsIncome": 25.86,
+            "ukDividendsIncome": 657.89
           }
         ]
       }

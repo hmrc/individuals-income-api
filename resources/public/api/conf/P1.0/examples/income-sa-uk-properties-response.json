@@ -11,7 +11,7 @@
         "ukProperties": [
           {
             "utr": "2432552635",
-            "totalProfit": 1276.67
+            "totalProfit": 0
           }
         ]
       },
@@ -20,7 +20,7 @@
         "ukProperties": [
           {
             "utr": "2432552635",
-            "totalProfit": 0
+            "totalProfit": 1276.67
           }
         ]
       }
