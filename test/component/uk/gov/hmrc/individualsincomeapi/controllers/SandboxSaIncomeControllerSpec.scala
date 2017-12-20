@@ -534,7 +534,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      "other": [
                        {
                           "utr": "$sandboxUtr",
-                          "otherIncome": 324.54
+                          "otherIncome": 26.70
                        }
                      ]
                    }

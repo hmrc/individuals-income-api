@@ -52,17 +52,17 @@
                     "ukInterestsIncome": {
                       "type": "number",
                       "description": "UK interests received before tax",
-                      "example": "324.54"
+                      "example": "12.46"
                     },
                     "foreignDividendsIncome": {
                       "type": "number",
                       "description": "Foreign dividends income",
-                      "example": "324.54"
+                      "example": "25.86"
                     },
                     "ukDividendsIncome": {
                       "type": "number",
                       "description": "UK dividends income",
-                      "example": "324.54"
+                      "example": "657.89"
                     }
                   },
                   "required": [
