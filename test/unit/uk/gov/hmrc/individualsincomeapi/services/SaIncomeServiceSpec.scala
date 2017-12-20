@@ -644,7 +644,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
 
       result shouldBe Seq(
         SaAnnualOtherIncomes(TaxYear("2014-15"), Seq(SaAnnualOtherIncome(sandboxUtr, 0))),
-        SaAnnualOtherIncomes(TaxYear("2013-14"), Seq(SaAnnualOtherIncome(sandboxUtr, 324.54)))
+        SaAnnualOtherIncomes(TaxYear("2013-14"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70)))
       )
     }
 

@@ -52,7 +52,7 @@
                     "otherIncome": {
                       "type": "number",
                       "description": "Other income",
-                      "example": "1276.67"
+                      "example": "26.70"
                     }
                   },
                   "required": [

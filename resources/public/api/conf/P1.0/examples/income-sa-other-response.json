@@ -11,7 +11,7 @@
         "other": [
           {
             "utr": "2432552635",
-            "otherIncome": 324.54
+            "otherIncome": 0
           }
         ]
       },
@@ -20,7 +20,7 @@
         "other": [
           {
             "utr": "2432552635",
-            "otherIncome": 0
+            "otherIncome": 26.70
           }
         ]
       }
