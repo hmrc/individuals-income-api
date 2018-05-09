@@ -24,8 +24,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.OK
 import play.mvc.Http.Status.UNAUTHORIZED
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, TaxYear}
-
+import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, SAIncome, TaxYear}
 import scalaj.http.Http
 
 class LiveSaIncomeControllerSpec extends BaseSpec {
@@ -41,20 +40,22 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
         caseStartDate = LocalDate.parse("2011-01-15"),
         receivedDate = LocalDate.parse("2014-11-05"),
         utr = SaUtr("2432552644"),
-        incomeFromAllEmployments = Some(1545.55),
-        profitFromSelfEmployment = Some(2535.55),
-        incomeFromSelfAssessment = Some(35500.55),
-        incomeFromTrust = Some(10800.64),
-        incomeFromForeign4Sources = Some(205.64),
-        profitFromPartnerships = Some(145.67),
-        incomeFromUkInterest = Some(34.56),
-        incomeFromForeignDividends = Some(72.68),
-        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
-        incomeFromPensions = Some(62.56),
-        incomeFromProperty = Some(257.46),
-        incomeFromGainsOnLifePolicies = Some(52.34),
-        incomeFromSharesOptions = Some(24.75),
-        incomeFromOther = Some(134.56)
+        income = SAIncome(
+          incomeFromAllEmployments = Some(1545.55),
+          profitFromSelfEmployment = Some(2535.55),
+          incomeFromSelfAssessment = Some(35500.55),
+          incomeFromTrust = Some(10800.64),
+          incomeFromForeign4Sources = Some(205.64),
+          profitFromPartnerships = Some(145.67),
+          incomeFromUkInterest = Some(34.56),
+          incomeFromForeignDividends = Some(72.68),
+          incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
+          incomeFromPensions = Some(62.56),
+          incomeFromProperty = Some(257.46),
+          incomeFromGainsOnLifePolicies = Some(52.34),
+          incomeFromSharesOptions = Some(24.75),
+          incomeFromOther = Some(134.56)
+        )
       )))
   )
 

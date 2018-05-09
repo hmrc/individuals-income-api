@@ -17,7 +17,9 @@
 package uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.LocalDate
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.SaUtr
+import JsonFormatters._
 
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 
@@ -47,7 +49,7 @@ case class SaEmploymentsIncome(utr: SaUtr, employmentIncome: Double)
 
 object SaAnnualEmployments {
   def apply(desSaIncome: DesSAIncome): SaAnnualEmployments = {
-    SaAnnualEmployments(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(sa => SaEmploymentsIncome(sa.utr, sa.incomeFromAllEmployments.getOrElse(0.0))))
+    SaAnnualEmployments(TaxYear.fromEndYear(desSaIncome.taxYear.toInt), desSaIncome.returnList.map(sa => SaEmploymentsIncome(sa.utr, sa.income.incomeFromAllEmployments.getOrElse(0.0))))
   }
 }
 
@@ -58,7 +60,7 @@ object SaAnnualSelfEmployments {
   def apply(desSAIncome: DesSAIncome): SaAnnualSelfEmployments = {
     SaAnnualSelfEmployments(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaSelfEmploymentsIncome(sa.utr, sa.profitFromSelfEmployment.getOrElse(0.0))))
+      desSAIncome.returnList.map(sa => SaSelfEmploymentsIncome(sa.utr, sa.income.profitFromSelfEmployment.getOrElse(0.0))))
   }
 }
 
@@ -69,7 +71,7 @@ object SaTaxReturnSummaries {
   def apply(desSAIncome: DesSAIncome): SaTaxReturnSummaries = {
     SaTaxReturnSummaries(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaTaxReturnSummary(sa.utr, sa.incomeFromSelfAssessment.getOrElse(0.0))))
+      desSAIncome.returnList.map(sa => SaTaxReturnSummary(sa.utr, sa.income.incomeFromSelfAssessment.getOrElse(0.0))))
   }
 }
 
@@ -80,7 +82,7 @@ object SaAnnualTrustIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualTrustIncomes = {
     SaAnnualTrustIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaAnnualTrustIncome(sa.utr, sa.incomeFromTrust.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa => SaAnnualTrustIncome(sa.utr, sa.income.incomeFromTrust.getOrElse(0.0)))
     )
   }
 }
@@ -92,7 +94,7 @@ object SaAnnualForeignIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualForeignIncomes = {
     SaAnnualForeignIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaAnnualForeignIncome(sa.utr, sa.incomeFromForeign4Sources.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa => SaAnnualForeignIncome(sa.utr, sa.income.incomeFromForeign4Sources.getOrElse(0.0)))
     )
   }
 }
@@ -104,7 +106,7 @@ object SaAnnualUkPropertiesIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualUkPropertiesIncomes = {
     SaAnnualUkPropertiesIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaAnnualUkPropertiesIncome(sa.utr, sa.incomeFromProperty.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa => SaAnnualUkPropertiesIncome(sa.utr, sa.income.incomeFromProperty.getOrElse(0.0)))
     )
   }
 }
@@ -116,7 +118,7 @@ object SaAnnualAdditionalInformations {
   def apply(desSAIncome: DesSAIncome): SaAnnualAdditionalInformations = {
     SaAnnualAdditionalInformations(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaAnnualAdditionalInformation(sa.utr, sa.incomeFromGainsOnLifePolicies.getOrElse(0.0), sa.incomeFromSharesOptions.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa => SaAnnualAdditionalInformation(sa.utr, sa.income.incomeFromGainsOnLifePolicies.getOrElse(0.0), sa.income.incomeFromSharesOptions.getOrElse(0.0)))
     )
   }
 }
@@ -128,7 +130,7 @@ object SaAnnualPartnershipIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualPartnershipIncomes = {
     SaAnnualPartnershipIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(sa => SaAnnualPartnershipIncome(sa.utr, sa.profitFromPartnerships.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa => SaAnnualPartnershipIncome(sa.utr, sa.income.profitFromPartnerships.getOrElse(0.0)))
     )
   }
 }
@@ -143,9 +145,9 @@ object SaAnnualInterestAndDividendIncomes {
       desSAIncome.returnList.map(sa =>
         SaAnnualInterestAndDividendIncome(
           sa.utr,
-          sa.incomeFromUkInterest.getOrElse(0.0),
-          sa.incomeFromForeignDividends.getOrElse(0.0),
-          sa.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)))
+          sa.income.incomeFromUkInterest.getOrElse(0.0),
+          sa.income.incomeFromForeignDividends.getOrElse(0.0),
+          sa.income.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)))
     )
   }
 }
@@ -160,7 +162,7 @@ object SaAnnualPensionAndStateBenefitIncomes {
       desSAIncome.returnList.map(sa =>
         SaAnnualPensionAndStateBenefitIncome(
           sa.utr,
-          sa.incomeFromPensions.getOrElse(0.0)))
+          sa.income.incomeFromPensions.getOrElse(0.0)))
     )
   }
 }
@@ -175,7 +177,55 @@ object SaAnnualOtherIncomes {
       desSAIncome.returnList.map(sa =>
         SaAnnualOtherIncome(
           sa.utr,
-          sa.incomeFromOther.getOrElse(0.0)))
+          sa.income.incomeFromOther.getOrElse(0.0)))
     )
   }
+}
+
+case class SaTradeDescriptions(taxYear: TaxYear, descriptions: Seq[SaTradeDescription])
+
+case class SaTradeDescription(utr: SaUtr, businessDescription: Option[String])
+
+object SaTradeDescription {
+  implicit val format: Format[SaTradeDescription] = Json.format[SaTradeDescription]
+}
+
+object SaTradeDescriptions {
+  def apply(desSAIncome: DesSAIncome): SaTradeDescriptions = {
+    val descriptions = desSAIncome.returnList.map { sa =>
+      SaTradeDescription(sa.utr, sa.businessDescription)
+    }.filter(_.businessDescription.isDefined)
+
+    SaTradeDescriptions(TaxYear.fromEndYear(desSAIncome.taxYear.toInt), descriptions)
+  }
+
+  implicit val format: Format[SaTradeDescriptions] = Json.format[SaTradeDescriptions]
+}
+
+case class SaTradingAddresses(taxYear: TaxYear, addresses: Seq[SaTradingAddress])
+
+case class SaTradingAddress(utr: SaUtr, businessAddress: Option[DesAddress])
+
+object SaTradingAddress {
+  implicit val format: Format[SaTradingAddress] = Json.format[SaTradingAddress]
+}
+
+object SaTradingAddresses {
+  def apply(desSAIncome: DesSAIncome): SaTradingAddresses = {
+    SaTradingAddresses(
+      TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
+      desSAIncome.returnList.map { sa =>
+        val address = for {
+          line1 <- sa.addressLine1
+          postcode <- sa.postalCode
+        } yield {
+          DesAddress(line1, postcode, sa.addressLine2, sa.addressLine3, sa.addressLine4)
+        }
+
+        SaTradingAddress(sa.utr, address)
+      }.filter(_.businessAddress.nonEmpty)
+    )
+  }
+
+  implicit val format: Format[SaTradingAddresses] = Json.format[SaTradingAddresses]
 }

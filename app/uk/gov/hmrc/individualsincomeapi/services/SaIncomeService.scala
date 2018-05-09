@@ -55,6 +55,10 @@ trait SaIncomeService {
   def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualAdditionalInformations]]
 
   def fetchSaOtherIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualOtherIncomes]]
+
+  def fetchSaTradeDescriptionByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTradeDescriptions]]
+
+  def fetchSaTradingAddressByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTradingAddresses]]
 }
 
 @Singleton
@@ -118,6 +122,14 @@ class SandboxSaIncomeService extends SaIncomeService {
 
   override def fetchSaOtherIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualOtherIncomes]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualOtherIncomes(desSAIncome))
+  }
+
+  override def fetchSaTradeDescriptionByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTradeDescriptions]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(SaTradeDescriptions.apply)
+  }
+
+  override def fetchSaTradingAddressByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTradingAddresses]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(SaTradingAddresses.apply)
   }
 }
 
@@ -192,5 +204,13 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
 
   override def fetchSaOtherIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualOtherIncomes]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualOtherIncomes(desSAIncome))
+  }
+
+  override def fetchSaTradeDescriptionByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTradeDescriptions]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(SaTradeDescriptions.apply)
+  }
+
+  override def fetchSaTradingAddressByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaTradingAddresses]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(SaTradingAddresses.apply)
   }
 }

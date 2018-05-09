@@ -54,20 +54,22 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         caseStartDate = LocalDate.parse("2011-06-06"),
         receivedDate = LocalDate.parse("2015-10-06"),
         utr = utr,
-        incomeFromAllEmployments = None,
-        profitFromSelfEmployment = None,
-        incomeFromSelfAssessment = Some(35000.55),
-        incomeFromTrust = Some(2600.55),
-        incomeFromForeign4Sources = Some(500.55),
-        profitFromPartnerships = Some(555.55),
-        incomeFromUkInterest = Some(43.56),
-        incomeFromForeignDividends = Some(72.57),
-        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32),
-        incomeFromProperty = Some(1276.67),
-        incomeFromPensions = Some(52.56),
-        incomeFromGainsOnLifePolicies = Some(45.20),
-        incomeFromSharesOptions = Some(12.45),
-        incomeFromOther = Some(134.56)
+        income = SAIncome(
+          incomeFromAllEmployments = None,
+          profitFromSelfEmployment = None,
+          incomeFromSelfAssessment = Some(35000.55),
+          incomeFromTrust = Some(2600.55),
+          incomeFromForeign4Sources = Some(500.55),
+          profitFromPartnerships = Some(555.55),
+          incomeFromUkInterest = Some(43.56),
+          incomeFromForeignDividends = Some(72.57),
+          incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32),
+          incomeFromProperty = Some(1276.67),
+          incomeFromPensions = Some(52.56),
+          incomeFromGainsOnLifePolicies = Some(45.20),
+          incomeFromSharesOptions = Some(12.45),
+          incomeFromOther = Some(134.56)
+        )
       ))),
     DesSAIncome(
       taxYear = "2016",
@@ -76,18 +78,20 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
           caseStartDate = LocalDate.parse("2011-06-06"),
           receivedDate = LocalDate.parse("2016-06-06"),
           utr = utr,
-          incomeFromAllEmployments = Some(1555.55),
-          profitFromSelfEmployment = Some(2500.55),
-          incomeFromSelfAssessment = None,
-          incomeFromTrust = None,
-          incomeFromForeign4Sources = None,
-          incomeFromUkInterest = None,
-          incomeFromForeignDividends = None,
-          incomeFromInterestNDividendsFromUKCompaniesNTrusts = None,
-          incomeFromProperty = None,
-          incomeFromPensions = None,
-          incomeFromGainsOnLifePolicies = None,
-          incomeFromSharesOptions = None
+          income = SAIncome(
+            incomeFromAllEmployments = Some(1555.55),
+            profitFromSelfEmployment = Some(2500.55),
+            incomeFromSelfAssessment = None,
+            incomeFromTrust = None,
+            incomeFromForeign4Sources = None,
+            incomeFromUkInterest = None,
+            incomeFromForeignDividends = None,
+            incomeFromInterestNDividendsFromUKCompaniesNTrusts = None,
+            incomeFromProperty = None,
+            incomeFromPensions = None,
+            incomeFromGainsOnLifePolicies = None,
+            incomeFromSharesOptions = None
+          )
         )))
   )
 

@@ -17,13 +17,14 @@
 package uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
-import play.api.libs.json.Json.{obj, toJson}
+import play.api.libs.json.Json
+import play.api.libs.json.Json._
 import play.api.mvc.hal._
-import play.api.mvc.{Action, RequestHeader}
+import play.api.mvc.{Action, AnyContent, RequestHeader}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment._
@@ -153,6 +154,26 @@ abstract class SaIncomeController(saIncomeService: SaIncomeService) extends Comm
         val taxReturnsJsObject = obj("taxReturns" -> toJson(saOtherIncome))
         val selfAssessmentJsObject = obj("selfAssessment" -> taxReturnsJsObject)
         Ok(state(selfAssessmentJsObject) ++ selfLink)
+      } recover recovery
+    }
+  }
+
+  def saTradeDescription(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async { implicit request =>
+    requiresPrivilegedAuthentication("read:individuals-income-sa-trade-description") {
+      saIncomeService.fetchSaTradeDescriptionByMatchId(matchId, taxYearInterval) map { tradeDescription =>
+        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trade-description?matchId=$matchId"))
+        val json = Json.obj("selfAssessment" -> Json.obj("taxReturns" -> Json.toJson(tradeDescription)))
+        Ok(state(json) ++ selfLink)
+      } recover recovery
+    }
+  }
+
+  def saTradingAddress(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async { implicit request =>
+    requiresPrivilegedAuthentication("read:individuals-income-sa-trading-address") {
+      saIncomeService.fetchSaTradingAddressByMatchId(matchId, taxYearInterval) map { tradingAddresses =>
+        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trading-address?matchId=$matchId"))
+        val json = Json.obj("selfAssessment" -> Json.obj("taxReturns" -> Json.toJson(tradingAddresses)))
+        Ok(state(json) ++ selfLink)
       } recover recovery
     }
   }
