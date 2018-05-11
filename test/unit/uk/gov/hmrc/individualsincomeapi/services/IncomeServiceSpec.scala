@@ -21,6 +21,7 @@ import java.util.UUID
 import org.joda.time.LocalDate.parse
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, refEq}
+import org.mockito.Mockito.{times, verify}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.domain.{EmpRef, Nino}
@@ -32,7 +33,9 @@ import uk.gov.hmrc.play.test.UnitSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
 import scala.concurrent.Future.failed
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+
+import scala.concurrent.Future
 
 class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
 
@@ -41,7 +44,7 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
 
     val mockMatchingConnector = mock[IndividualsMatchingApiConnector]
     val mockDesConnector = mock[DesConnector]
-    val liveIncomeService = new LiveIncomeService(mockMatchingConnector, mockDesConnector)
+    val liveIncomeService = new LiveIncomeService(mockMatchingConnector, mockDesConnector, 1)
     val sandboxIncomeService = new SandboxIncomeService()
   }
 
@@ -93,6 +96,20 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
       given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())).willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException]{await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))}
+    }
+
+    "retry once if DES returns a 503" in new Setup {
+      val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
+
+      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
+      given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any()))
+        .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
+        .willReturn(desEmployments)
+
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
+      result shouldBe List(Payment(10.5, parse("2016-02-28")))
+
+      verify(mockDesConnector, times(2)).fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())
     }
   }
 

@@ -17,10 +17,10 @@
 package uk.gov.hmrc.individualsincomeapi.services
 
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.{SaCacheId, SaIncomeCacheService}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
@@ -112,7 +112,7 @@ class SandboxSaIncomeService extends SaIncomeService {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualUkPropertiesIncomes(desSAIncome))
   }
 
-  override def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+  override def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualAdditionalInformations]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualAdditionalInformations(desSAIncome))
   }
 
@@ -122,11 +122,18 @@ class SandboxSaIncomeService extends SaIncomeService {
 }
 
 @Singleton
-class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector, desConnector: DesConnector, saIncomeCacheService: SaIncomeCacheService) extends SaIncomeService {
+class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
+                                    desConnector: DesConnector,
+                                    saIncomeCacheService: SaIncomeCacheService,
+                                    @Named("retryDelay") retryDelay: Int) extends SaIncomeService {
 
   private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
     val cacheId = SaCacheId(nino, taxYearInterval)
-    saIncomeCacheService.get[Seq[DesSAIncome]](cacheId, desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval))
+    saIncomeCacheService.get[Seq[DesSAIncome]](cacheId, withRetry(desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval)))
+  }
+
+  private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
+    case Upstream5xxResponse(_, 503, _) => Thread.sleep(retryDelay); body
   }
 
   private def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(implicit hc: HeaderCarrier): Future[Seq[T]] = {
@@ -147,7 +154,7 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualEmployments(desSAIncome))
   }
 
-  override def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+  override def fetchSelfEmploymentsIncomeByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualSelfEmployments]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualSelfEmployments(desSAIncome))
   }
 
@@ -179,7 +186,7 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualUkPropertiesIncomes(desSAIncome))
   }
 
-  override def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier) = {
+  override def fetchSaAdditionalInformationByMatchId(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[SaAnnualAdditionalInformations]] = {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualAdditionalInformations(desSAIncome))
   }
 

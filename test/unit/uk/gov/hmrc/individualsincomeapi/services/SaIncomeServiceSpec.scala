@@ -21,10 +21,11 @@ import java.util.UUID
 import org.joda.time.LocalDate
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, refEq}
+import org.mockito.Mockito.{verify, times}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.{CacheConfiguration, SaCacheId, SaIncomeCacheService, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
@@ -34,6 +35,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
@@ -97,7 +99,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     val configuration = mock[CacheConfiguration]
     val saIncomeCacheService = new SaIncomeCacheService(shortLivedCache, configuration)
     val sandboxSaIncomeService = new SandboxSaIncomeService()
-    val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService)
+    val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService, 1)
   }
 
   "LiveIncomeService.fetchSaFootprintByMatchId" should {
@@ -122,6 +124,24 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchSaFootprintByMatchId(liveMatchId, taxYearInterval))
       }
+    }
+
+    "retry the SA lookup once if DES returns a 503" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval))
+        .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
+        .willReturn(desIncomes)
+
+      await(liveSaIncomeService.fetchSaFootprintByMatchId(liveMatchId, taxYearInterval)) shouldBe SaFootprint(
+        registrations = Seq(SaRegistration(utr, LocalDate.parse("2011-06-06"))),
+        taxReturns = Seq(
+          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, LocalDate.parse("2016-06-06")))),
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, LocalDate.parse("2015-10-06"))))
+        )
+      )
+
+      verify(desConnector, times(2)).fetchSelfAssessmentIncome(any(), any())(any(), any())
     }
   }
 
