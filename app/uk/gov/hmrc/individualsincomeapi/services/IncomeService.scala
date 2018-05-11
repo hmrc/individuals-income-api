@@ -17,8 +17,8 @@
 package uk.gov.hmrc.individualsincomeapi.services
 
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
@@ -27,7 +27,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployments, MatchNotFoundExc
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.ExecutionContext.Implicits.global
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 
 trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
@@ -36,12 +36,18 @@ trait IncomeService {
 }
 
 @Singleton
-class LiveIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector, desConnector: DesConnector) extends IncomeService {
+class LiveIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
+                                  desConnector: DesConnector,
+                                  @Named("retryDelay") retryDelay: Int) extends IncomeService {
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      desEmployments <- desConnector.fetchEmployments(ninoMatch.nino, interval)
+      desEmployments <- withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
+  }
+
+  private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
+    case Upstream5xxResponse(_, 503, _) => Thread.sleep(retryDelay); body
   }
 }
 
