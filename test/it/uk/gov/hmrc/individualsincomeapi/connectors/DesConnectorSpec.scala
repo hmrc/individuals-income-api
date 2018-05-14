@@ -66,11 +66,13 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
 
   val desAddress = DesAddress(
     line1 = "Acme House",
-    postalCode = "AI22 9LL",
+    postalCode = Some("AI22 9LL"),
     line2 = Some("23 Acme Street"),
     line3 = Some("Richmond"),
     line4 = Some("Surrey"),
-    line5 = Some("UK"))
+    line5 = Some("UK")
+  )
+  
   val desPayments = Seq(
     DesPayment(
       paymentDate = LocalDate.parse("2016-11-28"),
