@@ -217,7 +217,7 @@ object SaTradingAddresses {
       desSAIncome.returnList.map { sa =>
         val address = for {
           line1 <- sa.addressLine1
-          postcode <- sa.postalCode
+          postcode = sa.postalCode
         } yield {
           DesAddress(line1, postcode, sa.addressLine2, sa.addressLine3, sa.addressLine4)
         }
