@@ -18,6 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
+import akka.stream.Materializer
 import org.joda.time.{Interval, LocalDate}
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, refEq}
@@ -28,6 +29,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.domain.EmpRef
+import uk.gov.hmrc.individualsincomeapi.actions.{LivePrivilegedAction, SandboxPrivilegedAction}
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.{LiveIncomeController, SandboxIncomeController}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.paymentJsonFormat
@@ -35,11 +37,12 @@ import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
 import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future.{failed, successful}
 
 class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
-  implicit lazy val materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
   val fromDateString = "2017-03-02"
@@ -48,11 +51,13 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeAppli
   val payments = Seq(Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
 
   trait Setup {
-    val mockIncomeService = mock[LiveIncomeService]
-    val mockAuthConnector = mock[ServiceAuthConnector]
+    val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
+    val mockAuthConnector: ServiceAuthConnector = mock[ServiceAuthConnector]
+    val testLivePrivilegedAction = new LivePrivilegedAction(mockAuthConnector)
+    val testSandboxPrivilegedAction = new SandboxPrivilegedAction()
 
-    val liveIncomeController = new LiveIncomeController(mockIncomeService, mockAuthConnector)
-    val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, mockAuthConnector)
+    val liveIncomeController = new LiveIncomeController(mockIncomeService, testLivePrivilegedAction)
+    val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, testSandboxPrivilegedAction)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }

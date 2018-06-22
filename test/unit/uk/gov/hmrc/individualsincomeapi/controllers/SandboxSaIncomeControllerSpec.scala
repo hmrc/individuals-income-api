@@ -18,28 +18,28 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
+import akka.stream.Materializer
 import org.joda.time.LocalDate
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, refEq}
-import org.mockito.Mockito.verifyZeroInteractions
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
+import uk.gov.hmrc.individualsincomeapi.actions.SandboxPrivilegedAction
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.SandboxSaIncomeService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future.{failed, successful}
 
 class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
-  implicit lazy val materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
   val utr = SaUtr("2432552644")
@@ -49,12 +49,10 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
   val requestParameters = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
-    val mockAuthConnector = mock[ServiceAuthConnector]
-    val mockSandboxSaIncomeService = mock[SandboxSaIncomeService]
+    val testAction: SandboxPrivilegedAction = new SandboxPrivilegedAction()
+    val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
 
-    val sandboxSaIncomeController = new SandboxSaIncomeController(mockSandboxSaIncomeService, mockAuthConnector)
-
-    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
+    val sandboxSaIncomeController = new SandboxSaIncomeController(mockSandboxSaIncomeService, testAction)
   }
 
   "SandboxSaIncomeController.saFootprint" should {
@@ -65,7 +63,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     )
 
     "return 200 (OK) with the registration information and self assessment returns for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saFootprint))
 
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -78,7 +76,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saFootprint))
 
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -88,23 +86,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saFootprint))
-
-      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
 
   }
@@ -114,7 +102,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 9000))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
       val result = await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -127,7 +115,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
       val result = await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -137,23 +125,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(employmentsIncomes))
-
-      val result = await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -162,7 +140,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val selfEmploymentIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500))))
 
     "return 200 (OK) with the self employments income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(selfEmploymentIncomes))
 
       val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -175,7 +153,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(selfEmploymentIncomes))
 
       val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -185,23 +163,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(selfEmploymentIncomes))
-
-      val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -210,7 +178,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(sandboxUtr, 20500))))
 
     "return 200 (OK) with the self tax return summaries for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(taxReturnSummaries))
 
       val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -223,7 +191,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(taxReturnSummaries))
 
       val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -233,23 +201,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(taxReturnSummaries))
-
-      val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -258,7 +216,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val saTrustIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(sandboxUtr, 20500))))
 
     "return 200 (OK) with the self tax return trusts for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saTrustIncomes))
 
       val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -271,7 +229,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saTrustIncomes))
 
       val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -281,23 +239,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saTrustIncomes))
-
-      val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -306,7 +254,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val saForeignIncomes = Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
     "return 200 (OK) with the self tax return foreign income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncomes))
 
       val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -319,7 +267,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncomes))
 
       val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -329,23 +277,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saForeignIncomes))
-
-      val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -354,7 +292,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val saPartnershipIncomes = Seq(SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 123.65))))
 
     "return 200 (OK) with the self tax return partnerships income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPartnershipIncomes))
 
       val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -367,7 +305,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPartnershipIncomes))
 
       val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -377,23 +315,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaPartnershipsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saPartnershipIncomes))
-
-      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -402,7 +330,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     val saPensionsAndStateBenefitsIncomes = Seq(SaAnnualPensionAndStateBenefitIncomes(TaxYear("2015-16"), Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))))
 
     "return 200 (OK) with the self tax return pensions and state benefits income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
       val result = await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -415,7 +343,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
       val result = await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -425,23 +353,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saPensionsAndStateBenefitsIncomes))
-
-      val result = await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -451,7 +369,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 10.56, 56.34, 52.56))))
 
     "return 200 (OK) with the self tax return interests and dividends income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saInterestsAndDividendsIncomes))
 
       val result = await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -464,7 +382,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saInterestsAndDividendsIncomes))
 
       val result = await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -474,23 +392,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saInterestsAndDividendsIncomes))
-
-      val result = await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -500,7 +408,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
     "return 200 (OK) with the UK properties income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncomes))
 
       val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -513,7 +421,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncomes))
 
       val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -523,23 +431,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saUkPropertiesIncomes))
-
-      val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -549,7 +447,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       Seq(SaAnnualAdditionalInformation(sandboxUtr, 76.67, 13.56))))
 
     "return 200 (OK) with the additional information income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaAdditionalInformationByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saAdditionalInformation))
 
       val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
@@ -562,7 +460,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaAdditionalInformationByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saAdditionalInformation))
 
       val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -572,23 +470,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaAdditionalInformationByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaAdditionalInformationByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saAdditionalInformation))
-
-      val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
@@ -598,7 +486,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       Seq(SaAnnualOtherIncome(sandboxUtr, 26.70))))
 
     "return 200 (OK) with the other income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(otherIncome))
 
       val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -611,7 +499,7 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(otherIncome))
 
       val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -621,23 +509,13 @@ class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
-    }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(otherIncome))
-
-      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
-
-      status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
     }
   }
 
