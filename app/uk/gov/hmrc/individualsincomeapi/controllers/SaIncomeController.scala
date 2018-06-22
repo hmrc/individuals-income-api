@@ -160,21 +160,11 @@ sealed trait SaIncomeController extends CommonController {
     }
   }
 
-  def saTradeDescription(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] ={
-    privilegedAction("read:individuals-income-sa-trade-description") { implicit request =>
-      saIncomeService.fetchSaTradeDescription(matchId, taxYearInterval) map { tradeDescription =>
-        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trade-description?matchId=$matchId"))
-        val json = Json.obj("selfAssessment" -> Json.obj("taxReturns" -> Json.toJson(tradeDescription)))
-        Ok(state(json) ++ selfLink)
-      }
-    }
-  }
-
-  def saTradingAddress(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = {
-    privilegedAction("read:individuals-income-sa-trading-address") { implicit request =>
-      saIncomeService.fetchSaTradingAddress(matchId, taxYearInterval) map { tradingAddresses =>
-        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trading-address?matchId=$matchId"))
-        val json = Json.obj("selfAssessment" -> Json.obj("taxReturns" -> Json.toJson(tradingAddresses)))
+  def saIncomeSource(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = {
+    privilegedAction("read:individuals-income-sa-source") { implicit request =>
+      saIncomeService.fetchSaIncomeSources(matchId, taxYearInterval) map { sources =>
+        val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/sources?matchId=$matchId"))
+        val json = Json.obj("selfAssessment" -> Json.obj("taxReturns" -> Json.toJson(sources)))
         Ok(state(json) ++ selfLink)
       }
     }

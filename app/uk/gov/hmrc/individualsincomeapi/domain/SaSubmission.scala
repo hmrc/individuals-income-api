@@ -182,50 +182,29 @@ object SaAnnualOtherIncomes {
   }
 }
 
-case class SaTradeDescriptions(taxYear: TaxYear, descriptions: Seq[SaTradeDescription])
+case class SaIncomeSources(taxYear: TaxYear, sources: Seq[SaIncomeSource])
 
-case class SaTradeDescription(utr: SaUtr, businessDescription: Option[String])
-
-object SaTradeDescription {
-  implicit val format: Format[SaTradeDescription] = Json.format[SaTradeDescription]
-}
-
-object SaTradeDescriptions {
-  def apply(desSAIncome: DesSAIncome): SaTradeDescriptions = {
-    val descriptions = desSAIncome.returnList.map { sa =>
-      SaTradeDescription(sa.utr, sa.businessDescription)
-    }.filter(_.businessDescription.isDefined)
-
-    SaTradeDescriptions(TaxYear.fromEndYear(desSAIncome.taxYear.toInt), descriptions)
-  }
-
-  implicit val format: Format[SaTradeDescriptions] = Json.format[SaTradeDescriptions]
-}
-
-case class SaTradingAddresses(taxYear: TaxYear, addresses: Seq[SaTradingAddress])
-
-case class SaTradingAddress(utr: SaUtr, businessAddress: Option[DesAddress])
-
-object SaTradingAddress {
-  implicit val format: Format[SaTradingAddress] = Json.format[SaTradingAddress]
-}
-
-object SaTradingAddresses {
-  def apply(desSAIncome: DesSAIncome): SaTradingAddresses = {
-    SaTradingAddresses(
+object SaIncomeSources {
+  def apply(desSAIncome: DesSAIncome): SaIncomeSources = {
+    SaIncomeSources(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map { sa =>
-        val address = for {
-          line1 <- sa.addressLine1
-          postcode = sa.postalCode
-        } yield {
-          DesAddress(line1, postcode, sa.addressLine2, sa.addressLine3, sa.addressLine4)
-        }
-
-        SaTradingAddress(sa.utr, address)
-      }.filter(_.businessAddress.nonEmpty)
+        SaIncomeSource(
+          sa.utr,
+          sa.businessDescription,
+          sa.addressLine1.map { l1 =>
+            DesAddress(l1, sa.addressLine2, sa.addressLine3, sa.addressLine4, postcode = sa.postalCode)
+          }
+        )
+      }.filter(s => s.businessAddress.isDefined || s.businessDescription.isDefined)
     )
   }
 
-  implicit val format: Format[SaTradingAddresses] = Json.format[SaTradingAddresses]
+  implicit val format: Format[SaIncomeSources] = Json.format[SaIncomeSources]
+}
+
+case class SaIncomeSource(utr: SaUtr, businessDescription: Option[String], businessAddress: Option[DesAddress])
+
+object SaIncomeSource {
+  implicit val format: Format[SaIncomeSource] = Json.format[SaIncomeSource]
 }

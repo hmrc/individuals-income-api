@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "SA additional information",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI to this resource",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of self-assessments tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2013-14"
+              },
+              "sources": {
+                "type": "array",
+                "description": "description and address for each income source, if known",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "The 10 digit self-assessment unique tax reference",
+                      "example": "2432552635"
+                    },
+                    "businessDescription": {
+                      "type": "string"
+                    },
+                    "businessAddress": {
+                      "type": "object",
+                      "properties": {
+                        "line1": {
+                          "type": "string"
+                        },
+                        "line2": {
+                          "type": "string"
+                        },
+                        "line3": {
+                          "type": "string"
+                        },
+                        "line4": {
+                          "type": "string"
+                        },
+                        "line5": {
+                          "type": "string"
+                        },
+                        "postcode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "line1"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "utr"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "sources"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

@@ -90,14 +90,9 @@ trait SaIncomeService {
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualOtherIncomes(desSAIncome))
   }
 
-  def fetchSaTradeDescription(matchId: UUID, taxYearInterval: TaxYearInterval)
-                             (implicit hc: HeaderCarrier): Future[Seq[SaTradeDescriptions]] = {
-    fetchSaIncomes(matchId, taxYearInterval)(SaTradeDescriptions.apply)
-  }
-
-  def fetchSaTradingAddress(matchId: UUID, taxYearInterval: TaxYearInterval)
-                           (implicit hc: HeaderCarrier): Future[Seq[SaTradingAddresses]] = {
-    fetchSaIncomes(matchId, taxYearInterval)(SaTradingAddresses.apply)
+  def fetchSaIncomeSources(matchId: UUID, taxYearInterval: TaxYearInterval)
+                          (implicit hc: HeaderCarrier): Future[Seq[SaIncomeSources]] = {
+    fetchSaIncomes(matchId, taxYearInterval)(SaIncomeSources.apply)
   }
 
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)

@@ -22,11 +22,11 @@ import uk.gov.hmrc.domain.EmpRef
 case class DesEmployments(employments: Seq[DesEmployment])
 
 case class DesAddress(line1: String,
-                      postalCode: Option[String] = None,
                       line2: Option[String] = None,
                       line3: Option[String] = None,
                       line4: Option[String] = None,
-                      line5: Option[String] = None)
+                      line5: Option[String] = None,
+                      postcode: Option[String] = None)
 
 case class DesPayment(paymentDate: LocalDate,
                       totalPayInPeriod: Double,
