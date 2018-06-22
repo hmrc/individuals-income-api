@@ -18,6 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
+import akka.stream.Materializer
 import org.scalatest.concurrent.ScalaFutures
 import org.mockito.Matchers.{any, refEq}
 import org.mockito.BDDMockito.given
@@ -36,9 +37,11 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import scala.concurrent.Future.successful
 import scala.concurrent.Future.failed
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.actions.SandboxPrivilegedAction
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 class RootControllerSpec extends UnitSpec with MockitoSugar with ScalaFutures with WithFakeApplication {
-  implicit lazy val materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup {
     val fakeRequest = FakeRequest()
@@ -47,8 +50,9 @@ class RootControllerSpec extends UnitSpec with MockitoSugar with ScalaFutures wi
     val matchedCitizen = MatchedCitizen(matchId, nino)
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockAuthConnector = mock[ServiceAuthConnector]
+    val testPrivilegedAction = new SandboxPrivilegedAction()
 
-    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, mockAuthConnector)
+    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, testPrivilegedAction)
   }
 
   "sandbox match citizen function" should {

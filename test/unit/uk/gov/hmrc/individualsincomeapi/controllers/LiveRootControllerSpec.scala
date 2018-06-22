@@ -32,10 +32,12 @@ import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.actions.LivePrivilegedAction
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future.{failed, successful}
 
@@ -44,7 +46,8 @@ class LiveRootControllerSpec extends PlaySpec with Results with MockitoSugar {
   trait Setup {
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
     val mockAuthConnector = mock[ServiceAuthConnector]
-    val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector)
+    val testPrivilegedAction = new LivePrivilegedAction(mockAuthConnector)
+    val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, testPrivilegedAction)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
     implicit val hc = HeaderCarrier()

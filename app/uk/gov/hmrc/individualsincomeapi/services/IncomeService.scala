@@ -56,7 +56,7 @@ class SandboxIncomeService extends IncomeService {
 
   def paymentFilter(interval: Interval)(payment: Payment): Boolean = {
     val paymentDate = payment.paymentDate.toDateTimeAtStartOfDay
-    interval.contains(paymentDate) || interval.getEnd().isEqual(paymentDate)
+    interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
   }
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]] = {

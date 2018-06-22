@@ -17,41 +17,38 @@
 package uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
-import play.api.mvc.hal._
 import play.api.libs.json.Json.{obj, toJson}
-import play.api.mvc.Action
-import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment._
-import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, LiveIncomeService, SandboxIncomeService}
+import play.api.mvc.hal._
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.individualsincomeapi.actions.{LivePrivilegedAction, PrivilegedAction, SandboxPrivilegedAction}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, LiveIncomeService, SandboxIncomeService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(incomeService: IncomeService) extends CommonController with PrivilegedAuthentication {
+trait IncomeController extends CommonController {
+  val incomeService: IncomeService
+  val privilegedAction: PrivilegedAction
 
-  def income(matchId: UUID, interval: Interval) = Action.async { implicit request =>
-    requiresPrivilegedAuthentication("read:individuals-income-paye") {
-      incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
-        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
-        val incomeJsObject = obj("income" -> toJson(income))
-        val payeJsObject = obj("paye" -> incomeJsObject)
-        Ok(state(payeJsObject) ++ halLink)
-      } recover recovery
+  def income(matchId: UUID, interval: Interval): Action[AnyContent] = privilegedAction("read:individuals-income-paye") { implicit request =>
+    incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
+      val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+      val incomeJsObject = obj("income" -> toJson(income))
+      val payeJsObject = obj("paye" -> incomeJsObject)
+      Ok(state(payeJsObject) ++ halLink)
     }
   }
 }
 
 @Singleton
-class LiveIncomeController @Inject()(liveIncomeService: LiveIncomeService, val authConnector: ServiceAuthConnector) extends IncomeController(liveIncomeService) {
-  override val environment = PRODUCTION
-}
+class LiveIncomeController @Inject()(val incomeService: LiveIncomeService,
+                                     val privilegedAction: LivePrivilegedAction) extends IncomeController
 
 @Singleton
-class SandboxIncomeController @Inject()(sandboxIncomeService: SandboxIncomeService, val authConnector: ServiceAuthConnector) extends IncomeController(sandboxIncomeService) {
-  override val environment = SANDBOX
-}
+class SandboxIncomeController @Inject()(val incomeService: SandboxIncomeService,
+                                        val privilegedAction: SandboxPrivilegedAction) extends IncomeController

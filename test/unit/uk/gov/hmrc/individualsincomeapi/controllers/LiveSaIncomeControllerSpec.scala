@@ -18,6 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
+import akka.stream.Materializer
 import org.joda.time.LocalDate
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, refEq}
@@ -29,6 +30,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.individualsincomeapi.actions.LivePrivilegedAction
 import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
@@ -36,11 +38,12 @@ import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.LiveSaIncomeService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future.{failed, successful}
 
 class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
-  implicit lazy val materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
   val utr = SaUtr("2432552644")
@@ -50,10 +53,11 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
   val requestParameters = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
-    val mockAuthConnector = mock[ServiceAuthConnector]
-    val mockLiveSaIncomeService = mock[LiveSaIncomeService]
+    val mockAuthConnector: ServiceAuthConnector = mock[ServiceAuthConnector]
+    val testPrivilegedAction: LivePrivilegedAction = new LivePrivilegedAction(mockAuthConnector)
+    val mockLiveSaIncomeService: LiveSaIncomeService = mock[LiveSaIncomeService]
 
-    val liveSaIncomeController = new LiveSaIncomeController(mockLiveSaIncomeService, mockAuthConnector)
+    val liveSaIncomeController = new LiveSaIncomeController(mockLiveSaIncomeService, testPrivilegedAction)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
@@ -65,7 +69,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, LocalDate.parse("2016-06-01"))))))
 
     "return 200 (OK) with the self assessment footprint for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saFootprint))
 
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -78,7 +82,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saFootprint))
 
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -88,7 +92,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaFootprintByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -111,7 +115,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(utr, 30500.55))))
 
     "return 200 (OK) when there are sa tax returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saReturnSummaries))
 
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -124,7 +128,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saReturnSummaries))
 
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -134,7 +138,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaReturnsSummaryByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -157,7 +161,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 9000))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
       val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -170,7 +174,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
       val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -180,7 +184,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -203,7 +207,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(utr, 9000.55))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
       val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -216,7 +220,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
       val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -226,7 +230,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -249,7 +253,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val saIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(utr, 9000.55))))
 
     "return 200 (OK) with the trusts income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
       val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -262,7 +266,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
       val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -272,7 +276,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaTrustsIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -295,7 +299,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val saForeignIncome = Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
     "return 200 (OK) with the foreign income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncome))
 
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -308,7 +312,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncome))
 
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -318,7 +322,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaForeignIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -341,7 +345,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val saUkPropertiesIncome = Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
     "return 200 (OK) with the uk properties income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncome))
 
       val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -354,7 +358,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncome))
 
       val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -364,7 +368,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaUkPropertiesIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -387,7 +391,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     val saOtherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(sandboxUtr, 134.56))))
 
     "return 200 (OK) with the other income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saOtherIncome))
 
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -400,7 +404,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saOtherIncome))
 
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -410,7 +414,7 @@ class LiveSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaOtherIncomeByMatchId(refEq(matchId), refEq(taxYearInterval))(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))

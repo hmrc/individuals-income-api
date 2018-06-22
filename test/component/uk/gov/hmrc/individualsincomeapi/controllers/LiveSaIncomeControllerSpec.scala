@@ -758,5 +758,5 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  private def headers() = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
+  private def headers: Map[String, String] = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
 }

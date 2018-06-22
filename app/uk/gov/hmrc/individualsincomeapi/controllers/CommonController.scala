@@ -17,16 +17,9 @@
 package uk.gov.hmrc.individualsincomeapi.controllers
 
 import org.joda.time.DateTime
-import play.api.mvc.{Request, Result}
-import uk.gov.hmrc.auth.core.{AuthorisedFunctions, Enrolment}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
-import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, MatchNotFoundException, TaxYear}
+import play.api.mvc.Request
 import uk.gov.hmrc.individualsincomeapi.util.Dates._
 import uk.gov.hmrc.play.microservice.controller.BaseController
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 trait CommonController extends BaseController {
 
@@ -44,25 +37,4 @@ trait CommonController extends BaseController {
       case _ => url
     }
   }
-
-  private[controllers] def recovery: PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException => ErrorNotFound.toHttpResponse
-    case e: IllegalArgumentException => ErrorInvalidRequest(e.getMessage).toHttpResponse
-  }
-
-}
-
-trait PrivilegedAuthentication extends AuthorisedFunctions {
-
-  val environment: String
-
-  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
-    if (environment == SANDBOX) body
-    else authorised(Enrolment(scope))(body)
-  }
-}
-
-object Environment {
-  val SANDBOX = "SANDBOX"
-  val PRODUCTION = "PRODUCTION"
 }
