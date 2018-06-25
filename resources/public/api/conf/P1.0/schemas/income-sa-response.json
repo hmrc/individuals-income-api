@@ -188,8 +188,7 @@
               }
             },
             "required": [
-              "utr",
-              "registrationDate"
+              "utr"
             ]
           }
         },
@@ -222,8 +221,7 @@
                     }
                   },
                   "required": [
-                    "utr",
-                    "receivedDate"
+                    "utr"
                   ]
                 }
               }

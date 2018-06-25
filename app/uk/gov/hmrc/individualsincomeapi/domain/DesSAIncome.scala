@@ -26,8 +26,8 @@ case class DesSAIncome(taxYear: String,
   def isIn(taxYearInterval: TaxYearInterval) = taxYear.toInt >= taxYearInterval.fromTaxYear.endYr && taxYear.toInt <= taxYearInterval.toTaxYear.endYr
 }
 
-case class DesSAReturn(caseStartDate: LocalDate,
-                       receivedDate: LocalDate,
+case class DesSAReturn(caseStartDate: Option[LocalDate],
+                       receivedDate: Option[LocalDate],
                        utr: SaUtr,
                        income: SAIncome = SAIncome(),
                        businessDescription: Option[String] = None,
@@ -55,8 +55,8 @@ object DesSAReturn {
     }
 
     override def reads(json: JsValue): JsResult[DesSAReturn] = for {
-      caseStartDate <- (json \ "caseStartDate").validate[LocalDate]
-      receivedDate <- (json \ "receivedDate").validate[LocalDate]
+      caseStartDate <- (json \ "caseStartDate").validateOpt[LocalDate]
+      receivedDate <- (json \ "receivedDate").validateOpt[LocalDate]
       utr <- (json \ "utr").validate[SaUtr]
       income <- json.validate[SAIncome]
       businessDescription <- (json \ "businessDescription").validateOpt[String]

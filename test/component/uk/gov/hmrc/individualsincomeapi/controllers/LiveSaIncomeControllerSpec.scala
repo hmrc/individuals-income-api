@@ -37,8 +37,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     DesSAIncome(
       taxYear = "2014",
       returnList = Seq(DesSAReturn(
-        caseStartDate = LocalDate.parse("2011-01-15"),
-        receivedDate = LocalDate.parse("2014-11-05"),
+        caseStartDate = Some(LocalDate.parse("2011-01-15")),
+        receivedDate = Some(LocalDate.parse("2014-11-05")),
         utr = SaUtr("2432552644"),
         income = SAIncome(
           incomeFromAllEmployments = Some(1545.55),

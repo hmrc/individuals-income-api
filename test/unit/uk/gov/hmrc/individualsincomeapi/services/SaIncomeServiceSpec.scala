@@ -51,8 +51,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       taxYear = "2015",
       returnList = Seq(
       DesSAReturn(
-        caseStartDate = LocalDate.parse("2011-06-06"),
-        receivedDate = LocalDate.parse("2015-10-06"),
+        caseStartDate = Some(LocalDate.parse("2011-06-06")),
+        receivedDate = Some(LocalDate.parse("2015-10-06")),
         utr = utr,
         income = SAIncome(
           incomeFromAllEmployments = None,
@@ -75,8 +75,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       taxYear = "2016",
       returnList = Seq(
         DesSAReturn(
-          caseStartDate = LocalDate.parse("2011-06-06"),
-          receivedDate = LocalDate.parse("2016-06-06"),
+          caseStartDate = Some(LocalDate.parse("2011-06-06")),
+          receivedDate = Some(LocalDate.parse("2016-06-06")),
           utr = utr,
           income = SAIncome(
             incomeFromAllEmployments = Some(1555.55),
@@ -115,10 +115,10 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval))
 
       result shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(utr, LocalDate.parse("2011-06-06"))),
+        registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2011-06-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, LocalDate.parse("2016-06-06")))),
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, LocalDate.parse("2015-10-06"))))
+          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-06"))))),
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, Some(LocalDate.parse("2015-10-06")))))
       ))
     }
 
@@ -138,10 +138,10 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         .willReturn(desIncomes)
 
       await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval)) shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(utr, LocalDate.parse("2011-06-06"))),
+        registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2011-06-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, LocalDate.parse("2016-06-06")))),
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, LocalDate.parse("2015-10-06"))))
+          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-06"))))),
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, Some(LocalDate.parse("2015-10-06")))))
         )
       )
 
@@ -154,17 +154,17 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       val result = await(sandboxSaIncomeService.fetchSaFootprint(sandboxMatchId, taxYearInterval))
 
       result shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(SaUtr("2432552635"), LocalDate.parse("2012-01-06"))),
+        registrations = Seq(SaRegistration(SaUtr("2432552635"), Some(LocalDate.parse("2012-01-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(SaUtr("2432552635"), LocalDate.parse("2015-10-06")))),
-          SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), LocalDate.parse("2014-06-06"))))
+          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2015-10-06"))))),
+          SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2014-06-06")))))
       ))
     }
 
     "filter out returns not in the requested period" in new Setup {
       val result = await(sandboxSaIncomeService.fetchSaFootprint(sandboxMatchId, taxYearInterval.copy(toTaxYear = TaxYear("2013-14"))))
 
-      result.taxReturns shouldBe Seq(SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), LocalDate.parse("2014-06-06")))))
+      result.taxReturns shouldBe Seq(SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2014-06-06"))))))
     }
 
     "return an empty footprint when no annual return exists for the requested period" in new Setup {
