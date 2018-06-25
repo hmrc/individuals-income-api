@@ -1,6 +1,6 @@
 # individuals-income-api
 
-[![Build Status](https://travis-ci.org/hmrc/individuals-income-api.svg)](https://travis-ci.org/hmrc/individuals-income-api) [ ![Download](https://api.bintray.com/packages/hmrc/releases/individuals-income-api/images/download.svg) ](https://bintray.com/hmrc/releases/individuals-income-api/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/hmrc/releases/individuals-income-api/images/download.svg) ](https://bintray.com/hmrc/releases/individuals-income-api/_latestVersion)
 
 This API provides individual's income information (PAYE only) from HM Revenue and Customs (HMRC). Income data is only available for tax years commencing 2013-2014.
 
