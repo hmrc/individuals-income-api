@@ -17,6 +17,8 @@
 package uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.LocalDate
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 import uk.gov.hmrc.domain.EmpRef
 
 case class DesEmployments(employments: Seq[DesEmployment])
@@ -27,6 +29,19 @@ case class DesAddress(line1: String,
                       line4: Option[String] = None,
                       line5: Option[String] = None,
                       postcode: Option[String] = None)
+
+object DesAddress {
+  implicit val desReads: Reads[DesAddress] = (
+    (__ \ "line1").read[String] and
+      (__ \ "line2").readNullable[String] and
+      (__ \ "line3").readNullable[String] and
+      (__ \ "line4").readNullable[String] and
+      (__ \ "line5").readNullable[String] and
+      (__ \ "postalCode").readNullable[String]
+  )(DesAddress.apply _)
+
+  implicit val apiWrites: Writes[DesAddress] = Json.writes[DesAddress]
+}
 
 case class DesPayment(paymentDate: LocalDate,
                       totalPayInPeriod: Double,

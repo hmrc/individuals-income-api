@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.services
 import java.util.UUID
 
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.{sandboxMatchId, sandboxNino}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen, SandboxIncomeData}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
