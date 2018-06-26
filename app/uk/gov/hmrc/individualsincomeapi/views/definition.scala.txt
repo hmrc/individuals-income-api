@@ -73,6 +73,11 @@
       "description": "Access self-assessment other income information for all individuals"
     },
     {
+      "key": "read:individuals-income-sa-source",
+      "name": "access self-assessment income source information for all individuals",
+      "description": "Access self-assessment income source information for all individuals"
+    },
+    {
       "key":"read:individual-income",
       "name":"access income information",
       "description":"Access personal and employment-based income information",
