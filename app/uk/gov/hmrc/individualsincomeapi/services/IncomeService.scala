@@ -20,14 +20,16 @@ import java.util.UUID
 
 import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.individualsincomeapi.cache.{CacheId, PayeIncomeCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployments, MatchNotFoundException, Payment}
+import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
-import scala.concurrent.ExecutionContext.Implicits.global
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 
 trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
@@ -38,12 +40,21 @@ trait IncomeService {
 @Singleton
 class LiveIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
                                   desConnector: DesConnector,
-                                  @Named("retryDelay") retryDelay: Int) extends IncomeService {
+                                  @Named("retryDelay") retryDelay: Int,
+                                  cache: PayeIncomeCache) extends IncomeService {
+
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]] = {
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      desEmployments <- withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
+      desEmployments <- cache.get(
+        cacheId(matchId, interval),
+        withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
+      )
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
+  }
+
+  private def cacheId(matchId: UUID, interval: Interval) = new CacheId {
+    override val id: String = s"$matchId-${interval.getStart}-${interval.getEnd}"
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {

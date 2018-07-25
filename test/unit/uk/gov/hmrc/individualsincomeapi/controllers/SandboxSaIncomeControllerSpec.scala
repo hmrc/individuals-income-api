@@ -21,7 +21,7 @@ import java.util.UUID
 import akka.stream.Materializer
 import org.joda.time.LocalDate
 import org.mockito.BDDMockito.given
-import org.mockito.Matchers.{any, refEq}
+import org.mockito.ArgumentMatchers.{any, refEq}
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}

@@ -104,6 +104,7 @@ class IndividualIncomeSpec extends BaseSpec {
     }
 
     scenario("Individual has no employment income") {
+      val toDate = "2017-02-01"
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)

@@ -17,26 +17,34 @@
 package uk.gov.hmrc.individualsincomeapi.cache
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class CacheService(shortLivedCache: ShortLivedCache, configuration: CacheConfiguration) {
+trait CacheService {
 
+  val shortLivedCache: CachingClient
+  val conf: ServicesConfig
   val key: String
 
-  def get[T](cacheId: CacheId, fallbackFunction: => Future[T])(implicit formats: Format[T]): Future[T] = {
+  lazy val cacheEnabled: Boolean = conf.getConfBool(
+    "cacheable.short-lived-cache.enabled",
+    throw new RuntimeException("cacheable.short-lived-cache.enabled")
+  )
 
-    if (configuration.enabled) shortLivedCache.fetch[T](cacheId.id, key) flatMap {
+  def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
+
+    if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)
       case None =>
         fallbackFunction map { result =>
-          shortLivedCache.cache[T](cacheId.id, key, result)
+          shortLivedCache.cache(cacheId.id, key, result)
           result
         }
     } else {
@@ -46,16 +54,19 @@ abstract class CacheService(shortLivedCache: ShortLivedCache, configuration: Cac
 }
 
 @Singleton
-class SaIncomeCacheService @Inject()(shortLivedCache: ShortLivedCache, configuration: CacheConfiguration)
-  extends CacheService(shortLivedCache, configuration) {
+class SaIncomeCacheService @Inject()(val shortLivedCache: CachingClient, val conf: ServicesConfig) extends CacheService {
+  val key = "sa-income"
+}
 
-  override val key = "sa-income"
+@Singleton
+class PayeIncomeCache @Inject()(val shortLivedCache: CachingClient, val conf: ServicesConfig) extends CacheService {
+  val key: String = "paye-income"
 }
 
 trait CacheId {
   val id: String
 
-  override def toString = id
+  override def toString: String = id
 }
 
 case class SaCacheId(nino: Nino, interval: TaxYearInterval) extends CacheId {

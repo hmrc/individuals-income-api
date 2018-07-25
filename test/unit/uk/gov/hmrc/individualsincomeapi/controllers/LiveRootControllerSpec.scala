@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 import java.util.UUID
 
 import org.mockito.BDDMockito.given
-import org.mockito.Matchers.{any, refEq}
+import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.Mockito.{verifyZeroInteractions, when}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
