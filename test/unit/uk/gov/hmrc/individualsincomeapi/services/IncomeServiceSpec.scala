@@ -18,13 +18,17 @@ package unit.uk.gov.hmrc.individualsincomeapi.services
 
 import java.util.UUID
 
+import org.joda.time.LocalDate
 import org.joda.time.LocalDate.parse
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
-import org.mockito.Matchers.{any, refEq}
-import org.mockito.Mockito.{times, verify}
+import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
+import play.api.libs.json.Format
 import uk.gov.hmrc.domain.{EmpRef, Nino}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.individualsincomeapi.cache.{CacheId, PayeIncomeCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData._
 import uk.gov.hmrc.individualsincomeapi.domain._
@@ -32,19 +36,24 @@ import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxInco
 import uk.gov.hmrc.play.test.UnitSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
-import scala.concurrent.Future.failed
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-
 import scala.concurrent.Future
+import scala.concurrent.Future.failed
 
 class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
 
   trait Setup {
-    implicit val hc = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
+    // can't mock function with by-value arguments
+    val stubCache = new PayeIncomeCache(null, null) {
+      override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier) = {
+        fallbackFunction
+      }
+    }
 
     val mockMatchingConnector = mock[IndividualsMatchingApiConnector]
     val mockDesConnector = mock[DesConnector]
-    val liveIncomeService = new LiveIncomeService(mockMatchingConnector, mockDesConnector, 1)
+    val liveIncomeService = new LiveIncomeService(mockMatchingConnector, mockDesConnector, 1, stubCache)
     val sandboxIncomeService = new SandboxIncomeService()
   }
 
@@ -56,7 +65,7 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())).willReturn(desEmployments)
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(desEmployments)
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
 
@@ -67,7 +76,7 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50), DesPayment(parse("2016-04-28"), 10.50), DesPayment(parse("2016-03-28"), 10.50))))
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())).willReturn(desEmployments)
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(desEmployments)
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
 
@@ -76,7 +85,7 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
 
     "Return empty list when there are no payments for a given period" in new Setup {
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())).willReturn(Seq.empty)
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(Seq.empty)
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
 
@@ -93,23 +102,45 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
     "fail when DES returns an error" in new Setup {
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())).willReturn(failed(new RuntimeException("test error")))
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(failed(new RuntimeException("test error")))
 
-      intercept[RuntimeException]{await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))}
+      intercept[RuntimeException](await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc)))
     }
 
     "retry once if DES returns a 503" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any()))
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(desEmployments)
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
       result shouldBe List(Payment(10.5, parse("2016-02-28")))
 
-      verify(mockDesConnector, times(2)).fetchEmployments(refEq(matchedCitizen.nino), refEq(interval))(any(), any())
+      verify(mockDesConnector, times(2)).fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())
+    }
+
+    "return a cached value if it exists" in {
+      val employments = Seq(DesEmployment(Seq(DesPayment(new LocalDate(2016, 1, 1), 1))))
+      
+      val mockMatching = mock[IndividualsMatchingApiConnector]
+      given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(matchedCitizen)
+      
+      val mockDes = mock[DesConnector]
+      val stubCache = new PayeIncomeCache(null, null) {
+        override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])
+                                   (implicit hc: HeaderCarrier): Future[T] = {
+          Future.successful(employments.asInstanceOf[T])
+        }
+      }
+      
+      val testService = new LiveIncomeService(mockMatching, mockDes, 1, stubCache)
+      
+      val res = await(testService.fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"))(HeaderCarrier()))
+      res shouldBe employments.flatMap(DesEmployments.toPayments)
+      
+      verify(mockDes, never).fetchEmployments(any(), any())(any(), any())
     }
   }
 

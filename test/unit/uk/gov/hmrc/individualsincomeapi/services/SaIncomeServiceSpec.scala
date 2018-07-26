@@ -19,24 +19,24 @@ package unit.uk.gov.hmrc.individualsincomeapi.services
 import java.util.UUID
 
 import org.joda.time.LocalDate
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
-import org.mockito.Matchers.{any, refEq}
-import org.mockito.Mockito.{verify, times}
+import org.mockito.Mockito.{times, verify}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.individualsincomeapi.cache.{CacheConfiguration, SaCacheId, SaIncomeCacheService, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.cache.{CachingClient, SaCacheId, SaIncomeCacheService}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.{LiveSaIncomeService, SandboxSaIncomeService}
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.Future.{failed, successful}
 
 class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
 
@@ -99,9 +99,9 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     implicit val hc = HeaderCarrier()
     val matchingConnector = mock[IndividualsMatchingApiConnector]
     val desConnector = mock[DesConnector]
-    val shortLivedCache = mock[ShortLivedCache]
-    val configuration = mock[CacheConfiguration]
-    val saIncomeCacheService = new SaIncomeCacheService(shortLivedCache, configuration)
+    val mockCache = mock[CachingClient]
+    val mockConfig = mock[ServicesConfig]
+    val saIncomeCacheService = new SaIncomeCacheService(mockCache, mockConfig)
     val sandboxSaIncomeService = new SandboxSaIncomeService()
     val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService, 1)
   }
@@ -109,7 +109,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaFootprintByMatchId" should {
     "return the saFootprint with saReturns sorted by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval))
@@ -123,7 +124,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval))
@@ -132,7 +133,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
 
     "retry the SA lookup once if DES returns a 503" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval))
         .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(desIncomes)
@@ -183,7 +185,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchEmploymentsIncomeByMatchId" should {
     "return the employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchEmploymentsIncome(liveMatchId, taxYearInterval))
@@ -195,7 +198,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchEmploymentsIncome(liveMatchId, taxYearInterval))
@@ -237,7 +240,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSelfEmploymentsIncomeByMatchId" should {
     "return the self employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchSelfEmploymentsIncome(liveMatchId, taxYearInterval))
@@ -249,7 +253,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchSelfEmploymentsIncome(liveMatchId, taxYearInterval))
@@ -282,7 +286,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaReturnsSummaryByMatchId" should {
     "return sa tax return summaries by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchReturnsSummary(liveMatchId, taxYearInterval))
@@ -294,7 +299,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchReturnsSummary(liveMatchId, taxYearInterval))
@@ -327,7 +332,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaTrustsByMatchId" should {
     "return sa tax return trusts income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchTrustsIncome(liveMatchId, taxYearInterval))
@@ -339,7 +345,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchTrustsIncome(liveMatchId, taxYearInterval))
@@ -372,7 +378,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaForeignIncomeByMatchId" should {
     "return sa tax return foreign income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchForeignIncome(liveMatchId, taxYearInterval))
@@ -384,7 +391,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchForeignIncome(liveMatchId, taxYearInterval))
@@ -417,7 +424,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaPartnershipsIncomeByMatchId" should {
     "return sa tax return partnership income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchPartnershipsIncome(liveMatchId, taxYearInterval))
@@ -429,7 +437,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchPartnershipsIncome(liveMatchId, taxYearInterval))
@@ -462,7 +470,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId" should {
     "return sa tax return interests and dividends income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchInterestsAndDividendsIncome(liveMatchId, taxYearInterval))
@@ -474,7 +483,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchInterestsAndDividendsIncome(liveMatchId, taxYearInterval))
@@ -507,7 +516,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaUkPropertiesIncomeByMatchId" should {
     "return sa UK properties income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchUkPropertiesIncome(liveMatchId, taxYearInterval))
@@ -519,7 +529,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchUkPropertiesIncome(liveMatchId, taxYearInterval))
@@ -552,7 +562,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId" should {
     "return sa tax return pensions and state benefits income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchPensionsAndStateBenefitsIncome(liveMatchId, taxYearInterval))
@@ -564,7 +575,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchPensionsAndStateBenefitsIncome(liveMatchId, taxYearInterval))
@@ -597,7 +608,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaAdditionalInformationByMatchId" should {
     "return sa tax return additional information by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchAdditionalInformation(liveMatchId, taxYearInterval))
@@ -609,7 +621,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchAdditionalInformation(liveMatchId, taxYearInterval))
@@ -642,7 +654,8 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
   "LiveIncomeService.fetchSaOtherIncomeByMatchId" should {
     "return sa tax return other income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
-      given(shortLivedCache.fetch[Seq[DesSAIncome]](refEq(saCacheId.id), refEq(saIncomeCacheService.key))(any())).willReturn(successful(None))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(desIncomes)
 
       val result = await(liveSaIncomeService.fetchOtherIncome(liveMatchId, taxYearInterval))
@@ -654,7 +667,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
-      given(matchingConnector.resolve(liveMatchId)).willReturn(failed(new MatchNotFoundException()))
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
 
       intercept[MatchNotFoundException] {
         await(liveSaIncomeService.fetchOtherIncome(liveMatchId, taxYearInterval))

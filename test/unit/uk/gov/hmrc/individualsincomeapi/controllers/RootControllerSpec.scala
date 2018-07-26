@@ -20,7 +20,7 @@ import java.util.UUID
 
 import akka.stream.Materializer
 import org.scalatest.concurrent.ScalaFutures
-import org.mockito.Matchers.{any, refEq}
+import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyZeroInteractions
 import org.scalatest.mockito.MockitoSugar

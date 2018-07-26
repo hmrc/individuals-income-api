@@ -20,13 +20,17 @@ import java.util.UUID
 
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verify, verifyZeroInteractions}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.cache.{CacheConfiguration, CacheId, CacheService, ShortLivedCache}
+import play.api.Environment
+import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.cache._
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future.successful
+import scala.concurrent.Future
 
 class CacheServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures {
 
@@ -35,36 +39,56 @@ class CacheServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures {
   val newValue = TestClass("new value")
 
   trait Setup {
-    val mockShortLivedCache = mock[ShortLivedCache]
-    val configuration = mock[CacheConfiguration]
-    val cacheService = new TestCacheService(mockShortLivedCache, configuration)
-    given(configuration.enabled).willReturn(true)
+    val mockClient = mock[CachingClient]
+    val cacheService = new CacheService {
+      override val shortLivedCache: CachingClient = mockClient
+      override val conf: ServicesConfig = TestServicesConfig
+      override val key: String = "test"
+    }
+
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
+    TestServicesConfig.setCacheEnabled(true)
   }
 
   "cacheService.get" should {
     "return the cached value for a given id and key" in new Setup {
-      given(mockShortLivedCache.fetch[TestClass](cacheId.id, cacheService.key)(TestClass.format)).willReturn(successful(Some(cachedValue)))
-      await(cacheService.get[TestClass](cacheId, successful(newValue))) shouldBe cachedValue
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(Some(cachedValue))
+      )
+      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
     }
 
     "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
-      given(mockShortLivedCache.fetch[TestClass](cacheId.id, cacheService.key)(TestClass.format)).willReturn(successful(None))
-      await(cacheService.get[TestClass](cacheId, successful(newValue))) shouldBe newValue
-      verify(mockShortLivedCache).cache[TestClass](cacheId.id, cacheService.key, newValue)
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any(), any(), any()))
+        .willReturn(Future.successful(None))
+
+      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(cacheService.key), eqTo(newValue))(any(), any(), any())
     }
 
     "ignore the cache when caching is not enabled" in new Setup {
-      given(configuration.enabled).willReturn(false)
-      await(cacheService.get[TestClass](cacheId, successful(newValue))) shouldBe newValue
-      verifyZeroInteractions(mockShortLivedCache)
+      TestServicesConfig.setCacheEnabled(false)
+      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
+      verifyZeroInteractions(mockClient)
     }
   }
 }
 
-class TestCacheService(shortLivedCache: ShortLivedCache, configuration: CacheConfiguration)
-  extends CacheService(shortLivedCache, configuration) {
+// mocking doesn't work for by-value arguments
+private object TestServicesConfig extends ServicesConfig {
+  override protected def environment: Environment = ???
 
-  override val key = "test-key"
+  private var _cacheEnabled: Boolean = true
+
+  override def getConfBool(confKey: String, defBool: => Boolean): Boolean = confKey match {
+    case "cacheable.short-lived-cache.enabled" => _cacheEnabled
+    case _ => ???
+  }
+
+  def setCacheEnabled(cacheEnabled: Boolean): Unit = {
+    _cacheEnabled = cacheEnabled
+  }
 }
 
 case class TestCacheId(id: String) extends CacheId
@@ -72,5 +96,5 @@ case class TestCacheId(id: String) extends CacheId
 case class TestClass(value: String)
 
 object TestClass {
-  implicit val format = Json.format[TestClass]
+  implicit val format: OFormat[TestClass] = Json.format[TestClass]
 }
