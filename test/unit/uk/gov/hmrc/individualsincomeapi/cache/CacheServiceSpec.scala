@@ -39,55 +39,40 @@ class CacheServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures {
   val newValue = TestClass("new value")
 
   trait Setup {
-    val mockClient = mock[CachingClient]
+    val mockClient = mock[ShortLivedCache]
+    val mockCacheConfig = mock[CacheConfiguration]
     val cacheService = new CacheService {
-      override val shortLivedCache: CachingClient = mockClient
-      override val conf: ServicesConfig = TestServicesConfig
+      override val shortLivedCache: ShortLivedCache = mockClient
+      override val conf: CacheConfiguration = mockCacheConfig
       override val key: String = "test"
     }
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    TestServicesConfig.setCacheEnabled(true)
+    given(mockCacheConfig.cacheEnabled).willReturn(true)
   }
 
   "cacheService.get" should {
     "return the cached value for a given id and key" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any(), any(), any()))
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
         .willReturn(Future.successful(Some(cachedValue))
       )
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
     }
 
     "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any(), any(), any()))
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(cacheService.key), eqTo(newValue))(any(), any(), any())
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(cacheService.key), eqTo(newValue))(any())
     }
 
     "ignore the cache when caching is not enabled" in new Setup {
-      TestServicesConfig.setCacheEnabled(false)
+      given(mockCacheConfig.cacheEnabled).willReturn(false)
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verifyZeroInteractions(mockClient)
     }
-  }
-}
-
-// mocking doesn't work for by-value arguments
-private object TestServicesConfig extends ServicesConfig {
-  override protected def environment: Environment = ???
-
-  private var _cacheEnabled: Boolean = true
-
-  override def getConfBool(confKey: String, defBool: => Boolean): Boolean = confKey match {
-    case "cacheable.short-lived-cache.enabled" => _cacheEnabled
-    case _ => ???
-  }
-
-  def setCacheEnabled(cacheEnabled: Boolean): Unit = {
-    _cacheEnabled = cacheEnabled
   }
 }
 

@@ -28,14 +28,11 @@ import scala.concurrent.Future
 
 trait CacheService {
 
-  val shortLivedCache: CachingClient
-  val conf: ServicesConfig
+  val shortLivedCache: ShortLivedCache
+  val conf: CacheConfiguration
   val key: String
 
-  lazy val cacheEnabled: Boolean = conf.getConfBool(
-    "cacheable.short-lived-cache.enabled",
-    throw new RuntimeException("cacheable.short-lived-cache.enabled")
-  )
+  lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
   def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
 
@@ -54,12 +51,12 @@ trait CacheService {
 }
 
 @Singleton
-class SaIncomeCacheService @Inject()(val shortLivedCache: CachingClient, val conf: ServicesConfig) extends CacheService {
+class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration) extends CacheService {
   val key = "sa-income"
 }
 
 @Singleton
-class PayeIncomeCache @Inject()(val shortLivedCache: CachingClient, val conf: ServicesConfig) extends CacheService {
+class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration) extends CacheService {
   val key: String = "paye-income"
 }
 
