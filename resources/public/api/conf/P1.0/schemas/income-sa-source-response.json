@@ -72,12 +72,21 @@
                         },
                         "postcode": {
                           "type": "string"
-                        }
+                        },
+						"addressTypeIndicator": {
+						  "type": "string"
+						},
+						"addressEffectiveDate": {
+						  "type": "string"
+						}
                       },
                       "required": [
                         "line1"
                       ]
-                    }
+                    },
+					"telephoneNumber": {
+						"type": "string"
+					}
                   },
                   "required": [
                     "utr"
