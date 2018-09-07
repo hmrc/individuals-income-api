@@ -31,7 +31,6 @@ import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatc
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.{LiveSaIncomeService, SandboxSaIncomeService}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
@@ -39,74 +38,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
-
-  val utr = SaUtr("2432552644")
-  val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
-  val liveMatchId = UUID.randomUUID()
-  val liveNino = Nino("AA100009B")
-  val taxYearInterval = TaxYearInterval(TaxYear("2013-14"), TaxYear("2016-17"))
-  val saCacheId = SaCacheId(liveNino, taxYearInterval)
-  val desIncomes = Seq(
-    DesSAIncome(
-      taxYear = "2015",
-      returnList = Seq(
-      DesSAReturn(
-        caseStartDate = Some(LocalDate.parse("2011-06-06")),
-        receivedDate = Some(LocalDate.parse("2015-10-06")),
-        utr = utr,
-        income = SAIncome(
-          incomeFromAllEmployments = None,
-          profitFromSelfEmployment = None,
-          incomeFromSelfAssessment = Some(35000.55),
-          incomeFromTrust = Some(2600.55),
-          incomeFromForeign4Sources = Some(500.55),
-          profitFromPartnerships = Some(555.55),
-          incomeFromUkInterest = Some(43.56),
-          incomeFromForeignDividends = Some(72.57),
-          incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32),
-          incomeFromProperty = Some(1276.67),
-          incomeFromPensions = Some(52.56),
-          incomeFromGainsOnLifePolicies = Some(45.20),
-          incomeFromSharesOptions = Some(12.45),
-          incomeFromOther = Some(134.56)
-        )
-      ))),
-    DesSAIncome(
-      taxYear = "2016",
-      returnList = Seq(
-        DesSAReturn(
-          caseStartDate = Some(LocalDate.parse("2011-06-06")),
-          receivedDate = Some(LocalDate.parse("2016-06-06")),
-          utr = utr,
-          income = SAIncome(
-            incomeFromAllEmployments = Some(1555.55),
-            profitFromSelfEmployment = Some(2500.55),
-            incomeFromSelfAssessment = None,
-            incomeFromTrust = None,
-            incomeFromForeign4Sources = None,
-            incomeFromUkInterest = None,
-            incomeFromForeignDividends = None,
-            incomeFromInterestNDividendsFromUKCompaniesNTrusts = None,
-            incomeFromProperty = None,
-            incomeFromPensions = None,
-            incomeFromGainsOnLifePolicies = None,
-            incomeFromSharesOptions = None
-          )
-        )
-      )
-    )
-  )
-
-  trait Setup {
-    implicit val hc = HeaderCarrier()
-    val matchingConnector = mock[IndividualsMatchingApiConnector]
-    val desConnector = mock[DesConnector]
-    val mockCache = mock[ShortLivedCache]
-    val mockConfig = mock[CacheConfiguration]
-    val saIncomeCacheService = new SaIncomeCacheService(mockCache, mockConfig)
-    val sandboxSaIncomeService = new SandboxSaIncomeService()
-    val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService, 1)
-  }
 
   "LiveIncomeService.fetchSaFootprintByMatchId" should {
     "return the saFootprint with saReturns sorted by tax year DESCENDING when the matchId is valid" in new Setup {
@@ -122,7 +53,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         taxReturns = Seq(
           SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-06"))))),
           SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, Some(LocalDate.parse("2015-10-06")))))
-      ))
+        ))
     }
 
     "fail with MatchNotFoundException when the matchId is invalid" in new Setup {
@@ -162,7 +93,7 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
         taxReturns = Seq(
           SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2015-10-06"))))),
           SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2014-06-06")))))
-      ))
+        ))
     }
 
     "filter out returns not in the requested period" in new Setup {
@@ -698,4 +629,202 @@ class SaIncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures w
       }
     }
   }
+
+  "LiveIncomeService.fetchSaSources" should {
+    "return the sa income sources by tax year in descending order when the matchId is valid" in new Setup {
+      val income = DesSAIncome("2016", Seq(anSAReturn.copy(
+        businessDescription = Some("business"),
+        addressLine1 = Some("line 1"),
+        addressLine2 = Some("line 2"),
+        addressLine3 = Some("line 3"),
+        addressLine4 = Some("line 4"),
+        postalCode = Some("AA11 1AA"),
+        telephoneNumber = Some("01234567890"),
+        baseAddressEffectiveDate = Some(new LocalDate(2018, 9, 7)),
+        addressTypeIndicator = Some("B")
+      )))
+
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+        .willReturn(Future.successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(Seq(income))
+
+      val result = await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(SaIncomeSources(TaxYear("2015-16"), Seq(
+        SaIncomeSource(
+          anSAReturn.utr,
+          Some("business"),
+          Some(DesAddress(
+            Some("line 1"),
+            Some("line 2"),
+            Some("line 3"),
+            Some("line 4"),
+            None,
+            Some("AA11 1AA"),
+            Some(new LocalDate(2018, 9, 7)),
+            Some("homeAddress")
+          )),
+          Some("01234567890")
+        )
+      )))
+    }
+
+    "filter out empty addresses from the response" in new Setup {
+      val income = DesSAIncome("2016", Seq(anSAReturn.copy(
+        businessDescription = Some("business"),
+        addressLine1 = None,
+        addressLine2 = None,
+        addressLine3 = None,
+        addressLine4 = None,
+        postalCode = None,
+        telephoneNumber = Some("01234567890"),
+        baseAddressEffectiveDate = None,
+        addressTypeIndicator = None
+      )))
+
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+        .willReturn(Future.successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(Seq(income))
+
+      val result = await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
+
+      result shouldBe Seq(SaIncomeSources(TaxYear("2015-16"), Seq(
+        SaIncomeSource(
+          anSAReturn.utr,
+          Some("business"),
+          None,
+          Some("01234567890")
+        )
+      )))
+    }
+
+    "convert addressTypeIndicator to addressType" in new Setup {
+      val conversions = Map(
+        Some("B") -> Some("homeAddress"),
+        Some("C") -> Some("correspondenceAddress"),
+        Some("thing else") -> Some("other"),
+        None -> None
+      )
+
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+        .willReturn(Future.successful(None))
+
+      conversions.foreach { case (indicator, addressType) =>
+        given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval))
+          .willReturn(Seq(DesSAIncome("2016", Seq(
+            anSAReturn.copy(businessDescription = Some("thing"), addressTypeIndicator = indicator, addressLine1 = Some("line 1"))
+          ))))
+
+        val result = await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
+
+        result shouldBe Seq(SaIncomeSources(TaxYear("2015-16"), Seq(
+          SaIncomeSource(
+            anSAReturn.utr,
+            Some("thing"),
+            Some(DesAddress(line1 = Some("line 1"), addressType = addressType)),
+            None
+          )
+        )))
+      }
+    }
+
+    "return an empty list when no tax returns exist for the requested period" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(MatchedCitizen(liveMatchId, liveNino))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+        .willReturn(Future.successful(None))
+      given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(Nil)
+
+      val result = await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
+      result shouldBe empty
+    }
+
+    "throw a MatchNotFoundException when the matchId is invalid" in new Setup {
+      given(matchingConnector.resolve(liveMatchId)).willReturn(Future.failed(new MatchNotFoundException()))
+
+      intercept[MatchNotFoundException] {
+        await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
+      }
+    }
+  }
+
+  trait Setup extends TestData {
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    val matchingConnector = mock[IndividualsMatchingApiConnector]
+    val desConnector = mock[DesConnector]
+    val mockCache = mock[ShortLivedCache]
+    val mockConfig = mock[CacheConfiguration]
+    val saIncomeCacheService = new SaIncomeCacheService(mockCache, mockConfig)
+    val sandboxSaIncomeService = new SandboxSaIncomeService()
+    val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService, 1)
+  }
+
+  trait TestData {
+    val utr = SaUtr("2432552644")
+    val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
+    val liveMatchId = UUID.randomUUID()
+    val liveNino = Nino("AA100009B")
+    val taxYearInterval = TaxYearInterval(TaxYear("2013-14"), TaxYear("2016-17"))
+    val saCacheId = SaCacheId(liveNino, taxYearInterval)
+
+    val anSAReturn = DesSAReturn(
+      caseStartDate = Some(LocalDate.parse("2011-06-06")),
+      receivedDate = Some(LocalDate.parse("2015-10-06")),
+      utr = utr,
+      income = SAIncome(
+        incomeFromAllEmployments = None,
+        profitFromSelfEmployment = None,
+        incomeFromSelfAssessment = Some(35000.55),
+        incomeFromTrust = Some(2600.55),
+        incomeFromForeign4Sources = Some(500.55),
+        profitFromPartnerships = Some(555.55),
+        incomeFromUkInterest = Some(43.56),
+        incomeFromForeignDividends = Some(72.57),
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(16.32),
+        incomeFromProperty = Some(1276.67),
+        incomeFromPensions = Some(52.56),
+        incomeFromGainsOnLifePolicies = Some(45.20),
+        incomeFromSharesOptions = Some(12.45),
+        incomeFromOther = Some(134.56)
+      )
+    )
+
+    val anotherSAReturn = DesSAReturn(
+      caseStartDate = Some(LocalDate.parse("2011-06-06")),
+      receivedDate = Some(LocalDate.parse("2016-06-06")),
+      utr = utr,
+      income = SAIncome(
+        incomeFromAllEmployments = Some(1555.55),
+        profitFromSelfEmployment = Some(2500.55),
+        incomeFromSelfAssessment = None,
+        incomeFromTrust = None,
+        incomeFromForeign4Sources = None,
+        incomeFromUkInterest = None,
+        incomeFromForeignDividends = None,
+        incomeFromInterestNDividendsFromUKCompaniesNTrusts = None,
+        incomeFromProperty = None,
+        incomeFromPensions = None,
+        incomeFromGainsOnLifePolicies = None,
+        incomeFromSharesOptions = None
+      )
+    )
+
+    val desIncomes = Seq(
+      DesSAIncome(
+        taxYear = "2015",
+        returnList = Seq(
+          anSAReturn
+        )
+      ),
+      DesSAIncome(
+        taxYear = "2016",
+        returnList = Seq(
+          anotherSAReturn
+        )
+      )
+    )
+  }
+
 }

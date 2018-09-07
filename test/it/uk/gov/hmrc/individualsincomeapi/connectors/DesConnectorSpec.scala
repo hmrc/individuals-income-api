@@ -64,7 +64,14 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
     wireMockServer.stop()
   }
 
-  val desAddress = DesAddress(line1 = "Acme House", line2 = Some("23 Acme Street"), line3 = Some("Richmond"), line4 = Some("Surrey"), line5 = Some("UK"), postcode = Some("AI22 9LL"))
+  val desAddress = DesAddress(
+    line1 = Some("Acme House"),
+    line2 = Some("23 Acme Street"),
+    line3 = Some("Richmond"),
+    line4 = Some("Surrey"),
+    line5 = Some("UK"),
+    postcode = Some("AI22 9LL")
+  )
   
   val desPayments = Seq(
     DesPayment(

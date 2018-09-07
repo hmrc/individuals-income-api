@@ -189,12 +189,29 @@ object SaIncomeSources {
     SaIncomeSources(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map { sa =>
+        val addressType = sa.addressTypeIndicator match {
+          case Some("B") => Some("homeAddress")
+          case Some("C") => Some("correspondenceAddress")
+          case Some(_) => Some("other")
+          case None => None
+        }
+
+        val address = DesAddress(
+          sa.addressLine1,
+          sa.addressLine2,
+          sa.addressLine3,
+          sa.addressLine4,
+          line5 = None,
+          sa.postalCode,
+          sa.baseAddressEffectiveDate,
+          addressType
+        )
+
         SaIncomeSource(
           sa.utr,
           sa.businessDescription,
-          sa.addressLine1.map { l1 =>
-            DesAddress(l1, sa.addressLine2, sa.addressLine3, sa.addressLine4, postcode = sa.postalCode)
-          }
+          Some(address).filterNot(_.isEmpty),
+          sa.telephoneNumber
         )
       }.filter(s => s.businessAddress.isDefined || s.businessDescription.isDefined)
     )
@@ -203,7 +220,7 @@ object SaIncomeSources {
   implicit val format: Format[SaIncomeSources] = Json.format[SaIncomeSources]
 }
 
-case class SaIncomeSource(utr: SaUtr, businessDescription: Option[String], businessAddress: Option[DesAddress])
+case class SaIncomeSource(utr: SaUtr, businessDescription: Option[String], businessAddress: Option[DesAddress], telephoneNumber: Option[String])
 
 object SaIncomeSource {
   implicit val format: Format[SaIncomeSource] = Json.format[SaIncomeSource]

@@ -23,21 +23,28 @@ import uk.gov.hmrc.domain.EmpRef
 
 case class DesEmployments(employments: Seq[DesEmployment])
 
-case class DesAddress(line1: String,
+case class DesAddress(line1: Option[String] = None,
                       line2: Option[String] = None,
                       line3: Option[String] = None,
                       line4: Option[String] = None,
                       line5: Option[String] = None,
-                      postcode: Option[String] = None)
+                      postcode: Option[String] = None,
+                      effectiveDate: Option[LocalDate] = None,
+                      addressType: Option[String] = None) {
+
+  def isEmpty: Boolean = this == DesAddress()
+}
 
 object DesAddress {
   implicit val desReads: Reads[DesAddress] = (
-    (__ \ "line1").read[String] and
+    (__ \ "line1").readNullable[String] and
       (__ \ "line2").readNullable[String] and
       (__ \ "line3").readNullable[String] and
       (__ \ "line4").readNullable[String] and
       (__ \ "line5").readNullable[String] and
-      (__ \ "postalCode").readNullable[String]
+      (__ \ "postalCode").readNullable[String] and
+      (__ \ "effectiveDate").readNullable[LocalDate] and
+      (__ \ "addressType").readNullable[String]
   )(DesAddress.apply _)
 
   implicit val apiWrites: Writes[DesAddress] = Json.writes[DesAddress]

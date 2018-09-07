@@ -35,8 +35,10 @@ case class DesSAReturn(caseStartDate: Option[LocalDate],
                        addressLine2: Option[String] = None,
                        addressLine3: Option[String] = None,
                        addressLine4: Option[String] = None,
-                       postalCode: Option[String] = None
-                      )
+                       postalCode: Option[String] = None,
+                       telephoneNumber: Option[String] = None,
+                       baseAddressEffectiveDate: Option[LocalDate] = None,
+                       addressTypeIndicator: Option[String] = None)
 
 object DesSAReturn {
   implicit val format: Format[DesSAReturn] = new Format[DesSAReturn] {
@@ -50,7 +52,10 @@ object DesSAReturn {
         "addressLine2" -> o.addressLine2,
         "addressLine3" -> o.addressLine3,
         "addressLine4" -> o.addressLine4,
-        "postalCode" -> o.postalCode
+        "postalCode" -> o.postalCode,
+        "telephoneNumber" -> o.telephoneNumber,
+        "baseAddressEffectiveDate" -> o.baseAddressEffectiveDate,
+        "addressTypeIndicator" -> o.addressTypeIndicator
       ) ++ Json.toJson(o.income).as[JsObject]
     }
 
@@ -65,6 +70,9 @@ object DesSAReturn {
       addressLine3 <- (json \ "addressLine3").validateOpt[String]
       addressLine4 <- (json \ "addressLine4").validateOpt[String]
       postalCode <- (json \ "postalCode").validateOpt[String]
+      telephoneNumber <- (json \ "telephoneNumber").validateOpt[String]
+      baseAddressEffectiveDate <- (json \ "baseAddressEffectivetDate").validateOpt[LocalDate] // misspelled as per the DES Spec
+      addressTypeIndicator <- (json \ "addressTypeIndicator").validateOpt[String]
     } yield DesSAReturn(
       caseStartDate,
       receivedDate,
@@ -75,7 +83,10 @@ object DesSAReturn {
       addressLine2,
       addressLine3,
       addressLine4,
-      postalCode
+      postalCode,
+      telephoneNumber,
+      baseAddressEffectiveDate,
+      addressTypeIndicator
     )
   }
 }
