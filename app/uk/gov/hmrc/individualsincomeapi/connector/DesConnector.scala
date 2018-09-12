@@ -17,9 +17,9 @@
 package uk.gov.hmrc.individualsincomeapi.connector
 
 import javax.inject.{Inject, Singleton}
-
 import org.joda.time.Interval
 import play.api.Configuration
+import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads, NotFoundException}
@@ -59,6 +59,7 @@ class DesConnector @Inject()(configuration: Configuration) extends ServicesConfi
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
     val toTaxYear = taxYearInterval.toTaxYear.endYr
     val originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
+    implicit val saIncomeReads: Reads[DesSAIncome] = DesSAIncome.desReads
 
     http.GET[Seq[DesSAIncome]](s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear")(
       implicitly[HttpReads[Seq[DesSAIncome]]], header("OriginatorId" -> originator), ec) recover {

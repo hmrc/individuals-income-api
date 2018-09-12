@@ -26,6 +26,16 @@ case class DesSAIncome(taxYear: String,
   def isIn(taxYearInterval: TaxYearInterval) = taxYear.toInt >= taxYearInterval.fromTaxYear.endYr && taxYear.toInt <= taxYearInterval.toTaxYear.endYr
 }
 
+object DesSAIncome {
+  implicit val format: Format[DesSAIncome] = Json.format[DesSAIncome]
+
+  val desReads: Reads[DesSAIncome] = {
+    implicit val saReturnReads: Reads[DesSAReturn] = DesSAReturn.desReads
+
+    Json.reads[DesSAIncome]
+  }
+}
+
 case class DesSAReturn(caseStartDate: Option[LocalDate],
                        receivedDate: Option[LocalDate],
                        utr: SaUtr,
@@ -59,6 +69,38 @@ object DesSAReturn {
       ) ++ Json.toJson(o.income).as[JsObject]
     }
 
+    override def reads(json: JsValue): JsResult[DesSAReturn] = for {
+      caseStartDate <- (json \ "caseStartDate").validateOpt[LocalDate]
+      receivedDate <- (json \ "receivedDate").validateOpt[LocalDate]
+      utr <- (json \ "utr").validate[SaUtr]
+      income <- json.validate[SAIncome]
+      businessDescription <- (json \ "businessDescription").validateOpt[String]
+      addressLine1 <- (json \ "addressLine1").validateOpt[String]
+      addressLine2 <- (json \ "addressLine2").validateOpt[String]
+      addressLine3 <- (json \ "addressLine3").validateOpt[String]
+      addressLine4 <- (json \ "addressLine4").validateOpt[String]
+      postalCode <- (json \ "postalCode").validateOpt[String]
+      telephoneNumber <- (json \ "telephoneNumber").validateOpt[String]
+      baseAddressEffectiveDate <- (json \ "baseAddressEffectiveDate").validateOpt[LocalDate]
+      addressTypeIndicator <- (json \ "addressTypeIndicator").validateOpt[String]
+    } yield DesSAReturn(
+      caseStartDate,
+      receivedDate,
+      utr,
+      income,
+      businessDescription,
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      addressLine4,
+      postalCode,
+      telephoneNumber,
+      baseAddressEffectiveDate,
+      addressTypeIndicator
+    )
+  }
+
+  val desReads: Reads[DesSAReturn] = new Reads[DesSAReturn] {
     override def reads(json: JsValue): JsResult[DesSAReturn] = for {
       caseStartDate <- (json \ "caseStartDate").validateOpt[LocalDate]
       receivedDate <- (json \ "receivedDate").validateOpt[LocalDate]
