@@ -16,30 +16,29 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.DateTime
-import org.joda.time.LocalDate.parse
+import org.joda.time.{DateTime, LocalDate}
 import org.scalatest.{FlatSpec, Matchers}
 import uk.gov.hmrc.individualsincomeapi.domain.ValidationException
-import uk.gov.hmrc.individualsincomeapi.util.Dates.{toFormattedLocalDate, toInterval}
+import uk.gov.hmrc.individualsincomeapi.util.Dates
 
 class DatesSpec extends FlatSpec with Matchers {
 
   "Dates utility" should "derive an interval between two dates" in {
-    val (fromDate, toDate) = (parse("2020-01-01"), parse("2020-01-02"))
-    toInterval(fromDate, toDate).toString shouldBe "2020-01-01T00:00:00.000Z/2020-01-02T00:00:00.001Z"
+    val (fromDate, toDate) = (LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-02"))
+    Dates.toInterval(fromDate, toDate).toString shouldBe "2020-01-01T00:00:00.000Z/2020-01-02T00:00:00.001Z"
   }
 
   it should "fail to derive an interval with a from date which is before 31st March 2013" in {
-    val (fromDate, toDate) = (parse("2013-03-30"), parse("2020-01-02"))
+    val (fromDate, toDate) = (LocalDate.parse("2013-03-30"), LocalDate.parse("2020-01-02"))
     the[ValidationException] thrownBy {
-      toInterval(fromDate, toDate)
+      Dates.toInterval(fromDate, toDate)
     } should have message "fromDate earlier than 31st March 2013"
 
-    noException should be thrownBy toInterval(parse("2013-03-31"), toDate)
+    noException should be thrownBy Dates.toInterval(LocalDate.parse("2013-03-31"), toDate)
   }
 
   it should "format date time instances" in {
-    toFormattedLocalDate(DateTime.parse("2017-12-31")) shouldBe "2017-12-31"
+    Dates.toFormattedLocalDate(DateTime.parse("2017-12-31")) shouldBe "2017-12-31"
   }
 
 }

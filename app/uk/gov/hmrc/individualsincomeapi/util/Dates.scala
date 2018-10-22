@@ -24,10 +24,10 @@ object Dates extends ServicesConfig {
 
   val localDatePattern = "yyyy-MM-dd"
 
-  private val desDataInceptionDate = LocalDate.parse("2013-03-31")
-  private val selfAssessmentYearHistory = getConfInt("self-assessment.historyInYears", 6)
+  private lazy val desDataInceptionDate = LocalDate.parse("2013-03-31")
+  private lazy val selfAssessmentYearHistory = getConfInt("self-assessment.historyInYears", 6)
 
-  def toFormattedLocalDate(date: DateTime) = date.toLocalDate.toString(localDatePattern)
+  def toFormattedLocalDate(date: DateTime): String = date.toLocalDate.toString(localDatePattern)
 
   def toInterval(fromDate: LocalDate, toDate: LocalDate): Interval = {
     if (fromDate.isBefore(desDataInceptionDate))
