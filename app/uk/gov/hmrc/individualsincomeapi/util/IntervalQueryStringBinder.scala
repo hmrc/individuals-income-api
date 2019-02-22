@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@ package uk.gov.hmrc.individualsincomeapi.util
 
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{Interval, LocalDate}
+import uk.gov.hmrc.individualsincomeapi.config.ConfigSupport
 import uk.gov.hmrc.individualsincomeapi.domain.ValidationException
 import uk.gov.hmrc.individualsincomeapi.util.Dates.toInterval
 import uk.gov.hmrc.play.config.ServicesConfig
 
-class IntervalQueryStringBinder extends AbstractQueryStringBindable[Interval] with ServicesConfig {
+class IntervalQueryStringBinder extends AbstractQueryStringBindable[Interval] with ServicesConfig with ConfigSupport {
 
   val dateTimeFormatter = DateTimeFormat.forPattern(Dates.localDatePattern)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 
 @Singleton
-class ShortLivedCache @Inject()(val configuration: CacheConfiguration) extends TimeToLive {
+class ShortLivedCache @Inject()(val cacheConfig: CacheConfiguration, configuration: Configuration) extends TimeToLive {
 
-  implicit lazy val crypto: CompositeSymmetricCrypto = ApplicationCrypto.JsonCrypto
-  lazy val repository = CacheRepository("shortLivedCache", configuration.cacheTtl, Cache.mongoFormats)
+  implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
+  lazy val repository = CacheRepository("shortLivedCache", cacheConfig.cacheTtl, Cache.mongoFormats)
 
   def cache[T](id: String, key: String, value: T)(implicit formats: Format[T]): Future[Unit] = {
     val jsonEncryptor = new JsonEncryptor[T]()

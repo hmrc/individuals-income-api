@@ -12,17 +12,17 @@ object MicroServiceBuild extends Build with MicroService {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "microservice-bootstrap" % "6.18.0",
-    "uk.gov.hmrc" %% "domain" % "4.1.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.2.0",
-    "uk.gov.hmrc" %% "play-hal" % "1.2.0",
+    "uk.gov.hmrc" %% "microservice-bootstrap" % "10.4.0",
+    "uk.gov.hmrc" %% "domain" % "5.3.0",
+    "uk.gov.hmrc" %% "auth-client" % "2.19.0-play-25",
+    "uk.gov.hmrc" %% "play-hal" % "1.8.0-play-25",
     "uk.gov.hmrc" %% "play-hmrc-api" % "2.0.0",
-    "uk.gov.hmrc" %% "mongo-caching" % "5.4.0",
+    "uk.gov.hmrc" %% "mongo-caching" % "5.7.0",
     "uk.gov.hmrc" %% "json-encryption" % "3.3.0"
   )
 
   def test(scope: String = "test,it") = Seq(
-    "uk.gov.hmrc" %% "hmrctest" % "2.3.0" % scope,
+    "uk.gov.hmrc" %% "hmrctest" % "3.5.0-play-25" % scope,
     "org.scalatest" %% "scalatest" % "2.2.6" % scope,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" %  scope,
     "org.scalaj" %% "scalaj-http" % "1.1.6" % scope,

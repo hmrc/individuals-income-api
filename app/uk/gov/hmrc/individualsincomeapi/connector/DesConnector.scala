@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads, NotFoundException}
-import uk.gov.hmrc.individualsincomeapi.config.WSHttp
+import uk.gov.hmrc.individualsincomeapi.config.{ConfigSupport, WSHttp}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
@@ -33,12 +33,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject()(configuration: Configuration) extends ServicesConfig {
+class DesConnector @Inject()(override val playConfiguration: Configuration) extends ServicesConfig with ConfigSupport {
 
   val serviceUrl = baseUrl("des")
   val http: HttpGet = WSHttp
-  val desBearerToken = configuration.getString("microservice.services.des.authorization-token").getOrElse(throw new RuntimeException("DES authorization token must be defined"))
-  val desEnvironment = configuration.getString("microservice.services.des.environment").getOrElse(throw new RuntimeException("DES environment must be defined"))
+  val desBearerToken = playConfiguration.getString("microservice.services.des.authorization-token").getOrElse(throw new RuntimeException("DES authorization token must be defined"))
+  val desEnvironment = playConfiguration.getString("microservice.services.des.environment").getOrElse(throw new RuntimeException("DES environment must be defined"))
 
   private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) = {
     hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken")))
