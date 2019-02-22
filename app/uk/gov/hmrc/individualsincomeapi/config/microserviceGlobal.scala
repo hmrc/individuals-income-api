@@ -18,25 +18,26 @@ package uk.gov.hmrc.individualsincomeapi.config
 
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
-import uk.gov.hmrc.api.config.{ServiceLocatorConfig, ServiceLocatorRegistration}
-import uk.gov.hmrc.api.connector.ServiceLocatorConnector
-import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest, ErrorUnauthorized}
-import uk.gov.hmrc.play.config.{AppName, ControllerConfig}
-import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import net.ceedubs.ficus.Ficus._
 import play.api.Mode.Mode
 import play.api.libs.json.Json
-import play.api.mvc.{RequestHeader, Result}
+import play.api.mvc.{Handler, RequestHeader, Result}
 import play.api.{Application, Configuration, Logger, Play}
+import uk.gov.hmrc.api.config.ServiceLocatorConfig
+import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
+import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.errorInvalidRequestFormat
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest, ErrorUnauthorized}
+import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
+import uk.gov.hmrc.play.config.{AppName, ControllerConfig}
+import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
+import uk.gov.hmrc.play.microservice.filters.{AuditFilter, LoggingFilter, MicroserviceFilterSupport}
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
 import scala.util.Try
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.microservice.filters.{AuditFilter, LoggingFilter, MicroserviceFilterSupport}
+import scala.util.matching.Regex
 
 
 object ControllerConfiguration extends ControllerConfig {
@@ -54,7 +55,6 @@ object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSu
 
 object MicroserviceGlobal
   extends DefaultMicroserviceGlobal
-    with ServiceLocatorRegistration
     with ServiceLocatorConfig
     with MicroserviceFilterSupport
     with ConfigSupport {
@@ -68,12 +68,6 @@ object MicroserviceGlobal
   override val microserviceAuditFilter = MicroserviceAuditFilter
 
   override val authFilter = None
-
-  override lazy val registrationEnabled = Play.current.configuration.getBoolean("microservice.services.service-locator.enabled").getOrElse(false)
-
-  override val slConnector = ServiceLocatorConnector(WSHttp)
-
-  override implicit val hc = HeaderCarrier()
 
   private lazy val unversionedContexts = Play.current.configuration.getStringSeq("versioning.unversionedContexts").getOrElse(Seq.empty[String])
 
@@ -103,6 +97,57 @@ object MicroserviceGlobal
       case Some(errorResponse) => successful(errorResponse.toHttpResponse)
       case _ => successful(ErrorInvalidRequest("Invalid Request").toHttpResponse)
     }
+  }
+
+  // need to inline most of the old play-hmrc-api code because the old version isn't compatible with the new libraries
+  // and the new version requires the bootstrap-play migration
+  private lazy val slConnector = new ServiceLocatorConnector {
+    override def appName: String = AppName(playConfiguration).appName
+
+    override val appUrl: String = playConfiguration.getString("appUrl").getOrElse(throw new RuntimeException("appUrl is not configured"))
+    override val serviceUrl: String = serviceLocatorUrl
+    override val handlerOK: () => Unit = () => Logger.info("Service is registered on the service locator")
+    override val handlerError: Throwable => Unit = e => Logger.error(s"Service could not register on the service locator", e)
+    override val metadata: Option[Map[String, String]] = Some(Map("third-party-api" -> "true"))
+    override val http: CorePost = WSHttp
+  }
+
+  private lazy val registrationEnabled = playConfiguration.getBoolean("microservice.services.service-locator.enabled").getOrElse(false)
+
+
+  override def onStart(app: Application): Unit = {
+    super.onStart(app)
+    if (registrationEnabled) {
+      slConnector.register(HeaderCarrier())
+    } else {
+      Logger.warn("Registration in Service Locator is disabled")
+    }
+  }
+
+  private lazy val headerOpt = playConfiguration.getString("router.header")
+  private lazy val regexOpt  = playConfiguration.getString("router.regex")
+  private lazy val prefixOpt = playConfiguration.getString("router.prefix")
+
+  lazy val router: Option[(String, String, String)] = {
+    (headerOpt, regexOpt, prefixOpt) match {
+      case (Some(a:String), Some(b:String), Some(c:String)) => Some((a, b, c))
+      case _ => None
+    }
+  }
+
+  override def onRouteRequest(request: RequestHeader): Option[Handler] = {
+    val overrideRequest = router.fold(request) {
+      case (header, regex, prefix) => request.headers.get(header) match {
+        case Some(value) =>
+          val found = new Regex(regex).findFirstIn(value)
+          found.fold(request) { _ =>
+            Logger.info(s"Overriding request due to $router")
+            request.copy(path = prefix + request.path)
+          }
+        case _ => request
+      }
+    }
+    super.onRouteRequest(overrideRequest)
   }
 }
 
