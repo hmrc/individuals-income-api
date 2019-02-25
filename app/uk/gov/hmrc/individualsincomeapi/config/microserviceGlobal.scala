@@ -22,11 +22,12 @@ import net.ceedubs.ficus.Ficus._
 import play.api.Mode.Mode
 import play.api.libs.json.Json
 import play.api.mvc.{Handler, RequestHeader, Result}
+import play.api.mvc.Results._
 import play.api.{Application, Configuration, Logger, Play}
 import uk.gov.hmrc.api.config.ServiceLocatorConfig
 import uk.gov.hmrc.api.connector.ServiceLocatorConnector
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
+import uk.gov.hmrc.http.{CorePost, HeaderCarrier, TooManyRequestException}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.errorInvalidRequestFormat
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest, ErrorUnauthorized}
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
@@ -35,8 +36,6 @@ import uk.gov.hmrc.play.microservice.bootstrap.DefaultMicroserviceGlobal
 import uk.gov.hmrc.play.microservice.filters.{AuditFilter, LoggingFilter, MicroserviceFilterSupport}
 
 import scala.concurrent.Future
-import scala.concurrent.Future.successful
-import scala.util.Try
 import scala.util.matching.Regex
 
 
@@ -82,20 +81,25 @@ object MicroserviceGlobal
 
   override def onError(request: RequestHeader, ex: Throwable): Future[Result] = {
     ex match {
-      case _: AuthorisationException => successful(ErrorUnauthorized.toHttpResponse)
+      case _: AuthorisationException => Future.successful(ErrorUnauthorized.toHttpResponse)
+      case _: TooManyRequestException =>
+        Future.successful(TooManyRequests(Json.obj(
+          "code" -> "TOO_MANY_REQUESTS",
+          "message" -> "Rate limit exceeded"
+        )))
       case _ =>
-        Logger.error("An unexpected error occured", ex)
-        successful(ErrorInternalServer.toHttpResponse)
+        Logger.error("An unexpected error occurred", ex)
+        Future.successful(ErrorInternalServer.toHttpResponse)
     }
   }
 
   override def onBadRequest(request: RequestHeader, error: String): Future[Result] = {
 
-    val maybeInvalidRequest = Try(Json.parse(error).as[ErrorInvalidRequest]).toOption
+    val maybeInvalidRequest = Json.parse(error).validate[ErrorInvalidRequest].asOpt
 
     maybeInvalidRequest match {
-      case Some(errorResponse) => successful(errorResponse.toHttpResponse)
-      case _ => successful(ErrorInvalidRequest("Invalid Request").toHttpResponse)
+      case Some(errorResponse) => Future.successful(errorResponse.toHttpResponse)
+      case _ => Future.successful(ErrorInvalidRequest("Invalid Request").toHttpResponse)
     }
   }
 
@@ -114,7 +118,6 @@ object MicroserviceGlobal
 
   private lazy val registrationEnabled = playConfiguration.getBoolean("microservice.services.service-locator.enabled").getOrElse(false)
 
-
   override def onStart(app: Application): Unit = {
     super.onStart(app)
     if (registrationEnabled) {
@@ -128,12 +131,11 @@ object MicroserviceGlobal
   private lazy val regexOpt  = playConfiguration.getString("router.regex")
   private lazy val prefixOpt = playConfiguration.getString("router.prefix")
 
-  lazy val router: Option[(String, String, String)] = {
-    (headerOpt, regexOpt, prefixOpt) match {
-      case (Some(a:String), Some(b:String), Some(c:String)) => Some((a, b, c))
-      case _ => None
-    }
-  }
+  lazy val router: Option[(String, String, String)] = for {
+    h <- headerOpt
+    r <- regexOpt
+    p <- prefixOpt
+  } yield (h, r, p)
 
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
     val overrideRequest = router.fold(request) {

@@ -22,7 +22,7 @@ import play.api.Configuration
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads, NotFoundException}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsincomeapi.config.{ConfigSupport, WSHttp}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
@@ -49,9 +49,11 @@ class DesConnector @Inject()(override val playConfiguration: Configuration) exte
     val fromDate = interval.getStart.toLocalDate
     val toDate = interval.getEnd.toLocalDate
 
-    http.GET[DesEmployments](s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate")(
-      implicitly[HttpReads[DesEmployments]], header(), ec) map (_.employments) recover {
-      case _: NotFoundException => Seq.empty
+    val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
+    http.GET[DesEmployments](employmentsUrl)(implicitly, header(), ec).map(_.employments).recoverWith {
+      case _: NotFoundException => Future.successful(Seq.empty)
+      case Upstream5xxResponse(msg, 503, _) if msg.contains("LTM000503") /* DES's magic rate limit error code*/ =>
+        Future.failed(new TooManyRequestException(msg))
     }
   }
 
@@ -61,9 +63,12 @@ class DesConnector @Inject()(override val playConfiguration: Configuration) exte
     val originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
     implicit val saIncomeReads: Reads[DesSAIncome] = DesSAIncome.desReads
 
-    http.GET[Seq[DesSAIncome]](s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear")(
-      implicitly[HttpReads[Seq[DesSAIncome]]], header("OriginatorId" -> originator), ec) recover {
-      case _: NotFoundException => Seq.empty
+    val saIncomeUrl = s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
+
+    http.GET[Seq[DesSAIncome]](saIncomeUrl)(implicitly, header("OriginatorId" -> originator), ec).recoverWith {
+      case _: NotFoundException => Future.successful(Seq.empty)
+      case Upstream5xxResponse(msg, 503, _) if msg.contains("LTM000503") /* DES's magic rate limit error code*/ =>
+        Future.failed(new TooManyRequestException(msg))
     }
   }
 

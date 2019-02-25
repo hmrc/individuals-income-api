@@ -21,8 +21,8 @@ import java.util.UUID
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import play.api.test.Helpers.OK
 import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments, DesPayment}
+import play.api.test.Helpers._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 
 import scalaj.http.Http
@@ -43,12 +43,12 @@ class IndividualIncomeSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.willRespondWith(matchId, OK,
-        s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("DES will return employments for the NINO")
       DesStub.searchEmploymentIncomeForPeriodReturns(nino, fromDate, toDate,
-        DesEmployments(Seq(DesEmployment(employerDistrictNumber = Some("123"), employerSchemeReference = Some("DI45678"),
+        DesEmployments(
+          Seq(DesEmployment(employerDistrictNumber = Some("123"), employerSchemeReference = Some("DI45678"),
           payments = Seq(
             DesPayment(LocalDate.parse("2017-02-09"), 500.25, weekPayNumber = Some(45)),
             DesPayment(LocalDate.parse("2017-02-16"), 500.25, weekPayNumber = Some(46)),
@@ -110,8 +110,7 @@ class IndividualIncomeSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.willRespondWith(matchId, OK,
-        s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("DES will return employments for the NINO")
       DesStub.searchEmploymentIncomeReturnsNoIncomeFor(nino, fromDate, toDate)
@@ -136,6 +135,30 @@ class IndividualIncomeSpec extends BaseSpec {
                }
              }
            """)
+    }
+
+    scenario("The employment income data source is rate limited") {
+      val toDate = "2017-02-02"
+
+      Given("A valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
+
+      And("DES is rate limited")
+      DesStub.searchEmploymentIncomeReturnsRateLimitErrorFor(nino, fromDate, toDate)
+
+      When("I request individual income for the existing matchId")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP1)).asString
+
+      Then("The response status should be 429 Too Many Requests")
+      response.code shouldBe TOO_MANY_REQUESTS
+      Json.parse(response.body) shouldBe Json.obj(
+        "code" -> "TOO_MANY_REQUESTS",
+        "message" -> "Rate limit exceeded"
+      )
     }
   }
 
