@@ -21,15 +21,15 @@ import java.util.UUID
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.{BeforeAndAfterEach, Matchers}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.http.{ HeaderCarrier, Upstream5xxResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import utils.SpecBase
 
-class IndividualsMatchingApiConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApplication {
+class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11121").toInt
   val stubHost = "localhost"
@@ -42,6 +42,8 @@ class IndividualsMatchingApiConnectorSpec extends UnitSpec with BeforeAndAfterEa
       override val serviceUrl = "http://localhost:11121"
     }
   }
+
+  def externalServices: Seq[String] = Seq("Stub")
 
   override def beforeEach() {
     wireMockServer.start()

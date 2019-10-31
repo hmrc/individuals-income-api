@@ -26,11 +26,11 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache._
-import uk.gov.hmrc.play.test.UnitSpec
+import utils.TestSupport
 
 import scala.concurrent.Future
 
-class CacheServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures {
+class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   val cacheId = TestCacheId(UUID.randomUUID().toString)
   val cachedValue = TestClass("cached value")

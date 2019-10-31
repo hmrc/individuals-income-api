@@ -33,13 +33,13 @@ import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatc
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
-import uk.gov.hmrc.play.test.UnitSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
+import utils.SpecBase
 
 import scala.concurrent.Future
-import scala.concurrent.Future.failed
+import scala.concurrent.Future.{failed, successful}
 
-class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures with Dates {
+class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with Dates {
 
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -64,8 +64,8 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
     "return the employment's income" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(desEmployments)
+      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(successful(desEmployments))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
 
@@ -75,8 +75,8 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
     "Sort the payments by payment date descending" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50), DesPayment(parse("2016-04-28"), 10.50), DesPayment(parse("2016-03-28"), 10.50))))
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(desEmployments)
+      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(successful(desEmployments))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
 
@@ -84,8 +84,8 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
     }
 
     "Return empty list when there are no payments for a given period" in new Setup {
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(Seq.empty)
+      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(successful(Seq.empty))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
 
@@ -101,7 +101,7 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
 
     "fail when DES returns an error" in new Setup {
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
+      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())).willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException](await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc)))
@@ -110,10 +110,10 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
     "retry once if DES returns a 503" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(matchedCitizen)
+      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
-        .willReturn(desEmployments)
+        .willReturn(successful(desEmployments))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
       result shouldBe List(Payment(10.5, parse("2016-02-28")))
@@ -125,7 +125,7 @@ class IncomeServiceSpec extends UnitSpec with MockitoSugar with ScalaFutures wit
       val employments = Seq(DesEmployment(Seq(DesPayment(new LocalDate(2016, 1, 1), 1))))
       
       val mockMatching = mock[IndividualsMatchingApiConnector]
-      given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(matchedCitizen)
+      given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
       
       val mockDes = mock[DesConnector]
       val stubCache = new PayeIncomeCache(null, null) {

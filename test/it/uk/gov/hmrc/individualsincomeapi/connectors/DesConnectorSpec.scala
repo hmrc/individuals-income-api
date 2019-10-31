@@ -20,19 +20,21 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.joda.time.LocalDate
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.integration.ServiceSpec
+import utils.TestSupport
 import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApplication with MockitoSugar with Dates {
+class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with Dates with TestSupport {
+
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
@@ -54,6 +56,8 @@ class DesConnectorSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApp
 
     val underTest = fakeApplication.injector.instanceOf[DesConnector]
   }
+
+  def externalServices: Seq[String] = Seq.empty
 
   override def beforeEach() {
     wireMockServer.start()

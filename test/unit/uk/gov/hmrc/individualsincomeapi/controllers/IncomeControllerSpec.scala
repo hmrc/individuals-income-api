@@ -36,12 +36,12 @@ import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.paymentJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
 import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}
 
-class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class IncomeControllerSpec extends SpecBase with MockitoSugar {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()
@@ -62,11 +62,13 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeAppli
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
 
+  def externalServices: Seq[String] = Seq("Stub")
+
   "Income controller income function" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString&toDate=$toDateString")
 
     "return 200 (OK) when matching succeeds and service returns payments" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(payments)
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(successful(payments))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 
@@ -75,7 +77,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeAppli
     }
 
     "return 200 (OK) when matching succeeds and service returns no payments" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(Seq.empty)
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(successful(Seq.empty))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 
@@ -86,7 +88,7 @@ class IncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeAppli
     "return 200 (OK) with correct self link response when toDate is not provided in the request" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(payments)
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(successful(payments))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 

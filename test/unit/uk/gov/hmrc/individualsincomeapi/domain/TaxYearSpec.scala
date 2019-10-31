@@ -19,9 +19,9 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain
 import org.joda.time.{DateTimeUtils, LocalDate}
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import uk.gov.hmrc.play.test.UnitSpec
+import utils.TestSupport
 
-class TaxYearSpec extends UnitSpec with Matchers with BeforeAndAfterEach {
+class TaxYearSpec extends TestSupport with Matchers with BeforeAndAfterEach {
 
   val validTaxYears = Seq("2014-15", "2013-14", "2016-17", "2019-20", "2099-00")
 
