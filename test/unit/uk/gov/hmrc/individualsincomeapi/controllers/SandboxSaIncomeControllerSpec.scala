@@ -33,12 +33,12 @@ import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.SandboxSaIncomeService
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}
 
-class SandboxSaIncomeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   val matchId = UUID.randomUUID()

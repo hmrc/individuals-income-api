@@ -32,15 +32,15 @@ import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future.successful
 import scala.concurrent.Future.failed
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.actions.SandboxPrivilegedAction
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import utils.SpecBase
 
-class RootControllerSpec extends UnitSpec with MockitoSugar with ScalaFutures with WithFakeApplication {
+class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup {

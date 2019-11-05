@@ -22,9 +22,9 @@ import org.scalatest.Matchers
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ACCEPT, GET}
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
-import uk.gov.hmrc.play.test.UnitSpec
+import utils.TestSupport
 
-class RequestHeaderUtilsSpec extends UnitSpec with Matchers {
+class RequestHeaderUtilsSpec extends TestSupport with Matchers {
 
   "getVersionedUri" should {
     "return the versioned request when the Accept header is set" in {

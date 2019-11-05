@@ -18,15 +18,16 @@ package it.uk.gov.hmrc.individualsincomeapi.connectors
 
 import java.util.UUID
 
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsincomeapi.cache.ShortLivedCache
 import uk.gov.hmrc.mongo.MongoSpecSupport
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import uk.gov.hmrc.integration.ServiceSpec
+import utils.TestSupport
 
-class ShortLivedCacheSpec extends UnitSpec with MongoSpecSupport with WithFakeApplication with BeforeAndAfterEach {
+class ShortLivedCacheSpec extends WordSpec with Matchers with MongoSpecSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
   val id = UUID.randomUUID().toString
@@ -39,6 +40,8 @@ class ShortLivedCacheSpec extends UnitSpec with MongoSpecSupport with WithFakeAp
     .build()
 
   val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
+
+  def externalServices: Seq[String] = Seq.empty
 
   override def beforeEach() {
     super.beforeEach()

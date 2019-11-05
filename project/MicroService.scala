@@ -6,6 +6,7 @@ import play.sbt.PlayImport.PlayKeys
 import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
+import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 
 trait MicroService {
 
@@ -21,6 +22,8 @@ trait MicroService {
   lazy val appDependencies : Seq[ModuleID] = ???
   lazy val plugins : Seq[Plugins] = Seq.empty
   lazy val playSettings : Seq[Setting[_]] = Seq.empty
+
+  lazy val externalServices = List(ExternalService("AUTH"), ExternalService("INDIVIDUALS_MATCHING_API"), ExternalService("DES"))
 
   def intTestFilter(name: String): Boolean = name startsWith "it"
   def unitFilter(name: String): Boolean = name startsWith "unit"
@@ -42,6 +45,7 @@ trait MicroService {
     .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
     .configs(IntegrationTest)
     .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+    .settings(itDependenciesList := externalServices)
     .settings(
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest)(base => Seq(base / "test")),
