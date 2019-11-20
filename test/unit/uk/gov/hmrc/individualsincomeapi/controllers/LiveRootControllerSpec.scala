@@ -18,36 +18,35 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 
 import java.util.UUID
 
-import org.mockito.BDDMockito.given
+import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
+import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verifyZeroInteractions, when}
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play._
 import play.api.http.Status.OK
+import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
-import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
-import uk.gov.hmrc.auth.core.{Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.actions.LivePrivilegedAction
-import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}
 
-class LiveRootControllerSpec extends PlaySpec with Results with MockitoSugar {
+class LiveRootControllerSpec extends SpecBase with MockitoSugar {
+  implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup {
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
-    val mockAuthConnector = mock[ServiceAuthConnector]
-    val testPrivilegedAction = new LivePrivilegedAction(mockAuthConnector)
-    val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, testPrivilegedAction)
+    val mockAuthConnector = mock[AuthConnector]
+
+    val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
     implicit val hc = HeaderCarrier()
@@ -62,8 +61,8 @@ class LiveRootControllerSpec extends PlaySpec with Results with MockitoSugar {
 
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
-      status(eventualResult) mustBe NOT_FOUND
-      contentAsJson(eventualResult) mustBe parse(
+      status(eventualResult) shouldBe NOT_FOUND
+      contentAsJson(eventualResult) shouldBe parse(
         """
           {
             "code":"NOT_FOUND",
@@ -77,8 +76,8 @@ class LiveRootControllerSpec extends PlaySpec with Results with MockitoSugar {
 
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
-      status(eventualResult) mustBe OK
-      contentAsJson(eventualResult) mustBe parse(
+      status(eventualResult) shouldBe OK
+      contentAsJson(eventualResult) shouldBe parse(
         s"""
           {
             "_links":{
@@ -101,7 +100,10 @@ class LiveRootControllerSpec extends PlaySpec with Results with MockitoSugar {
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any())).willReturn(failed(new InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveMatchCitizenController.root(randomMatchId).apply(FakeRequest()))}
+      val result = await(liveMatchCitizenController.root(randomMatchId).apply(FakeRequest()))
+      
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveCitizenMatchingService)
     }
 

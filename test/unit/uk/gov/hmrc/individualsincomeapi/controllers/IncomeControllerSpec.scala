@@ -20,23 +20,21 @@ import java.util.UUID
 
 import akka.stream.Materializer
 import org.joda.time.{Interval, LocalDate}
-import org.mockito.BDDMockito.given
 import org.mockito.ArgumentMatchers._
+import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyZeroInteractions
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.domain.EmpRef
-import uk.gov.hmrc.individualsincomeapi.actions.{LivePrivilegedAction, SandboxPrivilegedAction}
-import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.{LiveIncomeController, SandboxIncomeController}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.paymentJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
 import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}
@@ -52,12 +50,10 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
 
   trait Setup {
     val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
-    val mockAuthConnector: ServiceAuthConnector = mock[ServiceAuthConnector]
-    val testLivePrivilegedAction = new LivePrivilegedAction(mockAuthConnector)
-    val testSandboxPrivilegedAction = new SandboxPrivilegedAction()
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-    val liveIncomeController = new LiveIncomeController(mockIncomeService, testLivePrivilegedAction)
-    val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, testSandboxPrivilegedAction)
+    val liveIncomeController = new LiveIncomeController(mockIncomeService, mockAuthConnector)
+    val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, mockAuthConnector)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }

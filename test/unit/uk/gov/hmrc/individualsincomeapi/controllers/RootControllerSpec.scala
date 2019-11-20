@@ -19,26 +19,23 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers
 import java.util.UUID
 
 import akka.stream.Materializer
-import org.scalatest.concurrent.ScalaFutures
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyZeroInteractions
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import play.api.test.FakeRequest
-import uk.gov.hmrc.domain.Nino
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
+import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
-
-import scala.concurrent.Future.successful
-import scala.concurrent.Future.failed
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.actions.SandboxPrivilegedAction
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.SpecBase
+
+import scala.concurrent.Future.{failed, successful}
 
 class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
@@ -49,10 +46,9 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
-    val mockAuthConnector = mock[ServiceAuthConnector]
-    val testPrivilegedAction = new SandboxPrivilegedAction()
+    val mockAuthConnector = mock[AuthConnector]
 
-    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, testPrivilegedAction)
+    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, mockAuthConnector)
   }
 
   "sandbox match citizen function" should {

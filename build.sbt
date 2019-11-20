@@ -15,25 +15,24 @@ lazy val externalServices = List(ExternalService("AUTH"), ExternalService("INDIV
 
 val compile = Seq(
   ws,
-  hmrc %% "microservice-bootstrap" % "10.4.0",
-  hmrc %% "domain" % "5.3.0",
-  hmrc %% "auth-client" % "2.19.0-play-25",
-  hmrc %% "play-hal" % "1.8.0-play-25",
-  hmrc %% "play-hmrc-api" % "3.4.0-play-25",
-  hmrc %% "mongo-caching" % "5.7.0",
-  hmrc %% "json-encryption" % "3.3.0"
+  hmrc %% "bootstrap-play-25" % "5.1.0",
+  hmrc %% "domain"            % "5.6.0-play-25",
+  hmrc %% "auth-client"       % "2.31.0-play-25",
+  hmrc %% "play-hal"          % "1.8.0-play-25",
+  hmrc %% "play-hmrc-api"     % "3.6.0-play-25",
+  hmrc %% "mongo-caching"     % "6.6.0-play-25",
+  hmrc %% "json-encryption"   % "3.3.0"
 )
 
 def test(scope: String = "test,it") = Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
   "org.scalatest" %% "scalatest" % "2.2.6" % scope,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" %  scope,
   "org.scalaj" %% "scalaj-http" % "1.1.6" % scope,
   "org.mockito" % "mockito-core" % "2.11.0" % scope,
   "org.pegdown" % "pegdown" % "1.6.0" % scope,
   "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
   "com.github.tomakehurst" % "wiremock" % "2.6.0" % scope,
-  hmrc %% "reactivemongo-test" % "2.0.0" % scope,
+  hmrc %% "reactivemongo-test" % "4.15.0-play-25" % scope,
   hmrc %% "service-integration-test" % "0.9.0-play-25" % scope
 )
 

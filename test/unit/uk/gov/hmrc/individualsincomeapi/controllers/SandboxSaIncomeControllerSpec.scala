@@ -20,20 +20,19 @@ import java.util.UUID
 
 import akka.stream.Materializer
 import org.joda.time.LocalDate
-import org.mockito.BDDMockito.given
 import org.mockito.ArgumentMatchers.{any, refEq}
+import org.mockito.BDDMockito.given
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.individualsincomeapi.actions.SandboxPrivilegedAction
 import uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.SandboxSaIncomeService
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}
@@ -49,10 +48,10 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   val requestParameters = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
-    val testAction: SandboxPrivilegedAction = new SandboxPrivilegedAction()
     val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
+    val mockAuthConnector = mock[AuthConnector]
 
-    val sandboxSaIncomeController = new SandboxSaIncomeController(mockSandboxSaIncomeService, testAction)
+    val sandboxSaIncomeController = new SandboxSaIncomeController(mockSandboxSaIncomeService, mockAuthConnector)
   }
 
   "SandboxSaIncomeController.saFootprint" should {

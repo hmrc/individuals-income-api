@@ -18,21 +18,21 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import java.util.UUID
 
-import javax.inject.Singleton
-import uk.gov.hmrc.individualsincomeapi.config.{ConfigSupport, WSHttp}
+import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.individualsincomeapi.config.ConfigSupport
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.matchedCitizenJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, NotFoundException}
 
 @Singleton
-class IndividualsMatchingApiConnector extends ServicesConfig with ConfigSupport {
+class IndividualsMatchingApiConnector @Inject()(http: HttpClient) extends ServicesConfig with ConfigSupport {
 
   private[connector] val serviceUrl = baseUrl("individuals-matching-api")
-  private[connector] val http: HttpGet = WSHttp
 
   def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     http.GET[MatchedCitizen](s"$serviceUrl/match-record/$matchId") recover {
