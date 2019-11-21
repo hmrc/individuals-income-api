@@ -46,7 +46,7 @@ extends JsonErrorHandler(configuration, auditConnector) {
         Future.successful(ErrorInvalidRequest(message).toHttpResponse)
       case _ =>
         auditConnector.sendEvent(dataEvent("ClientError", s"A client error occurred, status: $statusCode", request))
-        Future.successful(Status(statusCode)(Json.toJson(ErrorResponse(statusCode, "Hello"))))
+        Future.successful(Status(statusCode)(Json.toJson(ErrorResponse(statusCode, message))))
     }
   }
 
