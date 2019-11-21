@@ -29,12 +29,12 @@ class IntervalQueryStringBinderSpec extends FlatSpec with Matchers with EitherVa
   "Interval query string binder" should "fail to bind a missing or malformed fromDate or a malformed toDate parameter" in new TableDrivenPropertyChecks {
     val fixtures = Table(
       ("parameters", "response"),
-      (Map[String, Seq[String]]().empty, """{"code":"INVALID_REQUEST","message":"fromDate is required"}"""),
-      (Map("fromDate" -> Seq.empty[String]), """{"code":"INVALID_REQUEST","message":"fromDate is required"}"""),
-      (Map("fromDate" -> Seq("")), """{"code":"INVALID_REQUEST","message":"fromDate: invalid date format"}"""),
-      (Map("fromDate" -> Seq("20200131")), """{"code":"INVALID_REQUEST","message":"fromDate: invalid date format"}"""),
-      (Map("fromDate" -> Seq("2020-01-31"), "toDate" -> Seq("")), """{"code":"INVALID_REQUEST","message":"toDate: invalid date format"}"""),
-      (Map("fromDate" -> Seq("2020-01-31"), "toDate" -> Seq("20201231")), """{"code":"INVALID_REQUEST","message":"toDate: invalid date format"}""")
+      (Map[String, Seq[String]]().empty, "fromDate is required"),
+      (Map("fromDate" -> Seq.empty[String]), "fromDate is required"),
+      (Map("fromDate" -> Seq("")), "fromDate: invalid date format"),
+      (Map("fromDate" -> Seq("20200131")), "fromDate: invalid date format"),
+      (Map("fromDate" -> Seq("2020-01-31"), "toDate" -> Seq("")), "toDate: invalid date format"),
+      (Map("fromDate" -> Seq("2020-01-31"), "toDate" -> Seq("20201231")), "toDate: invalid date format")
     )
 
     fixtures foreach { case (parameters, response) =>
@@ -58,7 +58,7 @@ class IntervalQueryStringBinderSpec extends FlatSpec with Matchers with EitherVa
   it should "fail to bind an interval from an invalid date range" in {
     val parameters = Map("fromDate" -> Seq("2020-12-31"), "toDate" -> Seq("2020-01-31"))
     val maybeEither = intervalQueryStringBinder.bind("", parameters)
-    maybeEither shouldBe Some(Left("""{"code":"INVALID_REQUEST","message":"Invalid time period requested"}"""))
+    maybeEither shouldBe Some(Left("Invalid time period requested"))
   }
 
   it should "bind an interval from a date range beginning after the des data inception date" in {
@@ -73,7 +73,7 @@ class IntervalQueryStringBinderSpec extends FlatSpec with Matchers with EitherVa
 
   it should "fail to bind an interval from an date range beginning before the des data inception date" in {
     val maybeEither = intervalQueryStringBinder.bind("", Map("fromDate" -> Seq("2013-03-30"), "toDate" -> Seq("2014-12-31")))
-    maybeEither shouldBe Some(Left("""{"code":"INVALID_REQUEST","message":"fromDate earlier than 31st March 2013"}"""))
+    maybeEither shouldBe Some(Left("fromDate earlier than 31st March 2013"))
   }
 
   it should "unbind intervals to query parameters" in {

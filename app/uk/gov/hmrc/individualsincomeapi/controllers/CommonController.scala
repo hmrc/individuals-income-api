@@ -17,9 +17,16 @@
 package uk.gov.hmrc.individualsincomeapi.controllers
 
 import org.joda.time.DateTime
-import play.api.mvc.Request
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment}
+import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, ErrorTooManyRequests, ErrorUnauthorized, MatchNotFoundException}
+import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
 import uk.gov.hmrc.individualsincomeapi.util.Dates._
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BaseController
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CommonController extends BaseController {
 
@@ -37,4 +44,26 @@ trait CommonController extends BaseController {
       case _ => url
     }
   }
+
+  private[controllers] def recovery: PartialFunction[Throwable, Result] = {
+    case _: MatchNotFoundException   => ErrorNotFound.toHttpResponse
+    case e: AuthorisationException   => ErrorUnauthorized(e.getMessage).toHttpResponse
+    case _: TooManyRequestException  => ErrorTooManyRequests.toHttpResponse
+    case e: IllegalArgumentException => ErrorInvalidRequest(e.getMessage).toHttpResponse
+  }
+}
+
+trait PrivilegedAuthentication extends AuthorisedFunctions {
+
+  val environment: String
+
+  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
+    if (environment == SANDBOX) body
+    else authorised(Enrolment(scope))(body)
+  }
+}
+
+object Environment {
+  val SANDBOX = "SANDBOX"
+  val PRODUCTION = "PRODUCTION"
 }

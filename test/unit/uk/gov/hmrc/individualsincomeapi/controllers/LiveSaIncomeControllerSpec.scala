@@ -20,24 +20,21 @@ import java.util.UUID
 
 import akka.stream.Materializer
 import org.joda.time.LocalDate
-import org.mockito.BDDMockito.given
 import org.mockito.ArgumentMatchers.{any, refEq}
+import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyZeroInteractions
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
-import uk.gov.hmrc.auth.core.{Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.individualsincomeapi.actions.LivePrivilegedAction
-import uk.gov.hmrc.individualsincomeapi.config.ServiceAuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.LiveSaIncomeService
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}
@@ -53,11 +50,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   val requestParameters = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
-    val mockAuthConnector: ServiceAuthConnector = mock[ServiceAuthConnector]
-    val testPrivilegedAction: LivePrivilegedAction = new LivePrivilegedAction(mockAuthConnector)
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockLiveSaIncomeService: LiveSaIncomeService = mock[LiveSaIncomeService]
 
-    val liveSaIncomeController = new LiveSaIncomeController(mockLiveSaIncomeService, testPrivilegedAction)
+    val liveSaIncomeController = new LiveSaIncomeController(mockLiveSaIncomeService, mockAuthConnector)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
@@ -105,7 +101,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -151,7 +150,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-summary")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -197,7 +199,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-employments")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -243,7 +248,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-self-employments")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -289,7 +297,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-trusts")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -335,7 +346,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-foreign")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -381,7 +395,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-uk-properties")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
@@ -427,7 +444,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-other")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
-      intercept[InsufficientEnrolments]{await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))}
+      val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveSaIncomeService)
     }
   }
