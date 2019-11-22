@@ -51,7 +51,7 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
     val mockAuthConnector = mock[AuthConnector]
 
-    val sandboxSaIncomeController = new SandboxSaIncomeController(mockSandboxSaIncomeService, mockAuthConnector)
+    val sandboxSaIncomeController = new SandboxSaIncomeController(mockSandboxSaIncomeService, mockAuthConnector, cc)
   }
 
   "SandboxSaIncomeController.saFootprint" should {

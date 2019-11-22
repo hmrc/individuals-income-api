@@ -15,25 +15,26 @@ lazy val externalServices = List(ExternalService("AUTH"), ExternalService("INDIV
 
 val compile = Seq(
   ws,
-  hmrc %% "bootstrap-play-25" % "5.1.0",
-  hmrc %% "domain"            % "5.6.0-play-25",
-  hmrc %% "auth-client"       % "2.31.0-play-25",
-  hmrc %% "play-hal"          % "1.8.0-play-25",
-  hmrc %% "play-hmrc-api"     % "3.6.0-play-25",
-  hmrc %% "mongo-caching"     % "6.6.0-play-25",
-  hmrc %% "json-encryption"   % "3.3.0"
+  hmrc %% "bootstrap-play-26" % "1.3.0",
+  hmrc %% "domain"            % "5.6.0-play-26",
+  hmrc %% "auth-client"       % "2.31.0-play-26",
+  hmrc %% "play-hal"          % "1.9.0-play-26",
+  hmrc %% "play-hmrc-api"     % "3.6.0-play-26",
+  hmrc %% "mongo-caching"     % "6.6.0-play-26",
+  hmrc %% "json-encryption"   % "4.4.0-play-26",
+  "com.typesafe.play" %% "play-json-joda" % "2.6.10"
 )
 
 def test(scope: String = "test,it") = Seq(
-  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
-  "org.scalatest" %% "scalatest" % "2.2.6" % scope,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.0" % scope,
+  "org.scalatest" %% "scalatest" % "3.0.0" % scope,
   "org.scalaj" %% "scalaj-http" % "1.1.6" % scope,
   "org.mockito" % "mockito-core" % "2.11.0" % scope,
   "org.pegdown" % "pegdown" % "1.6.0" % scope,
   "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-  "com.github.tomakehurst" % "wiremock" % "2.6.0" % scope,
-  hmrc %% "reactivemongo-test" % "4.15.0-play-25" % scope,
-  hmrc %% "service-integration-test" % "0.9.0-play-25" % scope
+  "com.github.tomakehurst" % "wiremock-jre8" % "2.21.0" % scope,
+  hmrc %% "reactivemongo-test" % "4.15.0-play-26" % scope,
+  hmrc %% "service-integration-test" % "0.9.0-play-26" % scope
 )
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
@@ -50,8 +51,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     testOptions in Test := Seq(Tests.Filter(unitFilter)),
     retrieveManaged := true,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    routesGenerator := StaticRoutesGenerator
+    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
   )
   .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
   .configs(IntegrationTest)

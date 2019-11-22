@@ -29,11 +29,11 @@ import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.integration.ServiceSpec
 import utils.TestSupport
-import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
+import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with Dates with TestSupport {
+class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates with TestSupport {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"

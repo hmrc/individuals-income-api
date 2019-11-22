@@ -53,7 +53,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockLiveSaIncomeService: LiveSaIncomeService = mock[LiveSaIncomeService]
 
-    val liveSaIncomeController = new LiveSaIncomeController(mockLiveSaIncomeService, mockAuthConnector)
+    val liveSaIncomeController = new LiveSaIncomeController(mockLiveSaIncomeService, mockAuthConnector, cc)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }

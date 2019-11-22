@@ -24,7 +24,7 @@ import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
@@ -32,7 +32,7 @@ import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, LiveIncomeServi
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(incomeService: IncomeService) extends CommonController with PrivilegedAuthentication {
+abstract class IncomeController(incomeService: IncomeService, cc: ControllerComponents) extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-paye") {
@@ -48,12 +48,14 @@ abstract class IncomeController(incomeService: IncomeService) extends CommonCont
 
 @Singleton
 class LiveIncomeController @Inject()(val incomeService: LiveIncomeService,
-                                     val authConnector: AuthConnector) extends IncomeController(incomeService) {
+                                     val authConnector: AuthConnector,
+                                     cc: ControllerComponents) extends IncomeController(incomeService, cc) {
   override val environment = PRODUCTION
 }
 
 @Singleton
 class SandboxIncomeController @Inject()(val incomeService: SandboxIncomeService,
-                                        val authConnector: AuthConnector) extends IncomeController(incomeService) {
+                                        val authConnector: AuthConnector,
+                                        cc: ControllerComponents) extends IncomeController(incomeService, cc) {
   override val environment = SANDBOX
 }

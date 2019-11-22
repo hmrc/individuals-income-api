@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.util
 import org.joda.time.LocalDateTime.parse
 import org.joda.time.{Interval, LocalDateTime}
 
-trait Dates {
+trait TestDates {
 
   protected def toInterval(fromDate: String, toDate: String): Interval =
     toInterval(parse(fromDate), parse(toDate))

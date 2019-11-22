@@ -18,20 +18,25 @@ package uk.gov.hmrc.individualsincomeapi.handlers
 
 import javax.inject.Inject
 import play.api.Configuration
-import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, TOO_MANY_REQUESTS}
+import play.api.http.Status.{BAD_REQUEST, NOT_FOUND}
 import play.api.libs.json.Json
 import play.api.mvc.Results.Status
 import play.api.mvc.{RequestHeader, Result}
-import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, ErrorTooManyRequests}
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound}
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import uk.gov.hmrc.play.bootstrap.http.{ErrorResponse, JsonErrorHandler}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CustomErrorHandler @Inject()(override val configuration: Configuration, auditConnector: AuditConnector)
-extends JsonErrorHandler(configuration, auditConnector) {
+class CustomErrorHandler @Inject()(auditConnector: AuditConnector,
+                                   httpAuditEvent: HttpAuditEvent,
+                                   configuration: Configuration)
+extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
+
+  import httpAuditEvent.dataEvent
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 

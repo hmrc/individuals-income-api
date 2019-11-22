@@ -39,7 +39,9 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
   trait Fixture {
     implicit val hc = HeaderCarrier()
 
-    val individualsMatchingApiConnector = new IndividualsMatchingApiConnector(fakeApplication.injector.instanceOf[HttpClient]) {
+    val individualsMatchingApiConnector = new IndividualsMatchingApiConnector(
+      appConfig,
+      fakeApplication.injector.instanceOf[HttpClient]) {
       override val serviceUrl = "http://localhost:11121"
     }
   }

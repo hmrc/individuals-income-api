@@ -52,8 +52,8 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-    val liveIncomeController = new LiveIncomeController(mockIncomeService, mockAuthConnector)
-    val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, mockAuthConnector)
+    val liveIncomeController = new LiveIncomeController(mockIncomeService, mockAuthConnector, cc)
+    val sandboxIncomeController = new SandboxIncomeController(new SandboxIncomeService, mockAuthConnector, cc)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
