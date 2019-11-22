@@ -18,10 +18,10 @@ package utils
 
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.ControllerComponents
-import uk.gov.hmrc.individualsincomeapi.config.AppConfig
+import play.api.{Application, Configuration}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait SpecBase extends TestSupport with GuiceOneAppPerSuite {
 
@@ -41,7 +41,7 @@ trait SpecBase extends TestSupport with GuiceOneAppPerSuite {
 
   override lazy val fakeApplication: Application = buildFakeApplication(additionalConfig)
 
-  lazy val appConfig: AppConfig = fakeApplication.injector.instanceOf[AppConfig]
+  lazy val servicesConfig: ServicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
   lazy val cc: ControllerComponents = fakeApplication.injector.instanceOf[ControllerComponents]
 
 }

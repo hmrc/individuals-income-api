@@ -22,23 +22,26 @@ import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.individualsincomeapi.config.AppConfig
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject()(appConfig: AppConfig, http: HttpClient) {
+class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
 
-  val serviceUrl = appConfig.baseUrl("des")
+  val serviceUrl = servicesConfig.baseUrl("des")
+
+  lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
+  lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
   private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) = {
-    hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desBearerToken}")))
-      .withExtraHeaders(Seq("Environment" -> appConfig.desEnvironment, "Source" -> "MDTP") ++ extraHeaders: _*)
+    hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken")))
+      .withExtraHeaders(Seq("Environment" -> desEnvironment, "Source" -> "MDTP") ++ extraHeaders: _*)
   }
 
   def fetchEmployments(nino: Nino, interval: Interval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesEmployment]] = {
