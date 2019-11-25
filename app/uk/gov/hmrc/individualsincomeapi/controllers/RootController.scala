@@ -22,14 +22,14 @@ import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal._
 import play.api.hal.HalLink
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class RootController(citizenMatchingService: CitizenMatchingService) extends CommonController with PrivilegedAuthentication {
+abstract class RootController(citizenMatchingService: CitizenMatchingService, cc: ControllerComponents) extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income") {
@@ -45,12 +45,14 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService) ex
 
 @Singleton
 class SandboxRootController @Inject()(val citizenMatchingService: SandboxCitizenMatchingService,
-                                      val authConnector: AuthConnector) extends RootController(citizenMatchingService) {
+                                      val authConnector: AuthConnector,
+                                      cc: ControllerComponents) extends RootController(citizenMatchingService, cc) {
   override val environment = SANDBOX
 }
 
 @Singleton
 class LiveRootController @Inject()(val citizenMatchingService: LiveCitizenMatchingService,
-                                   val authConnector: AuthConnector) extends RootController(citizenMatchingService) {
+                                   val authConnector: AuthConnector,
+                                   cc: ControllerComponents) extends RootController(citizenMatchingService, cc) {
   override val environment = PRODUCTION
 }

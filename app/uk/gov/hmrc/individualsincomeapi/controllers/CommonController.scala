@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
+import javax.inject.Inject
 import org.joda.time.DateTime
-import play.api.mvc.{Request, Result}
+import play.api.mvc.{ControllerComponents, Request, Result}
 import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
-import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound, ErrorTooManyRequests, ErrorUnauthorized, MatchNotFoundException}
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
+import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.util.Dates._
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-trait CommonController extends BaseController {
+abstract class CommonController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
   private def getQueryParam[T](name: String)(implicit request: Request[T]) = request.queryString.get(name).flatMap(_.headOption)
 

@@ -23,7 +23,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsincomeapi.cache.ShortLivedCache
 import uk.gov.hmrc.mongo.MongoSpecSupport
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import uk.gov.hmrc.integration.ServiceSpec
 import utils.TestSupport
 

@@ -24,7 +24,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.libs.json.Json._
 import play.api.mvc.hal._
-import play.api.mvc.{Action, AnyContent, RequestHeader}
+import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
@@ -35,7 +35,7 @@ import uk.gov.hmrc.individualsincomeapi.services._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-sealed abstract class SaIncomeController(saIncomeService: SaIncomeService) extends CommonController with PrivilegedAuthentication {
+sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: ControllerComponents) extends CommonController(cc) with PrivilegedAuthentication {
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
 
@@ -193,12 +193,14 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService) exten
 
 @Singleton
 class SandboxSaIncomeController @Inject()(val saIncomeService: SandboxSaIncomeService,
-                                          val authConnector: AuthConnector) extends SaIncomeController(saIncomeService) {
+                                          val authConnector: AuthConnector,
+                                          cc: ControllerComponents) extends SaIncomeController(saIncomeService, cc) {
   override val environment = SANDBOX
 }
 
 @Singleton
 class LiveSaIncomeController @Inject()(val saIncomeService: LiveSaIncomeService,
-                                       val authConnector: AuthConnector) extends SaIncomeController(saIncomeService) {
+                                       val authConnector: AuthConnector,
+                                       cc: ControllerComponents) extends SaIncomeController(saIncomeService, cc) {
   override val environment = PRODUCTION
 }

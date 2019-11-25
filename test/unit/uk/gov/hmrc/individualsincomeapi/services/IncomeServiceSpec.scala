@@ -33,13 +33,13 @@ import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatc
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
-import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
+import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.SpecBase
 
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
-class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with Dates {
+class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with TestDates {
 
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()

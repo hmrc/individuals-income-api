@@ -22,7 +22,7 @@ import org.scalatest.{EitherValues, FlatSpec, Matchers}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import uk.gov.hmrc.individualsincomeapi.util.IntervalQueryStringBinder
 
-class IntervalQueryStringBinderSpec extends FlatSpec with Matchers with EitherValues with Dates with GuiceOneAppPerSuite {
+class IntervalQueryStringBinderSpec extends FlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {
 
   lazy val intervalQueryStringBinder = new IntervalQueryStringBinder
 

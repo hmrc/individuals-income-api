@@ -18,27 +18,26 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
-import play.api.Configuration
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.individualsincomeapi.config.ConfigSupport
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject()(override val config: Configuration, http: HttpClient) extends ServicesConfig with ConfigSupport {
+class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
 
-  val serviceUrl = baseUrl("des")
-  val desBearerToken = config.getString("microservice.services.des.authorization-token").getOrElse(throw new RuntimeException("DES authorization token must be defined"))
-  val desEnvironment = config.getString("microservice.services.des.environment").getOrElse(throw new RuntimeException("DES environment must be defined"))
+  val serviceUrl = servicesConfig.baseUrl("des")
+
+  lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
+  lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
   private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) = {
     hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken")))

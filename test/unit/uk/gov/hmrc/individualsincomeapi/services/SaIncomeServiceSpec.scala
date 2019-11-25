@@ -31,14 +31,14 @@ import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatc
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.services.{LiveSaIncomeService, SandboxSaIncomeService}
-import unit.uk.gov.hmrc.individualsincomeapi.util.Dates
+import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
 
-class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFutures with Dates {
+class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFutures with TestDates {
 
   "LiveIncomeService.fetchSaFootprintByMatchId" should {
     "return the saFootprint with saReturns sorted by tax year DESCENDING when the matchId is valid" in new Setup {

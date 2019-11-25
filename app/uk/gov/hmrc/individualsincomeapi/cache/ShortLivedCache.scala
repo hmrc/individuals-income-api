@@ -24,8 +24,8 @@ import uk.gov.hmrc.cache.model.Cache
 import uk.gov.hmrc.cache.repository.CacheRepository
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
@@ -56,6 +56,6 @@ class ShortLivedCache @Inject()(val cacheConfig: CacheConfiguration, configurati
 
 @Singleton
 class CacheConfiguration @Inject()(configuration: Configuration) {
-  lazy val cacheEnabled = configuration.getBoolean("cache.enabled").getOrElse(true)
-  lazy val cacheTtl = configuration.getInt("cache.ttlInSeconds").getOrElse(60 * 15)
+  lazy val cacheEnabled = configuration.getOptional[Boolean]("cache.enabled").getOrElse(true)
+  lazy val cacheTtl = configuration.getOptional[Int]("cache.ttlInSeconds").getOrElse(60 * 15)
 }

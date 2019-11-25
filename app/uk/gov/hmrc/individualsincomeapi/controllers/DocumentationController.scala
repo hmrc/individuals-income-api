@@ -16,24 +16,26 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
+import controllers.Assets
 import javax.inject.{Inject, Singleton}
-
 import play.api.Configuration
 import play.api.http.HttpErrorHandler
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.individualsincomeapi.views._
 
 @Singleton
-class DocumentationController @Inject()(httpErrorHandler: HttpErrorHandler, configuration: Configuration) extends uk.gov.hmrc.api.controllers.DocumentationController(httpErrorHandler) {
+class DocumentationController @Inject()(cc: ControllerComponents, assets: Assets, errorHandler: HttpErrorHandler, config: Configuration)
+  extends uk.gov.hmrc.api.controllers.DocumentationController(cc, assets, errorHandler) {
 
-  private lazy val privilegedWhitelistedApplicationIds = configuration.getStringSeq("api.access.version-P1.0.whitelistedApplicationIds").getOrElse(Seq.empty)
+  private lazy val privilegedWhitelistedApplicationIds =
+    config.getOptional[Seq[String]]("api.access.version-P1.0.whitelistedApplicationIds").getOrElse(Seq.empty)
 
   override def definition(): Action[AnyContent] = Action {
     Ok(txt.definition(privilegedWhitelistedApplicationIds)).withHeaders(CONTENT_TYPE -> JSON)
   }
 
   def raml(version: String, file: String) = {
-    super.at(s"/public/api/conf/$version", file)
+    assets.at(s"/public/api/conf/$version", file)
   }
 
 }

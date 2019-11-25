@@ -17,12 +17,10 @@
 package uk.gov.hmrc.individualsincomeapi.util
 
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.individualsincomeapi.config.ConfigSupport
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval, ValidationException}
 import uk.gov.hmrc.individualsincomeapi.util.Dates.toTaxYearInterval
-import uk.gov.hmrc.play.config.ServicesConfig
 
-class TaxYearIntervalQueryStringBinder extends QueryStringBindable[TaxYearInterval] with ServicesConfig with ConfigSupport {
+class TaxYearIntervalQueryStringBinder extends QueryStringBindable[TaxYearInterval] {
 
   override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TaxYearInterval]] = {
     (getParam(params, "fromTaxYear"), getParam(params, "toTaxYear", Some(TaxYear.current()))) match {

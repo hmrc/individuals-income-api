@@ -17,23 +17,22 @@
 package uk.gov.hmrc.individualsincomeapi.handlers
 
 import javax.inject.Inject
+import play.api.Configuration
 import play.api.http.{HttpConfiguration, HttpErrorHandler, HttpFilters}
 import play.api.mvc.{Handler, RequestHeader}
 import play.api.routing.Router
-import uk.gov.hmrc.individualsincomeapi.config.ConfigSupport
-import uk.gov.hmrc.play.bootstrap.http.RequestHandler
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
+import uk.gov.hmrc.play.bootstrap.http.RequestHandler
 
-class VersioningRequestHandler @Inject()(
+class VersioningRequestHandler @Inject()( config: Configuration,
                                           router: Router,
                                           errorHandler: HttpErrorHandler,
-                                          configuration: HttpConfiguration,
+                                          httpConfiguration: HttpConfiguration,
                                           filters: HttpFilters)
-  extends RequestHandler(router, errorHandler, configuration, filters)
-    with ConfigSupport {
+  extends RequestHandler(router, errorHandler, httpConfiguration, filters){
 
   private lazy val unversionedContexts = config
-    .getStringSeq("versioning.unversionedContexts")
+    .getOptional[Seq[String]]("versioning.unversionedContexts")
     .getOrElse(Seq.empty[String])
 
   override def routeRequest(request: RequestHeader): Option[Handler] = {

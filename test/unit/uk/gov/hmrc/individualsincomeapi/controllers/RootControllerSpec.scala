@@ -48,7 +48,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockAuthConnector = mock[AuthConnector]
 
-    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, mockAuthConnector)
+    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, mockAuthConnector, cc)
   }
 
   "sandbox match citizen function" should {

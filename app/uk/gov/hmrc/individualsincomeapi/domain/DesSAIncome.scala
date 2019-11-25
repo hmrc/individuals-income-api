@@ -19,6 +19,8 @@ package uk.gov.hmrc.individualsincomeapi.domain
 import org.joda.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.domain.SaUtr
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 case class DesSAIncome(taxYear: String,
                        returnList: Seq[DesSAReturn]) {
