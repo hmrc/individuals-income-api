@@ -18,6 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
+import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
@@ -52,8 +53,10 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
     http.GET[DesEmployments](employmentsUrl)(implicitly, header(), ec).map(_.employments).recoverWith {
       case _: NotFoundException => Future.successful(Seq.empty)
-      case Upstream5xxResponse(msg, 503, _) if msg.contains("LTM000503") /* DES's magic rate limit error code*/ =>
+      case Upstream4xxResponse(msg, 429, _, _) => {
+        Logger.warn(s"DES Rate limited: $msg")
         Future.failed(new TooManyRequestException(msg))
+      }
     }
   }
 
