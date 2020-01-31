@@ -37,7 +37,8 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       When("I request individual SA income with a missing fromTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -50,7 +51,8 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       When("I request individual SA income with an incorrectly formatted fromTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=20162017&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -63,7 +65,8 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       When("I request individual SA income with an incorrectly formatted toTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=20170301")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -76,7 +79,8 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       When("I request individual income with toTaxYear value before fromTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -89,8 +93,10 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       When("I request individual income with fromTaxYear 7 years before the current tax year")
       val fromTaxYear = TaxYear.fromEndYear(today.getYear - 8)
-      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response = Http(
+        s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -105,8 +111,10 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       val currentEndYear = TaxYear.current().endYr
       val fromTaxYear = TaxYear.fromEndYear(today.getYear - 3).formattedTaxYear
       val toTaxYear = TaxYear.fromEndYear(currentEndYear + 1).formattedTaxYear
-      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -119,13 +127,15 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       When("I request individual income for the existing matchId without a toTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 200")
       response.code shouldBe OK
 
       And("The response contains the self-assessment for the period")
-      (Json.parse(response.body) \ "selfAssessment" \ "taxReturns" \\ "taxYear").map(_.as[String]) shouldBe Seq("2014-15", "2013-14")
+      (Json.parse(response.body) \ "selfAssessment" \ "taxReturns" \\ "taxYear")
+        .map(_.as[String]) shouldBe Seq("2014-15", "2013-14")
     }
   }
 }

@@ -112,9 +112,9 @@ object EnumJson {
     def writes(v: E#Value): JsValue = JsString(v.toString)
   }
 
-  implicit def enumFormat[E <: Enumeration](enum: E): Format[E#Value] = {
+  implicit def enumFormat[E <: Enumeration](enum: E): Format[E#Value] =
     Format(enumReads(enum), enumWrites)
-  }
 }
 
-class InvalidEnumException(className: String, input:String) extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")
+class InvalidEnumException(className: String, input: String)
+    extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")

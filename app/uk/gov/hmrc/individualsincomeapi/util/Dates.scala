@@ -28,11 +28,10 @@ object Dates {
 
   def toFormattedLocalDate(date: DateTime): String = date.toLocalDate.toString(localDatePattern)
 
-  def toInterval(fromDate: LocalDate, toDate: LocalDate): Interval = {
+  def toInterval(fromDate: LocalDate, toDate: LocalDate): Interval =
     if (fromDate.isBefore(desDataInceptionDate))
       throw new ValidationException("fromDate earlier than 31st March 2013")
     else new Interval(fromDate.toDate.getTime, toDate.toDateTimeAtStartOfDay.plusMillis(1).toDate.getTime)
-  }
 
   def toTaxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): TaxYearInterval = {
     if (fromTaxYear.startYr > toTaxYear.startYr)
@@ -43,7 +42,6 @@ object Dates {
 
     if (toTaxYear.endYr > TaxYear.current().endYr)
       throw new ValidationException("toTaxYear is later than the current tax year")
-
     else TaxYearInterval(fromTaxYear, toTaxYear)
   }
 

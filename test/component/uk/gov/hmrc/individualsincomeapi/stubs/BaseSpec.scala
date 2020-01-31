@@ -30,19 +30,22 @@ import play.mvc.Http.MimeTypes.JSON
 
 import scala.concurrent.duration.Duration
 
-trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
-  with GivenWhenThen {
+trait BaseSpec
+    extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
+    with GivenWhenThen {
 
   override lazy val port = 9000
-  implicit override lazy val app: Application = GuiceApplicationBuilder().configure(
-    "auditing.enabled" -> false,
-    "auditing.traceRequests" -> false,
-    "microservice.services.auth.port" -> AuthStub.port,
-    "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
-    "microservice.services.des.port" -> DesStub.port,
-    "microservice.services.cacheable.short-lived-cache.port" -> Save4LaterStub.port,
-    "run.mode" -> "It"
-  ).build()
+  implicit override lazy val app: Application = GuiceApplicationBuilder()
+    .configure(
+      "auditing.enabled"                                       -> false,
+      "auditing.traceRequests"                                 -> false,
+      "microservice.services.auth.port"                        -> AuthStub.port,
+      "microservice.services.individuals-matching-api.port"    -> IndividualsMatchingApiStub.port,
+      "microservice.services.des.port"                         -> DesStub.port,
+      "microservice.services.cacheable.short-lived-cache.port" -> Save4LaterStub.port,
+      "run.mode"                                               -> "It"
+    )
+    .build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
   val serviceUrl = s"http://localhost:$port"
@@ -51,25 +54,20 @@ trait BaseSpec extends FeatureSpec with BeforeAndAfterAll with BeforeAndAfterEac
   val clientId = "CLIENT_ID"
   val acceptHeaderP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
 
-  protected def requestHeaders(acceptHeader: (String, String) = acceptHeaderP1) = {
+  protected def requestHeaders(acceptHeader: (String, String) = acceptHeaderP1) =
     Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader)
-  }
 
-  protected def errorResponse(message: String) = {
+  protected def errorResponse(message: String) =
     s"""{"code":"INVALID_REQUEST","message":"$message"}"""
-  }
 
-  override protected def beforeEach(): Unit = {
+  override protected def beforeEach(): Unit =
     mocks.foreach(m => if (!m.server.isRunning) m.server.start())
-  }
 
-  override protected def afterEach(): Unit = {
+  override protected def afterEach(): Unit =
     mocks.foreach(_.mock.resetMappings())
-  }
 
-  override def afterAll(): Unit = {
+  override def afterAll(): Unit =
     mocks.foreach(_.server.stop())
-  }
 }
 
 case class MockHost(port: Int) {

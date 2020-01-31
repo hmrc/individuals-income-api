@@ -27,35 +27,34 @@ class TaxYearSpec extends TestSupport with Matchers with BeforeAndAfterEach {
 
   val invalidTaxYears = Seq("2014", "201314", "2016-1X", "A2014-15", "2015-17", "2013-18", "2015-14", "2015-15")
 
-  override def afterEach: Unit = {
+  override def afterEach: Unit =
     DateTimeUtils.setCurrentMillisSystem()
-  }
 
   "isValid" should {
 
-    validTaxYears.foreach {
-      taxYear => s"return true for tax year $taxYear" in {
-          TaxYear.isValid(taxYear) shouldBe true
+    validTaxYears.foreach { taxYear =>
+      s"return true for tax year $taxYear" in {
+        TaxYear.isValid(taxYear) shouldBe true
       }
     }
 
-    invalidTaxYears.foreach {
-      taxYear => s"return false for tax year $taxYear" in {
+    invalidTaxYears.foreach { taxYear =>
+      s"return false for tax year $taxYear" in {
         TaxYear.isValid(taxYear) shouldBe false
       }
     }
   }
 
   "TaxYear constructor" should {
-    validTaxYears.foreach {
-      taxYear => s"create a taxYear for a valid argument '$taxYear'" in {
+    validTaxYears.foreach { taxYear =>
+      s"create a taxYear for a valid argument '$taxYear'" in {
         TaxYear(taxYear).formattedTaxYear == taxYear shouldBe true
       }
     }
 
-    invalidTaxYears.foreach {
-      taxYear => s"throw an IllegalArgumentException for an invalid argument '$taxYear'" in {
-        an [IllegalArgumentException] should be thrownBy TaxYear(taxYear)
+    invalidTaxYears.foreach { taxYear =>
+      s"throw an IllegalArgumentException for an invalid argument '$taxYear'" in {
+        an[IllegalArgumentException] should be thrownBy TaxYear(taxYear)
       }
     }
   }

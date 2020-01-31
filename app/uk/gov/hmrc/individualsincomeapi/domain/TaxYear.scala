@@ -32,14 +32,14 @@ object TaxYear {
 
   private final val TaxYearRegex = "^(\\d{4})-(\\d{2})$"
 
-  private final def firstDayOfTaxYear(year: Int): LocalDate =  new MonthDay(4, 6).toLocalDate(year)
+  private final def firstDayOfTaxYear(year: Int): LocalDate = new MonthDay(4, 6).toLocalDate(year)
 
   private val matchTaxYear: String => Option[Match] = new Regex(s"$TaxYearRegex", "first", "second") findFirstMatchIn _
 
-  def fromEndYear(endYear: Int): TaxYear = TaxYear(s"%04d-%02d".format(endYear - 1, endYear % 100) )
+  def fromEndYear(endYear: Int): TaxYear = TaxYear(s"%04d-%02d".format(endYear - 1, endYear % 100))
 
-  def isValid(taxYearReference: String) = matchTaxYear(taxYearReference) exists {
-    r => (r.group("first").toInt + 1) % 100 == r.group("second").toInt
+  def isValid(taxYearReference: String) = matchTaxYear(taxYearReference) exists { r =>
+    (r.group("first").toInt + 1) % 100 == r.group("second").toInt
   }
 
   def current(): TaxYear = {

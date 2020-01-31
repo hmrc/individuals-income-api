@@ -44,7 +44,8 @@ class IntervalValidationSpec extends BaseSpec {
 
       When("I request individual income with a missing fromDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&toDate=2017-03-01")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -57,7 +58,8 @@ class IntervalValidationSpec extends BaseSpec {
 
       When("I request individual income with an incorrectly formatted fromDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=20160101&toDate=2017-03-01")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -70,7 +72,8 @@ class IntervalValidationSpec extends BaseSpec {
 
       When("I request individual income with an incorrectly formatted toDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=2016-01-01&toDate=20170301")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -83,7 +86,8 @@ class IntervalValidationSpec extends BaseSpec {
 
       When("I request individual income with ToDate value before fromDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=2017-01-01&toDate=2016-03-01")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 400 (Bad Request)")
       response.code shouldBe BAD_REQUEST
@@ -98,23 +102,25 @@ class IntervalValidationSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.willRespondWith(matchId, OK,
-        s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
       And("DES will return employments for the NINO between fromDate and today")
-      DesStub.searchEmploymentIncomeForPeriodReturns(nino, fromDate, today,
+      DesStub.searchEmploymentIncomeForPeriodReturns(
+        nino,
+        fromDate,
+        today,
         DesEmployments(Seq(DesEmployment(Seq(DesPayment(LocalDate.parse(yesterday), 100.5))))))
 
       When("I request individual income for the existing matchId without a toDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 200")
       response.code shouldBe OK
 
       And("The response contains the payments for the period")
-      Json.parse(response.body) shouldBe Json.parse(
-        s"""
+      Json.parse(response.body) shouldBe Json.parse(s"""
             {
                "_links":
                {

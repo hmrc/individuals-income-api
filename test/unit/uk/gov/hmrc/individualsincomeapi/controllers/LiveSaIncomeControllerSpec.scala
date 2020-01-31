@@ -47,7 +47,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   val fromTaxYear = TaxYear("2015-16")
   val toTaxYear = TaxYear("2016-17")
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
-  val requestParameters = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
+  val requestParameters =
+    s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -62,7 +63,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
     val saFootprint = SaFootprint(
       Seq(SaRegistration(utr, Some(LocalDate.parse("2013-06-01")))),
-      Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-01")))))))
+      Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-01"))))))
+    )
 
     "return 200 (OK) with the self assessment footprint for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -94,11 +96,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -125,7 +129,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and a link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saReturnSummaries))
@@ -133,7 +138,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saReturnSummaries)))
+      jsonBodyOf(result) shouldBe Json.parse(
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saReturnSummaries)))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -143,11 +149,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-summary privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-summary")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa-summary")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -174,15 +182,18 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
-      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+      val result =
+        await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(employmentsIncomes)))
+      jsonBodyOf(result) shouldBe Json.parse(
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(employmentsIncomes)))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -192,11 +203,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-employments privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-employments")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa-employments")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -223,12 +236,14 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
-      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+      val result =
+        await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saIncomes)))
@@ -241,11 +256,14 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-self-employments privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-self-employments")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector.authorise(
+          refEq(Enrolment("read:individuals-income-sa-self-employments")),
+          refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -272,7 +290,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
@@ -290,11 +309,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-trusts privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-trusts")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa-trusts")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -307,7 +328,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.saForeignIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
-    val saForeignIncome = Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
+    val saForeignIncome =
+      Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
     "return 200 (OK) with the foreign income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -321,7 +343,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncome))
@@ -329,7 +352,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saForeignIncome)))
+      jsonBodyOf(result) shouldBe Json.parse(
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saForeignIncome)))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -339,11 +363,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-foreign privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-foreign")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa-foreign")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -356,7 +382,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.saUkPropertiesIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
-    val saUkPropertiesIncome = Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
+    val saUkPropertiesIncome =
+      Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
     "return 200 (OK) with the uk properties income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -370,15 +397,18 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncome))
 
-      val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+      val result =
+        await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saUkPropertiesIncome)))
+      jsonBodyOf(result) shouldBe Json.parse(
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saUkPropertiesIncome)))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -388,11 +418,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-uk-properties privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-uk-properties")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa-uk-properties")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -419,7 +451,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
-      val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saOtherIncome))
@@ -427,7 +460,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
-      jsonBodyOf(result) shouldBe Json.parse(expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saOtherIncome)))
+      jsonBodyOf(result) shouldBe Json.parse(
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saOtherIncome)))
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -437,11 +471,13 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "require read:individuals-income-sa-other privileged scope" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income-sa-other")), refEq(EmptyRetrieval))(any(), any()))
+      given(
+        mockAuthConnector
+          .authorise(refEq(Enrolment("read:individuals-income-sa-other")), refEq(EmptyRetrieval))(any(), any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -452,7 +488,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     }
   }
 
-  private def expectedSaFootprintPayload(requestParameters: String, saFootprint: SaFootprint) = {
+  private def expectedSaFootprintPayload(requestParameters: String, saFootprint: SaFootprint) =
     s"""
        {
          "_links": {
@@ -475,9 +511,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
          }
        }
       """
-  }
 
-  private def expectedSaPayload(fakeRequest: String, income: JsValue) = {
+  private def expectedSaPayload(fakeRequest: String, income: JsValue) =
     s"""
        {
          "_links": {
@@ -488,7 +523,5 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
          }
        }
       """
-  }
 
 }
-

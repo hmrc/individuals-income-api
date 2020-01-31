@@ -46,25 +46,32 @@ class IndividualIncomeSpec extends BaseSpec {
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("DES will return employments for the NINO")
-      DesStub.searchEmploymentIncomeForPeriodReturns(nino, fromDate, toDate,
+      DesStub.searchEmploymentIncomeForPeriodReturns(
+        nino,
+        fromDate,
+        toDate,
         DesEmployments(
-          Seq(DesEmployment(employerDistrictNumber = Some("123"), employerSchemeReference = Some("DI45678"),
-          payments = Seq(
-            DesPayment(LocalDate.parse("2017-02-09"), 500.25, weekPayNumber = Some(45)),
-            DesPayment(LocalDate.parse("2017-02-16"), 500.25, weekPayNumber = Some(46)),
-            DesPayment(LocalDate.parse("2016-04-15"), 1000.25, monthPayNumber = Some(1)),
-            DesPayment(LocalDate.parse("2016-05-15"), 1000.25, weekPayNumber = Some(2)))))))
-
+          Seq(DesEmployment(
+            employerDistrictNumber = Some("123"),
+            employerSchemeReference = Some("DI45678"),
+            payments = Seq(
+              DesPayment(LocalDate.parse("2017-02-09"), 500.25, weekPayNumber = Some(45)),
+              DesPayment(LocalDate.parse("2017-02-16"), 500.25, weekPayNumber = Some(46)),
+              DesPayment(LocalDate.parse("2016-04-15"), 1000.25, monthPayNumber = Some(1)),
+              DesPayment(LocalDate.parse("2016-05-15"), 1000.25, weekPayNumber = Some(2))
+            )
+          )))
+      )
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {
@@ -117,13 +124,13 @@ class IndividualIncomeSpec extends BaseSpec {
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {
@@ -151,12 +158,13 @@ class IndividualIncomeSpec extends BaseSpec {
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "TOO_MANY_REQUESTS",
+        "code"    -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -168,13 +176,13 @@ class IndividualIncomeSpec extends BaseSpec {
 
       When("I request individual income for the sandbox matchId")
       val response = Http(s"$serviceUrl/sandbox/paye?matchId=$sandboxMatchId&fromDate=$fromDate&toDate=$toDate")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {

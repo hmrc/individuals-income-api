@@ -39,11 +39,10 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
   trait Fixture {
     implicit val hc = HeaderCarrier()
 
-    val individualsMatchingApiConnector = new IndividualsMatchingApiConnector(
-      servicesConfig,
-      fakeApplication.injector.instanceOf[HttpClient]) {
-      override val serviceUrl = "http://localhost:11121"
-    }
+    val individualsMatchingApiConnector =
+      new IndividualsMatchingApiConnector(servicesConfig, fakeApplication.injector.instanceOf[HttpClient]) {
+        override val serviceUrl = "http://localhost:11121"
+      }
   }
 
   def externalServices: Seq[String] = Seq("Stub")
@@ -58,8 +57,9 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
     val matchId = UUID.randomUUID()
 
     def stubWithResponseStatus(responseStatus: Int, body: String = ""): Unit =
-      stubFor(get(urlPathMatching(s"/match-record/$matchId"))
-        .willReturn(aResponse().withStatus(responseStatus).withBody(body)))
+      stubFor(
+        get(urlPathMatching(s"/match-record/$matchId"))
+          .willReturn(aResponse().withStatus(responseStatus).withBody(body)))
 
     "fail when upstream service fails" in new Fixture {
       stubWithResponseStatus(INTERNAL_SERVER_ERROR)
@@ -76,7 +76,8 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
     }
 
     "return a nino match when upstream service call succeeds" in new Fixture {
-      stubWithResponseStatus(OK,
+      stubWithResponseStatus(
+        OK,
         s"""
           {
             "matchId":"${matchId.toString}",

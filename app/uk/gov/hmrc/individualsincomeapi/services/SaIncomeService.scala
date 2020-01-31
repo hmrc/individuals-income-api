@@ -32,121 +32,110 @@ import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 trait SaIncomeService {
-  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)
-                      (implicit hc: HeaderCarrier): Future[SaFootprint]
+  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint]
 
-  def fetchReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval)
-                         (implicit hc: HeaderCarrier): Future[Seq[SaTaxReturnSummaries]] = {
+  def fetchReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaTaxReturnSummaries]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaTaxReturnSummaries(desSAIncome))
-  }
 
-  def fetchTrustsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                       (implicit hc: HeaderCarrier): Future[Seq[SaAnnualTrustIncomes]] = {
+  def fetchTrustsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualTrustIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualTrustIncomes(desSAIncome))
-  }
 
-  def fetchForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                        (implicit hc: HeaderCarrier): Future[Seq[SaAnnualForeignIncomes]] = {
+  def fetchForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualForeignIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualForeignIncomes(desSAIncome))
-  }
 
-  def fetchPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                             (implicit hc: HeaderCarrier): Future[Seq[SaAnnualPartnershipIncomes]] = {
+  def fetchPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualPartnershipIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualPartnershipIncomes(desSAIncome))
-  }
 
-  def fetchInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                                      (implicit hc: HeaderCarrier): Future[Seq[SaAnnualInterestAndDividendIncomes]] = {
+  def fetchInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualInterestAndDividendIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualInterestAndDividendIncomes(desSAIncome))
-  }
 
-  def fetchUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                             (implicit hc: HeaderCarrier): Future[Seq[SaAnnualUkPropertiesIncomes]] = {
+  def fetchUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualUkPropertiesIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualUkPropertiesIncomes(desSAIncome))
-  }
 
-  def fetchPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                                         (implicit hc: HeaderCarrier): Future[Seq[SaAnnualPensionAndStateBenefitIncomes]] = {
+  def fetchPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualPensionAndStateBenefitIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualPensionAndStateBenefitIncomes(desSAIncome))
-  }
 
-  def fetchEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                            (implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] = {
+  def fetchEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualEmployments]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualEmployments(desSAIncome))
-  }
 
-  def fetchSelfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                                (implicit hc: HeaderCarrier): Future[Seq[SaAnnualSelfEmployments]] = {
+  def fetchSelfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualSelfEmployments]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualSelfEmployments(desSAIncome))
-  }
 
-  def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval)
-                                (implicit hc: HeaderCarrier): Future[Seq[SaAnnualAdditionalInformations]] = {
+  def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualAdditionalInformations]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualAdditionalInformations(desSAIncome))
-  }
 
-  def fetchOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval)
-                      (implicit hc: HeaderCarrier): Future[Seq[SaAnnualOtherIncomes]] = {
+  def fetchOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaAnnualOtherIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualOtherIncomes(desSAIncome))
-  }
 
-  def fetchSaIncomeSources(matchId: UUID, taxYearInterval: TaxYearInterval)
-                          (implicit hc: HeaderCarrier): Future[Seq[SaIncomeSources]] = {
+  def fetchSaIncomeSources(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[SaIncomeSources]] =
     fetchSaIncomes(matchId, taxYearInterval)(SaIncomeSources.apply)
-  }
 
-  protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)
-                                 (implicit hc: HeaderCarrier): Future[Seq[T]]
+  protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(
+    implicit hc: HeaderCarrier): Future[Seq[T]]
 }
 
 @Singleton
 class SandboxSaIncomeService extends SaIncomeService {
 
-  protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)
-                                 (implicit hc: HeaderCarrier): Future[Seq[T]] = {
+  protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(
+    implicit hc: HeaderCarrier): Future[Seq[T]] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) =>
         val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
         successful(selectedSaReturns map (r => transform(r)))
       case None => failed(new MatchNotFoundException)
     }
-  }
 
-  override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint] = {
+  override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[SaFootprint] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) => successful(SaFootprint(saIncomes.filter(s => s.isIn(taxYearInterval))))
-      case None => failed(new MatchNotFoundException)
+      case None            => failed(new MatchNotFoundException)
     }
-  }
 }
 
 @Singleton
-class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
-                                    desConnector: DesConnector,
-                                    saIncomeCacheService: SaIncomeCacheService,
-                                    @Named("retryDelay") retryDelay: Int) extends SaIncomeService {
+class LiveSaIncomeService @Inject()(
+  matchingConnector: IndividualsMatchingApiConnector,
+  desConnector: DesConnector,
+  saIncomeCacheService: SaIncomeCacheService,
+  @Named("retryDelay") retryDelay: Int)
+    extends SaIncomeService {
 
-  private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
+  private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
     val cacheId = SaCacheId(nino, taxYearInterval)
-    saIncomeCacheService.get[Seq[DesSAIncome]](cacheId, withRetry(desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval)))
+    saIncomeCacheService
+      .get[Seq[DesSAIncome]](cacheId, withRetry(desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval)))
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case Upstream5xxResponse(_, 503, _) => Thread.sleep(retryDelay); body
   }
 
-  protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)
-                               (implicit hc: HeaderCarrier): Future[Seq[T]] = {
+  protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(
+    implicit hc: HeaderCarrier): Future[Seq[T]] =
     for {
-      ninoMatch <- matchingConnector.resolve(matchId)
+      ninoMatch    <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => transform(r))
-  }
 
-  override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint] = {
+  override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier): Future[SaFootprint] =
     for {
-      ninoMatch <- matchingConnector.resolve(matchId)
+      ninoMatch    <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield SaFootprint(desSaIncomes)
-  }
 }

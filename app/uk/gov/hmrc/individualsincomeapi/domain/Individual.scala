@@ -24,20 +24,21 @@ import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
+case class Individual(
+  matchId: UUID,
+  nino: String,
+  firstName: String,
+  lastName: String,
+  dateOfBirth: LocalDate,
+  income: Seq[Payment],
+  saIncome: Seq[DesSAIncome])
 
-case class Individual(matchId: UUID,
-                      nino: String,
-                      firstName: String,
-                      lastName: String,
-                      dateOfBirth: LocalDate,
-                      income: Seq[Payment],
-                      saIncome: Seq[DesSAIncome])
-
-case class Payment(taxablePayment: Double,
-                   paymentDate: LocalDate,
-                   employerPayeReference: Option[EmpRef] = None,
-                   monthPayNumber: Option[Int] = None,
-                   weekPayNumber: Option[Int] = None) {
+case class Payment(
+  taxablePayment: Double,
+  paymentDate: LocalDate,
+  employerPayeReference: Option[EmpRef] = None,
+  monthPayNumber: Option[Int] = None,
+  weekPayNumber: Option[Int] = None) {
 
   def isPaidWithin(interval: Interval): Boolean =
     interval.contains(paymentDate.toDateTimeAtStartOfDay)
@@ -50,7 +51,7 @@ object SandboxIncomeData {
 
   def matchedCitizen(matchId: UUID) = matchId match {
     case `sandboxMatchId` => Some(MatchedCitizen(sandboxMatchId, sandboxNino))
-    case _ => None
+    case _                => None
   }
 
   private lazy val individuals = Seq(amanda())
@@ -78,35 +79,40 @@ object SandboxIncomeData {
       Payment(1000.25, parse("2016-04-28"), Some(acmeEmployerReference), monthPayNumber = Some(1)),
       Payment(1000.25, parse("2016-05-28"), Some(acmeEmployerReference), monthPayNumber = Some(2)),
       Payment(500.25, parse("2017-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
-      Payment(500.25, parse("2017-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))),
+      Payment(500.25, parse("2017-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))
+    ),
     Seq(
-      DesSAIncome("2014", Seq(DesSAReturn(
-        caseStartDate = Some(parse("2012-01-06")),
-        receivedDate = Some(parse("2014-06-06")),
-        utr = sandboxUtr,
-        income = SAIncome(
-          incomeFromAllEmployments = Some(5000),
-          profitFromSelfEmployment = Some(10500),
-          incomeFromSelfAssessment = Some(30000),
-          incomeFromTrust = Some(2143.32),
-          incomeFromForeign4Sources = Some(1054.65),
-          profitFromPartnerships = Some(324.54),
-          incomeFromUkInterest = Some(12.46),
-          incomeFromForeignDividends = Some(25.86),
-          incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(657.89),
-          incomeFromProperty = Some(1276.67),
-          incomeFromPensions = Some(52.79),
-          incomeFromGainsOnLifePolicies = Some(44.54),
-          incomeFromSharesOptions = Some(52.34),
-          incomeFromOther = Some(26.70)
-        ),
-        businessDescription = None,
-        addressLine1 = None,
-        addressLine2 = None,
-        addressLine3 = None,
-        addressLine4 = None,
-        postalCode = None
-      ))),
+      DesSAIncome(
+        "2014",
+        Seq(
+          DesSAReturn(
+            caseStartDate = Some(parse("2012-01-06")),
+            receivedDate = Some(parse("2014-06-06")),
+            utr = sandboxUtr,
+            income = SAIncome(
+              incomeFromAllEmployments = Some(5000),
+              profitFromSelfEmployment = Some(10500),
+              incomeFromSelfAssessment = Some(30000),
+              incomeFromTrust = Some(2143.32),
+              incomeFromForeign4Sources = Some(1054.65),
+              profitFromPartnerships = Some(324.54),
+              incomeFromUkInterest = Some(12.46),
+              incomeFromForeignDividends = Some(25.86),
+              incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(657.89),
+              incomeFromProperty = Some(1276.67),
+              incomeFromPensions = Some(52.79),
+              incomeFromGainsOnLifePolicies = Some(44.54),
+              incomeFromSharesOptions = Some(52.34),
+              incomeFromOther = Some(26.70)
+            ),
+            businessDescription = None,
+            addressLine1 = None,
+            addressLine2 = None,
+            addressLine3 = None,
+            addressLine4 = None,
+            postalCode = None
+          ))
+      ),
       DesSAIncome("2015", Seq(DesSAReturn(Some(parse("2012-01-06")), Some(parse("2015-10-06")), sandboxUtr)))
     )
   )

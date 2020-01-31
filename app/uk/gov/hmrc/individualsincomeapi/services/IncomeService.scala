@@ -38,20 +38,22 @@ trait IncomeService {
 }
 
 @Singleton
-class LiveIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
-                                  desConnector: DesConnector,
-                                  @Named("retryDelay") retryDelay: Int,
-                                  cache: PayeIncomeCache) extends IncomeService {
+class LiveIncomeService @Inject()(
+  matchingConnector: IndividualsMatchingApiConnector,
+  desConnector: DesConnector,
+  @Named("retryDelay") retryDelay: Int,
+  cache: PayeIncomeCache)
+    extends IncomeService {
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]] = {
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(
+    implicit hc: HeaderCarrier): Future[Seq[Payment]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       desEmployments <- cache.get(
-        cacheId(matchId, interval),
-        withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
-      )
+                         cacheId(matchId, interval),
+                         withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
+                       )
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
-  }
 
   private def cacheId(matchId: UUID, interval: Interval) = new CacheId {
     override val id: String = s"$matchId-${interval.getStart}-${interval.getEnd}"
@@ -70,11 +72,11 @@ class SandboxIncomeService extends IncomeService {
     interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
   }
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]] = {
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(
+    implicit hc: HeaderCarrier): Future[Seq[Payment]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payments) =>
         successful(payments.filter(paymentFilter(interval)).sortBy(_.paymentDate).reverse)
       case None => failed(new MatchNotFoundException)
     }
-  }
 }

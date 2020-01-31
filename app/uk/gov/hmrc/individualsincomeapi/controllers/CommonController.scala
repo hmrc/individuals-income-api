@@ -31,20 +31,20 @@ import scala.concurrent.Future
 
 abstract class CommonController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
-  private def getQueryParam[T](name: String)(implicit request: Request[T]) = request.queryString.get(name).flatMap(_.headOption)
+  private def getQueryParam[T](name: String)(implicit request: Request[T]) =
+    request.queryString.get(name).flatMap(_.headOption)
 
   private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {
     val urlWithFromDate = s"$url&fromDate=${toFormattedLocalDate(from)}"
     getQueryParam("toDate").map(x => s"$urlWithFromDate&toDate=$x").getOrElse(urlWithFromDate)
   }
 
-  private[controllers] def urlWithTaxYearInterval[T](url: String)(implicit request: Request[T]) = {
+  private[controllers] def urlWithTaxYearInterval[T](url: String)(implicit request: Request[T]) =
     (getQueryParam("fromTaxYear"), getQueryParam("toTaxYear")) match {
       case (Some(fromTaxYear), Some(toTaxYear)) => s"$url&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear"
-      case (Some(fromTaxYear), None) => s"$url&fromTaxYear=$fromTaxYear"
-      case _ => url
+      case (Some(fromTaxYear), None)            => s"$url&fromTaxYear=$fromTaxYear"
+      case _                                    => url
     }
-  }
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException   => ErrorNotFound.toHttpResponse
@@ -58,10 +58,10 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
 
   val environment: String
 
-  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
+  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
+    implicit hc: HeaderCarrier): Future[Result] =
     if (environment == SANDBOX) body
     else authorised(Enrolment(scope))(body)
-  }
 }
 
 object Environment {

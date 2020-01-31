@@ -45,8 +45,11 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
   val matchId = UUID.randomUUID()
   val fromDateString = "2017-03-02"
   val toDateString = "2017-05-31"
-  val interval = new Interval(new LocalDate(fromDateString).toDateTimeAtStartOfDay, new LocalDate(toDateString).toDateTimeAtStartOfDay)
-  val payments = Seq(Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
+  val interval = new Interval(
+    new LocalDate(fromDateString).toDateTimeAtStartOfDay,
+    new LocalDate(toDateString).toDateTimeAtStartOfDay)
+  val payments = Seq(
+    Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
 
   trait Setup {
     val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
@@ -61,10 +64,12 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
   def externalServices: Seq[String] = Seq("Stub")
 
   "Income controller income function" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString&toDate=$toDateString")
+    val fakeRequest =
+      FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString&toDate=$toDateString")
 
     "return 200 (OK) when matching succeeds and service returns payments" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(successful(payments))
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+        .willReturn(successful(payments))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 
@@ -73,7 +78,8 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 200 (OK) when matching succeeds and service returns no payments" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(successful(Seq.empty))
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+        .willReturn(successful(Seq.empty))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 
@@ -84,7 +90,8 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     "return 200 (OK) with correct self link response when toDate is not provided in the request" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(successful(payments))
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+        .willReturn(successful(payments))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 
@@ -93,12 +100,13 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any())).willReturn(failed(new MatchNotFoundException()))
+      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse( s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
+      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"NOT_FOUND", "message":"The resource can not be found"}""")
     }
 
     "not require bearer token authentication for Sandbox" in new Setup {
@@ -110,7 +118,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
 
   }
 
-  private def expectedPayload(uri: String, payments: Seq[Payment] = payments) = {
+  private def expectedPayload(uri: String, payments: Seq[Payment] = payments) =
     s"""
        {
          "_links": {
@@ -121,5 +129,4 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
          }
        }
       """
-  }
 }

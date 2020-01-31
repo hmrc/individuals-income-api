@@ -39,12 +39,13 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
   lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
   lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
-  private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) = {
+  private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) =
     hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken")))
       .withExtraHeaders(Seq("Environment" -> desEnvironment, "Source" -> "MDTP") ++ extraHeaders: _*)
-  }
 
-  def fetchEmployments(nino: Nino, interval: Interval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesEmployment]] = {
+  def fetchEmployments(nino: Nino, interval: Interval)(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext): Future[Seq[DesEmployment]] = {
     val fromDate = interval.getStart.toLocalDate
     val toDate = interval.getEnd.toLocalDate
 
@@ -56,13 +57,16 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
     }
   }
 
-  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
+  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
+    implicit hc: HeaderCarrier,
+    ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
     val toTaxYear = taxYearInterval.toTaxYear.endYr
     val originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
     implicit val saIncomeReads: Reads[DesSAIncome] = DesSAIncome.desReads
 
-    val saIncomeUrl = s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
+    val saIncomeUrl =
+      s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
 
     http.GET[Seq[DesSAIncome]](saIncomeUrl)(implicitly, header("OriginatorId" -> originator), ec).recoverWith {
       case _: NotFoundException => Future.successful(Seq.empty)

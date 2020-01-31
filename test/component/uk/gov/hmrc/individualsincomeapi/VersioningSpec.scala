@@ -28,12 +28,14 @@ import scalaj.http.{Http, HttpResponse}
 
 class VersioningSpec extends BaseSpec {
 
-  implicit override lazy val app: Application = GuiceApplicationBuilder().configure(
-    "auditing.enabled" -> false,
-    "auditing.traceRequests" -> false,
-    "microservice.services.auth.port" -> AuthStub.port,
-    "run.mode" -> "It"
-  ).build()
+  implicit override lazy val app: Application = GuiceApplicationBuilder()
+    .configure(
+      "auditing.enabled"                -> false,
+      "auditing.traceRequests"          -> false,
+      "microservice.services.auth.port" -> AuthStub.port,
+      "run.mode"                        -> "It"
+    )
+    .build()
   val incomeScope = "read:individuals-income"
 
   feature("Versioning") {
@@ -68,16 +70,18 @@ class VersioningSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("A request to the match citizen endpoint is made with version 1.0 accept header")
-      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, ACCEPT -> "application/vnd.hmrc.1.0+json")
+      val response = invokeWithHeaders(
+        s"/sandbox?matchId=$sandboxMatchId",
+        AUTHORIZATION -> authToken,
+        ACCEPT        -> "application/vnd.hmrc.1.0+json")
 
       Then("The response status should be 404 (Not Found)")
       response.code shouldBe NOT_FOUND
     }
   }
 
-  private def validResponsePayload = {
-    Json.parse(
-      s"""
+  private def validResponsePayload =
+    Json.parse(s"""
          {
              "_links": {
                  "paye": {
@@ -93,7 +97,6 @@ class VersioningSpec extends BaseSpec {
                  }
              }
          }""")
-  }
 
   private def invokeWithHeaders(urlPath: String, headers: (String, String)*): HttpResponse[String] =
     Http(s"$serviceUrl$urlPath").headers(headers).asString

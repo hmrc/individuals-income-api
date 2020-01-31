@@ -31,16 +31,18 @@ import uk.gov.hmrc.play.bootstrap.http.{ErrorResponse, JsonErrorHandler}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CustomErrorHandler @Inject()(auditConnector: AuditConnector,
-                                   httpAuditEvent: HttpAuditEvent,
-                                   configuration: Configuration)
-extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
+class CustomErrorHandler @Inject()(
+  auditConnector: AuditConnector,
+  httpAuditEvent: HttpAuditEvent,
+  configuration: Configuration)
+    extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
 
   import httpAuditEvent.dataEvent
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 
-    implicit val headerCarrier = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, request = Some(request))
+    implicit val headerCarrier =
+      HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, request = Some(request))
 
     statusCode match {
       case NOT_FOUND =>

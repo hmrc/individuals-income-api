@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient){
+class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
 
   private[connector] val serviceUrl = servicesConfig.baseUrl("individuals-matching-api")
 
