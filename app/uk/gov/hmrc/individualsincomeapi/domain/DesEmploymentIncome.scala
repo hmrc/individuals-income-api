@@ -25,14 +25,15 @@ import uk.gov.hmrc.domain.EmpRef
 
 case class DesEmployments(employments: Seq[DesEmployment])
 
-case class DesAddress(line1: Option[String] = None,
-                      line2: Option[String] = None,
-                      line3: Option[String] = None,
-                      line4: Option[String] = None,
-                      line5: Option[String] = None,
-                      postcode: Option[String] = None,
-                      effectiveDate: Option[LocalDate] = None,
-                      addressType: Option[String] = None) {
+case class DesAddress(
+  line1: Option[String] = None,
+  line2: Option[String] = None,
+  line3: Option[String] = None,
+  line4: Option[String] = None,
+  line5: Option[String] = None,
+  postcode: Option[String] = None,
+  effectiveDate: Option[LocalDate] = None,
+  addressType: Option[String] = None) {
 
   def isEmpty: Boolean = this == DesAddress()
 }
@@ -52,25 +53,26 @@ object DesAddress {
   implicit val apiWrites: Writes[DesAddress] = Json.writes[DesAddress]
 }
 
-case class DesPayment(paymentDate: LocalDate,
-                      totalPayInPeriod: Double,
-                      weekPayNumber: Option[Int] = None,
-                      monthPayNumber: Option[Int] = None)
+case class DesPayment(
+  paymentDate: LocalDate,
+  totalPayInPeriod: Double,
+  weekPayNumber: Option[Int] = None,
+  monthPayNumber: Option[Int] = None)
 
-case class DesEmployment(payments: Seq[DesPayment],
-                         employerName: Option[String] = None,
-                         employerAddress: Option[DesAddress] = None,
-                         employerDistrictNumber: Option[String] = None,
-                         employerSchemeReference: Option[String] = None,
-                         employmentStartDate: Option[LocalDate] = None,
-                         employmentLeavingDate: Option[LocalDate] = None,
-                         employmentPayFrequency: Option[DesEmploymentPayFrequency.Value] = None
-                        ) {
+case class DesEmployment(
+  payments: Seq[DesPayment],
+  employerName: Option[String] = None,
+  employerAddress: Option[DesAddress] = None,
+  employerDistrictNumber: Option[String] = None,
+  employerSchemeReference: Option[String] = None,
+  employmentStartDate: Option[LocalDate] = None,
+  employmentLeavingDate: Option[LocalDate] = None,
+  employmentPayFrequency: Option[DesEmploymentPayFrequency.Value] = None) {
 
   val employerPayeReference = {
     (employerDistrictNumber, employerSchemeReference) match {
       case (Some(districtNumber), Some(schemeReference)) => Some(EmpRef(districtNumber, schemeReference))
-      case _ => None
+      case _                                             => None
     }
   }
 }
@@ -80,14 +82,14 @@ object DesEmploymentPayFrequency extends Enumeration {
 }
 
 object DesEmployments {
-  def toPayments(desEmployment: DesEmployment): Seq[Payment] = {
+  def toPayments(desEmployment: DesEmployment): Seq[Payment] =
     desEmployment.payments map { payment =>
       Payment(
         taxablePayment = payment.totalPayInPeriod,
         paymentDate = payment.paymentDate,
         employerPayeReference = desEmployment.employerPayeReference,
         monthPayNumber = payment.monthPayNumber,
-        weekPayNumber = payment.weekPayNumber)
+        weekPayNumber = payment.weekPayNumber
+      )
     }
-  }
 }

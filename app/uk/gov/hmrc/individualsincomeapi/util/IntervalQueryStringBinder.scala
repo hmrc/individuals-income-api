@@ -26,33 +26,34 @@ class IntervalQueryStringBinder extends QueryStringBindable[Interval] {
 
   val dateTimeFormatter = DateTimeFormat.forPattern(Dates.localDatePattern)
 
-  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Interval]] = {
+  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Interval]] =
     (getParam(params, "fromDate"), getParam(params, "toDate", Some(LocalDate.now()))) match {
       case (Right(from), Right(to)) => Some(interval(from, to))
-      case (_, Left(msg)) => Some(Left(msg))
-      case (Left(msg), _) => Some(Left(msg))
+      case (_, Left(msg))           => Some(Left(msg))
+      case (Left(msg), _)           => Some(Left(msg))
     }
-  }
 
-  private def interval(fromDate: LocalDate, toDate: LocalDate): Either[String, Interval] = try {
-    Right(toInterval(fromDate, toDate))
-  } catch {
-    case e: ValidationException => Left(e.getMessage)
-    case _: Throwable => Left("Invalid time period requested")
-  }
+  private def interval(fromDate: LocalDate, toDate: LocalDate): Either[String, Interval] =
+    try {
+      Right(toInterval(fromDate, toDate))
+    } catch {
+      case e: ValidationException => Left(e.getMessage)
+      case _: Throwable           => Left("Invalid time period requested")
+    }
 
-  private def getParam(params: Map[String, Seq[String]], paramName: String, default: Option[LocalDate] = None): Either[String, LocalDate] = {
+  private def getParam(
+    params: Map[String, Seq[String]],
+    paramName: String,
+    default: Option[LocalDate] = None): Either[String, LocalDate] =
     try {
       params.get(paramName).flatMap(_.headOption) match {
         case Some(date) => Right(dateTimeFormatter.parseLocalDate(date))
-        case None => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
+        case None       => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
       }
     } catch {
       case _: Throwable => Left(s"$paramName: invalid date format")
     }
-  }
 
-  override def unbind(key: String, dateRange: Interval): String = {
+  override def unbind(key: String, dateRange: Interval): String =
     s"fromDate=${dateTimeFormatter.print(dateRange.getStart.toLocalDate)}&toDate=${dateTimeFormatter.print(dateRange.getEnd.toLocalDate)}"
-  }
 }

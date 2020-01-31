@@ -25,44 +25,53 @@ import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 
 object DesStub extends MockHost(23000) {
 
-  def searchEmploymentIncomeForPeriodReturns(nino: String, fromDate: String, toDate: String, desEmployments: DesEmployments) = {
-    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
-      .withQueryParam("from", equalTo(fromDate))
-      .withQueryParam("to", equalTo(toDate))
-      .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desEmployments).toString())))
-  }
+  def searchEmploymentIncomeForPeriodReturns(
+    nino: String,
+    fromDate: String,
+    toDate: String,
+    desEmployments: DesEmployments) =
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
+        .withQueryParam("from", equalTo(fromDate))
+        .withQueryParam("to", equalTo(toDate))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desEmployments).toString())))
 
-  def searchEmploymentIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String) = {
-    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
-      .withQueryParam("from", equalTo(fromDate))
-      .withQueryParam("to", equalTo(toDate))
-      .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
-  }
+  def searchEmploymentIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String) =
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
+        .withQueryParam("from", equalTo(fromDate))
+        .withQueryParam("to", equalTo(toDate))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
 
   def searchEmploymentIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String): Unit = {
     val desRateLimitError = Json.obj("response" -> Json.obj("incidentReference" -> "LTM000503"))
 
-    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
-      .withQueryParam("from", equalTo(fromDate))
-      .withQueryParam("to", equalTo(toDate))
-      // DES/BigIP returns 503 instead of 429 when rate limited
-      .willReturn(serviceUnavailable().withBody(desRateLimitError.toString))
-    )
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
+        .withQueryParam("from", equalTo(fromDate))
+        .withQueryParam("to", equalTo(toDate))
+        // DES/BigIP returns 503 instead of 429 when rate limited
+        .willReturn(serviceUnavailable().withBody(desRateLimitError.toString)))
   }
 
-  def searchSelfAssessmentIncomeForPeriodReturns(nino: Nino, startYear: TaxYear, endYear: TaxYear, clientId: String, desSAIncomes: Seq[DesSAIncome]) = {
-    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
-      .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
-      .withQueryParam("startYear", equalTo(startYear.endYr.toString))
-      .withQueryParam("endYear", equalTo(endYear.endYr.toString))
-      .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desSAIncomes).toString())))
-  }
+  def searchSelfAssessmentIncomeForPeriodReturns(
+    nino: Nino,
+    startYear: TaxYear,
+    endYear: TaxYear,
+    clientId: String,
+    desSAIncomes: Seq[DesSAIncome]) =
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
+        .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
+        .withQueryParam("startYear", equalTo(startYear.endYr.toString))
+        .withQueryParam("endYear", equalTo(endYear.endYr.toString))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desSAIncomes).toString())))
 
-  def searchSelfAssessmentIncomeForPeriodReturnsNoDataFor(nino: String, startYear: String, endYear: String) = {
-    mock.register(get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
-      .withQueryParam("startYear", equalTo(startYear))
-      .withQueryParam("endYear", equalTo(endYear))
-      .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
-  }
+  def searchSelfAssessmentIncomeForPeriodReturnsNoDataFor(nino: String, startYear: String, endYear: String) =
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
+        .withQueryParam("startYear", equalTo(startYear))
+        .withQueryParam("endYear", equalTo(endYear))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
 
 }

@@ -38,15 +38,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the self-assessments for Sandbox")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
       val requestParameters = s"matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"
 
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa?$requestParameters"},
@@ -97,14 +97,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     scenario("Employments Income endpoint for the sandbox implementation") {
 
       When("I request the SA employments for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -138,14 +139,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     scenario("Self Employments Income endpoint for the sandbox implementation") {
 
       When("I request the SA self employments for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -179,14 +181,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     scenario("SA returns summary endpoint for the sandbox implementation") {
 
       When("I request the SA returns summary for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -219,14 +222,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
     scenario("SA trusts endpoint for the sandbox implementation") {
       When("I request the SA trusts income for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -259,14 +263,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
     scenario("SA foreign endpoint for the sandbox implementation") {
       When("I request the SA foreign income for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -300,14 +305,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   scenario("SA partnerships endpoint for the sandbox implementation") {
     When("I request the SA partnerships income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-      .headers(requestHeaders(acceptHeaderP1)).asString
+    val response =
+      Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -340,14 +346,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   scenario("SA pensions and state benefits endpoint for the sandbox implementation") {
     When("I request the SA pensions and state benefits income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-      .headers(requestHeaders(acceptHeaderP1)).asString
+    val response = Http(
+      s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+      .headers(requestHeaders(acceptHeaderP1))
+      .asString
 
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -380,14 +387,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   scenario("SA interests and dividends endpoint for the sandbox implementation") {
     When("I request the SA interests and dividends income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-      .headers(requestHeaders(acceptHeaderP1)).asString
+    val response = Http(
+      s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+      .headers(requestHeaders(acceptHeaderP1))
+      .asString
 
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -424,14 +432,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   scenario("SA uk-properties endpoint for the sandbox implementation") {
     When("I request the SA uk-properties income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-      .headers(requestHeaders(acceptHeaderP1)).asString
+    val response =
+      Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -464,14 +473,15 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   scenario("SA additional-information endpoint for the sandbox implementation") {
     When("I request the SA additional-information income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-      .headers(requestHeaders(acceptHeaderP1)).asString
+    val response = Http(
+      s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+      .headers(requestHeaders(acceptHeaderP1))
+      .asString
 
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -507,13 +517,13 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   scenario("SA other endpoint for the sandbox implementation") {
     When("I request the SA other income for Sandbox")
     val response = Http(s"$serviceUrl/sandbox/sa/other?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-      .headers(requestHeaders(acceptHeaderP1)).asString
+      .headers(requestHeaders(acceptHeaderP1))
+      .asString
 
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/other?matchId=$sandboxMatchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -544,4 +554,3 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 }
-

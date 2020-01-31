@@ -33,8 +33,7 @@ trait CacheService {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] = {
-
+  def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
     if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)
@@ -46,16 +45,17 @@ trait CacheService {
     } else {
       fallbackFunction
     }
-  }
 }
 
 @Singleton
-class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration) extends CacheService {
+class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+    extends CacheService {
   val key = "sa-income"
 }
 
 @Singleton
-class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration) extends CacheService {
+class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+    extends CacheService {
   val key: String = "paye-income"
 }
 

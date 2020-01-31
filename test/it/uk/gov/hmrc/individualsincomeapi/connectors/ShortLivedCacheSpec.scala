@@ -27,7 +27,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import uk.gov.hmrc.integration.ServiceSpec
 import utils.TestSupport
 
-class ShortLivedCacheSpec extends WordSpec with Matchers with MongoSpecSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
+class ShortLivedCacheSpec
+    extends WordSpec with Matchers with MongoSpecSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
   val id = UUID.randomUUID().toString
@@ -85,7 +86,6 @@ class ShortLivedCacheSpec extends WordSpec with Matchers with MongoSpecSupport w
     val storedValue = await(shortLivedCache.repository.findById(id)).get
     (storedValue.data.get \ cachekey).get
   }
-
 
   case class TestClass(one: String, two: String)
 

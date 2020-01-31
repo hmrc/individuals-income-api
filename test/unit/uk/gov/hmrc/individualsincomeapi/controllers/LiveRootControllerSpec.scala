@@ -57,13 +57,13 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val randomMatchId = UUID.randomUUID()
 
     "return a 404 (not found) when a match id does not match live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier])).thenReturn(failed(new MatchNotFoundException))
+      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
+        .thenReturn(failed(new MatchNotFoundException))
 
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) shouldBe NOT_FOUND
-      contentAsJson(eventualResult) shouldBe parse(
-        """
+      contentAsJson(eventualResult) shouldBe parse("""
           {
             "code":"NOT_FOUND",
             "message":"The resource can not be found"
@@ -72,13 +72,13 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return a 200 (ok) when a match id matches live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier])).thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
+      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
+        .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
 
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) shouldBe OK
-      contentAsJson(eventualResult) shouldBe parse(
-        s"""
+      contentAsJson(eventualResult) shouldBe parse(s"""
           {
             "_links":{
               "paye":{
@@ -98,10 +98,12 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
-      given(mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any())).willReturn(failed(new InsufficientEnrolments()))
+      given(
+        mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any()))
+        .willReturn(failed(new InsufficientEnrolments()))
 
       val result = await(liveMatchCitizenController.root(randomMatchId).apply(FakeRequest()))
-      
+
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyZeroInteractions(mockLiveCitizenMatchingService)

@@ -21,17 +21,15 @@ import play.api.libs.json.Json
 import play.api.mvc.Results
 import JsonFormatters._
 
-sealed abstract class ErrorResponse(
-                                     val httpStatusCode: Int,
-                                     val errorCode: String,
-                                     val message: String) {
+sealed abstract class ErrorResponse(val httpStatusCode: Int, val errorCode: String, val message: String) {
 
   def toHttpResponse = Results.Status(httpStatusCode)(Json.toJson(this))
 }
 
 case class ErrorInvalidRequest(errorMessage: String) extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
 case class ErrorUnauthorized(errorMessage: String) extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", errorMessage)
-case object ErrorInternalServer extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Failed to process request")
+case object ErrorInternalServer
+    extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Failed to process request")
 case object ErrorNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource can not be found")
 case object ErrorTooManyRequests extends ErrorResponse(TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", "Rate limit exceeded")
 

@@ -22,32 +22,33 @@ import uk.gov.hmrc.individualsincomeapi.util.Dates.toTaxYearInterval
 
 class TaxYearIntervalQueryStringBinder extends QueryStringBindable[TaxYearInterval] {
 
-  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TaxYearInterval]] = {
+  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TaxYearInterval]] =
     (getParam(params, "fromTaxYear"), getParam(params, "toTaxYear", Some(TaxYear.current()))) match {
       case (Right(from), Right(to)) => Some(taxYearInterval(from, to))
-      case (_, Left(msg)) => Some(Left(msg))
-      case (Left(msg), _) => Some(Left(msg))
+      case (_, Left(msg))           => Some(Left(msg))
+      case (Left(msg), _)           => Some(Left(msg))
     }
-  }
 
-  private def taxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): Either[String, TaxYearInterval] = try {
-    Right(toTaxYearInterval(fromTaxYear, toTaxYear))
-  } catch {
-    case e: ValidationException => Left(e.getMessage)
-  }
+  private def taxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): Either[String, TaxYearInterval] =
+    try {
+      Right(toTaxYearInterval(fromTaxYear, toTaxYear))
+    } catch {
+      case e: ValidationException => Left(e.getMessage)
+    }
 
-  private def getParam(params: Map[String, Seq[String]], paramName: String, default: Option[TaxYear] = None): Either[String, TaxYear] = {
+  private def getParam(
+    params: Map[String, Seq[String]],
+    paramName: String,
+    default: Option[TaxYear] = None): Either[String, TaxYear] =
     try {
       params.get(paramName).flatMap(_.headOption) match {
         case Some(taxYear) => Right(TaxYear(taxYear))
-        case None => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
+        case None          => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
       }
     } catch {
       case _: Throwable => Left(s"$paramName: invalid tax year format")
     }
-  }
 
-  override def unbind(key: String, taxYearInterval: TaxYearInterval): String = {
+  override def unbind(key: String, taxYearInterval: TaxYearInterval): String =
     s"fromTaxYear=${taxYearInterval.fromTaxYear.formattedTaxYear}&toTaxYear=${taxYearInterval.toTaxYear.formattedTaxYear}"
-  }
 }

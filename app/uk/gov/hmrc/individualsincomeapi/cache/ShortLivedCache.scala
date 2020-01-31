@@ -44,11 +44,12 @@ class ShortLivedCache @Inject()(val cacheConfig: CacheConfiguration, configurati
     val decryptor = new JsonDecryptor[T]()
 
     repository.findById(id) map {
-      case Some(cache) => cache.data flatMap { json =>
-        (json \ key).toOption flatMap { jsValue =>
-          decryptor.reads(jsValue).asOpt map (_.decryptedValue)
+      case Some(cache) =>
+        cache.data flatMap { json =>
+          (json \ key).toOption flatMap { jsValue =>
+            decryptor.reads(jsValue).asOpt map (_.decryptedValue)
+          }
         }
-      }
       case None => None
     }
   }

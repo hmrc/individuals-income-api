@@ -36,27 +36,29 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   val desIncomes = Seq(
     DesSAIncome(
       taxYear = "2014",
-      returnList = Seq(DesSAReturn(
-        caseStartDate = Some(LocalDate.parse("2011-01-15")),
-        receivedDate = Some(LocalDate.parse("2014-11-05")),
-        utr = SaUtr("2432552644"),
-        income = SAIncome(
-          incomeFromAllEmployments = Some(1545.55),
-          profitFromSelfEmployment = Some(2535.55),
-          incomeFromSelfAssessment = Some(35500.55),
-          incomeFromTrust = Some(10800.64),
-          incomeFromForeign4Sources = Some(205.64),
-          profitFromPartnerships = Some(145.67),
-          incomeFromUkInterest = Some(34.56),
-          incomeFromForeignDividends = Some(72.68),
-          incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
-          incomeFromPensions = Some(62.56),
-          incomeFromProperty = Some(257.46),
-          incomeFromGainsOnLifePolicies = Some(52.34),
-          incomeFromSharesOptions = Some(24.75),
-          incomeFromOther = Some(134.56)
-        )
-      )))
+      returnList = Seq(
+        DesSAReturn(
+          caseStartDate = Some(LocalDate.parse("2011-01-15")),
+          receivedDate = Some(LocalDate.parse("2014-11-05")),
+          utr = SaUtr("2432552644"),
+          income = SAIncome(
+            incomeFromAllEmployments = Some(1545.55),
+            profitFromSelfEmployment = Some(2535.55),
+            incomeFromSelfAssessment = Some(35500.55),
+            incomeFromTrust = Some(10800.64),
+            incomeFromForeign4Sources = Some(205.64),
+            profitFromPartnerships = Some(145.67),
+            incomeFromUkInterest = Some(34.56),
+            incomeFromForeignDividends = Some(72.68),
+            incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
+            incomeFromPensions = Some(62.56),
+            incomeFromProperty = Some(257.46),
+            incomeFromGainsOnLifePolicies = Some(52.34),
+            incomeFromSharesOptions = Some(24.75),
+            incomeFromOther = Some(134.56)
+          )
+        ))
+    )
   )
 
   feature("SA root endpoint") {
@@ -73,15 +75,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa root resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the self-assessments")
       val requestParameters = s"matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"
 
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                   "self": {"href": "/individuals/income/sa?$requestParameters"},
@@ -126,11 +128,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the self assessments")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
 
     }
   }
@@ -148,13 +152,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the employments")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the employments")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -182,14 +186,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the employments")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
-
 
   feature("SA self employments endpoint") {
     scenario("Fetch Self Assessment self employments") {
@@ -204,13 +209,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the self employments")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the self employments")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -238,11 +243,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the self employments")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -259,13 +266,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa summary")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the self employments")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -293,11 +300,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa summary")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -314,13 +323,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa trusts income")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the trusts income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16"}
@@ -348,11 +357,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa trusts income")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -369,13 +380,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa foreign income")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -405,11 +416,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa foreign income")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -426,13 +439,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa partnerships income")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -462,11 +475,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa partnerships income")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -482,14 +497,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the sa interests and dividends income")
-      val response = Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+      val response =
+        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(headers)
+          .asString
 
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -520,12 +536,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-interests-and-dividends")
 
       When("I request the sa interests and dividends income")
-      val response = Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -541,14 +560,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the sa pensions and state benefits income")
-      val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+      val response =
+        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(headers)
+          .asString
 
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -577,12 +597,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-pensions-and-state-benefits")
 
       When("I request the sa pensions and state benefits income")
-      val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -599,13 +622,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa UK properties income income")
       val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the UK properties income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -635,11 +658,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa UK properties income")
       val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -655,14 +680,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
 
       When("I request the sa additional information")
-      val response = Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+      val response =
+        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(headers)
+          .asString
 
       Then("The response status should be 200 (OK) with the UK properties income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -692,12 +718,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-additional-information")
 
       When("I request the sa additional information")
-      val response = Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+      val response =
+        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
+          .headers(requestHeaders(acceptHeaderP1))
+          .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 
@@ -714,13 +743,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa other income")
       val response = Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(headers).asString
+        .headers(headers)
+        .asString
 
       Then("The response status should be 200 (OK) with the other income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -750,11 +779,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa other income")
       val response = Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2015-16")
-        .headers(requestHeaders(acceptHeaderP1)).asString
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
 
       Then("The response status should be 401 (Unauthorized)")
       response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
     }
   }
 

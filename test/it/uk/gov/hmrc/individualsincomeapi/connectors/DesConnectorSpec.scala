@@ -33,7 +33,9 @@ import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates with TestSupport {
+class DesConnectorSpec
+    extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+    with TestSupport {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
@@ -43,13 +45,14 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
   val clientId = "CLIENT_ID"
 
   override lazy val fakeApplication = new GuiceApplicationBuilder()
-    .bindings(bindModules:_*)
+    .bindings(bindModules: _*)
     .configure(
-      "microservice.services.des.host" -> "localhost",
-      "microservice.services.des.port" -> "11122",
+      "microservice.services.des.host"                -> "localhost",
+      "microservice.services.des.port"                -> "11122",
       "microservice.services.des.authorization-token" -> desAuthorizationToken,
-      "microservice.services.des.environment" -> desEnvironment
-    ).build()
+      "microservice.services.des.environment"         -> desEnvironment
+    )
+    .build()
 
   trait Setup {
     implicit val hc = HeaderCarrier()
@@ -76,7 +79,7 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     line5 = Some("UK"),
     postcode = Some("AI22 9LL")
   )
-  
+
   val desPayments = Seq(
     DesPayment(
       paymentDate = LocalDate.parse("2016-11-28"),
@@ -97,7 +100,8 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     employmentStartDate = Some(LocalDate.parse("2016-01-01")),
     employmentLeavingDate = Some(LocalDate.parse("2016-06-30")),
     employmentPayFrequency = Some(DesEmploymentPayFrequency.M1),
-    payments = desPayments)
+    payments = desPayments
+  )
 
   "fetchEmployments" should {
     val nino = Nino("NA000799C")
@@ -106,13 +110,17 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     val interval = toInterval(fromDate, toDate)
 
     "return the employments" in new Setup {
-      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
-        .withQueryParam("from", equalTo(fromDate))
-        .withQueryParam("to", equalTo(toDate))
-        .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
-        .withHeader("Environment", equalTo(desEnvironment))
-        .willReturn(aResponse().withStatus(200).withBody(
-          """
+      stubFor(
+        get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
+          .withQueryParam("from", equalTo(fromDate))
+          .withQueryParam("to", equalTo(toDate))
+          .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
+          .withHeader("Environment", equalTo(desEnvironment))
+          .willReturn(
+            aResponse()
+              .withStatus(200)
+              .withBody(
+                """
              {
                "employments": [
                  {
@@ -146,7 +154,7 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
                ]
              }
           """
-        )))
+              )))
 
       val result = await(underTest.fetchEmployments(nino, interval))
 
@@ -154,10 +162,11 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     }
 
     "return an empty list when there is no employments" in new Setup {
-      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
-        .withQueryParam("from", equalTo("2016-01-01"))
-        .withQueryParam("to", equalTo("2017-03-01"))
-        .willReturn(aResponse().withStatus(404)))
+      stubFor(
+        get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
+          .withQueryParam("from", equalTo("2016-01-01"))
+          .withQueryParam("to", equalTo("2017-03-01"))
+          .willReturn(aResponse().withStatus(404)))
 
       val result = await(underTest.fetchEmployments(nino, interval))
 
@@ -165,10 +174,11 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     }
 
     "fail when DES returns an error" in new Setup {
-      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
-        .willReturn(aResponse().withStatus(500)))
+      stubFor(
+        get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
+          .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse]{await(underTest.fetchEmployments(nino, interval))}
+      intercept[Upstream5xxResponse] { await(underTest.fetchEmployments(nino, interval)) }
     }
 
   }
@@ -182,14 +192,18 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     "return the self-assessment returns" in new Setup {
       override implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders("X-Client-ID" -> clientId)
 
-      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
-        .withQueryParam("startYear", equalTo(startYear))
-        .withQueryParam("endYear", equalTo(endYear))
-        .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
-        .withHeader("Environment", equalTo(desEnvironment))
-        .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
-        .willReturn(aResponse().withStatus(200).withBody(
-          """
+      stubFor(
+        get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
+          .withQueryParam("startYear", equalTo(startYear))
+          .withQueryParam("endYear", equalTo(endYear))
+          .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
+          .withHeader("Environment", equalTo(desEnvironment))
+          .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
+          .willReturn(
+            aResponse()
+              .withStatus(200)
+              .withBody(
+                """
              [{
                "taxYear": "2016",
                "returnList": [
@@ -202,7 +216,7 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
                ]
              }]
           """
-        )))
+              )))
 
       val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
@@ -222,10 +236,11 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     }
 
     "return an empty list when there is no self-assessment returns" in new Setup {
-      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
-        .withQueryParam("startYear", equalTo(startYear))
-        .withQueryParam("endYear", equalTo(endYear))
-        .willReturn(aResponse().withStatus(404)))
+      stubFor(
+        get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
+          .withQueryParam("startYear", equalTo(startYear))
+          .withQueryParam("endYear", equalTo(endYear))
+          .willReturn(aResponse().withStatus(404)))
 
       val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
@@ -233,10 +248,11 @@ class DesConnectorSpec extends WordSpec with Matchers with BeforeAndAfterEach wi
     }
 
     "fail when DES returns an error" in new Setup {
-      stubFor(get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
-        .willReturn(aResponse().withStatus(500)))
+      stubFor(
+        get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
+          .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse]{await(underTest.fetchSelfAssessmentIncome(nino, interval))}
+      intercept[Upstream5xxResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval)) }
     }
   }
 }

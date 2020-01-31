@@ -53,8 +53,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
   "cacheService.get" should {
     "return the cached value for a given id and key" in new Setup {
       given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
-        .willReturn(Future.successful(Some(cachedValue))
-      )
+        .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
     }
 

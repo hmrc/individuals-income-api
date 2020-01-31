@@ -24,12 +24,13 @@ import play.api.routing.Router
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils._
 import uk.gov.hmrc.play.bootstrap.http.RequestHandler
 
-class VersioningRequestHandler @Inject()( config: Configuration,
-                                          router: Router,
-                                          errorHandler: HttpErrorHandler,
-                                          httpConfiguration: HttpConfiguration,
-                                          filters: HttpFilters)
-  extends RequestHandler(router, errorHandler, httpConfiguration, filters){
+class VersioningRequestHandler @Inject()(
+  config: Configuration,
+  router: Router,
+  errorHandler: HttpErrorHandler,
+  httpConfiguration: HttpConfiguration,
+  filters: HttpFilters)
+    extends RequestHandler(router, errorHandler, httpConfiguration, filters) {
 
   private lazy val unversionedContexts = config
     .getOptional[Seq[String]]("versioning.unversionedContexts")

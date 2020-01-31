@@ -54,14 +54,14 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   "sandbox match citizen function" should {
 
     "return 200 (OK) for a valid matchId" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(successful(matchedCitizen))
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(successful(matchedCitizen))
 
       val result = await(sandboxController.root(matchId)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
          {
              "_links": {
                  "paye": {
@@ -80,7 +80,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "return 400 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(failed(new MatchNotFoundException))
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(failed(new MatchNotFoundException))
 
       val result = await(sandboxController.root(matchId)(fakeRequest))
 
@@ -89,7 +90,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "not require bearer token authentication" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier])).willReturn(successful(matchedCitizen))
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(successful(matchedCitizen))
 
       val result = await(sandboxController.root(matchId)(fakeRequest))
 

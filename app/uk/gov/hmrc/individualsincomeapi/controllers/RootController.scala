@@ -29,13 +29,20 @@ import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCi
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class RootController(citizenMatchingService: CitizenMatchingService, cc: ControllerComponents) extends CommonController(cc) with PrivilegedAuthentication {
+abstract class RootController(citizenMatchingService: CitizenMatchingService, cc: ControllerComponents)
+    extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income") {
       citizenMatchingService.matchCitizen(matchId) map { _ =>
-        val payeLink = HalLink("paye", s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}", title = Some("View individual's income per employment"))
-        val saLink = HalLink("selfAssessment", s"/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}", title = Some("View individual's self-assessment income"))
+        val payeLink = HalLink(
+          "paye",
+          s"/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+          title = Some("View individual's income per employment"))
+        val saLink = HalLink(
+          "selfAssessment",
+          s"/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+          title = Some("View individual's self-assessment income"))
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
         Ok(links(saLink, payeLink, selfLink))
       }
@@ -44,15 +51,19 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService, cc
 }
 
 @Singleton
-class SandboxRootController @Inject()(val citizenMatchingService: SandboxCitizenMatchingService,
-                                      val authConnector: AuthConnector,
-                                      cc: ControllerComponents) extends RootController(citizenMatchingService, cc) {
+class SandboxRootController @Inject()(
+  val citizenMatchingService: SandboxCitizenMatchingService,
+  val authConnector: AuthConnector,
+  cc: ControllerComponents)
+    extends RootController(citizenMatchingService, cc) {
   override val environment = SANDBOX
 }
 
 @Singleton
-class LiveRootController @Inject()(val citizenMatchingService: LiveCitizenMatchingService,
-                                   val authConnector: AuthConnector,
-                                   cc: ControllerComponents) extends RootController(citizenMatchingService, cc) {
+class LiveRootController @Inject()(
+  val citizenMatchingService: LiveCitizenMatchingService,
+  val authConnector: AuthConnector,
+  cc: ControllerComponents)
+    extends RootController(citizenMatchingService, cc) {
   override val environment = PRODUCTION
 }
