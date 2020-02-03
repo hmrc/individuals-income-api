@@ -32,7 +32,7 @@ val compile = Seq(
 )
 
 def test(scope: String = "test,it") = Seq(
-  "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.3"             % scope,
+  "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.2"             % scope,
   "org.scalatest"          %% "scalatest"                % "3.0.8"             % scope,
   "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
   "org.mockito"            % "mockito-core"              % "3.2.4"             % scope,
