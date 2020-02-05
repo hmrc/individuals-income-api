@@ -21,8 +21,8 @@ import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.{verifyZeroInteractions, when}
-import org.scalatest.mockito.MockitoSugar
+import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
@@ -106,7 +106,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveCitizenMatchingService)
+      verifyNoInteractions(mockLiveCitizenMatchingService)
     }
 
   }

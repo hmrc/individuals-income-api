@@ -20,9 +20,9 @@ import java.util.UUID
 
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.{verify, verifyZeroInteractions}
+import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache._
@@ -68,7 +68,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
     "ignore the cache when caching is not enabled" in new Setup {
       given(mockCacheConfig.cacheEnabled).willReturn(false)
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verifyZeroInteractions(mockClient)
+      verifyNoInteractions(mockClient)
     }
   }
 }

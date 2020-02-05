@@ -22,8 +22,8 @@ import akka.stream.Materializer
 import org.joda.time.{Interval, LocalDate}
 import org.mockito.ArgumentMatchers._
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyZeroInteractions
-import org.scalatest.mockito.MockitoSugar
+import org.mockito.Mockito.verifyNoInteractions
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -113,7 +113,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
       val result = await(sandboxIncomeController.income(sandboxMatchId, interval)(fakeRequest))
 
       status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
+      verifyNoInteractions(mockAuthConnector)
     }
 
   }

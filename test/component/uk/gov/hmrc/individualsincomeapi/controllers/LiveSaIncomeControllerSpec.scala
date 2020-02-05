@@ -21,8 +21,7 @@ import java.util.UUID
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import play.api.test.Helpers.OK
-import play.mvc.Http.Status.UNAUTHORIZED
+import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, SAIncome, TaxYear}
 import scalaj.http.Http
@@ -136,6 +135,32 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Json.parse(response.body) shouldBe Json
         .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
 
+    }
+
+    scenario("The self assessment data source is rate limited") {
+      val toTaxYear = TaxYear("2014-15")
+
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES is rate limited")
+      DesStub
+        .searchSelfAssessmentIncomeForPeriodReturnsRateLimitErrorFor(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+
+      When("I request the sa root resources")
+      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2013-14&toTaxYear=2014-15")
+        .headers(headers)
+        .asString
+
+      Then("The response status should be 429 Too Many Requests")
+      response.code shouldBe TOO_MANY_REQUESTS
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "TOO_MANY_REQUESTS",
+        "message" -> "Rate limit exceeded"
+      )
     }
   }
 

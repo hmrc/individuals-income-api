@@ -21,9 +21,9 @@ import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyZeroInteractions
+import org.mockito.Mockito.verifyNoInteractions
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -96,7 +96,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
       val result = await(sandboxController.root(matchId)(fakeRequest))
 
       status(result) shouldBe OK
-      verifyZeroInteractions(mockAuthConnector)
+      verifyNoInteractions(mockAuthConnector)
     }
 
   }

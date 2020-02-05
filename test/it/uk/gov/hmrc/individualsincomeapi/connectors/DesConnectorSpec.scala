@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.joda.time.LocalDate
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}

@@ -43,16 +43,25 @@ object DesStub extends MockHost(23000) {
         .withQueryParam("to", equalTo(toDate))
         .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
 
-  def searchEmploymentIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String): Unit = {
-    val desRateLimitError = Json.obj("response" -> Json.obj("incidentReference" -> "LTM000503"))
-
+  def searchEmploymentIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String): Unit =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
         .withQueryParam("from", equalTo(fromDate))
         .withQueryParam("to", equalTo(toDate))
-        // DES/BigIP returns 503 instead of 429 when rate limited
-        .willReturn(serviceUnavailable().withBody(desRateLimitError.toString)))
-  }
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+
+  def searchSelfAssessmentIncomeForPeriodReturnsRateLimitErrorFor(
+    nino: Nino,
+    startYear: TaxYear,
+    endYear: TaxYear,
+    clientId: String,
+    desSAIncomes: Seq[DesSAIncome]) =
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
+        .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
+        .withQueryParam("startYear", equalTo(startYear.endYr.toString))
+        .withQueryParam("endYear", equalTo(endYear.endYr.toString))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
   def searchSelfAssessmentIncomeForPeriodReturns(
     nino: Nino,

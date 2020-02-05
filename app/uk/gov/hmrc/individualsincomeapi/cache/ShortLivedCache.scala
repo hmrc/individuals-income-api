@@ -19,31 +19,34 @@ package uk.gov.hmrc.individualsincomeapi.cache
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
+import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.cache.TimeToLive
-import uk.gov.hmrc.cache.model.Cache
-import uk.gov.hmrc.cache.repository.CacheRepository
+import uk.gov.hmrc.cache.repository.{CacheMongoRepository, CacheRepository}
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShortLivedCache @Inject()(val cacheConfig: CacheConfiguration, configuration: Configuration) extends TimeToLive {
+class ShortLivedCache @Inject()(
+  val cacheConfig: CacheConfiguration,
+  configuration: Configuration,
+  mongo: ReactiveMongoComponent)(implicit ec: ExecutionContext)
+    extends CacheMongoRepository("shortLivedCache", cacheConfig.cacheTtl)(mongo.mongoConnector.db, ec) with TimeToLive {
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
-  lazy val repository = CacheRepository("shortLivedCache", cacheConfig.cacheTtl, Cache.mongoFormats)
 
   def cache[T](id: String, key: String, value: T)(implicit formats: Format[T]): Future[Unit] = {
     val jsonEncryptor = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    repository.createOrUpdate(id, key, encryptedValue).map(_ => ())
+    createOrUpdate(id, key, encryptedValue).map(_ => ())
   }
 
   def fetchAndGetEntry[T](id: String, key: String)(implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = new JsonDecryptor[T]()
 
-    repository.findById(id) map {
+    findById(id) map {
       case Some(cache) =>
         cache.data flatMap { json =>
           (json \ key).toOption flatMap { jsValue =>

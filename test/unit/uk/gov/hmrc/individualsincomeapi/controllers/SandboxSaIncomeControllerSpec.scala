@@ -22,7 +22,7 @@ import akka.stream.Materializer
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
