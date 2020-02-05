@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.{EmpRef, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}

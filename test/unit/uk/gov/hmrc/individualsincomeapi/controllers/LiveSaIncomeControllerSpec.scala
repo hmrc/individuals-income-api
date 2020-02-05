@@ -22,8 +22,8 @@ import akka.stream.Materializer
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyZeroInteractions
-import org.scalatest.mockito.MockitoSugar
+import org.mockito.Mockito.verifyNoInteractions
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
@@ -109,7 +109,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -162,7 +162,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -216,7 +216,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -270,7 +270,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -322,7 +322,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -376,7 +376,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -431,7 +431,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 
@@ -484,7 +484,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe UNAUTHORIZED
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyZeroInteractions(mockLiveSaIncomeService)
+      verifyNoInteractions(mockLiveSaIncomeService)
     }
   }
 

@@ -46,12 +46,12 @@ class ShortLivedCacheSpec
 
   override def beforeEach() {
     super.beforeEach()
-    await(shortLivedCache.repository.drop)
+    await(shortLivedCache.drop)
   }
 
   override def afterEach() {
     super.afterEach()
-    await(shortLivedCache.repository.drop)
+    await(shortLivedCache.drop)
   }
 
   "cache" should {
@@ -83,7 +83,7 @@ class ShortLivedCacheSpec
   }
 
   private def retrieveRawCachedValue(id: String, key: String) = {
-    val storedValue = await(shortLivedCache.repository.findById(id)).get
+    val storedValue = await(shortLivedCache.findById(id)).get
     (storedValue.data.get \ cachekey).get
   }
 

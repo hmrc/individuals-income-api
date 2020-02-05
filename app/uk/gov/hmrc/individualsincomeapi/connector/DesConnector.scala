@@ -51,13 +51,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
     val toDate = interval.getEnd.toLocalDate
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
-    http.GET[DesEmployments](employmentsUrl)(implicitly, header(), ec).map(_.employments).recoverWith {
-      case _: NotFoundException => Future.successful(Seq.empty)
-      case Upstream4xxResponse(msg, 429, _, _) => {
-        Logger.warn(s"DES Rate limited: $msg")
-        Future.failed(new TooManyRequestException(msg))
-      }
-    }
+    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl)(implicitly, header(), ec).map(_.employments))
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
@@ -71,10 +65,14 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
 
-    http.GET[Seq[DesSAIncome]](saIncomeUrl)(implicitly, header("OriginatorId" -> originator), ec).recoverWith {
-      case _: NotFoundException => Future.successful(Seq.empty)
-      case Upstream5xxResponse(msg, 503, _) if msg.contains("LTM000503") /* DES's magic rate limit error code*/ =>
-        Future.failed(new TooManyRequestException(msg))
+    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl)(implicitly, header("OriginatorId" -> originator), ec))
+  }
+
+  def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
+    case _: NotFoundException => Future.successful(Seq.empty)
+    case Upstream4xxResponse(msg, 429, _, _) => {
+      Logger.warn(s"DES Rate limited: $msg")
+      Future.failed(new TooManyRequestException(msg))
     }
   }
 
