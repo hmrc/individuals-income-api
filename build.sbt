@@ -19,16 +19,30 @@ lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val externalServices =
   List(ExternalService("AUTH"), ExternalService("INDIVIDUALS_MATCHING_API"), ExternalService("DES"))
 
+val akkaVersion = "2.5.23"
+
+val akkaHttpVersion = "10.0.15"
+
+dependencyOverrides += "com.typesafe.akka" %% "akka-stream" % akkaVersion
+
+dependencyOverrides += "com.typesafe.akka" %% "akka-protobuf" % akkaVersion
+
+dependencyOverrides += "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
+
+dependencyOverrides += "com.typesafe.akka" %% "akka-actor" % akkaVersion
+
+dependencyOverrides += "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion
+
 val compile = Seq(
   ws,
   hmrc                %% "bootstrap-play-26" % "1.3.0",
   hmrc                %% "domain"            % "5.6.0-play-26",
-  hmrc                %% "auth-client"       % "2.32.2-play-26",
+  hmrc                %% "auth-client"       % "2.33.0-play-26",
   hmrc                %% "play-hal"          % "1.9.0-play-26",
-  hmrc                %% "play-hmrc-api"     % "3.9.0-play-26",
+  hmrc                %% "play-hmrc-api"     % "4.1.0-play-26",
   hmrc                %% "mongo-caching"     % "6.8.0-play-26",
   hmrc                %% "json-encryption"   % "4.5.0-play-26",
-  "com.typesafe.play" %% "play-json-joda"    % "2.6.10"
+  "com.typesafe.play" %% "play-json-joda"    % "2.6.14"
 )
 
 def test(scope: String = "test,it") = Seq(
@@ -38,7 +52,7 @@ def test(scope: String = "test,it") = Seq(
   "org.mockito"            % "mockito-core"              % "3.2.4"             % scope,
   "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
   "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
-  "com.github.tomakehurst" % "wiremock-jre8"             % "2.21.0"            % scope,
+  "com.github.tomakehurst" % "wiremock-jre8"             % "2.26.0"            % scope,
   hmrc                     %% "reactivemongo-test"       % "4.16.0-play-26"    % scope,
   hmrc                     %% "service-integration-test" % "0.9.0-play-26"     % scope
 )
@@ -96,8 +110,8 @@ lazy val microservice =
 lazy val ComponentTest = config("component") extend Test
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
-  tests map { test =>
-    Group(test.name, Seq(test), SubProcess(ForkOptions(runJVMOptions = Seq("-Dtest.name=" + test.name))))
+  tests.map { test =>
+    new Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
   }
 
 lazy val compileAll = taskKey[Unit]("Compiles sources in all configurations.")
