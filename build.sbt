@@ -35,18 +35,18 @@ dependencyOverrides += "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion
 
 val compile = Seq(
   ws,
-  hmrc                %% "bootstrap-play-26" % "1.3.0",
-  hmrc                %% "domain"            % "5.6.0-play-26",
-  hmrc                %% "auth-client"       % "2.33.0-play-26",
+  hmrc                %% "bootstrap-play-26" % "1.8.0",
+  hmrc                %% "domain"            % "5.9.0-play-26",
+  hmrc                %% "auth-client"       % "3.0.0-play-26",
   hmrc                %% "play-hal"          % "1.9.0-play-26",
   hmrc                %% "play-hmrc-api"     % "4.1.0-play-26",
-  hmrc                %% "mongo-caching"     % "6.8.0-play-26",
-  hmrc                %% "json-encryption"   % "4.5.0-play-26",
+  hmrc                %% "mongo-caching"     % "6.13.0-play-26",
+  hmrc                %% "json-encryption"   % "4.8.0-play-26",
   "com.typesafe.play" %% "play-json-joda"    % "2.6.14"
 )
 
 def test(scope: String = "test,it") = Seq(
-  "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.2"             % scope,
+  "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.3"             % scope,
   "org.scalatest"          %% "scalatest"                % "3.0.8"             % scope,
   "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
   "org.mockito"            % "mockito-core"              % "3.2.4"             % scope,
