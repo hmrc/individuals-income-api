@@ -163,44 +163,44 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     "return income for the entire available history ordered by date descending" in new Setup {
 
       val expected = List(
-        Payment(500.25, parse("2017-02-16"), Some(EmpRef.fromIdentifiers("123/DI45678")), None, Some(46)),
-        Payment(500.25, parse("2017-02-09"), Some(EmpRef.fromIdentifiers("123/DI45678")), None, Some(45)),
-        Payment(1000.25, parse("2016-05-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(2), None),
-        Payment(1000.25, parse("2016-04-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(1), None),
-        Payment(1000.5, parse("2016-03-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(12), None),
-        Payment(1000.5, parse("2016-02-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(11), None),
-        Payment(1000.5, parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10), None)
+        Payment(500.25, parse("2020-02-16"), Some(EmpRef.fromIdentifiers("123/DI45678")), None, Some(46)),
+        Payment(500.25, parse("2020-02-09"), Some(EmpRef.fromIdentifiers("123/DI45678")), None, Some(45)),
+        Payment(1000.25, parse("2019-05-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(2), None),
+        Payment(1000.25, parse("2019-04-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(1), None),
+        Payment(1000.5, parse("2019-03-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(12), None),
+        Payment(1000.5, parse("2019-02-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(11), None),
+        Payment(1000.5, parse("2019-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10), None)
       )
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-01-01", "2017-03-01"))(hc))
+        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2020-03-01"))(hc))
       result shouldBe expected
     }
 
     "return income for a limited period" in new Setup {
 
       val expected = List(
-        Payment(1000.25, parse("2016-05-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(2), None),
-        Payment(1000.25, parse("2016-04-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(1), None),
-        Payment(1000.5, parse("2016-03-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(12), None),
-        Payment(1000.5, parse("2016-02-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(11), None),
-        Payment(1000.5, parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10), None)
+        Payment(1000.25, parse("2019-05-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(2), None),
+        Payment(1000.25, parse("2019-04-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(1), None),
+        Payment(1000.5, parse("2019-03-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(12), None),
+        Payment(1000.5, parse("2019-02-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(11), None),
+        Payment(1000.5, parse("2019-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10), None)
       )
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-01-01", "2016-07-01"))(hc))
+        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2019-07-01"))(hc))
       result shouldBe expected
     }
 
     "return correct income when range includes a period of no payments" in new Setup {
 
       val expected = List(
-        Payment(500.25, parse("2017-02-09"), Some(EmpRef.fromIdentifiers("123/DI45678")), weekPayNumber = Some(45)),
-        Payment(1000.25, parse("2016-05-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), monthPayNumber = Some(2))
+        Payment(500.25, parse("2020-02-09"), Some(EmpRef.fromIdentifiers("123/DI45678")), weekPayNumber = Some(45)),
+        Payment(1000.25, parse("2019-05-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), monthPayNumber = Some(2))
       )
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-04-30", "2017-02-15"))(hc))
+        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-04-30", "2020-02-15"))(hc))
 
       result shouldBe expected
     }

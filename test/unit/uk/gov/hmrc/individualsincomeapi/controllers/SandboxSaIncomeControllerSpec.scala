@@ -42,8 +42,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   val matchId = UUID.randomUUID()
   val utr = SaUtr("2432552644")
-  val fromTaxYear = TaxYear("2015-16")
-  val toTaxYear = TaxYear("2016-17")
+  val fromTaxYear = TaxYear("2018-19")
+  val toTaxYear = TaxYear("2019-20")
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
   val requestParameters =
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"

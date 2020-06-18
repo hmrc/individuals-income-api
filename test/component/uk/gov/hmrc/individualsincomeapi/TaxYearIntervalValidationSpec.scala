@@ -126,7 +126,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
     scenario("toTaxYear defaults to the current tax year when it is not provided") {
 
       When("I request individual income for the existing matchId without a toTaxYear")
-      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2013-14")
+      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17")
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 
@@ -135,7 +135,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       And("The response contains the self-assessment for the period")
       (Json.parse(response.body) \ "selfAssessment" \ "taxReturns" \\ "taxYear")
-        .map(_.as[String]) shouldBe Seq("2014-15", "2013-14")
+        .map(_.as[String]) shouldBe Seq("2017-18", "2016-17")
     }
   }
 }
