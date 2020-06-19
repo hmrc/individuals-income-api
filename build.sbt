@@ -7,9 +7,7 @@ import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-income-api"
-val hmrc = "uk.gov.hmrc"
 
-lazy val appDependencies: Seq[ModuleID] = compile ++ test()
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.domain._",
@@ -18,44 +16,6 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val externalServices =
   List(ExternalService("AUTH"), ExternalService("INDIVIDUALS_MATCHING_API"), ExternalService("DES"))
-
-val akkaVersion = "2.5.23"
-
-val akkaHttpVersion = "10.0.15"
-
-dependencyOverrides += "com.typesafe.akka" %% "akka-stream" % akkaVersion
-
-dependencyOverrides += "com.typesafe.akka" %% "akka-protobuf" % akkaVersion
-
-dependencyOverrides += "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
-
-dependencyOverrides += "com.typesafe.akka" %% "akka-actor" % akkaVersion
-
-dependencyOverrides += "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion
-
-val compile = Seq(
-  ws,
-  hmrc                %% "bootstrap-play-26" % "1.8.0",
-  hmrc                %% "domain"            % "5.9.0-play-26",
-  hmrc                %% "auth-client"       % "3.0.0-play-26",
-  hmrc                %% "play-hal"          % "1.9.0-play-26",
-  hmrc                %% "play-hmrc-api"     % "4.1.0-play-26",
-  hmrc                %% "mongo-caching"     % "6.13.0-play-26",
-  hmrc                %% "json-encryption"   % "4.8.0-play-26",
-  "com.typesafe.play" %% "play-json-joda"    % "2.6.14"
-)
-
-def test(scope: String = "test,it") = Seq(
-  "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.3"             % scope,
-  "org.scalatest"          %% "scalatest"                % "3.0.8"             % scope,
-  "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
-  "org.mockito"            % "mockito-core"              % "3.2.4"             % scope,
-  "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
-  "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
-  "com.github.tomakehurst" % "wiremock-jre8"             % "2.26.0"            % scope,
-  hmrc                     %% "reactivemongo-test"       % "4.16.0-play-26"    % scope,
-  hmrc                     %% "service-integration-test" % "0.9.0-play-26"     % scope
-)
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
 def unitFilter(name: String): Boolean = name startsWith "unit"
@@ -75,7 +35,8 @@ lazy val microservice =
     .settings(defaultSettings(): _*)
     .settings(scalafmtOnCompile := true)
     .settings(
-      libraryDependencies ++= appDependencies,
+      dependencyOverrides ++= AppDependencies.overrides,
+      libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),
       testOptions in Test := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
