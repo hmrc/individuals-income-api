@@ -44,8 +44,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   val matchId = UUID.randomUUID()
   val utr = SaUtr("2432552644")
-  val fromTaxYear = TaxYear("2015-16")
-  val toTaxYear = TaxYear("2016-17")
+  val fromTaxYear = TaxYear("2018-19")
+  val toTaxYear = TaxYear("2019-20")
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
   val requestParameters =
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
@@ -62,8 +62,8 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   "LiveSaIncomeController.saFootprint" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
     val saFootprint = SaFootprint(
-      Seq(SaRegistration(utr, Some(LocalDate.parse("2013-06-01")))),
-      Seq(SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-01"))))))
+      Seq(SaRegistration(utr, Some(LocalDate.parse("2018-06-01")))),
+      Seq(SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-01"))))))
     )
 
     "return 200 (OK) with the self assessment footprint for the period" in new Setup {
@@ -115,7 +115,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.saReturnsSummary" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
-    val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(utr, 30500.55))))
+    val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2018-19"), Seq(SaTaxReturnSummary(utr, 30500.55))))
 
     "return 200 (OK) when there are sa tax returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -168,7 +168,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.employmentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
-    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 9000))))
+    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2018-19"), Seq(SaEmploymentsIncome(utr, 9000))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -222,7 +222,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.selfEmploymentsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
-    val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(utr, 9000.55))))
+    val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2018-19"), Seq(SaSelfEmploymentsIncome(utr, 9000.55))))
 
     "return 200 (OK) with the employments income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -276,7 +276,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.saTrustsIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
-    val saIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(utr, 9000.55))))
+    val saIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2018-19"), Seq(SaAnnualTrustIncome(utr, 9000.55))))
 
     "return 200 (OK) with the trusts income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -329,7 +329,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   "LiveSaIncomeController.saForeignIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
     val saForeignIncome =
-      Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
+      Seq(SaAnnualForeignIncomes(TaxYear("2018-19"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
     "return 200 (OK) with the foreign income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -383,7 +383,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   "LiveSaIncomeController.saUkPropertiesIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
     val saUkPropertiesIncome =
-      Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
+      Seq(SaAnnualUkPropertiesIncomes(TaxYear("2018-19"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
     "return 200 (OK) with the uk properties income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -437,7 +437,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
   "LiveSaIncomeController.saOtherIncome" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
-    val saOtherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(sandboxUtr, 134.56))))
+    val saOtherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2018-19"), Seq(SaAnnualOtherIncome(sandboxUtr, 134.56))))
 
     "return 200 (OK) with the other income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))

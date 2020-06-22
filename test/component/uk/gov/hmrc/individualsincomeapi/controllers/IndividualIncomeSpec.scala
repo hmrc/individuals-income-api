@@ -31,8 +31,8 @@ class IndividualIncomeSpec extends BaseSpec {
 
   val matchId = UUID.randomUUID().toString
   val nino = "CS700100A"
-  val fromDate = "2016-04-01"
-  val toDate = "2017-01-01"
+  val fromDate = "2019-04-01"
+  val toDate = "2020-01-01"
   val payeIncomeScope = "read:individuals-income-paye"
 
   feature("Live individual income") {
@@ -55,10 +55,10 @@ class IndividualIncomeSpec extends BaseSpec {
             employerDistrictNumber = Some("123"),
             employerSchemeReference = Some("DI45678"),
             payments = Seq(
-              DesPayment(LocalDate.parse("2017-02-09"), 500.25, weekPayNumber = Some(45)),
-              DesPayment(LocalDate.parse("2017-02-16"), 500.25, weekPayNumber = Some(46)),
-              DesPayment(LocalDate.parse("2016-04-15"), 1000.25, monthPayNumber = Some(1)),
-              DesPayment(LocalDate.parse("2016-05-15"), 1000.25, weekPayNumber = Some(2))
+              DesPayment(LocalDate.parse("2020-02-09"), 500.25, weekPayNumber = Some(45)),
+              DesPayment(LocalDate.parse("2020-02-16"), 500.25, weekPayNumber = Some(46)),
+              DesPayment(LocalDate.parse("2019-04-15"), 1000.25, monthPayNumber = Some(1)),
+              DesPayment(LocalDate.parse("2019-05-15"), 1000.25, weekPayNumber = Some(2))
             )
           )))
       )
@@ -82,25 +82,25 @@ class IndividualIncomeSpec extends BaseSpec {
                  "income": [
                    {
                      "taxablePayment": 500.25,
-                     "paymentDate": "2017-02-16",
+                     "paymentDate": "2020-02-16",
                      "employerPayeReference": "123/DI45678",
                      "weekPayNumber": 46
                    },
                    {
                      "taxablePayment": 500.25,
-                     "paymentDate": "2017-02-09",
+                     "paymentDate": "2020-02-09",
                      "employerPayeReference": "123/DI45678",
                      "weekPayNumber": 45
                    },
                    {
                      "taxablePayment": 1000.25,
-                     "paymentDate": "2016-05-15",
+                     "paymentDate": "2019-05-15",
                      "employerPayeReference": "123/DI45678",
                      "weekPayNumber": 2
                    },
                    {
                      "taxablePayment": 1000.25,
-                     "paymentDate": "2016-04-15",
+                     "paymentDate": "2019-04-15",
                      "employerPayeReference": "123/DI45678",
                      "monthPayNumber": 1
                    }
@@ -111,7 +111,7 @@ class IndividualIncomeSpec extends BaseSpec {
     }
 
     scenario("Individual has no employment income") {
-      val toDate = "2017-02-01"
+      val toDate = "2020-02-01"
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
@@ -145,7 +145,7 @@ class IndividualIncomeSpec extends BaseSpec {
     }
 
     scenario("The employment income data source is rate limited") {
-      val toDate = "2017-02-02"
+      val toDate = "2020-02-02"
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
@@ -193,13 +193,13 @@ class IndividualIncomeSpec extends BaseSpec {
                  "income": [
                    {
                      "taxablePayment": 1000.25,
-                     "paymentDate": "2016-05-28",
+                     "paymentDate": "2019-05-28",
                      "employerPayeReference": "123/AI45678",
                      "monthPayNumber": 2
                    },
                    {
                      "taxablePayment": 1000.25,
-                     "paymentDate": "2016-04-28",
+                     "paymentDate": "2019-04-28",
                      "employerPayeReference": "123/AI45678",
                      "monthPayNumber": 1
                    }

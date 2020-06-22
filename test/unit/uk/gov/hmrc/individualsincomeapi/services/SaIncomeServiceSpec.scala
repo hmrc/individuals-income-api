@@ -50,10 +50,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval))
 
       result shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2011-06-06")))),
+        registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2017-06-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-06"))))),
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, Some(LocalDate.parse("2015-10-06")))))
+          SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-06"))))),
+          SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(utr, Some(LocalDate.parse("2018-10-06")))))
         )
       )
     }
@@ -75,10 +75,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
         .willReturn(successful(desIncomes))
 
       await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval)) shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2011-06-06")))),
+        registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2017-06-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(utr, Some(LocalDate.parse("2016-06-06"))))),
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(utr, Some(LocalDate.parse("2015-10-06")))))
+          SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-06"))))),
+          SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(utr, Some(LocalDate.parse("2018-10-06")))))
         )
       )
 
@@ -91,26 +91,26 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(sandboxSaIncomeService.fetchSaFootprint(sandboxMatchId, taxYearInterval))
 
       result shouldBe SaFootprint(
-        registrations = Seq(SaRegistration(SaUtr("2432552635"), Some(LocalDate.parse("2012-01-06")))),
+        registrations = Seq(SaRegistration(SaUtr("2432552635"), Some(LocalDate.parse("2015-01-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2014-15"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2015-10-06"))))),
-          SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2014-06-06")))))
+          SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2018-10-06"))))),
+          SaTaxReturn(TaxYear("2016-17"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2017-06-06")))))
         )
       )
     }
 
     "filter out returns not in the requested period" in new Setup {
       val result = await(
-        sandboxSaIncomeService.fetchSaFootprint(sandboxMatchId, taxYearInterval.copy(toTaxYear = TaxYear("2013-14"))))
+        sandboxSaIncomeService.fetchSaFootprint(sandboxMatchId, taxYearInterval.copy(toTaxYear = TaxYear("2016-17"))))
 
       result.taxReturns shouldBe Seq(
-        SaTaxReturn(TaxYear("2013-14"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2014-06-06"))))))
+        SaTaxReturn(TaxYear("2016-17"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2017-06-06"))))))
     }
 
     "return an empty footprint when no annual return exists for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchSaFootprint(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchSaFootprint(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
 
       result shouldBe SaFootprint(Seq.empty, Seq.empty)
     }
@@ -119,7 +119,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchSaFootprint(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchSaFootprint(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -134,8 +134,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchEmploymentsIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 1555.55))),
-        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(utr, 0.0)))
+        SaAnnualEmployments(TaxYear("2018-19"), Seq(SaEmploymentsIncome(utr, 1555.55))),
+        SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(utr, 0.0)))
       )
     }
 
@@ -152,28 +152,28 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+          .fetchEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(sandboxUtr, 0))),
-        SaAnnualEmployments(TaxYear("2013-14"), Seq(SaEmploymentsIncome(sandboxUtr, 5000)))
+        SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(sandboxUtr, 0))),
+        SaAnnualEmployments(TaxYear("2016-17"), Seq(SaEmploymentsIncome(sandboxUtr, 5000)))
       )
     }
 
     "filter out employments income not in the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchEmploymentsIncome(sandboxMatchId, taxYearInterval.copy(fromTaxYear = TaxYear("2014-15"))))
+          .fetchEmploymentsIncome(sandboxMatchId, taxYearInterval.copy(fromTaxYear = TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2014-15"), Seq(SaEmploymentsIncome(sandboxUtr, 0)))
+        SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(sandboxUtr, 0)))
       )
     }
 
     "return an empty list when no employments income exists for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
 
       result shouldBe Seq()
     }
@@ -182,7 +182,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchEmploymentsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchEmploymentsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -197,8 +197,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchSelfEmploymentsIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(utr, 2500.55))),
-        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(utr, 0.0)))
+        SaAnnualSelfEmployments(TaxYear("2018-19"), Seq(SaSelfEmploymentsIncome(utr, 2500.55))),
+        SaAnnualSelfEmployments(TaxYear("2017-18"), Seq(SaSelfEmploymentsIncome(utr, 0.0)))
       )
     }
 
@@ -215,18 +215,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the self employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchSelfEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchSelfEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualSelfEmployments(TaxYear("2014-15"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 0.0))),
-        SaAnnualSelfEmployments(TaxYear("2013-14"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500)))
+        SaAnnualSelfEmployments(TaxYear("2017-18"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 0.0))),
+        SaAnnualSelfEmployments(TaxYear("2016-17"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500)))
       )
     }
 
     "return an empty list when no self employments exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchSelfEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchSelfEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -234,7 +234,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchSelfEmploymentsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchSelfEmploymentsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -249,8 +249,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchReturnsSummary(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(utr, 0.0))),
-        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(utr, 35000.55)))
+        SaTaxReturnSummaries(TaxYear("2018-19"), Seq(SaTaxReturnSummary(utr, 0.0))),
+        SaTaxReturnSummaries(TaxYear("2017-18"), Seq(SaTaxReturnSummary(utr, 35000.55)))
       )
     }
 
@@ -267,18 +267,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa tax return summaries by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaTaxReturnSummaries(TaxYear("2014-15"), Seq(SaTaxReturnSummary(sandboxUtr, 0.0))),
-        SaTaxReturnSummaries(TaxYear("2013-14"), Seq(SaTaxReturnSummary(sandboxUtr, 30000)))
+        SaTaxReturnSummaries(TaxYear("2017-18"), Seq(SaTaxReturnSummary(sandboxUtr, 0.0))),
+        SaTaxReturnSummaries(TaxYear("2016-17"), Seq(SaTaxReturnSummary(sandboxUtr, 30000)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -286,7 +286,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchReturnsSummary(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchReturnsSummary(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -301,8 +301,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchTrustsIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(utr, 0.0))),
-        SaAnnualTrustIncomes(TaxYear("2014-15"), Seq(SaAnnualTrustIncome(utr, 2600.55)))
+        SaAnnualTrustIncomes(TaxYear("2018-19"), Seq(SaAnnualTrustIncome(utr, 0.0))),
+        SaAnnualTrustIncomes(TaxYear("2017-18"), Seq(SaAnnualTrustIncome(utr, 2600.55)))
       )
     }
 
@@ -319,18 +319,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa trusts by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchTrustsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchTrustsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualTrustIncomes(TaxYear("2014-15"), Seq(SaAnnualTrustIncome(sandboxUtr, 0))),
-        SaAnnualTrustIncomes(TaxYear("2013-14"), Seq(SaAnnualTrustIncome(sandboxUtr, 2143.32)))
+        SaAnnualTrustIncomes(TaxYear("2017-18"), Seq(SaAnnualTrustIncome(sandboxUtr, 0))),
+        SaAnnualTrustIncomes(TaxYear("2016-17"), Seq(SaAnnualTrustIncome(sandboxUtr, 2143.32)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -338,7 +338,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchTrustsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchTrustsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -353,8 +353,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchForeignIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(utr, 0.0))),
-        SaAnnualForeignIncomes(TaxYear("2014-15"), Seq(SaAnnualForeignIncome(utr, 500.55)))
+        SaAnnualForeignIncomes(TaxYear("2018-19"), Seq(SaAnnualForeignIncome(utr, 0.0))),
+        SaAnnualForeignIncomes(TaxYear("2017-18"), Seq(SaAnnualForeignIncome(utr, 500.55)))
       )
     }
 
@@ -371,18 +371,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa foreign income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchForeignIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchForeignIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualForeignIncomes(TaxYear("2014-15"), Seq(SaAnnualForeignIncome(sandboxUtr, 0))),
-        SaAnnualForeignIncomes(TaxYear("2013-14"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65)))
+        SaAnnualForeignIncomes(TaxYear("2017-18"), Seq(SaAnnualForeignIncome(sandboxUtr, 0))),
+        SaAnnualForeignIncomes(TaxYear("2016-17"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchForeignIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchForeignIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -390,7 +390,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchForeignIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchForeignIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -405,8 +405,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchPartnershipsIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(utr, 0.0))),
-        SaAnnualPartnershipIncomes(TaxYear("2014-15"), Seq(SaAnnualPartnershipIncome(utr, 555.55)))
+        SaAnnualPartnershipIncomes(TaxYear("2018-19"), Seq(SaAnnualPartnershipIncome(utr, 0.0))),
+        SaAnnualPartnershipIncomes(TaxYear("2017-18"), Seq(SaAnnualPartnershipIncome(utr, 555.55)))
       )
     }
 
@@ -423,18 +423,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa partnership income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchPartnershipsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchPartnershipsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualPartnershipIncomes(TaxYear("2014-15"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 0))),
-        SaAnnualPartnershipIncomes(TaxYear("2013-14"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 324.54)))
+        SaAnnualPartnershipIncomes(TaxYear("2017-18"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 0))),
+        SaAnnualPartnershipIncomes(TaxYear("2016-17"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 324.54)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchPartnershipsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchPartnershipsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -442,7 +442,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchPartnershipsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchPartnershipsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -458,10 +458,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualInterestAndDividendIncomes(
-          TaxYear("2015-16"),
+          TaxYear("2018-19"),
           Seq(SaAnnualInterestAndDividendIncome(utr, 0.0, 0.0, 0.0))),
         SaAnnualInterestAndDividendIncomes(
-          TaxYear("2014-15"),
+          TaxYear("2017-18"),
           Seq(SaAnnualInterestAndDividendIncome(utr, 43.56, 72.57, 16.32)))
       )
     }
@@ -479,14 +479,14 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa interests and dividends income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchInterestsAndDividendsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchInterestsAndDividendsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
         SaAnnualInterestAndDividendIncomes(
-          TaxYear("2014-15"),
+          TaxYear("2017-18"),
           Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 0, 0, 0))),
         SaAnnualInterestAndDividendIncomes(
-          TaxYear("2013-14"),
+          TaxYear("2016-17"),
           Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 12.46, 25.86, 657.89)))
       )
     }
@@ -494,14 +494,14 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchInterestsAndDividendsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchInterestsAndDividendsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
     "fail with MatchNotFoundException when the matchId is not the sandbox matchId" in new Setup {
       intercept[MatchNotFoundException] {
         await(sandboxSaIncomeService
-          .fetchInterestsAndDividendsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+          .fetchInterestsAndDividendsIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -516,8 +516,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchUkPropertiesIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(utr, 0.0))),
-        SaAnnualUkPropertiesIncomes(TaxYear("2014-15"), Seq(SaAnnualUkPropertiesIncome(utr, 1276.67)))
+        SaAnnualUkPropertiesIncomes(TaxYear("2018-19"), Seq(SaAnnualUkPropertiesIncome(utr, 0.0))),
+        SaAnnualUkPropertiesIncomes(TaxYear("2017-18"), Seq(SaAnnualUkPropertiesIncome(utr, 1276.67)))
       )
     }
 
@@ -534,18 +534,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa UK properties income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchUkPropertiesIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchUkPropertiesIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualUkPropertiesIncomes(TaxYear("2014-15"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 0))),
-        SaAnnualUkPropertiesIncomes(TaxYear("2013-14"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67)))
+        SaAnnualUkPropertiesIncomes(TaxYear("2017-18"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 0))),
+        SaAnnualUkPropertiesIncomes(TaxYear("2016-17"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchUkPropertiesIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchUkPropertiesIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -553,7 +553,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchUkPropertiesIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchUkPropertiesIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -568,8 +568,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchPensionsAndStateBenefitsIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2015-16"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 0.0))),
-        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2014-15"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 52.56)))
+        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2018-19"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 0.0))),
+        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2017-18"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 52.56)))
       )
     }
 
@@ -586,14 +586,14 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa pensions and state benefits income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchPensionsAndStateBenefitsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchPensionsAndStateBenefitsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
         SaAnnualPensionAndStateBenefitIncomes(
-          TaxYear("2014-15"),
+          TaxYear("2017-18"),
           Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 0))),
         SaAnnualPensionAndStateBenefitIncomes(
-          TaxYear("2013-14"),
+          TaxYear("2016-17"),
           Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 52.79)))
       )
     }
@@ -601,7 +601,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchPensionsAndStateBenefitsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchPensionsAndStateBenefitsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -610,7 +610,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
         await(
           sandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(
             UUID.randomUUID(),
-            TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -625,8 +625,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchAdditionalInformation(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualAdditionalInformations(TaxYear("2015-16"), Seq(SaAnnualAdditionalInformation(utr, 0.0, 0.0))),
-        SaAnnualAdditionalInformations(TaxYear("2014-15"), Seq(SaAnnualAdditionalInformation(utr, 45.20, 12.45)))
+        SaAnnualAdditionalInformations(TaxYear("2018-19"), Seq(SaAnnualAdditionalInformation(utr, 0.0, 0.0))),
+        SaAnnualAdditionalInformations(TaxYear("2017-18"), Seq(SaAnnualAdditionalInformation(utr, 45.20, 12.45)))
       )
     }
 
@@ -643,18 +643,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa additional information by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchAdditionalInformation(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchAdditionalInformation(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualAdditionalInformations(TaxYear("2014-15"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 0, 0))),
-        SaAnnualAdditionalInformations(TaxYear("2013-14"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 44.54, 52.34)))
+        SaAnnualAdditionalInformations(TaxYear("2017-18"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 0, 0))),
+        SaAnnualAdditionalInformations(TaxYear("2016-17"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 44.54, 52.34)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchAdditionalInformation(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchAdditionalInformation(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -662,7 +662,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchAdditionalInformation(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchAdditionalInformation(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -677,8 +677,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchOtherIncome(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(utr, 0.0))),
-        SaAnnualOtherIncomes(TaxYear("2014-15"), Seq(SaAnnualOtherIncome(utr, 134.56)))
+        SaAnnualOtherIncomes(TaxYear("2018-19"), Seq(SaAnnualOtherIncome(utr, 0.0))),
+        SaAnnualOtherIncomes(TaxYear("2017-18"), Seq(SaAnnualOtherIncome(utr, 134.56)))
       )
     }
 
@@ -695,18 +695,18 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     "return the sa other income by tax year DESCENDING when the matchId is valid" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchOtherIncome(sandboxMatchId, TaxYearInterval(TaxYear("2013-14"), TaxYear("2014-15"))))
+          .fetchOtherIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualOtherIncomes(TaxYear("2014-15"), Seq(SaAnnualOtherIncome(sandboxUtr, 0))),
-        SaAnnualOtherIncomes(TaxYear("2013-14"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70)))
+        SaAnnualOtherIncomes(TaxYear("2017-18"), Seq(SaAnnualOtherIncome(sandboxUtr, 0))),
+        SaAnnualOtherIncomes(TaxYear("2016-17"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70)))
       )
     }
 
     "return an empty list when no sa tax returns exist for the requested period" in new Setup {
       val result = await(
         sandboxSaIncomeService
-          .fetchOtherIncome(sandboxMatchId, TaxYearInterval(TaxYear("2015-16"), TaxYear("2015-16"))))
+          .fetchOtherIncome(sandboxMatchId, TaxYearInterval(TaxYear("2018-19"), TaxYear("2018-19"))))
       result shouldBe Seq.empty
     }
 
@@ -714,7 +714,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       intercept[MatchNotFoundException] {
         await(
           sandboxSaIncomeService
-            .fetchOtherIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2013-14"), TaxYear("2015-16"))))
+            .fetchOtherIncome(UUID.randomUUID(), TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
       }
     }
   }
@@ -722,7 +722,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaSources" should {
     "return the sa income sources by tax year in descending order when the matchId is valid" in new Setup {
       val income = DesSAIncome(
-        "2016",
+        "2019",
         Seq(
           anSAReturn.copy(
             businessDescription = Some("business"),
@@ -746,7 +746,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaIncomeSources(
-          TaxYear("2015-16"),
+          TaxYear("2018-19"),
           Seq(
             SaIncomeSource(
               anSAReturn.utr,
@@ -770,7 +770,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
     "filter out empty addresses from the response" in new Setup {
       val income = DesSAIncome(
-        "2016",
+        "2019",
         Seq(
           anSAReturn.copy(
             businessDescription = Some("business"),
@@ -794,7 +794,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaIncomeSources(
-          TaxYear("2015-16"),
+          TaxYear("2018-19"),
           Seq(
             SaIncomeSource(
               anSAReturn.utr,
@@ -824,7 +824,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
               successful(
                 Seq(
                   DesSAIncome(
-                    "2016",
+                    "2019",
                     Seq(
                       anSAReturn.copy(
                         businessDescription = Some("thing"),
@@ -836,7 +836,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
           result shouldBe Seq(
             SaIncomeSources(
-              TaxYear("2015-16"),
+              TaxYear("2018-19"),
               Seq(
                 SaIncomeSource(
                   anSAReturn.utr,
@@ -883,12 +883,12 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
     val liveMatchId = UUID.randomUUID()
     val liveNino = Nino("AA100009B")
-    val taxYearInterval = TaxYearInterval(TaxYear("2013-14"), TaxYear("2016-17"))
+    val taxYearInterval = TaxYearInterval(TaxYear("2016-17"), TaxYear("2019-20"))
     val saCacheId = SaCacheId(liveNino, taxYearInterval)
 
     val anSAReturn = DesSAReturn(
-      caseStartDate = Some(LocalDate.parse("2011-06-06")),
-      receivedDate = Some(LocalDate.parse("2015-10-06")),
+      caseStartDate = Some(LocalDate.parse("2017-06-06")),
+      receivedDate = Some(LocalDate.parse("2018-10-06")),
       utr = utr,
       income = SAIncome(
         incomeFromAllEmployments = None,
@@ -909,8 +909,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     )
 
     val anotherSAReturn = DesSAReturn(
-      caseStartDate = Some(LocalDate.parse("2011-06-06")),
-      receivedDate = Some(LocalDate.parse("2016-06-06")),
+      caseStartDate = Some(LocalDate.parse("2017-06-06")),
+      receivedDate = Some(LocalDate.parse("2019-06-06")),
       utr = utr,
       income = SAIncome(
         incomeFromAllEmployments = Some(1555.55),
@@ -930,13 +930,13 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
     val desIncomes = Seq(
       DesSAIncome(
-        taxYear = "2015",
+        taxYear = "2018",
         returnList = Seq(
           anSAReturn
         )
       ),
       DesSAIncome(
-        taxYear = "2016",
+        taxYear = "2019",
         returnList = Seq(
           anotherSAReturn
         )
