@@ -27,17 +27,17 @@ object AppDependencies {
     hmrc                %% "play-hmrc-api"              % "4.1.0-play-26",
     hmrc                %% "mongo-caching"              % "6.15.0-play-26",
     hmrc                %% "json-encryption"            % "4.8.0-play-26",
-    "com.typesafe.play" %% "play-json-joda"             % "2.9.0"
+    "com.typesafe.play" %% "play-json-joda"             % "2.9.1"
   )
 
   def test(scope: String = "test,it") = Seq(
     "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.3"             % scope,
     "org.scalatest"          %% "scalatest"                % "3.0.8"             % scope,
     "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
-    "org.mockito"            % "mockito-core"              % "3.2.4"             % scope,
+    "org.mockito"            % "mockito-core"              % "3.5.10"             % scope,
     "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
     "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
-    "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.1"            % scope,
+    "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.2"            % scope,
     hmrc                     %% "reactivemongo-test"       % "4.21.0-play-26"    % scope,
     hmrc                     %% "service-integration-test" % "0.12.0-play-26"     % scope
   )
