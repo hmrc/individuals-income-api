@@ -25,7 +25,6 @@ import uk.gov.hmrc.cache.repository.{CacheMongoRepository, CacheRepository}
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

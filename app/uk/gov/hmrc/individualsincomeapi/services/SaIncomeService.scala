@@ -122,7 +122,7 @@ class LiveSaIncomeService @Inject()(
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, _) => Thread.sleep(retryDelay); body
+    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(

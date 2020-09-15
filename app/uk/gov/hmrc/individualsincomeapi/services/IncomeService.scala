@@ -60,7 +60,7 @@ class LiveIncomeService @Inject()(
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, _) => Thread.sleep(retryDelay); body
+    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 }
 

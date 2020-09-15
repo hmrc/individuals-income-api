@@ -32,6 +32,7 @@ lazy val microservice =
     .settings(playSettings: _*)
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
+    .settings(scalaVersion := "2.12.11")
     .settings(defaultSettings(): _*)
     .settings(scalafmtOnCompile := true)
     .settings(

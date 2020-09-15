@@ -24,10 +24,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.SpecBase
 
 class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
