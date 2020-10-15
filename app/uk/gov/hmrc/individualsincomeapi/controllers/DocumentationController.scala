@@ -32,11 +32,11 @@ class DocumentationController @Inject()(
   config: Configuration)
     extends BackendController(cc) {
 
-  private lazy val privilegedWhitelistedApplicationIds =
-    config.getOptional[Seq[String]]("api.access.version-P1.0.whitelistedApplicationIds").getOrElse(Seq.empty)
+  private lazy val privilegedAllowListedApplicationIds =
+    config.getOptional[Seq[String]]("api.access.version-P1.0.allowListedApplicationIds").getOrElse(Seq.empty)
 
   def definition(): Action[AnyContent] = Action {
-    Ok(txt.definition(privilegedWhitelistedApplicationIds)).withHeaders(CONTENT_TYPE -> JSON)
+    Ok(txt.definition(privilegedAllowListedApplicationIds)).withHeaders(CONTENT_TYPE -> JSON)
   }
   def documentation(
     version: String,
