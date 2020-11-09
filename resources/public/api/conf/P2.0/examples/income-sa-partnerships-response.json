@@ -1,0 +1,29 @@
+{
+  "_links": {
+    "self": {
+      "href": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    }
+  },
+  "selfAssessment": {
+    "taxReturns": [
+      {
+        "taxYear": "2014-15",
+        "partnerships": [
+          {
+            "utr": "2432552635",
+            "partnershipProfit": 0
+          }
+        ]
+      },
+      {
+        "taxYear": "2013-14",
+        "partnerships": [
+          {
+            "utr": "2432552635",
+            "partnershipProfit": 324.54
+          }
+        ]
+      }
+    ]
+  }
+}

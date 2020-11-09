@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.AUTHORIZATION
 import play.api.http.{HeaderNames, Status}
-import play.api.libs.json.JsArray
+import play.api.libs.json.{JsArray, JsString}
 import play.api.libs.json.Json._
 import uk.gov.hmrc.auth.core.Enrolment
 
@@ -31,19 +31,40 @@ object AuthStub extends MockHost(22000) {
     "retrieve"  -> JsArray()
   )
 
-  def willAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): StubMapping =
+  private def privilegedAuthorityRetrieveAll(scope: String) = obj(
+    "authorise" -> arr(toJson(Enrolment(scope))),
+    "retrieve"  -> arr(toJson("allEnrolments"))
+  )
+
+  def willAuthorizePrivilegedAuthToken(
+    authBearerToken: String,
+    scope: String,
+    retrieveAll: Boolean = false): StubMapping =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
-        .withRequestBody(equalToJson(privilegedAuthority(scope).toString()))
+        .withRequestBody(
+          equalToJson(
+            if (retrieveAll)
+              privilegedAuthorityRetrieveAll(scope).toString()
+            else
+              privilegedAuthority(scope).toString()))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
         .willReturn(aResponse()
           .withStatus(Status.OK)
-          .withBody("""{"internalId": "some-id"}""")))
+          .withBody("""{"internalId": "some-id", "allEnrolments": [ { "key": "key", "value": "hello-world" } ]}""")))
 
-  def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): StubMapping =
+  def willNotAuthorizePrivilegedAuthToken(
+    authBearerToken: String,
+    scope: String,
+    retrieveAll: Boolean = false): StubMapping =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
-        .withRequestBody(equalToJson(privilegedAuthority(scope).toString()))
+        .withRequestBody(
+          equalToJson(
+            if (retrieveAll)
+              privilegedAuthorityRetrieveAll(scope).toString()
+            else
+              privilegedAuthority(scope).toString()))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
         .willReturn(aResponse()
           .withStatus(Status.UNAUTHORIZED)
