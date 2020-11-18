@@ -48,6 +48,11 @@ object JsonFormatters {
     override def writes(taxYear: TaxYear): JsValue = JsString(taxYear.formattedTaxYear)
   }
 
+  implicit val payeFormat = Json.format[Paye]
+  implicit val ifPayeFormat = Json.format[IFPaye]
+  implicit val saFormat = Json.format[Sa]
+  implicit val ifSelfAssessmentFormat = Json.format[IFSelfAssessment]
+
   implicit val paymentJsonFormat = Json.format[Payment]
   implicit val matchedCitizenJsonFormat = Json.format[MatchedCitizen]
 
