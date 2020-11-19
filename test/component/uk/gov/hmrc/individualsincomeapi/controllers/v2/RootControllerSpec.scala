@@ -31,7 +31,7 @@ class RootControllerSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 200 (OK)")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }

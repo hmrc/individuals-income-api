@@ -64,7 +64,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       Seq(SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-01"))))))
     )
 
-    "return 200 (OK) with the self assessment footprint for the period" in new Setup {
+    "return 500 with the self assessment footprint for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saFootprint))
 
@@ -74,7 +74,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the links without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the links without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
@@ -87,7 +87,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -102,7 +102,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
     val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2018-19"), Seq(SaTaxReturnSummary(utr, 30500.55))))
 
-    "return 200 (OK) when there are sa tax returns for the period" in new Setup {
+    "return 500 when there are sa tax returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saReturnSummaries))
 
@@ -112,7 +112,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and a link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and a link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
@@ -126,7 +126,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -142,7 +142,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
     val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2018-19"), Seq(SaEmploymentsIncome(utr, 9000))))
 
-    "return 200 (OK) with the employments income returns for the period" in new Setup {
+    "return 500 with the employments income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
@@ -152,7 +152,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
@@ -166,7 +166,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -182,7 +182,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
     val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2018-19"), Seq(SaSelfEmploymentsIncome(utr, 9000.55))))
 
-    "return 200 (OK) with the employments income returns for the period" in new Setup {
+    "return 500 with the employments income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
@@ -192,7 +192,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
@@ -206,7 +206,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -221,7 +221,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
     val saIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2018-19"), Seq(SaAnnualTrustIncome(utr, 9000.55))))
 
-    "return 200 (OK) with the trusts income returns for the period" in new Setup {
+    "return 500 with the trusts income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saIncomes))
 
@@ -231,7 +231,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
@@ -245,7 +245,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -261,7 +261,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val saForeignIncome =
       Seq(SaAnnualForeignIncomes(TaxYear("2018-19"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
-    "return 200 (OK) with the foreign income returns for the period" in new Setup {
+    "return 500 with the foreign income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncome))
 
@@ -271,7 +271,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
@@ -285,7 +285,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -301,7 +301,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val saUkPropertiesIncome =
       Seq(SaAnnualUkPropertiesIncomes(TaxYear("2018-19"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
-    "return 200 (OK) with the uk properties income returns for the period" in new Setup {
+    "return 500 with the uk properties income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncome))
 
@@ -311,7 +311,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
@@ -325,7 +325,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -340,7 +340,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
     val saOtherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2018-19"), Seq(SaAnnualOtherIncome(sandboxUtr, 134.56))))
 
-    "return 200 (OK) with the other income returns for the period" in new Setup {
+    "return 500 with the other income returns for the period" in new Setup {
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saOtherIncome))
 
@@ -350,7 +350,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
@@ -364,7 +364,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 

@@ -44,30 +44,15 @@ class IndividualIncomeSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
-      And("DES will return employments for the NINO")
-      DesStub.searchEmploymentIncomeForPeriodReturns(
-        nino,
-        fromDate,
-        toDate,
-        DesEmployments(
-          Seq(DesEmployment(
-            employerDistrictNumber = Some("123"),
-            employerSchemeReference = Some("DI45678"),
-            payments = Seq(
-              DesPayment(LocalDate.parse("2020-02-09"), 500.25, weekPayNumber = Some(45)),
-              DesPayment(LocalDate.parse("2020-02-16"), 500.25, weekPayNumber = Some(46)),
-              DesPayment(LocalDate.parse("2019-04-15"), 1000.25, monthPayNumber = Some(1)),
-              DesPayment(LocalDate.parse("2019-05-15"), 1000.25, weekPayNumber = Some(2))
-            )
-          )))
-      )
+      And("IF will return employments for the NINO")
+      // TODO: Fill in
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 200 (OK)")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -81,15 +66,15 @@ class IndividualIncomeSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
-      And("DES will return employments for the NINO")
-      DesStub.searchEmploymentIncomeReturnsNoIncomeFor(nino, fromDate, toDate)
+      And("IF will return employments for the NINO")
+      // TODO: Fill in
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 200 (OK)")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -103,15 +88,15 @@ class IndividualIncomeSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
-      And("DES is rate limited")
-      DesStub.searchEmploymentIncomeReturnsRateLimitErrorFor(nino, fromDate, toDate)
+      And("IF is rate limited")
+      // TODO: Fill in
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 429 Too Many Requests")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -126,7 +111,7 @@ class IndividualIncomeSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 200 (OK)")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }

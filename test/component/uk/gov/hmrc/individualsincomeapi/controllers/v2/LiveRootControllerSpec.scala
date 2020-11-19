@@ -104,7 +104,7 @@ class LiveRootControllerSpec extends BaseSpec {
       When("the root entry point to the API is invoked with an invalid match id")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
-      Then("the response status should be 404 (not found)")
+      Then("the response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -124,7 +124,7 @@ class LiveRootControllerSpec extends BaseSpec {
       When("the root entry point to the API is invoked with a valid match id")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
-      Then("the response status should be 200 (ok)")
+      Then("the response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }

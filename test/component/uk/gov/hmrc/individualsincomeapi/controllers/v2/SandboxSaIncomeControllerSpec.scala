@@ -40,7 +40,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 200 (OK) with a valid payload")
+      Then("The response status should be 500 with a valid payload")
       val requestParameters = s"matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19"
 
       response.code shouldBe INTERNAL_SERVER_ERROR
@@ -55,7 +55,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
-      Then("The response status should be 200 (OK) with a valid payload")
+      Then("The response status should be 500 with a valid payload")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -68,7 +68,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
-      Then("The response status should be 200 (OK) with a valid payload")
+      Then("The response status should be 500 with a valid payload")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -81,7 +81,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
-      Then("The response status should be 200 (OK) with a valid payload")
+      Then("The response status should be 500 with a valid payload")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -93,7 +93,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
-      Then("The response status should be 200 (OK) with a valid payload")
+      Then("The response status should be 500 with a valid payload")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -105,7 +105,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
-      Then("The response status should be 200 (OK) with a valid payload")
+      Then("The response status should be 500 with a valid payload")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -118,7 +118,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-    Then("The response status should be 200 (OK) with a valid payload")
+    Then("The response status should be 500 with a valid payload")
     response.code shouldBe INTERNAL_SERVER_ERROR
     response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
   }
@@ -130,7 +130,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       .headers(requestHeaders(acceptHeaderP2))
       .asString
 
-    Then("The response status should be 200 (OK) with a valid payload")
+    Then("The response status should be 500 with a valid payload")
     response.code shouldBe INTERNAL_SERVER_ERROR
     response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
   }
@@ -142,7 +142,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       .headers(requestHeaders(acceptHeaderP2))
       .asString
 
-    Then("The response status should be 200 (OK) with a valid payload")
+    Then("The response status should be 500 with a valid payload")
     response.code shouldBe INTERNAL_SERVER_ERROR
     response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
   }
@@ -154,7 +154,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-    Then("The response status should be 200 (OK) with a valid payload")
+    Then("The response status should be 500 with a valid payload")
     response.code shouldBe INTERNAL_SERVER_ERROR
     response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
   }
@@ -166,7 +166,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       .headers(requestHeaders(acceptHeaderP2))
       .asString
 
-    Then("The response status should be 200 (OK) with a valid payload")
+    Then("The response status should be 500 with a valid payload")
     response.code shouldBe INTERNAL_SERVER_ERROR
     response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
   }
@@ -177,7 +177,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       .headers(requestHeaders(acceptHeaderP2))
       .asString
 
-    Then("The response status should be 200 (OK) with a valid payload")
+    Then("The response status should be 500 with a valid payload")
     response.code shouldBe INTERNAL_SERVER_ERROR
     response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
   }

@@ -63,7 +63,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
     val fakeRequest =
       FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString&toDate=$toDateString")
 
-    "return 200 (OK) when matching succeeds and service returns payments" in new Setup {
+    "return 500 when matching succeeds and service returns payments" in new Setup {
 
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(successful(payments))
@@ -72,7 +72,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (OK) when matching succeeds and service returns no payments" in new Setup {
+    "return 500 when matching succeeds and service returns no payments" in new Setup {
 
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(successful(Seq.empty))
@@ -81,7 +81,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (OK) with correct self link response when toDate is not provided in the request" in new Setup {
+    "return 500 with correct self link response when toDate is not provided in the request" in new Setup {
 
       val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
@@ -92,7 +92,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
 
       given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(new MatchNotFoundException()))

@@ -63,7 +63,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
         SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(SaUtr("1234567890"), Some(LocalDate.parse("2016-06-01"))))))
     )
 
-    "return 200 (OK) with the registration information and self assessment returns for the period" in new Setup {
+    "return 500 with the registration information and self assessment returns for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saFootprint))
 
@@ -73,7 +73,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the links without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the links without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
@@ -86,7 +86,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -102,7 +102,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
     val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 9000))))
 
-    "return 200 (OK) with the employments income returns for the period" in new Setup {
+    "return 500 with the employments income returns for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(employmentsIncomes))
 
@@ -112,7 +112,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
@@ -126,7 +126,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -142,7 +142,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val selfEmploymentIncomes =
       Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500))))
 
-    "return 200 (OK) with the self employments income for the period" in new Setup {
+    "return 500 with the self employments income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(selfEmploymentIncomes))
 
@@ -152,7 +152,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
@@ -166,7 +166,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -181,7 +181,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
     val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(sandboxUtr, 20500))))
 
-    "return 200 (OK) with the self tax return summaries for the period" in new Setup {
+    "return 500 with the self tax return summaries for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(taxReturnSummaries))
 
@@ -191,7 +191,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
@@ -205,7 +205,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -220,7 +220,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
     val saTrustIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(sandboxUtr, 20500))))
 
-    "return 200 (OK) with the self tax return trusts for the period" in new Setup {
+    "return 500 with the self tax return trusts for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saTrustIncomes))
 
@@ -230,7 +230,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
@@ -244,7 +244,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -260,7 +260,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val saForeignIncomes =
       Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
-    "return 200 (OK) with the self tax return foreign income for the period" in new Setup {
+    "return 500 with the self tax return foreign income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saForeignIncomes))
 
@@ -270,7 +270,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
@@ -284,7 +284,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -300,7 +300,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val saPartnershipIncomes =
       Seq(SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 123.65))))
 
-    "return 200 (OK) with the self tax return partnerships income for the period" in new Setup {
+    "return 500 with the self tax return partnerships income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPartnershipIncomes))
 
@@ -310,7 +310,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
@@ -324,7 +324,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -342,7 +342,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
         TaxYear("2015-16"),
         Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))))
 
-    "return 200 (OK) with the self tax return pensions and state benefits income for the period" in new Setup {
+    "return 500 with the self tax return pensions and state benefits income for the period" in new Setup {
       given(
         mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saPensionsAndStateBenefitsIncomes))
@@ -353,7 +353,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
@@ -370,7 +370,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(
         mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
@@ -389,7 +389,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
         TaxYear("2015-16"),
         Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 10.56, 56.34, 52.56))))
 
-    "return 200 (OK) with the self tax return interests and dividends income for the period" in new Setup {
+    "return 500 with the self tax return interests and dividends income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saInterestsAndDividendsIncomes))
 
@@ -399,7 +399,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
@@ -415,7 +415,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -431,7 +431,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val saUkPropertiesIncomes =
       Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
-    "return 200 (OK) with the UK properties income for the period" in new Setup {
+    "return 500 with the UK properties income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saUkPropertiesIncomes))
 
@@ -441,7 +441,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
@@ -455,7 +455,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -471,7 +471,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val saAdditionalInformation = Seq(
       SaAnnualAdditionalInformations(TaxYear("2015-16"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 76.67, 13.56))))
 
-    "return 200 (OK) with the additional information income for the period" in new Setup {
+    "return 500 with the additional information income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(saAdditionalInformation))
 
@@ -481,7 +481,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
@@ -495,7 +495,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
@@ -510,7 +510,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
     val otherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70))))
 
-    "return 200 (OK) with the other income for the period" in new Setup {
+    "return 500 with the other income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(successful(otherIncome))
 
@@ -520,7 +520,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
@@ -534,7 +534,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 404 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 

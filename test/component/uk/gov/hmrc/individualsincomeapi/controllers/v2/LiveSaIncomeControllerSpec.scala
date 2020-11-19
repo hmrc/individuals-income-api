@@ -69,15 +69,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the user")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the user")
+      // TODO: Fill in
 
       When("I request the sa root resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the self-assessments")
+      Then("The response status should be 500 with the self-assessments")
       val requestParameters = s"matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
 
       response.code shouldBe INTERNAL_SERVER_ERROR
@@ -109,16 +109,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES is rate limited")
-      DesStub
-        .searchSelfAssessmentIncomeForPeriodReturnsRateLimitErrorFor(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF is rate limited")
+      // TODO: Fill in
 
       When("I request the sa root resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2017-18")
         .headers(headers)
         .asString
 
-      Then("The response status should be 429 Too Many Requests")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -132,15 +131,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the user")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the user")
+      // TODO: Fill in
 
       When("I request the employments")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the employments")
+      Then("The response status should be 500 with the employments")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -171,15 +170,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the user")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the user")
+      // TODO: Fill in
 
       When("I request the self employments")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the self employments")
+      Then("The response status should be 500 with the self employments")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -211,15 +210,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa summary")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the self employments")
+      Then("The response status should be 500 with the self employments")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -248,15 +247,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa trusts income")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the trusts income")
+      Then("The response status should be 500 with the trusts income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -285,15 +284,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa foreign income")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the foreign income")
+      Then("The response status should be 500 with the foreign income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -323,15 +322,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa partnerships income")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the foreign income")
+      Then("The response status should be 500 with the foreign income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -364,8 +363,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa interests and dividends income")
       val response =
@@ -373,7 +372,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
           .headers(headers)
           .asString
 
-      Then("The response status should be 200 (OK) with the foreign income")
+      Then("The response status should be 500 with the foreign income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -409,8 +408,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa pensions and state benefits income")
       val response =
@@ -418,7 +417,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
           .headers(headers)
           .asString
 
-      Then("The response status should be 200 (OK) with the foreign income")
+      Then("The response status should be 500 with the foreign income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -452,15 +451,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa UK properties income income")
       val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the UK properties income")
+      Then("The response status should be 500 with the UK properties income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -493,8 +492,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa additional information")
       val response =
@@ -502,7 +501,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
           .headers(headers)
           .asString
 
-      Then("The response status should be 200 (OK) with the UK properties income")
+      Then("The response status should be 500 with the UK properties income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -535,15 +534,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
 
-      And("DES will return self-assessment data for the individual")
-      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
 
       When("I request the sa other income")
       val response = Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
-      Then("The response status should be 200 (OK) with the other income")
+      Then("The response status should be 500 with the other income")
       response.code shouldBe INTERNAL_SERVER_ERROR
       response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
     }
@@ -554,6 +553,43 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the sa other income")
       val response = Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("The response status should be 401 (Unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+    }
+  }
+
+  feature("SA further information") {
+    scenario("Fetch Self Assessment further information") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-further-information")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-further-information", retrieveAll = true)
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("IF will return self-assessment data for the individual")
+      // TODO: Fill in
+
+      When("I request the sa further information")
+      val response = Http(s"$serviceUrl/sa/further-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
+        .asString
+
+      Then("The response status should be 500 with the other income")
+      response.code shouldBe INTERNAL_SERVER_ERROR
+      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+    }
+
+    scenario("Invalid token") {
+      Given("A token WITHOUT the scope read:individuals-income-sa-further-information")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-further-information", retrieveAll = true)
+
+      When("I request the sa further information")
+      val response = Http(s"$serviceUrl/sa/further-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 

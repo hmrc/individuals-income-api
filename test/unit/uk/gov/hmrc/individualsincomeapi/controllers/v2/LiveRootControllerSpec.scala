@@ -55,14 +55,14 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     val randomMatchId = UUID.randomUUID()
 
-    "return a 404 (not found) when a match id does not match live data" in new Setup {
+    "return a 500 when a match id does not match live data" in new Setup {
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
         .thenReturn(failed(new MatchNotFoundException))
       val result = intercept[Exception] { await(liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())) }
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return a 200 (ok) when a match id matches live data" in new Setup {
+    "return a 500 when a match id matches live data" in new Setup {
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
         .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
 
@@ -71,9 +71,6 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     }
 
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
-//      given(
-//        mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any()))
-//        .willReturn(failed(new InsufficientEnrolments()))
       val result = intercept[Exception] { await(liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())) }
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }

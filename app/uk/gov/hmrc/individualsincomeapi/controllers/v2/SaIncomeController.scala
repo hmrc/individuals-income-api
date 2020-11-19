@@ -193,6 +193,18 @@ sealed abstract class SaIncomeController(
           .recover(recovery)
       }
   }
+
+  def saFurtherInformation(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
+      {
+        val scopes = scopeService.getEndPointScopes("income-sa-further-information")
+        requiresPrivilegedAuthentication(scopes)
+          .flatMap { authScopes =>
+            throw new Exception("NOT_IMPLEMENTED")
+          }
+          .recover(recovery)
+      }
+  }
 }
 
 @Singleton

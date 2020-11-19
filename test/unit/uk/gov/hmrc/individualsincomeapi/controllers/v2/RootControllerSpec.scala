@@ -56,7 +56,7 @@ class RootControllerSpec extends SpecBase with AuthHelper with MockitoSugar with
 
   "sandbox match citizen function" should {
 
-    "return 200 (OK) for a valid matchId" in new Setup {
+    "return 500 for a valid matchId" in new Setup {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
@@ -64,7 +64,7 @@ class RootControllerSpec extends SpecBase with AuthHelper with MockitoSugar with
       assert(result.getMessage == "NOT_IMPLEMENTED")
     }
 
-    "return 400 (Not Found) for an invalid matchId" in new Setup {
+    "return 500 for an invalid matchId" in new Setup {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(failed(new MatchNotFoundException))
 
