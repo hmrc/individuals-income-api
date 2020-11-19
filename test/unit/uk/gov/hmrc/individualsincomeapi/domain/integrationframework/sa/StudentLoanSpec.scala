@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.StudentLoan
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.StudentLoan
 import utils.UnitSpec
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomePaye._
 
 class StudentLoanSpec extends UnitSpec {
   val validStudentLoan = StudentLoan(Some("01"), Some(100), Some(100))

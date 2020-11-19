@@ -17,7 +17,7 @@
 package utils
 
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{Benefits, EmployeeNics, EmployeePensionContribs, PayeEntry, PostGradLoan, StudentLoan}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{Benefits, EmployeeNics, EmployeePensionContribs, PayeEntry, PostGradLoan, StudentLoan}
 
 trait IncomePayeHelpers {
   def createValidPayeEntry() =

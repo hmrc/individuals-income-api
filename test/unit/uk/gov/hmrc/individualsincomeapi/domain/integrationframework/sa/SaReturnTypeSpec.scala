@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{Address, SaIncome, SaReturnType}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{Address, SaIncome, SaReturnType}
 import utils.UnitSpec
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomeSa._
 
 class SaReturnTypeSpec extends UnitSpec {
 

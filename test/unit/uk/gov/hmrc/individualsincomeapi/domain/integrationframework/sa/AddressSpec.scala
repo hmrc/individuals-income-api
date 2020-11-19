@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomeSa._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.Address
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa._
 import utils.UnitSpec
 
 class AddressSpec extends UnitSpec {

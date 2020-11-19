@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{Benefits, EmployeeNics, EmployeePensionContribs, PayeEntry, PostGradLoan, StudentLoan}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye._
 import utils.UnitSpec
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomePaye._
 
 class PayeEntrySpec extends UnitSpec {
 

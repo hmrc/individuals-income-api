@@ -23,7 +23,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IncomePaye, IncomeSa, PayeEntry, SaTaxYearEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IncomePaye, PayeEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IncomeSa, SaTaxYearEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}

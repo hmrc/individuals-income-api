@@ -30,7 +30,8 @@ import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomePaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -73,8 +74,8 @@ class IntegrationFrameworkConnectorSpec
   }
 
   val incomePayeNoData = IncomePaye(Seq())
-  val incomePayeSingle = integrationframework.IncomePaye(Seq(createValidPayeEntry()))
-  val incomePayeMulti = integrationframework.IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomePayeSingle = paye.IncomePaye(Seq(createValidPayeEntry()))
+  val incomePayeMulti = paye.IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
 
   "fetchPaye" should {
     val nino = Nino("NA000799C")

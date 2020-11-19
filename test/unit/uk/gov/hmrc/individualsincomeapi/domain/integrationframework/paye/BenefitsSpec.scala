@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.Benefits
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomePaye._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.Benefits
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
 import utils.UnitSpec
 
 class BenefitsSpec extends UnitSpec {

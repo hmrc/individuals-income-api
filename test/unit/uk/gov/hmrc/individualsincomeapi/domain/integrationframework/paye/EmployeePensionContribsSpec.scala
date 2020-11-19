@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.EmployeePensionContribs
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.EmployeePensionContribs
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
 import utils.UnitSpec
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomePaye._
 
 class EmployeePensionContribsSpec extends UnitSpec {
 
