@@ -25,16 +25,18 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.connector.IntegrationFrameworkConnector
-import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.integration.ServiceSpec
-import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
-import utils.TestSupport
+import unit.uk.gov.hmrc.individualsincomeapi.util._
+import utils._
+import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IncomePaye
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class IntegrationFrameworkConnectorSpec
     extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
-    with TestSupport {
+    with TestSupport with IncomePayeHelpers {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
@@ -70,8 +72,9 @@ class IntegrationFrameworkConnectorSpec
     wireMockServer.stop()
   }
 
-  val ifPaye = Seq(Paye("one"), Paye("two"))
-  val ifSa = Seq(Sa("one"), Sa("two"))
+  val incomePayeNoData = IncomePaye(Seq())
+  val incomePayeSingle = integrationframework.IncomePaye(Seq(createValidPayeEntry()))
+  val incomePayeMulti = integrationframework.IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
 
   "fetchPaye" should {
     val nino = Nino("NA000799C")
@@ -79,30 +82,69 @@ class IntegrationFrameworkConnectorSpec
     val endDate = "2017-03-01"
     val interval = toInterval(startDate, endDate)
 
-    "return the paye datait:test" in new Setup {
-      stubFor(
-        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .withQueryParam("startDate", equalTo(startDate))
-          .withQueryParam("endDate", equalTo(endDate))
-          .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
-          .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
-          .willReturn(
-            aResponse()
+    "for no paye data" should {
+
+      "return en empty sequence" in new Setup {
+
+        stubFor(
+          get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+            .withQueryParam("startDate", equalTo(startDate))
+            .withQueryParam("endDate", equalTo(endDate))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .willReturn(aResponse()
               .withStatus(200)
-              .withBody(
-                """
-             {
-               "paye": [
-                 {"id":"one"},
-                 {"id":"two"}
-               ]
-             }
-          """
-              )))
+              .withBody(Json.toJson(incomePayeNoData).toString())))
 
-      val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        result shouldBe incomePayeNoData.paye
 
-      result shouldBe ifPaye
+      }
+    }
+
+    "for single paye data found" should {
+
+      "return single paye data" in new Setup {
+
+        stubFor(
+          get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+            .withQueryParam("startDate", equalTo(startDate))
+            .withQueryParam("endDate", equalTo(endDate))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(
+                  Json.toJson(incomePayeSingle).toString()
+                )
+            )
+        )
+
+        val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        result shouldBe incomePayeSingle.paye
+
+      }
+    }
+
+    "for multi paye data found" should {
+
+      "return multi paye data" in new Setup {
+
+        stubFor(
+          get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+            .withQueryParam("startDate", equalTo(startDate))
+            .withQueryParam("endDate", equalTo(endDate))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .willReturn(aResponse()
+              .withStatus(200)
+              .withBody(Json.toJson(incomePayeMulti).toString())))
+
+        val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        result shouldBe incomePayeMulti.paye
+
+      }
     }
   }
 }

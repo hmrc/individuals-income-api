@@ -19,16 +19,12 @@ package uk.gov.hmrc.individualsincomeapi.connector
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Logger
-import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IncomePaye, IncomeSa, PayeEntry, SaTaxYearEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-
-import scala.concurrent.{ExecutionContext, Future}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,34 +49,26 @@ class IntegrationFrameworkConnector @Inject()(servicesConfig: ServicesConfig, ht
 
   def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String])(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Seq[Paye]] = {
+    ec: ExecutionContext): Future[Seq[PayeEntry]] = {
 
     val startDate = interval.getStart.toLocalDate
     val endDate = interval.getEnd.toLocalDate
+    val payeUrl = s"$serviceUrl/individuals/income/paye/" +
+      s"nino/$nino?startDate=$startDate&endDate=$endDate&fields=$filter"
 
-    // If we need to pass the caller id we can;
-    // originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
-    // Passing in as a header like;
-    // recover[Paye](http.GET[IFPaye](payeUrl)(implicitly, header("OriginatorId" -> originator), ec).map(_.payeList))
-
-    val payeUrl = s"$serviceUrl/individuals/income/paye/nino/$nino?startDate=$startDate&endDate=$endDate&fields=$filter"
-    recover[Paye](http.GET[IFPaye](payeUrl)(implicitly, header(), ec).map(_.paye))
+    recover[PayeEntry](http.GET[IncomePaye](payeUrl)(implicitly, header(), ec).map(_.paye))
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String])(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Seq[Sa]] = {
+    ec: ExecutionContext): Future[Seq[SaTaxYearEntry]] = {
 
     val startYear = taxYearInterval.fromTaxYear.endYr
     val endYear = taxYearInterval.toTaxYear.endYr
+    val saUrl = s"$serviceUrl/individuals/income/sa/" +
+      s"nino/$nino?startYear=$startYear&endYear=$endYear&fields=$filter"
 
-    // If we need to pass the caller id we can;
-    // originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
-    // Passing in as a header like;
-    // recover[Sa](http.GET[Seq[IFSelfAssessment]](saIncomeUrl)(implicitly, header("OriginatorId" -> originator), ec)).map(_.saList))
-
-    val saUrl = s"$serviceUrl/individuals/income/sa/nino/$nino?startYear=$startYear&endYear=$endYear&fields=$filter"
-    recover[Sa](http.GET[IFSelfAssessment](saUrl)(implicitly, header(), ec).map(_.saList))
+    recover[SaTaxYearEntry](http.GET[IncomeSa](saUrl)(implicitly, header(), ec).map(_.sa))
 
   }
 
