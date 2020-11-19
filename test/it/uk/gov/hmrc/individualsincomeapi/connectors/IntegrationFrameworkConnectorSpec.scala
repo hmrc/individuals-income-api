@@ -102,7 +102,7 @@ class IntegrationFrameworkConnectorSpec
 
       val result = await(underTest.fetchPayeIncome(nino, interval, None))
 
-      result shouldBe Seq(ifPaye)
+      result shouldBe ifPaye
     }
   }
 }
