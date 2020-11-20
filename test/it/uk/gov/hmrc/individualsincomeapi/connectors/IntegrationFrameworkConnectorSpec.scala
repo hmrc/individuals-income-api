@@ -23,21 +23,21 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IntegrationFrameworkConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
+import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class IntegrationFrameworkConnectorSpec
     extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
-    with TestSupport with IncomePayeHelpers {
+    with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
@@ -74,14 +74,18 @@ class IntegrationFrameworkConnectorSpec
   }
 
   val incomePayeNoData = IncomePaye(Seq())
-  val incomePayeSingle = paye.IncomePaye(Seq(createValidPayeEntry()))
-  val incomePayeMulti = paye.IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomePayeSingle = IncomePaye(Seq(createValidPayeEntry()))
+  val incomePayeMulti  = IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomeSaNoData   = IncomeSa(Seq())
+  val incomeSaSingle   = IncomeSa(Seq(createValidSaTaxYearEntry()))
+  val incomeSaMulti    = IncomeSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
 
   "fetchPaye" should {
     val nino = Nino("NA000799C")
     val startDate = "2016-01-01"
     val endDate = "2017-03-01"
     val interval = toInterval(startDate, endDate)
+    val fields = "some(fields(one, two, three))"
 
     "for no paye data" should {
 
@@ -97,7 +101,7 @@ class IntegrationFrameworkConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeNoData).toString())))
 
-        val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        val result = await(underTest.fetchPayeIncome(nino, interval, Some(fields)))
         result shouldBe incomePayeNoData.paye
 
       }
@@ -122,7 +126,7 @@ class IntegrationFrameworkConnectorSpec
             )
         )
 
-        val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        val result = await(underTest.fetchPayeIncome(nino, interval, Some(fields)))
         result shouldBe incomePayeSingle.paye
 
       }
@@ -142,10 +146,115 @@ class IntegrationFrameworkConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeMulti).toString())))
 
-        val result = await(underTest.fetchPayeIncome(nino, interval, None))
+        val result = await(underTest.fetchPayeIncome(nino, interval, Some(fields)))
         result shouldBe incomePayeMulti.paye
 
       }
+    }
+
+    "fail when IF returns an error" in new Setup {
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+          .willReturn(aResponse().withStatus(500)))
+
+      intercept[Upstream5xxResponse] { await(underTest.fetchPayeIncome(nino, interval, None)) }
+    }
+
+    "fail when IF returns a bad request" in new Setup {
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+          .willReturn(aResponse().withStatus(400)))
+
+      intercept[BadRequestException] { await(underTest.fetchPayeIncome(nino, interval, None)) }
+    }
+  }
+
+  "fetchSa" should {
+    val nino = Nino("NA000799C")
+    val startYear = "2016"
+    val endYear = "2017"
+    val interval = TaxYearInterval(TaxYear("2015-16"), TaxYear("2016-17"))
+    val fields = "some(fields(one, two, three))"
+
+    "for no self assessment data" should {
+
+      "return en empty sequence" in new Setup {
+
+        stubFor(
+          get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
+            .withQueryParam("startYear", equalTo(startYear))
+            .withQueryParam("endYear", equalTo(endYear))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .willReturn(aResponse()
+              .withStatus(200)
+              .withBody(Json.toJson(incomeSaNoData).toString())))
+
+        val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields)))
+        result shouldBe incomeSaNoData.sa
+
+      }
+    }
+
+    "for single self assessment data found" should {
+
+      "return single self assessment data" in new Setup {
+
+        stubFor(
+          get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
+            .withQueryParam("startYear", equalTo(startYear))
+            .withQueryParam("endYear", equalTo(endYear))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(
+                  Json.toJson(incomeSaSingle).toString()
+                )
+            )
+        )
+
+        val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields)))
+        result shouldBe incomeSaSingle.sa
+
+      }
+    }
+
+    "for multi self assessment data found" should {
+
+      "return multi self assessment data" in new Setup {
+
+        stubFor(
+          get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
+            .withQueryParam("startYear", equalTo(startYear))
+            .withQueryParam("endYear", equalTo(endYear))
+            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
+            .willReturn(aResponse()
+              .withStatus(200)
+              .withBody(Json.toJson(incomeSaMulti).toString())))
+
+        val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields)))
+        result shouldBe incomeSaMulti.sa
+
+      }
+    }
+
+    "fail when IF returns an error" in new Setup {
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
+          .willReturn(aResponse().withStatus(500)))
+
+      intercept[Upstream5xxResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval, None)) }
+    }
+
+    "fail when IF returns a bad request" in new Setup {
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
+          .willReturn(aResponse().withStatus(400)))
+
+      intercept[BadRequestException] { await(underTest.fetchSelfAssessmentIncome(nino, interval, None)) }
     }
   }
 }
