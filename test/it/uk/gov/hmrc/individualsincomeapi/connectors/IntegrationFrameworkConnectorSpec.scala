@@ -75,12 +75,13 @@ class IntegrationFrameworkConnectorSpec
 
   val incomePayeNoData = IncomePaye(Seq())
   val incomePayeSingle = IncomePaye(Seq(createValidPayeEntry()))
-  val incomePayeMulti  = IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
-  val incomeSaNoData   = IncomeSa(Seq())
-  val incomeSaSingle   = IncomeSa(Seq(createValidSaTaxYearEntry()))
-  val incomeSaMulti    = IncomeSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
+  val incomePayeMulti = IncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomeSaNoData = IncomeSa(Seq())
+  val incomeSaSingle = IncomeSa(Seq(createValidSaTaxYearEntry()))
+  val incomeSaMulti = IncomeSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
 
   "fetchPaye" should {
+
     val nino = Nino("NA000799C")
     val startDate = "2016-01-01"
     val endDate = "2017-03-01"
@@ -170,6 +171,7 @@ class IntegrationFrameworkConnectorSpec
   }
 
   "fetchSa" should {
+
     val nino = Nino("NA000799C")
     val startYear = "2016"
     val endYear = "2017"

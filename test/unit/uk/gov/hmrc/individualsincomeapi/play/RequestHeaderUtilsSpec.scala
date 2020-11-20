@@ -28,10 +28,10 @@ class RequestHeaderUtilsSpec extends TestSupport with Matchers {
 
   "getVersionedUri" should {
     "return the versioned request when the Accept header is set" in {
-      val fooRequest = FakeRequest(GET, "/integrationframework")
+      val fooRequest = FakeRequest(GET, "/foo")
 
-      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).uri shouldBe "/v2.0/integrationframework"
-      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).path shouldBe "/v2.0/integrationframework"
+      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).uri shouldBe "/v2.0/foo"
+      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).path shouldBe "/v2.0/foo"
     }
 
     "return the versioned request for the root endpoint when the Accept header is set" in {
@@ -42,18 +42,18 @@ class RequestHeaderUtilsSpec extends TestSupport with Matchers {
     }
 
     "Default to v1.0 when the Accept header is not set" in {
-      val fooRequest = FakeRequest(GET, "/integrationframework")
+      val fooRequest = FakeRequest(GET, "/foo")
 
-      getVersionedRequest(fooRequest).uri shouldBe "/v1.0/integrationframework"
-      getVersionedRequest(fooRequest).path shouldBe "/v1.0/integrationframework"
+      getVersionedRequest(fooRequest).uri shouldBe "/v1.0/foo"
+      getVersionedRequest(fooRequest).path shouldBe "/v1.0/foo"
     }
   }
 
   "extractUriContext" should {
     "extract uri contexts" in {
       extractUriContext(FakeRequest(GET, "/")) shouldBe "/"
-      extractUriContext(FakeRequest(GET, "/integrationframework")) shouldBe "/integrationframework"
-      extractUriContext(FakeRequest(GET, "/integrationframework/bar")) shouldBe "/integrationframework"
+      extractUriContext(FakeRequest(GET, "/foo")) shouldBe "/foo"
+      extractUriContext(FakeRequest(GET, "/foo/bar")) shouldBe "/foo"
     }
   }
 
