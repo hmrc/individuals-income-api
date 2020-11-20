@@ -33,7 +33,7 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     {
-      val scopes = scopeService.getEndPointScopes("individuals-income-paye")
+      val scopes = scopeService.getEndPointScopes("incomePaye")
       requiresPrivilegedAuthentication(scopes)
         .flatMap { authScopes =>
           throw new Exception("NOT_IMPLEMENTED")

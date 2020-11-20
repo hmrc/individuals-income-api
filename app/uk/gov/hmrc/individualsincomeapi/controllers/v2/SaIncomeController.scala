@@ -41,7 +41,7 @@ sealed abstract class SaIncomeController(
   def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa")
+        val scopes = scopeService.getEndPointScopes("incomeSa")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -53,7 +53,7 @@ sealed abstract class SaIncomeController(
   def saReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-summary")
+        val scopes = scopeService.getEndPointScopes("incomeSaSummary")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -65,7 +65,7 @@ sealed abstract class SaIncomeController(
   def saTrustsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-trusts")
+        val scopes = scopeService.getEndPointScopes("incomeSaTrusts")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -77,7 +77,7 @@ sealed abstract class SaIncomeController(
   def saForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-foreign")
+        val scopes = scopeService.getEndPointScopes("incomeSaForeign")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -89,7 +89,7 @@ sealed abstract class SaIncomeController(
   def saPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-partnerships")
+        val scopes = scopeService.getEndPointScopes("incomeSaPartnerships")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -101,7 +101,7 @@ sealed abstract class SaIncomeController(
   def saInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] =
     Action.async { implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-interests-and-dividends")
+        val scopes = scopeService.getEndPointScopes("incomeSaInterestsAndDividends")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -113,7 +113,7 @@ sealed abstract class SaIncomeController(
   def saPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] =
     Action.async { implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-pensions-and-state-benefits")
+        val scopes = scopeService.getEndPointScopes("incomeSaPensionsAndStateBenefits")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -125,7 +125,7 @@ sealed abstract class SaIncomeController(
   def saUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-uk-properties")
+        val scopes = scopeService.getEndPointScopes("incomeSaUkProperties")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -137,7 +137,7 @@ sealed abstract class SaIncomeController(
   def saAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-additional-information")
+        val scopes = scopeService.getEndPointScopes("incomeSaAdditionalInformation")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -149,7 +149,7 @@ sealed abstract class SaIncomeController(
   def saOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-other")
+        val scopes = scopeService.getEndPointScopes("incomeSaOther")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -161,7 +161,7 @@ sealed abstract class SaIncomeController(
   def saIncomeSource(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-source")
+        val scopes = scopeService.getEndPointScopes("incomeSaSource")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -173,7 +173,7 @@ sealed abstract class SaIncomeController(
   def employmentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-employments")
+        val scopes = scopeService.getEndPointScopes("incomeSaEmployments")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -185,7 +185,7 @@ sealed abstract class SaIncomeController(
   def selfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-self-employments")
+        val scopes = scopeService.getEndPointScopes("incomeSaSelfEmployments")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")
@@ -194,10 +194,10 @@ sealed abstract class SaIncomeController(
       }
   }
 
-  def saFurtherInformation(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saFurtherDetails(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       {
-        val scopes = scopeService.getEndPointScopes("income-sa-further-information")
+        val scopes = scopeService.getEndPointScopes("incomeSaFurtherDetails")
         requiresPrivilegedAuthentication(scopes)
           .flatMap { authScopes =>
             throw new Exception("NOT_IMPLEMENTED")

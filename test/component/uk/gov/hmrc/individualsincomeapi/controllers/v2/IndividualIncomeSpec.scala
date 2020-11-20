@@ -18,13 +18,10 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
-import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IndividualsMatchingApiStub}
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments, DesPayment}
 
 class IndividualIncomeSpec extends BaseSpec {
 
@@ -32,14 +29,26 @@ class IndividualIncomeSpec extends BaseSpec {
   val nino = "CS700100A"
   val fromDate = "2019-04-01"
   val toDate = "2020-01-01"
-  val payeIncomeScope = "read:individuals-income-paye"
+
+  val payeIncomeScopes = List(
+    "read:individuals-employments-nictsejo-c4",
+    "read:individuals-income-hmcts-c2",
+    "read:individuals-income-hmcts-c3",
+    "read:individuals-income-hmcts-c4",
+    "read:individuals-income-laa-c1",
+    "read:individuals-income-laa-c2",
+    "read:individuals-income-laa-c3",
+    "read:individuals-income-laa-c4",
+    "read:individuals-income-lsani-c1",
+    "read:individuals-income-lsani-c3"
+  )
 
   feature("Live individual income") {
 
     scenario("Individual has employment income") {
 
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope, retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
@@ -61,7 +70,7 @@ class IndividualIncomeSpec extends BaseSpec {
       val toDate = "2020-02-01"
 
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope, retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
@@ -83,7 +92,7 @@ class IndividualIncomeSpec extends BaseSpec {
       val toDate = "2020-02-02"
 
       Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope, retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)

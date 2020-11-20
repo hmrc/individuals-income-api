@@ -61,7 +61,7 @@ class VersioningSpec extends BaseSpec {
       When("A request to the match citizen endpoint is made with version P2.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP2)
 
-      Then("The response status should be 200")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
 
       Then("And the response body should be for api version P2.0")

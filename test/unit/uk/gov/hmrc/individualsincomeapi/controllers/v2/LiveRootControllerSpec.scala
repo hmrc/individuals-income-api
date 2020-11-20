@@ -47,7 +47,9 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val liveMatchCitizenController =
       new LiveRootController(mockLiveCitizenMatchingService, scopeService, mockAuthConnector, cc)
 
+    when(scopeService.getAllScopes).thenReturn(List("hello-world"))
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
+
     implicit val hc = HeaderCarrier()
   }
 

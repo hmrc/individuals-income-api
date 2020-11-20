@@ -35,7 +35,7 @@ abstract class RootController(
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
     {
-      val scopes = scopeService.getEndPointScopes("individuals-income")
+      val scopes = scopeService.getAllScopes
       requiresPrivilegedAuthentication(scopes)
         .flatMap { authScopes =>
           throw new Exception("NOT_IMPLEMENTED")

@@ -32,39 +32,25 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   val nino = Nino("AA100009B")
   val fromTaxYear = TaxYear("2016-17")
   val toTaxYear = TaxYear("2018-19")
-  val desIncomes = Seq(
-    DesSAIncome(
-      taxYear = "2017",
-      returnList = Seq(
-        DesSAReturn(
-          caseStartDate = Some(LocalDate.parse("2014-01-15")),
-          receivedDate = Some(LocalDate.parse("2017-11-05")),
-          utr = SaUtr("2432552644"),
-          income = SAIncome(
-            incomeFromAllEmployments = Some(1545.55),
-            profitFromSelfEmployment = Some(2535.55),
-            incomeFromSelfAssessment = Some(35500.55),
-            incomeFromTrust = Some(10800.64),
-            incomeFromForeign4Sources = Some(205.64),
-            profitFromPartnerships = Some(145.67),
-            incomeFromUkInterest = Some(34.56),
-            incomeFromForeignDividends = Some(72.68),
-            incomeFromInterestNDividendsFromUKCompaniesNTrusts = Some(90.35),
-            incomeFromPensions = Some(62.56),
-            incomeFromProperty = Some(257.46),
-            incomeFromGainsOnLifePolicies = Some(52.34),
-            incomeFromSharesOptions = Some(24.75),
-            incomeFromOther = Some(134.56)
-          )
-        ))
-    )
-  )
 
   feature("SA root endpoint") {
 
+    val rootScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-hmcts-c2",
+      "read:individuals-income-hmcts-c3",
+      "read:individuals-income-hmcts-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-laa-c4",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment annual returns") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -86,7 +72,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa", retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("I request the self assessments")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -104,7 +90,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       val toTaxYear = TaxYear("2017-18")
 
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -124,9 +110,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA employments endpoint") {
+
+    val employmentScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment employments") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-employments")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-employments", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -147,7 +143,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-employments")
       AuthStub
-        .willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-employments", retrieveAll = true)
+        .willNotAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
       When("I request the employments")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -162,10 +158,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA self employments endpoint") {
+
+    val selfAssessmentScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-hmcts-c2",
+      "read:individuals-income-hmcts-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment self employments") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-self-employments")
       AuthStub
-        .willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-self-employments", retrieveAll = true)
+        .willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -185,10 +190,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-self-employments")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-self-employments",
-        retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
       When("I request the self employments")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -203,9 +205,21 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA summary endpoint") {
+
+    val summaryScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-hmcts-c2",
+      "read:individuals-income-hmcts-c3",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment summary") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-summary")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-summary", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -225,7 +239,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-summary")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-summary", retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
       When("I request the sa summary")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -240,9 +254,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA trusts endpoint") {
+
+    val trustsScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment trusts income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-trusts")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-trusts", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -262,7 +286,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-trusts")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-trusts", retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
       When("I request the sa trusts income")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -277,9 +301,20 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA foreign endpoint") {
+
+    val foreignScopes = List(
+      "read:individuals-income-hmcts-c2",
+      "read:individuals-income-hmcts-c3",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment foreign income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-foreign")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-foreign", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -299,7 +334,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-foreign")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-foreign", retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
       When("I request the sa foreign income")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -314,10 +349,20 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA partnerships endpoint") {
+
+    val partnershipsScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment partnerships income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-partnerships")
       AuthStub
-        .willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-partnerships", retrieveAll = true)
+        .willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -338,7 +383,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-partnerships")
       AuthStub
-        .willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-partnerships", retrieveAll = true)
+        .willNotAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
       When("I request the sa partnerships income")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -353,12 +398,21 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA interests and dividends income") {
+
+    val interestsAndDividendsScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-hmcts-c2",
+      "read:individuals-income-hmcts-c3",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment interests and dividends income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-interests-and-dividends")
-      AuthStub.willAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-interests-and-dividends",
-        retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -379,10 +433,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-interests-and-dividends")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-interests-and-dividends",
-        retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
       When("I request the sa interests and dividends income")
       val response =
@@ -398,12 +449,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA pensions and state benefits income") {
+
+    val pensionsAndStateBenefitsScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment pensions and state benefits income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-pensions-and-state-benefits")
-      AuthStub.willAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-pensions-and-state-benefits",
-        retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -424,10 +482,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-pensions-and-state-benefits")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-pensions-and-state-benefits",
-        retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
       When("I request the sa pensions and state benefits income")
       val response =
@@ -443,10 +498,22 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA UK properties income") {
+
+    val ukPropertiesScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-hmcts-c2",
+      "read:individuals-income-hmcts-c3",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment UK properties income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-uk-properties")
       AuthStub
-        .willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-uk-properties", retrieveAll = true)
+        .willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -467,7 +534,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-uk-properties")
       AuthStub
-        .willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-uk-properties", retrieveAll = true)
+        .willNotAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
       When("I request the sa UK properties income")
       val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -482,12 +549,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA additional information") {
+
+    val additionalInformationScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment additional information") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-additional-information")
-      AuthStub.willAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-additional-information",
-        retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -508,10 +582,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-additional-information")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(
-        authToken,
-        "read:individuals-income-sa-additional-information",
-        retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
       When("I request the sa additional information")
       val response =
@@ -527,9 +598,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   }
 
   feature("SA other income") {
+
+    val otherIncomeScopes = List(
+      "read:individuals-employments-nictsejo-c4",
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
     scenario("Fetch Self Assessment other income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-other")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-other", retrieveAll = true)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -549,7 +630,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-other")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-other", retrieveAll = true)
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
       When("I request the sa other income")
       val response = Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -563,10 +644,19 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA further information") {
-    scenario("Fetch Self Assessment further information") {
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa-further-information")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-further-information", retrieveAll = true)
+  feature("SA further details") {
+
+    val furtherDetailsScopes = List(
+      "read:individuals-income-laa-c1",
+      "read:individuals-income-laa-c2",
+      "read:individuals-income-laa-c3",
+      "read:individuals-income-lsani-c1",
+      "read:individuals-income-lsani-c3"
+    )
+
+    scenario("Fetch Self Assessment further details") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-further-details")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
@@ -574,8 +664,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       And("IF will return self-assessment data for the individual")
       // TODO: Fill in
 
-      When("I request the sa further information")
-      val response = Http(s"$serviceUrl/sa/further-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+      When("I request the sa further details")
+      val response = Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
 
@@ -585,11 +675,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
 
     scenario("Invalid token") {
-      Given("A token WITHOUT the scope read:individuals-income-sa-further-information")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-further-information", retrieveAll = true)
+      Given("A token WITHOUT the scope read:individuals-income-sa-further-details")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
-      When("I request the sa further information")
-      val response = Http(s"$serviceUrl/sa/further-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+      When("I request the sa further details")
+      val response = Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 

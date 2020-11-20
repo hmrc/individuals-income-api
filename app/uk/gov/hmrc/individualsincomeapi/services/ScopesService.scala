@@ -25,7 +25,7 @@ class ScopesService @Inject()(configuration: Configuration) {
   private[services] lazy val apiConfig =
     configuration.get[ApiConfig]("api-config")
 
-  def getScopeItemsKeys(scope: String): List[String] =
+  private[services] def getScopeItemsKeys(scope: String): List[String] =
     apiConfig
       .getScope(scope)
       .map(s => s.fields)
@@ -35,17 +35,19 @@ class ScopesService @Inject()(configuration: Configuration) {
     getScopeItemsKeys(scope)
       .flatMap(fieldId => apiConfig.endpoints.flatMap(e => e.fields.get(fieldId)))
 
-  def getEndpointFieldKeys(endpointKey: String): Iterable[String] =
+  private[services] def getEndpointFieldKeys(endpointKey: String): Iterable[String] =
     apiConfig
       .getEndpoint(endpointKey)
       .map(endpoint => endpoint.fields.keys.toList.sorted)
       .getOrElse(List())
 
-  def getFieldNames(keys: Iterable[String]): Iterable[String] =
+  private[services] def getFieldNames(keys: Iterable[String]): Iterable[String] =
     apiConfig.endpoints
       .map(e => e.fields)
       .flatMap(value => keys.map(value.get))
       .flatten
+
+  def getAllScopes: List[String] = apiConfig.scopes.map(_.name).sorted
 
   def getValidItemsFor(scopes: List[String], endpoint: String): Iterable[String] = {
     val uniqueDataFields = scopes.flatMap(getScopeItemsKeys).distinct
@@ -55,7 +57,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     getFieldNames(authorizedDataItemsOnEndpoint)
   }
 
-  def getAccessibleEndpoints(scopes: List[String]): Iterable[String] = {
+  private[services] def getAccessibleEndpoints(scopes: List[String]): Iterable[String] = {
     val scopeKeys = scopes.flatMap(s => getScopeItemsKeys(s))
     apiConfig.endpoints
       .filter(endpoint => endpoint.fields.keySet.exists(scopeKeys.contains))

@@ -21,6 +21,7 @@ import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
@@ -51,6 +52,7 @@ class RootControllerSpec extends SpecBase with AuthHelper with MockitoSugar with
     val sandboxController =
       new SandboxRootController(mockSandboxCitizenMatchingService, scopeService, mockAuthConnector, cc)
 
+    when(scopeService.getAllScopes).thenReturn(List("hello-world"))
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
   }
 
