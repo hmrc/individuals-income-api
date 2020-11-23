@@ -16,7 +16,26 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-case class PostGradLoan(
+import play.api.libs.json.{Format, JsPath}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFIncomePaye._
+import play.api.libs.functional.syntax.{unlift, _}
+
+case class IFPostGradLoan(
   repaymentsInPayPeriod: Option[Double],
   repaymentsYtd: Option[Double]
 )
+
+object IFPostGradLoan {
+
+  implicit val postGradLoanFormat: Format[IFPostGradLoan] = Format(
+    (
+      (JsPath \ "repaymentsInPayPeriod").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "repaymentsYTD").readNullable[Double](paymentAmountValidator)
+    )(IFPostGradLoan.apply _),
+    (
+      (JsPath \ "repaymentsInPayPeriod").writeNullable[Double] and
+        (JsPath \ "repaymentsYTD").writeNullable[Double]
+    )(unlift(IFPostGradLoan.unapply))
+  )
+
+}

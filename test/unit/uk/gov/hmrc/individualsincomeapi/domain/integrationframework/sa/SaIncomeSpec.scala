@@ -17,13 +17,12 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.SaIncome
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaIncome
+import utils.SpecBase
 
-class SaIncomeSpec extends UnitSpec {
+class SaIncomeSpec extends SpecBase {
 
-  val validSaIncome = SaIncome(
+  val validSaIncome = IFSaIncome(
     Some(100.0),
     Some(100.0),
     Some(100.0),
@@ -40,7 +39,7 @@ class SaIncomeSpec extends UnitSpec {
     Some(100.0)
   )
 
-  val invalidSaIncome = SaIncome(
+  val invalidSaIncome = IFSaIncome(
     Some(100.001),
     Some(100.001),
     Some(100.001),
@@ -83,12 +82,12 @@ class SaIncomeSpec extends UnitSpec {
     }
 
     "Validate successfully when SA Income is valid" in {
-      val result = Json.toJson(validSaIncome).validate[SaIncome]
+      val result = Json.toJson(validSaIncome).validate[IFSaIncome]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when SA Income is invalid" in {
-      val result = Json.toJson(invalidSaIncome).validate[SaIncome]
+      val result = Json.toJson(invalidSaIncome).validate[IFSaIncome]
       result.isError shouldBe true
     }
   }

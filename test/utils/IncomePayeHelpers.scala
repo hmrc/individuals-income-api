@@ -17,11 +17,11 @@
 package utils
 
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{Benefits, EmployeeNics, EmployeePensionContribs, PayeEntry, PostGradLoan, StudentLoan}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFBenefits, IFEmployeeNics, IFEmployeePensionContribs, IFPayeEntry, IFPostGradLoan, IFStudentLoan}
 
 trait IncomePayeHelpers {
   def createValidPayeEntry() =
-    PayeEntry(
+    IFPayeEntry(
       Some("K971"),
       Some("36"),
       Some(19157.5),
@@ -44,7 +44,7 @@ trait IncomePayeHelpers {
     )
 
   private def createValidEmployeeNics() =
-    EmployeeNics(
+    IFEmployeeNics(
       Some(15797.45),
       Some(13170.69),
       Some(16193.76),
@@ -56,11 +56,11 @@ trait IncomePayeHelpers {
     )
 
   private def createValidEmployeePensionContribs() =
-    EmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+    IFEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
-  private def createValidBenefits() = Benefits(Some(506328.1), Some(246594.83))
+  private def createValidBenefits() = IFBenefits(Some(506328.1), Some(246594.83))
 
-  private def createValidStudentLoan() = StudentLoan(Some("02"), Some(88478.16), Some(545.52))
+  private def createValidStudentLoan() = IFStudentLoan(Some("02"), Some(88478.16), Some(545.52))
 
-  private def createValidPostGradLoan() = PostGradLoan(Some(15636.22), Some(46849.26))
+  private def createValidPostGradLoan() = IFPostGradLoan(Some(15636.22), Some(46849.26))
 }

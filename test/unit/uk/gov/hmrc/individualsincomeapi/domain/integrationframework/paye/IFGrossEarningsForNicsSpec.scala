@@ -17,51 +17,50 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.EmployeePensionContribs
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFGrossEarningsForNics
+import utils.SpecBase
 
-class EmployeePensionContribsSpec extends UnitSpec {
+class IFGrossEarningsForNicsSpec extends SpecBase {
 
-  val validEmployeePensionContribs = EmployeePensionContribs(
-    Some(169731.51),
-    Some(173987.07),
-    Some(822317.49),
-    Some(818841.65)
+  val validGrossEarningsForNics = IFGrossEarningsForNics(
+    Some(995979.04),
+    Some(606456.38),
+    Some(797877.34),
+    Some(166334.69)
   )
 
-  val invalidEmployeePensionContribs = EmployeePensionContribs(
+  val invalidGrossEarningsForNics = IFGrossEarningsForNics(
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1)
   )
 
-  "EmployeePensionContribs" should {
-    "WriteToJson" in {
+  "IFGrossEarningsForNics" should {
+    "Write to Json" in {
       val expectedJson = Json.parse(
         """
           |{
-          |    "paidYTD": 169731.51,
-          |    "notPaidYTD": 173987.07,
-          |    "paid": 822317.49,
-          |    "notPaid": 818841.65
+          |  "inPayPeriod1": 995979.04,
+          |  "inPayPeriod2": 606456.38,
+          |  "inPayPeriod3": 797877.34,
+          |  "inPayPeriod4": 166334.69
           |}
           |""".stripMargin
       )
 
-      val result = Json.toJson(validEmployeePensionContribs)
+      val result = Json.toJson(validGrossEarningsForNics)
 
       result shouldBe expectedJson
     }
 
-    "Validate successfully when given valid EmployeePensionContribs" in {
-      val result = Json.toJson(validEmployeePensionContribs).validate[EmployeePensionContribs]
+    "Validates successfully when given a valid IFGrossEarningsForNics" in {
+      val result = Json.toJson(validGrossEarningsForNics).validate[IFGrossEarningsForNics]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when given invalid EmployeePensionContribs" in {
-      val result = Json.toJson(invalidEmployeePensionContribs).validate[EmployeePensionContribs]
+    "Validates unsuccessfully when given an invalid IFGrossEarningsForNics" in {
+      val result = Json.toJson(invalidGrossEarningsForNics).validate[IFGrossEarningsForNics]
       result.isError shouldBe true
     }
   }

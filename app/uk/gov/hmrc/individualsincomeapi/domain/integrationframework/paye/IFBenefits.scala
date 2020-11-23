@@ -16,7 +16,26 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-case class Benefits(
+import play.api.libs.functional.syntax.{unlift, _}
+import play.api.libs.json.{Format, JsPath}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFIncomePaye.paymentAmountValidator
+
+case class IFBenefits(
   taxedViaPayroll: Option[Double],
   taxedViaPayrollYtd: Option[Double]
 )
+
+object IFBenefits {
+
+  implicit val benefitsFormat: Format[IFBenefits] = Format(
+    (
+      (JsPath \ "taxedViaPayroll").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "taxedViaPayrollYTD").readNullable[Double](paymentAmountValidator)
+    )(IFBenefits.apply _),
+    (
+      (JsPath \ "taxedViaPayroll").writeNullable[Double] and
+        (JsPath \ "taxedViaPayrollYTD").writeNullable[Double]
+    )(unlift(IFBenefits.unapply))
+  )
+
+}

@@ -17,18 +17,17 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{Address, SaIncome, SaReturnType, SaTaxYearEntry}
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturnType, IFSaTaxYearEntry}
+import utils.SpecBase
 
-class SaTaxYearEntrySpec extends UnitSpec {
+class IFSaTaxYearEntrySpec extends SpecBase {
 
   val returnTypeList = Seq(createValidSaReturnType())
 
-  val validSaTaxYearEntry = SaTaxYearEntry(Some("2020"), Some(100.01), Some(returnTypeList))
-  val invalidSaTaxYearEntry = SaTaxYearEntry(Some("-42"), Some(100.001), Some(returnTypeList))
+  val validSaTaxYearEntry = IFSaTaxYearEntry(Some("2020"), Some(100.01), Some(returnTypeList))
+  val invalidSaTaxYearEntry = IFSaTaxYearEntry(Some("-42"), Some(100.001), Some(returnTypeList))
 
-  "SaTaxYearEntry" should {
+  "IFSaTaxYearEntry" should {
     "WriteToJson" in {
       val expectedJson = Json.parse(
         """
@@ -80,19 +79,19 @@ class SaTaxYearEntrySpec extends UnitSpec {
       result shouldBe expectedJson
     }
 
-    "Validate successfully when provided valid SaTaxYearEntry" in {
-      val result = Json.toJson(validSaTaxYearEntry).validate[SaTaxYearEntry]
+    "Validate successfully when provided valid IFSaTaxYearEntry" in {
+      val result = Json.toJson(validSaTaxYearEntry).validate[IFSaTaxYearEntry]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when provided invalid SaTaxYearEntry" in {
-      val result = Json.toJson(invalidSaTaxYearEntry).validate[SaTaxYearEntry]
+    "Validate unsuccessfully when provided invalid IFSaTaxYearEntry" in {
+      val result = Json.toJson(invalidSaTaxYearEntry).validate[IFSaTaxYearEntry]
       result.isError shouldBe true
     }
   }
 
   private def createValidSaReturnType() = {
-    val validSaIncome = SaIncome(
+    val validSaIncome = IFSaIncome(
       Some(100.0),
       Some(100.0),
       Some(100.0),
@@ -109,7 +108,7 @@ class SaTaxYearEntrySpec extends UnitSpec {
       Some(100.0)
     )
 
-    SaReturnType(
+    IFSaReturnType(
       Some("1234567890"),
       Some("2020-01-01"),
       Some("2020-01-01"),
@@ -122,7 +121,7 @@ class SaTaxYearEntrySpec extends UnitSpec {
       Some(100.01),
       Some(100.01),
       Some(100.01),
-      Some(Address(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
+      Some(IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
       Some(validSaIncome)
     )
   }

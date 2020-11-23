@@ -17,16 +17,15 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.Benefits
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFBenefits
+import utils.SpecBase
 
-class BenefitsSpec extends UnitSpec {
+class IFBenefitsSpec extends SpecBase {
 
-  val validBenefits = Benefits(Some(506328.1), Some(246594.83))
-  val invalidBenefits = Benefits(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
+  val validBenefits = IFBenefits(Some(506328.1), Some(246594.83))
+  val invalidBenefits = IFBenefits(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
 
-  "Benefits" should {
+  "IFBenefits" should {
     "Write to Json" in {
       val expectedJson = Json.parse(
         """
@@ -43,13 +42,13 @@ class BenefitsSpec extends UnitSpec {
     }
   }
 
-  "Validate successfully when given valid Benefits" in {
-    val result = Json.toJson(validBenefits).validate[Benefits]
+  "Validate successfully when given valid IFBenefits" in {
+    val result = Json.toJson(validBenefits).validate[IFBenefits]
     result.isSuccess shouldBe true
   }
 
-  "Validate unsuccessfully when given invalid Benefits" in {
-    val result = Json.toJson(invalidBenefits).validate[Benefits]
+  "Validate unsuccessfully when given invalid IFBenefits" in {
+    val result = Json.toJson(invalidBenefits).validate[IFBenefits]
     result.isError shouldBe true
   }
 }

@@ -17,17 +17,16 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.Address
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa._
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFAddress
+import utils.SpecBase
 
-class AddressSpec extends UnitSpec {
+class IFAddressSpec extends SpecBase {
 
-  val validAddress = Address(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))
+  val validAddress = IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))
   val invalidAddress =
-    Address(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("1234567891011121314151617181920"))
+    IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("1234567891011121314151617181920"))
 
-  "Address" should {
+  "IFAddress" should {
     "Write to Json" in {
       val expectedJson = Json.parse("""
                                       |{
@@ -45,12 +44,12 @@ class AddressSpec extends UnitSpec {
     }
 
     "Validate successfully when address is valid" in {
-      val result = Json.toJson(validAddress).validate[Address]
+      val result = Json.toJson(validAddress).validate[IFAddress]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when address is invalid" in {
-      val result = Json.toJson(invalidAddress).validate[Address]
+      val result = Json.toJson(invalidAddress).validate[IFAddress]
       result.isError shouldBe true
     }
   }

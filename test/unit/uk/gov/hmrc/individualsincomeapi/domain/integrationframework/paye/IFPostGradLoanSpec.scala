@@ -17,16 +17,15 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.PostGradLoan
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPostGradLoan
+import utils.SpecBase
 
-class PostGradLoanSpec extends UnitSpec {
+class IFPostGradLoanSpec extends SpecBase {
 
-  val validPostGradLoan = PostGradLoan(Some(1588498.34), Some(2217757.33))
-  val invalidPostGradLoan = PostGradLoan(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
+  val validPostGradLoan = IFPostGradLoan(Some(1588498.34), Some(2217757.33))
+  val invalidPostGradLoan = IFPostGradLoan(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
 
-  "PostGradLoan" should {
+  "IFPostGradLoan" should {
     "Write to json" in {
       val expectedJson = Json.parse(
         """
@@ -42,13 +41,13 @@ class PostGradLoanSpec extends UnitSpec {
       result shouldBe expectedJson
     }
 
-    "Validate successfully with valid PostGradLoan" in {
-      val result = Json.toJson(validPostGradLoan).validate[PostGradLoan]
+    "Validate successfully with valid IFPostGradLoan" in {
+      val result = Json.toJson(validPostGradLoan).validate[IFPostGradLoan]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully with invalid PostGradLoan" in {
-      val result = Json.toJson(invalidPostGradLoan).validate[PostGradLoan]
+    "Validate unsuccessfully with invalid IFPostGradLoan" in {
+      val result = Json.toJson(invalidPostGradLoan).validate[IFPostGradLoan]
       result.isError shouldBe true
     }
   }

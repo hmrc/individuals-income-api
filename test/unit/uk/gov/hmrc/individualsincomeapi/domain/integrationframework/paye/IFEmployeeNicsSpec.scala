@@ -17,13 +17,13 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.EmployeeNics
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFEmployeeNics
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFIncomePaye._
+import utils.SpecBase
 
-class EmployeeNicsSpec extends UnitSpec {
+class IFEmployeeNicsSpec extends SpecBase {
 
-  val validEmployeeNics = EmployeeNics(
+  val validEmployeeNics = IFEmployeeNics(
     Some(15797.45),
     Some(13170.69),
     Some(16193.76),
@@ -34,7 +34,7 @@ class EmployeeNicsSpec extends UnitSpec {
     Some(162081.23)
   )
 
-  val invalidEmployeeNics = EmployeeNics(
+  val invalidEmployeeNics = IFEmployeeNics(
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
@@ -45,7 +45,7 @@ class EmployeeNicsSpec extends UnitSpec {
     Some(9999999999.99 + 1)
   )
 
-  "EmployeeNics" should {
+  "IFEmployeeNics" should {
     "Write to Json" in {
       val expectedJson = Json.parse(
         """
@@ -67,13 +67,13 @@ class EmployeeNicsSpec extends UnitSpec {
       result shouldBe expectedJson
     }
 
-    "Validates successfully when passed a valid EmployeeNics" in {
-      val result = Json.toJson(validEmployeeNics).validate[EmployeeNics]
+    "Validates successfully when passed a valid IFEmployeeNics" in {
+      val result = Json.toJson(validEmployeeNics).validate[IFEmployeeNics]
       result.isSuccess shouldBe true
     }
 
-    "Validates unsuccessfully when passed an invalid EmployeeNics" in {
-      val result = Json.toJson(invalidEmployeeNics).validate[EmployeeNics]
+    "Validates unsuccessfully when passed an invalid IFEmployeeNics" in {
+      val result = Json.toJson(invalidEmployeeNics).validate[IFEmployeeNics]
       result.isError shouldBe true
     }
   }

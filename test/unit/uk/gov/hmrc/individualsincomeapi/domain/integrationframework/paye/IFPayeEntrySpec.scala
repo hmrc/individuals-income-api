@@ -17,13 +17,12 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye._
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFBenefits, IFEmployeeNics, IFEmployeePensionContribs, IFPayeEntry, IFPostGradLoan, IFStudentLoan}
+import utils.SpecBase
 
-class PayeEntrySpec extends UnitSpec {
+class IFPayeEntrySpec extends SpecBase {
 
-  val validPayeEntry = PayeEntry(
+  val validPayeEntry = IFPayeEntry(
     Some("K971"),
     Some("36"),
     Some(19157.5),
@@ -45,7 +44,7 @@ class PayeEntrySpec extends UnitSpec {
     Some(createValidPostGradLoan())
   )
 
-  val invalidPayeEntry = PayeEntry(
+  val invalidPayeEntry = IFPayeEntry(
     Some("TEST"),
     Some("TEST"),
     Some(19157.5),
@@ -67,7 +66,7 @@ class PayeEntrySpec extends UnitSpec {
     Some(createValidPostGradLoan())
   )
 
-  "PayeEntry" should {
+  "IFPayeEntry" should {
     "Write to json" in {
       val expectedJson = Json.parse(
         """
@@ -126,19 +125,19 @@ class PayeEntrySpec extends UnitSpec {
       result shouldBe expectedJson
     }
 
-    "Validate successfully when given valid PayeEntry" in {
-      val result = Json.toJson(validPayeEntry).validate[PayeEntry]
+    "Validate successfully when given valid IFPayeEntry" in {
+      val result = Json.toJson(validPayeEntry).validate[IFPayeEntry]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when given invalid PayeEntry" in {
-      val result = Json.toJson(invalidPayeEntry).validate[PayeEntry]
+    "Validate unsuccessfully when given invalid IFPayeEntry" in {
+      val result = Json.toJson(invalidPayeEntry).validate[IFPayeEntry]
       result.isError shouldBe true
     }
   }
 
   private def createValidEmployeeNics() =
-    EmployeeNics(
+    IFEmployeeNics(
       Some(15797.45),
       Some(13170.69),
       Some(16193.76),
@@ -150,11 +149,11 @@ class PayeEntrySpec extends UnitSpec {
     )
 
   private def createValidEmployeePensionContribs() =
-    EmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+    IFEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
-  private def createValidBenefits() = Benefits(Some(506328.1), Some(246594.83))
+  private def createValidBenefits() = IFBenefits(Some(506328.1), Some(246594.83))
 
-  private def createValidStudentLoan() = StudentLoan(Some("02"), Some(88478.16), Some(545.52))
+  private def createValidStudentLoan() = IFStudentLoan(Some("02"), Some(88478.16), Some(545.52))
 
-  private def createValidPostGradLoan() = PostGradLoan(Some(15636.22), Some(46849.26))
+  private def createValidPostGradLoan() = IFPostGradLoan(Some(15636.22), Some(46849.26))
 }

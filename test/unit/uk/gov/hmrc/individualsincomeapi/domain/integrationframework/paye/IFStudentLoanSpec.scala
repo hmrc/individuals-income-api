@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
+package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IncomePaye._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.StudentLoan
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFStudentLoan
+import utils.SpecBase
 
-class StudentLoanSpec extends UnitSpec {
-  val validStudentLoan = StudentLoan(Some("01"), Some(100), Some(100))
-  val invalidStudentLoan = StudentLoan(Some("NotValid"), Some(9999999999.99 + 1), Some(9999999999.99 + 1))
+class IFStudentLoanSpec extends SpecBase {
+  val validStudentLoan = IFStudentLoan(Some("01"), Some(100), Some(100))
+  val invalidStudentLoan = IFStudentLoan(Some("NotValid"), Some(9999999999.99 + 1), Some(9999999999.99 + 1))
 
   "Student Loan" should {
     "WriteToJson" in {
@@ -43,12 +42,12 @@ class StudentLoanSpec extends UnitSpec {
     }
 
     "Validate successfully when given a valid Student Loan" in {
-      val result = Json.toJson(validStudentLoan).validate[StudentLoan]
+      val result = Json.toJson(validStudentLoan).validate[IFStudentLoan]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when given an invalid Student Loan" in {
-      val result = Json.toJson(invalidStudentLoan).validate[StudentLoan]
+      val result = Json.toJson(invalidStudentLoan).validate[IFStudentLoan]
       result.isError shouldBe true
     }
   }

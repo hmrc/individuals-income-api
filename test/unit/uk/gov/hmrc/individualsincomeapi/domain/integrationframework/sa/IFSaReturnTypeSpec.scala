@@ -17,13 +17,12 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IncomeSa._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{Address, SaIncome, SaReturnType}
-import utils.UnitSpec
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturnType}
+import utils.SpecBase
 
-class SaReturnTypeSpec extends UnitSpec {
+class IFSaReturnTypeSpec extends SpecBase {
 
-  val validSaReturnType = SaReturnType(
+  val validSaReturnType = IFSaReturnType(
     Some("1234567890"),
     Some("2020-01-01"),
     Some("2020-01-01"),
@@ -36,11 +35,11 @@ class SaReturnTypeSpec extends UnitSpec {
     Some(100.01),
     Some(100.01),
     Some(100.01),
-    Some(Address(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
+    Some(IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
     Some(createValidSaIncome)
   )
 
-  val invalidSaReturnType = SaReturnType(
+  val invalidSaReturnType = IFSaReturnType(
     Some(""),
     Some(""),
     Some(""),
@@ -53,11 +52,11 @@ class SaReturnTypeSpec extends UnitSpec {
     Some(100.001),
     Some(100.001),
     Some(100.001),
-    Some(Address(Some(""), Some(""), Some(""), Some(""), None, Some(""))),
+    Some(IFAddress(Some(""), Some(""), Some(""), Some(""), None, Some(""))),
     Some(createValidSaIncome)
   )
 
-  "SaReturnType" should {
+  "IFSaReturnType" should {
     "Write to Json" in {
       val result = Json.toJson(validSaReturnType)
       val expectedJson = Json.parse("""
@@ -103,20 +102,20 @@ class SaReturnTypeSpec extends UnitSpec {
       result shouldBe expectedJson
     }
 
-    "Validate successfully for valid SaReturnType" in {
-      val result = Json.toJson(validSaReturnType).validate[SaReturnType]
+    "Validate successfully for valid IFSaReturnType" in {
+      val result = Json.toJson(validSaReturnType).validate[IFSaReturnType]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully for invalid SaReturnType" in {
-      val result = Json.toJson(invalidSaReturnType).validate[SaReturnType]
+    "Validate unsuccessfully for invalid IFSaReturnType" in {
+      val result = Json.toJson(invalidSaReturnType).validate[IFSaReturnType]
       result.isError shouldBe true
     }
 
   }
 
   private def createValidSaIncome() =
-    SaIncome(
+    IFSaIncome(
       Some(100.0),
       Some(100.0),
       Some(100.0),
