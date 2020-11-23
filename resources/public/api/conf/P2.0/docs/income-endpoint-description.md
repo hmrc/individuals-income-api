@@ -1,0 +1,1 @@
+<p>This endpoint returns an individual's PAYE income data for the requested time period.</p>

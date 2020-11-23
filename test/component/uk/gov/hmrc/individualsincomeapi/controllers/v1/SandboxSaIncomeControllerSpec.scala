@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package component.uk.gov.hmrc.individualsincomeapi.controllers
+package component.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
+import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.{sandboxMatchId, sandboxUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-
-import scalaj.http.Http
 
 class SandboxSaIncomeControllerSpec extends BaseSpec {
 

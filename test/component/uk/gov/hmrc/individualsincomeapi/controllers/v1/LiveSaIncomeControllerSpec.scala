@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package component.uk.gov.hmrc.individualsincomeapi.controllers
+package component.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
@@ -22,9 +22,9 @@ import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, Des
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import scalaj.http.Http
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, SAIncome, TaxYear}
-import scalaj.http.Http
 
 class LiveSaIncomeControllerSpec extends BaseSpec {
 
