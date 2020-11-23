@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
+import play.api.libs.json.Reads.verifying
+import play.api.libs.json.{Format, JsPath, Reads}
 
-import play.api.libs.json.Reads.{verifying}
-import play.api.libs.json.{Format, JsPath, Json, Reads}
+case class IFPaye(paye: Seq[IFPayeEntry])
 
-case class IFIncomeSa(sa: Seq[IFSaTaxYearEntry])
-
-object IFIncomeSa {
+object IFPaye {
 
   val minValue = -9999999999.99
   val maxValue = 9999999999.99
-
-  val utrPattern = "^[0-9]{10}$".r
-  val dateStringPattern = ("^(((19|20)([2468][048]|[13579][26]|0[48])|2000)" +
-    "[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)[-]" +
-    "(0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-]" +
-    "(0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-]" +
-    "(0[1-9]|1[0-9]|2[0-8])))$").r
 
   def isMultipleOfPointZeroOne(value: Double): Boolean = (BigDecimal(value) * 100.0) % 1 == 0
 
@@ -40,9 +32,9 @@ object IFIncomeSa {
   def paymentAmountValidator(implicit rds: Reads[Double]): Reads[Double] =
     verifying[Double](value => isInRange(value) && isMultipleOfPointZeroOne(value))
 
-  implicit val incomeSaFormat: Format[IFIncomeSa] = Format(
-    (JsPath \ "sa").read[Seq[IFSaTaxYearEntry]].map(value => IFIncomeSa(value)),
-    (JsPath \ "sa").write[Seq[IFSaTaxYearEntry]].contramap(value => value.sa)
+  implicit val incomePayeFormat: Format[IFPaye] = Format(
+    (JsPath \ "paye").read[Seq[IFPayeEntry]].map(value => IFPaye(value)),
+    (JsPath \ "paye").write[Seq[IFPayeEntry]].contramap(value => value.paye)
   )
 
 }

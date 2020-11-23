@@ -16,12 +16,12 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturnType, IFSaTaxYearEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaEntry, IFSaIncome, IFSaReturn}
 
 trait IncomeSaHelpers {
   def createValidSaTaxYearEntry() = {
     val returnTypeList = Seq(createValidSaReturnType())
-    IFSaTaxYearEntry(Some("2020"), Some(100.01), Some(returnTypeList))
+    IFSaEntry(Some("2020"), Some(100.01), Some(returnTypeList))
   }
 
   private def createValidSaReturnType() = {
@@ -42,7 +42,7 @@ trait IncomeSaHelpers {
       Some(100.0)
     )
 
-    IFSaReturnType(
+    IFSaReturn(
       Some("1234567890"),
       Some("2020-01-01"),
       Some("2020-01-01"),

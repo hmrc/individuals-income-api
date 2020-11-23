@@ -16,13 +16,14 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturnType}
-import utils.SpecBase
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturn}
 
-class IFSaReturnTypeSpec extends SpecBase {
+class IFSaReturnSpec extends WordSpec with Matchers {
 
-  val validSaReturnType = IFSaReturnType(
+  val validSaReturnType = IFSaReturn(
     Some("1234567890"),
     Some("2020-01-01"),
     Some("2020-01-01"),
@@ -39,7 +40,7 @@ class IFSaReturnTypeSpec extends SpecBase {
     Some(createValidSaIncome)
   )
 
-  val invalidSaReturnType = IFSaReturnType(
+  val invalidSaReturnType = IFSaReturn(
     Some(""),
     Some(""),
     Some(""),
@@ -56,7 +57,7 @@ class IFSaReturnTypeSpec extends SpecBase {
     Some(createValidSaIncome)
   )
 
-  "IFSaReturnType" should {
+  "IFSaReturn" should {
     "Write to Json" in {
       val result = Json.toJson(validSaReturnType)
       val expectedJson = Json.parse("""
@@ -102,13 +103,13 @@ class IFSaReturnTypeSpec extends SpecBase {
       result shouldBe expectedJson
     }
 
-    "Validate successfully for valid IFSaReturnType" in {
-      val result = Json.toJson(validSaReturnType).validate[IFSaReturnType]
+    "Validate successfully for valid IFSaReturn" in {
+      val result = Json.toJson(validSaReturnType).validate[IFSaReturn]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully for invalid IFSaReturnType" in {
-      val result = Json.toJson(invalidSaReturnType).validate[IFSaReturnType]
+    "Validate unsuccessfully for invalid IFSaReturn" in {
+      val result = Json.toJson(invalidSaReturnType).validate[IFSaReturn]
       result.isError shouldBe true
     }
 

@@ -16,11 +16,12 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFBenefits
-import utils.SpecBase
 
-class IFBenefitsSpec extends SpecBase {
+class IFBenefitsSpec extends WordSpec with Matchers {
 
   val validBenefits = IFBenefits(Some(506328.1), Some(246594.83))
   val invalidBenefits = IFBenefits(Some(9999999999.99 + 1), Some(9999999999.99 + 1))

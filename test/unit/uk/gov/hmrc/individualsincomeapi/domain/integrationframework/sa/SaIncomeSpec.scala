@@ -16,11 +16,12 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaEntry._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaIncome
-import utils.SpecBase
 
-class SaIncomeSpec extends SpecBase {
+class SaIncomeSpec extends WordSpec with Matchers {
 
   val validSaIncome = IFSaIncome(
     Some(100.0),

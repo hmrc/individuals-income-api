@@ -30,8 +30,8 @@ import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFIncomePaye
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFIncomeSa
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSa
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -73,12 +73,12 @@ class IntegrationFrameworkConnectorSpec
     wireMockServer.stop()
   }
 
-  val incomePayeNoData = IFIncomePaye(Seq())
-  val incomePayeSingle = IFIncomePaye(Seq(createValidPayeEntry()))
-  val incomePayeMulti = IFIncomePaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
-  val incomeSaNoData = IFIncomeSa(Seq())
-  val incomeSaSingle = IFIncomeSa(Seq(createValidSaTaxYearEntry()))
-  val incomeSaMulti = IFIncomeSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
+  val incomePayeNoData = IFPaye(Seq())
+  val incomePayeSingle = IFPaye(Seq(createValidPayeEntry()))
+  val incomePayeMulti = IFPaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomeSaNoData = IFSa(Seq())
+  val incomeSaSingle = IFSa(Seq(createValidSaTaxYearEntry()))
+  val incomeSaMulti = IFSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
 
   "fetchPaye" should {
 

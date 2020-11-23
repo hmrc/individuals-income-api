@@ -16,11 +16,48 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFBenefits, IFEmployeeNics, IFEmployeePensionContribs, IFPayeEntry, IFPostGradLoan, IFStudentLoan}
-import utils.SpecBase
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFBenefits, IFEmployeeNics, IFEmployeePensionContribs, IFGrossEarningsForNics, IFPayeEntry, IFPostGradLoan, IFStudentLoan, IFTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
 
-class IFPayeEntrySpec extends SpecBase {
+class IFPayeEntrySpec extends WordSpec with Matchers {
+
+  val validEmployeeNics =
+    IFEmployeeNics(
+      Some(15797.45),
+      Some(13170.69),
+      Some(16193.76),
+      Some(30846.56),
+      Some(10633.5),
+      Some(15579.18),
+      Some(110849.27),
+      Some(162081.23)
+    )
+
+  val validTotalEmployerNics =
+    IFTotalEmployerNics(
+      Some(15797.45),
+      Some(13170.69),
+      Some(16193.76),
+      Some(30846.56),
+      Some(10633.5),
+      Some(15579.18),
+      Some(110849.27),
+      Some(162081.23)
+    )
+
+  val validEmployeePensionContribs =
+    IFEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+
+  val validBenefits = IFBenefits(Some(506328.1), Some(246594.83))
+
+  val validStudentLoan = IFStudentLoan(Some("02"), Some(88478.16), Some(545.52))
+
+  val validPostGradLoan = IFPostGradLoan(Some(15636.22), Some(46849.26))
+
+  val validGrossEarningsForNics =
+    IFGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
   val validPayeEntry = IFPayeEntry(
     Some("K971"),
@@ -28,6 +65,7 @@ class IFPayeEntrySpec extends SpecBase {
     Some(19157.5),
     Some(3095.89),
     Some(159228.49),
+    Some(validGrossEarningsForNics),
     Some("345/34678"),
     Some("2006-02-27"),
     Some(16533.95),
@@ -36,12 +74,13 @@ class IFPayeEntrySpec extends SpecBase {
     Some("2"),
     Some("W4"),
     Some(198035.8),
-    Some(createValidEmployeeNics()),
-    Some(createValidEmployeePensionContribs()),
-    Some(createValidBenefits()),
+    Some(validTotalEmployerNics),
+    Some(validEmployeeNics),
+    Some(validEmployeePensionContribs),
+    Some(validBenefits),
     Some(39708.7),
-    Some(createValidStudentLoan()),
-    Some(createValidPostGradLoan())
+    Some(validStudentLoan),
+    Some(validPostGradLoan)
   )
 
   val invalidPayeEntry = IFPayeEntry(
@@ -50,6 +89,7 @@ class IFPayeEntrySpec extends SpecBase {
     Some(19157.5),
     Some(3095.89),
     Some(159228.49),
+    Some(validGrossEarningsForNics),
     Some("TEST"),
     Some("TEST"),
     Some(16533.95),
@@ -58,12 +98,13 @@ class IFPayeEntrySpec extends SpecBase {
     Some("TEST"),
     Some("TEST"),
     Some(198035.8),
-    Some(createValidEmployeeNics()),
-    Some(createValidEmployeePensionContribs()),
-    Some(createValidBenefits()),
+    Some(validTotalEmployerNics),
+    Some(validEmployeeNics),
+    Some(validEmployeePensionContribs),
+    Some(validBenefits),
     Some(39708.7),
-    Some(createValidStudentLoan()),
-    Some(createValidPostGradLoan())
+    Some(validStudentLoan),
+    Some(validPostGradLoan)
   )
 
   "IFPayeEntry" should {
@@ -76,6 +117,12 @@ class IFPayeEntrySpec extends SpecBase {
           |    "taxablePayToDate": 19157.5,
           |    "totalTaxToDate": 3095.89,
           |    "taxDeductedOrRefunded": 159228.49,
+          |    "grossEarningsForNICs": {
+          |        "inPayPeriod1": 169731.51,
+          |        "inPayPeriod2": 173987.07,
+          |        "inPayPeriod3": 822317.49,
+          |        "inPayPeriod4": 818841.65
+          |    },
           |    "employerPayeRef": "345/34678",
           |    "paymentDate": "2006-02-27",
           |    "taxablePay": 16533.95,
@@ -84,6 +131,16 @@ class IFPayeEntrySpec extends SpecBase {
           |    "weeklyPeriodNumber": "2",
           |    "payFrequency": "W4",
           |    "dednsFromNetPay": 198035.8,
+          |    "totalEmployerNICs": {
+          |        "inPayPeriod1": 15797.45,
+          |        "inPayPeriod2": 13170.69,
+          |        "inPayPeriod3": 16193.76,
+          |        "inPayPeriod4": 30846.56,
+          |        "ytd1": 10633.5,
+          |        "ytd2": 15579.18,
+          |        "ytd3": 110849.27,
+          |        "ytd4": 162081.23
+          |    },
           |    "employeeNICs": {
           |        "inPayPeriod1": 15797.45,
           |        "inPayPeriod2": 13170.69,
@@ -135,25 +192,4 @@ class IFPayeEntrySpec extends SpecBase {
       result.isError shouldBe true
     }
   }
-
-  private def createValidEmployeeNics() =
-    IFEmployeeNics(
-      Some(15797.45),
-      Some(13170.69),
-      Some(16193.76),
-      Some(30846.56),
-      Some(10633.5),
-      Some(15579.18),
-      Some(110849.27),
-      Some(162081.23)
-    )
-
-  private def createValidEmployeePensionContribs() =
-    IFEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
-
-  private def createValidBenefits() = IFBenefits(Some(506328.1), Some(246594.83))
-
-  private def createValidStudentLoan() = IFStudentLoan(Some("02"), Some(88478.16), Some(545.52))
-
-  private def createValidPostGradLoan() = IFPostGradLoan(Some(15636.22), Some(46849.26))
 }

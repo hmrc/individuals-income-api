@@ -19,8 +19,59 @@ package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json.{Format, JsPath, Reads}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFIncomePaye._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPaye.paymentAmountValidator
 
+case class IFGrossEarningsForNics(
+                                   inPayPeriod1: Option[Double],
+                                   inPayPeriod2: Option[Double],
+                                   inPayPeriod3: Option[Double],
+                                   inPayPeriod4: Option[Double]
+                                 )
+
+case class IFTotalEmployerNics(
+                           inPayPeriod1: Option[Double],
+                           inPayPeriod2: Option[Double],
+                           inPayPeriod3: Option[Double],
+                           inPayPeriod4: Option[Double],
+                           ytd1: Option[Double],
+                           ytd2: Option[Double],
+                           ytd3: Option[Double],
+                           ytd4: Option[Double]
+                         )
+
+case class IFEmployeeNics(
+                           inPayPeriod1: Option[Double],
+                           inPayPeriod2: Option[Double],
+                           inPayPeriod3: Option[Double],
+                           inPayPeriod4: Option[Double],
+                           ytd1: Option[Double],
+                           ytd2: Option[Double],
+                           ytd3: Option[Double],
+                           ytd4: Option[Double]
+                         )
+
+case class IFEmployeePensionContribs(
+                                      paidYtd: Option[Double],
+                                      notPaidYtd: Option[Double],
+                                      paid: Option[Double],
+                                      notPaid: Option[Double]
+                                    )
+
+case class IFBenefits(
+                       taxedViaPayroll: Option[Double],
+                       taxedViaPayrollYtd: Option[Double]
+                     )
+
+case class IFStudentLoan(
+                          planType: Option[String],
+                          repaymentsInPayPeriod: Option[Double],
+                          repaymentsYTD: Option[Double]
+                        )
+
+case class IFPostGradLoan(
+                           repaymentsInPayPeriod: Option[Double],
+                           repaymentsYtd: Option[Double]
+                         )
 
 case class IFPayeEntry(
                         taxCode: Option[String],
@@ -28,6 +79,7 @@ case class IFPayeEntry(
                         taxablePayToDate: Option[Double],
                         totalTaxToDate: Option[Double],
                         taxDeductedOrRefunded: Option[Double],
+                        grossEarningsForNics: Option[IFGrossEarningsForNics],
                         employerPayeRef: Option[String],
                         paymentDate: Option[String],
                         taxablePay: Option[Double],
@@ -36,6 +88,7 @@ case class IFPayeEntry(
                         weeklyPeriodNumber: Option[String],
                         payFrequency: Option[String],
                         dednsFromNetPay: Option[Double],
+                        totalEmployerNics: Option[IFTotalEmployerNics],
                         employeeNics: Option[IFEmployeeNics],
                         employeePensionContribs: Option[IFEmployeePensionContribs],
                         benefits: Option[IFBenefits],
@@ -57,10 +110,124 @@ object IFPayeEntry {
   val monthlyPeriodNumberPattern = "^([1-9]|1[0-2])$".r
   val weeklyPeriodNumberPattern = "^([1-9]|[1-4][0-9]|5[0-46])$".r
 
+  val studentLoanPlanTypePattern = "^(01|02)$".r
+
   val payFrequencyValues = Seq("W1", "W2", "W4", "M1", "M3", "M6", "MA", "IO", "IR")
 
   def isInPayFrequency(implicit rds: Reads[String]): Reads[String] =
     verifying(value => payFrequencyValues.contains(value))
+
+  implicit val grossEarningsForNicsFormat: Format[IFGrossEarningsForNics] = Format(
+    (
+      (JsPath \ "inPayPeriod1").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod2").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod3").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod4").readNullable[Double](paymentAmountValidator)
+      )(IFGrossEarningsForNics.apply _),
+    (
+      (JsPath \ "inPayPeriod1").writeNullable[Double] and
+        (JsPath \ "inPayPeriod2").writeNullable[Double] and
+        (JsPath \ "inPayPeriod3").writeNullable[Double] and
+        (JsPath \ "inPayPeriod4").writeNullable[Double]
+      )(unlift(IFGrossEarningsForNics.unapply))
+  )
+
+  implicit val totalEmployerNicsFormat: Format[IFTotalEmployerNics] = Format(
+    (
+      (JsPath \ "inPayPeriod1").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod2").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod3").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod4").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd1").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd2").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd3").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd4").readNullable[Double](paymentAmountValidator)
+      )(IFTotalEmployerNics.apply _),
+    (
+      (JsPath \ "inPayPeriod1").writeNullable[Double] and
+        (JsPath \ "inPayPeriod2").writeNullable[Double] and
+        (JsPath \ "inPayPeriod3").writeNullable[Double] and
+        (JsPath \ "inPayPeriod4").writeNullable[Double] and
+        (JsPath \ "ytd1").writeNullable[Double] and
+        (JsPath \ "ytd2").writeNullable[Double] and
+        (JsPath \ "ytd3").writeNullable[Double] and
+        (JsPath \ "ytd4").writeNullable[Double]
+      )(unlift(IFTotalEmployerNics.unapply))
+  )
+
+  implicit val employeeNicsFormat: Format[IFEmployeeNics] = Format(
+    (
+      (JsPath \ "inPayPeriod1").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod2").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod3").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "inPayPeriod4").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd1").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd2").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd3").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "ytd4").readNullable[Double](paymentAmountValidator)
+      )(IFEmployeeNics.apply _),
+    (
+      (JsPath \ "inPayPeriod1").writeNullable[Double] and
+        (JsPath \ "inPayPeriod2").writeNullable[Double] and
+        (JsPath \ "inPayPeriod3").writeNullable[Double] and
+        (JsPath \ "inPayPeriod4").writeNullable[Double] and
+        (JsPath \ "ytd1").writeNullable[Double] and
+        (JsPath \ "ytd2").writeNullable[Double] and
+        (JsPath \ "ytd3").writeNullable[Double] and
+        (JsPath \ "ytd4").writeNullable[Double]
+      )(unlift(IFEmployeeNics.unapply))
+  )
+
+  implicit val employeePensionContribsFormat: Format[IFEmployeePensionContribs] = Format(
+    (
+      (JsPath \ "paidYTD").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "notPaidYTD").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "paid").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "notPaid").readNullable[Double](paymentAmountValidator)
+      )(IFEmployeePensionContribs.apply _),
+    (
+      (JsPath \ "paidYTD").writeNullable[Double] and
+        (JsPath \ "notPaidYTD").writeNullable[Double] and
+        (JsPath \ "paid").writeNullable[Double] and
+        (JsPath \ "notPaid").writeNullable[Double]
+      )(unlift(IFEmployeePensionContribs.unapply))
+  )
+
+  implicit val benefitsFormat: Format[IFBenefits] = Format(
+    (
+      (JsPath \ "taxedViaPayroll").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "taxedViaPayrollYTD").readNullable[Double](paymentAmountValidator)
+      )(IFBenefits.apply _),
+    (
+      (JsPath \ "taxedViaPayroll").writeNullable[Double] and
+        (JsPath \ "taxedViaPayrollYTD").writeNullable[Double]
+      )(unlift(IFBenefits.unapply))
+  )
+
+  implicit val studentLoanFormat: Format[IFStudentLoan] = Format(
+    (
+      (JsPath \ "planType")
+        .readNullable[String](pattern(studentLoanPlanTypePattern, "Invalid student loan plan type")) and
+        (JsPath \ "repaymentsInPayPeriod").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "repaymentsYTD").readNullable[Double](paymentAmountValidator)
+      )(IFStudentLoan.apply _),
+    (
+      (JsPath \ "planType").writeNullable[String] and
+        (JsPath \ "repaymentsInPayPeriod").writeNullable[Double] and
+        (JsPath \ "repaymentsYTD").writeNullable[Double]
+      )(unlift(IFStudentLoan.unapply))
+  )
+
+  implicit val postGradLoanFormat: Format[IFPostGradLoan] = Format(
+    (
+      (JsPath \ "repaymentsInPayPeriod").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "repaymentsYTD").readNullable[Double](paymentAmountValidator)
+      )(IFPostGradLoan.apply _),
+    (
+      (JsPath \ "repaymentsInPayPeriod").writeNullable[Double] and
+        (JsPath \ "repaymentsYTD").writeNullable[Double]
+      )(unlift(IFPostGradLoan.unapply))
+  )
 
   implicit val payeEntryFormat: Format[IFPayeEntry] = Format(
     (
@@ -74,6 +241,7 @@ object IFPayeEntry {
         (JsPath \ "taxablePayToDate").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "totalTaxToDate").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "taxDeductedOrRefunded").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "grossEarningsForNICs").readNullable[IFGrossEarningsForNics] and
         (JsPath \ "employerPayeRef").readNullable[String]
           (maxLength[String](10)
             .keepAnd(pattern(employerPayeRefPattern, "Invalid employer PAYE reference"))) and
@@ -88,6 +256,7 @@ object IFPayeEntry {
             .keepAnd(minLength[String](1)).keepAnd(maxLength[String](2))) and
         (JsPath \ "payFrequency").readNullable[String](isInPayFrequency) and
         (JsPath \ "dednsFromNetPay").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "totalEmployerNICs").readNullable[IFTotalEmployerNics] and
         (JsPath \ "employeeNICs").readNullable[IFEmployeeNics] and
         (JsPath \ "employeePensionContribs").readNullable[IFEmployeePensionContribs] and
         (JsPath \ "benefits").readNullable[IFBenefits] and
@@ -101,6 +270,7 @@ object IFPayeEntry {
         (JsPath \ "taxablePayToDate").writeNullable[Double] and
         (JsPath \ "totalTaxToDate").writeNullable[Double] and
         (JsPath \ "taxDeductedOrRefunded").writeNullable[Double] and
+        (JsPath \ "grossEarningsForNICs").writeNullable[IFGrossEarningsForNics] and
         (JsPath \ "employerPayeRef").writeNullable[String] and
         (JsPath \ "paymentDate").writeNullable[String] and
         (JsPath \ "taxablePay").writeNullable[Double] and
@@ -109,6 +279,7 @@ object IFPayeEntry {
         (JsPath \ "weeklyPeriodNumber").writeNullable[String] and
         (JsPath \ "payFrequency").writeNullable[String] and
         (JsPath \ "dednsFromNetPay").writeNullable[Double] and
+        (JsPath \ "totalEmployerNICs").writeNullable[IFTotalEmployerNics] and
         (JsPath \ "employeeNICs").writeNullable[IFEmployeeNics] and
         (JsPath \ "employeePensionContribs").writeNullable[IFEmployeePensionContribs] and
         (JsPath \ "benefits").writeNullable[IFBenefits] and

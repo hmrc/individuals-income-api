@@ -16,18 +16,18 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturnType, IFSaTaxYearEntry}
-import utils.SpecBase
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaEntry, IFSaIncome, IFSaReturn}
 
-class IFSaTaxYearEntrySpec extends SpecBase {
+class IFSaEntrySpec extends WordSpec with Matchers {
 
   val returnTypeList = Seq(createValidSaReturnType())
 
-  val validSaTaxYearEntry = IFSaTaxYearEntry(Some("2020"), Some(100.01), Some(returnTypeList))
-  val invalidSaTaxYearEntry = IFSaTaxYearEntry(Some("-42"), Some(100.001), Some(returnTypeList))
+  val validSaTaxYearEntry = IFSaEntry(Some("2020"), Some(100.01), Some(returnTypeList))
+  val invalidSaTaxYearEntry = IFSaEntry(Some("-42"), Some(100.001), Some(returnTypeList))
 
-  "IFSaTaxYearEntry" should {
+  "IFSaEntry" should {
     "WriteToJson" in {
       val expectedJson = Json.parse(
         """
@@ -79,13 +79,13 @@ class IFSaTaxYearEntrySpec extends SpecBase {
       result shouldBe expectedJson
     }
 
-    "Validate successfully when provided valid IFSaTaxYearEntry" in {
-      val result = Json.toJson(validSaTaxYearEntry).validate[IFSaTaxYearEntry]
+    "Validate successfully when provided valid IFSaEntry" in {
+      val result = Json.toJson(validSaTaxYearEntry).validate[IFSaEntry]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when provided invalid IFSaTaxYearEntry" in {
-      val result = Json.toJson(invalidSaTaxYearEntry).validate[IFSaTaxYearEntry]
+    "Validate unsuccessfully when provided invalid IFSaEntry" in {
+      val result = Json.toJson(invalidSaTaxYearEntry).validate[IFSaEntry]
       result.isError shouldBe true
     }
   }
@@ -108,7 +108,7 @@ class IFSaTaxYearEntrySpec extends SpecBase {
       Some(100.0)
     )
 
-    IFSaReturnType(
+    IFSaReturn(
       Some("1234567890"),
       Some("2020-01-01"),
       Some("2020-01-01"),

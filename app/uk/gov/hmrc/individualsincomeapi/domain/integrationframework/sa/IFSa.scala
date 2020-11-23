@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
-import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.Reads.verifying
-import play.api.libs.json.{Format, JsPath, Reads}
+import play.api.libs.json.Reads.{verifying}
+import play.api.libs.json.{Format, JsPath, Json, Reads}
 
-case class IFIncomePaye(paye: Seq[IFPayeEntry])
+case class IFSa(sa: Seq[IFSaEntry])
 
-object IFIncomePaye {
+object IFSa {
 
   val minValue = -9999999999.99
   val maxValue = 9999999999.99
@@ -34,9 +33,9 @@ object IFIncomePaye {
   def paymentAmountValidator(implicit rds: Reads[Double]): Reads[Double] =
     verifying[Double](value => isInRange(value) && isMultipleOfPointZeroOne(value))
 
-  implicit val incomePayeFormat: Format[IFIncomePaye] = Format(
-    (JsPath \ "paye").read[Seq[IFPayeEntry]].map(value => IFIncomePaye(value)),
-    (JsPath \ "paye").write[Seq[IFPayeEntry]].contramap(value => value.paye)
+  implicit val incomeSaFormat: Format[IFSa] = Format(
+    (JsPath \ "sa").read[Seq[IFSaEntry]].map(value => IFSa(value)),
+    (JsPath \ "sa").write[Seq[IFSaEntry]].contramap(value => value.sa)
   )
 
 }
