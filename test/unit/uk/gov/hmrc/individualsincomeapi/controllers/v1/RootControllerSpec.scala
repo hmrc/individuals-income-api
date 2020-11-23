@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.controllers
+package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
@@ -30,11 +30,12 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.controllers.SandboxRootController
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
 import utils.SpecBase
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
 class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
@@ -45,6 +46,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     val matchId = UUID.randomUUID()
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
+    implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockAuthConnector = mock[AuthConnector]
 

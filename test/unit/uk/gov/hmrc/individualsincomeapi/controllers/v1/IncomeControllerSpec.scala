@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.controllers
+package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
@@ -30,7 +30,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.domain.EmpRef
-import uk.gov.hmrc.individualsincomeapi.controllers.{LiveIncomeController, SandboxIncomeController}
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.{LiveIncomeController, SandboxIncomeController}
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.paymentJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}

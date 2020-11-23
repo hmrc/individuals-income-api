@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.controllers
+package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
@@ -28,7 +28,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.individualsincomeapi.controllers.SandboxSaIncomeController
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._

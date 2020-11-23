@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.controllers
+package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
@@ -32,11 +32,12 @@ import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.controllers.LiveRootController
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.LiveRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import utils.SpecBase
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
 class LiveRootControllerSpec extends SpecBase with MockitoSugar {
@@ -45,6 +46,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
   trait Setup {
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
     val mockAuthConnector = mock[AuthConnector]
+    implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
     val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector, cc)
 

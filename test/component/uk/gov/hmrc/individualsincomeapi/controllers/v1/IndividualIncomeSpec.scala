@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package component.uk.gov.hmrc.individualsincomeapi.controllers
+package component.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments, DesPayment}
 import play.api.test.Helpers._
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
-
 import scalaj.http.Http
+import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments, DesPayment}
 
 class IndividualIncomeSpec extends BaseSpec {
 

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package component.uk.gov.hmrc.individualsincomeapi.controllers
+package component.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import java.util.UUID
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IndividualsMatchingApiStub}
 import play.api.libs.json.Json.parse
 import play.api.test.Helpers._
-
 import scalaj.http.{Http, HttpResponse}
 
 class LiveRootControllerSpec extends BaseSpec {
