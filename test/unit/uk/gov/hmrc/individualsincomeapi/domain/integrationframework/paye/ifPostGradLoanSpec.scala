@@ -18,15 +18,15 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPostGradLoan
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPostGradLoan
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class IFPostGradLoanSpec extends WordSpec with Matchers {
+class ifPostGradLoanSpec extends WordSpec with Matchers {
 
-  val validPostGradLoan = IFPostGradLoan(Some(1588498.34), Some(2217757.33))
-  val invalidPostGradLoan = IFPostGradLoan(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
+  val validPostGradLoan = IfPostGradLoan(Some(1588498.34), Some(2217757.33))
+  val invalidPostGradLoan = IfPostGradLoan(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
 
-  "IFPostGradLoan" should {
+  "IfPostGradLoan" should {
     "Write to json" in {
       val expectedJson = Json.parse(
         """
@@ -42,13 +42,13 @@ class IFPostGradLoanSpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validate successfully with valid IFPostGradLoan" in {
-      val result = Json.toJson(validPostGradLoan).validate[IFPostGradLoan]
+    "Validate successfully with valid IfPostGradLoan" in {
+      val result = Json.toJson(validPostGradLoan).validate[IfPostGradLoan]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully with invalid IFPostGradLoan" in {
-      val result = Json.toJson(invalidPostGradLoan).validate[IFPostGradLoan]
+    "Validate unsuccessfully with invalid IfPostGradLoan" in {
+      val result = Json.toJson(invalidPostGradLoan).validate[IfPostGradLoan]
       result.isError shouldBe true
     }
   }

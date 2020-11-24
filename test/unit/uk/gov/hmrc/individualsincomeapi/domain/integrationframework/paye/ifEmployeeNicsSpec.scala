@@ -18,12 +18,12 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFEmployeeNics
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfEmployeeNics
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class IFEmployeeNicsSpec extends WordSpec with Matchers {
+class ifEmployeeNicsSpec extends WordSpec with Matchers {
 
-  val validEmployeeNics = IFEmployeeNics(
+  val validEmployeeNics = IfEmployeeNics(
     Some(15797.45),
     Some(13170.69),
     Some(16193.76),
@@ -34,7 +34,7 @@ class IFEmployeeNicsSpec extends WordSpec with Matchers {
     Some(162081.23)
   )
 
-  val invalidEmployeeNics = IFEmployeeNics(
+  val invalidEmployeeNics = IfEmployeeNics(
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
@@ -45,7 +45,7 @@ class IFEmployeeNicsSpec extends WordSpec with Matchers {
     Some(9999999999.99 + 1)
   )
 
-  "IFEmployeeNics" should {
+  "IfEmployeeNics" should {
     "Write to Json" in {
       val expectedJson = Json.parse(
         """
@@ -67,13 +67,13 @@ class IFEmployeeNicsSpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validates successfully when passed a valid IFEmployeeNics" in {
-      val result = Json.toJson(validEmployeeNics).validate[IFEmployeeNics]
+    "Validates successfully when passed a valid IfEmployeeNics" in {
+      val result = Json.toJson(validEmployeeNics).validate[IfEmployeeNics]
       result.isSuccess shouldBe true
     }
 
-    "Validates unsuccessfully when passed an invalid IFEmployeeNics" in {
-      val result = Json.toJson(invalidEmployeeNics).validate[IFEmployeeNics]
+    "Validates unsuccessfully when passed an invalid IfEmployeeNics" in {
+      val result = Json.toJson(invalidEmployeeNics).validate[IfEmployeeNics]
       result.isError shouldBe true
     }
   }

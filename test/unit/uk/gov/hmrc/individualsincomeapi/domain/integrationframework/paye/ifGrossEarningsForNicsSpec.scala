@@ -18,26 +18,26 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFGrossEarningsForNics
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfGrossEarningsForNics
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class IFGrossEarningsForNicsSpec extends WordSpec with Matchers {
+class ifGrossEarningsForNicsSpec extends WordSpec with Matchers {
 
-  val validGrossEarningsForNics = IFGrossEarningsForNics(
+  val validGrossEarningsForNics = IfGrossEarningsForNics(
     Some(995979.04),
     Some(606456.38),
     Some(797877.34),
     Some(166334.69)
   )
 
-  val invalidGrossEarningsForNics = IFGrossEarningsForNics(
+  val invalidGrossEarningsForNics = IfGrossEarningsForNics(
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1)
   )
 
-  "IFGrossEarningsForNics" should {
+  "IfGrossEarningsForNics" should {
     "Write to Json" in {
       val expectedJson = Json.parse(
         """
@@ -55,13 +55,13 @@ class IFGrossEarningsForNicsSpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validates successfully when given a valid IFGrossEarningsForNics" in {
-      val result = Json.toJson(validGrossEarningsForNics).validate[IFGrossEarningsForNics]
+    "Validates successfully when given a valid IfGrossEarningsForNics" in {
+      val result = Json.toJson(validGrossEarningsForNics).validate[IfGrossEarningsForNics]
       result.isSuccess shouldBe true
     }
 
-    "Validates unsuccessfully when given an invalid IFGrossEarningsForNics" in {
-      val result = Json.toJson(invalidGrossEarningsForNics).validate[IFGrossEarningsForNics]
+    "Validates unsuccessfully when given an invalid IfGrossEarningsForNics" in {
+      val result = Json.toJson(invalidGrossEarningsForNics).validate[IfGrossEarningsForNics]
       result.isError shouldBe true
     }
   }

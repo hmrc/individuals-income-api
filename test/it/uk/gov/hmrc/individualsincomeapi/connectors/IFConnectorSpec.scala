@@ -24,18 +24,18 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
-import uk.gov.hmrc.individualsincomeapi.connector.IntegrationFrameworkConnector
+import uk.gov.hmrc.individualsincomeapi.connector.IFConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSa
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class IntegrationFrameworkConnectorSpec
+class IFConnectorSpec
     extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
     with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
 
@@ -59,7 +59,7 @@ class IntegrationFrameworkConnectorSpec
   trait Setup {
     implicit val hc = HeaderCarrier()
 
-    val underTest = fakeApplication.injector.instanceOf[IntegrationFrameworkConnector]
+    val underTest = fakeApplication.injector.instanceOf[IFConnector]
   }
 
   def externalServices: Seq[String] = Seq.empty
@@ -73,9 +73,9 @@ class IntegrationFrameworkConnectorSpec
     wireMockServer.stop()
   }
 
-  val incomePayeNoData = IFPaye(Seq())
-  val incomePayeSingle = IFPaye(Seq(createValidPayeEntry()))
-  val incomePayeMulti = IFPaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomePayeNoData = IfPaye(Seq())
+  val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
+  val incomePayeMulti = IfPaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
   val incomeSaNoData = IFSa(Seq())
   val incomeSaSingle = IFSa(Seq(createValidSaTaxYearEntry()))
   val incomeSaMulti = IFSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))

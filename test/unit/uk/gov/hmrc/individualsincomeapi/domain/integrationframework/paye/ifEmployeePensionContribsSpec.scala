@@ -18,26 +18,26 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFEmployeePensionContribs
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfEmployeePensionContribs
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class IFEmployeePensionContribsSpec extends WordSpec with Matchers {
+class ifEmployeePensionContribsSpec extends WordSpec with Matchers {
 
-  val validEmployeePensionContribs = IFEmployeePensionContribs(
+  val validEmployeePensionContribs = IfEmployeePensionContribs(
     Some(169731.51),
     Some(173987.07),
     Some(822317.49),
     Some(818841.65)
   )
 
-  val invalidEmployeePensionContribs = IFEmployeePensionContribs(
+  val invalidEmployeePensionContribs = IfEmployeePensionContribs(
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1)
   )
 
-  "IFEmployeePensionContribs" should {
+  "IfEmployeePensionContribs" should {
     "WriteToJson" in {
       val expectedJson = Json.parse(
         """
@@ -55,13 +55,13 @@ class IFEmployeePensionContribsSpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validate successfully when given valid IFEmployeePensionContribs" in {
-      val result = Json.toJson(validEmployeePensionContribs).validate[IFEmployeePensionContribs]
+    "Validate successfully when given valid IfEmployeePensionContribs" in {
+      val result = Json.toJson(validEmployeePensionContribs).validate[IfEmployeePensionContribs]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when given invalid IFEmployeePensionContribs" in {
-      val result = Json.toJson(invalidEmployeePensionContribs).validate[IFEmployeePensionContribs]
+    "Validate unsuccessfully when given invalid IfEmployeePensionContribs" in {
+      val result = Json.toJson(invalidEmployeePensionContribs).validate[IfEmployeePensionContribs]
       result.isError shouldBe true
     }
   }

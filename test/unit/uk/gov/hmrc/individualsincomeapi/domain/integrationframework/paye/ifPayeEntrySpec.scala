@@ -18,13 +18,13 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFBenefits, IFEmployeeNics, IFEmployeePensionContribs, IFGrossEarningsForNics, IFPayeEntry, IFPostGradLoan, IFStudentLoan, IFTotalEmployerNics}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStudentLoan, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class IFPayeEntrySpec extends WordSpec with Matchers {
+class ifPayeEntrySpec extends WordSpec with Matchers {
 
   val validEmployeeNics =
-    IFEmployeeNics(
+    IfEmployeeNics(
       Some(15797.45),
       Some(13170.69),
       Some(16193.76),
@@ -36,7 +36,7 @@ class IFPayeEntrySpec extends WordSpec with Matchers {
     )
 
   val validTotalEmployerNics =
-    IFTotalEmployerNics(
+    IfTotalEmployerNics(
       Some(15797.45),
       Some(13170.69),
       Some(16193.76),
@@ -48,18 +48,18 @@ class IFPayeEntrySpec extends WordSpec with Matchers {
     )
 
   val validEmployeePensionContribs =
-    IFEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+    IfEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
-  val validBenefits = IFBenefits(Some(506328.1), Some(246594.83))
+  val validBenefits = IfBenefits(Some(506328.1), Some(246594.83))
 
-  val validStudentLoan = IFStudentLoan(Some("02"), Some(88478.16), Some(545.52))
+  val validStudentLoan = IfStudentLoan(Some("02"), Some(88478.16), Some(545.52))
 
-  val validPostGradLoan = IFPostGradLoan(Some(15636.22), Some(46849.26))
+  val validPostGradLoan = IfPostGradLoan(Some(15636.22), Some(46849.26))
 
   val validGrossEarningsForNics =
-    IFGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+    IfGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
-  val validPayeEntry = IFPayeEntry(
+  val validPayeEntry = IfPayeEntry(
     Some("K971"),
     Some("36"),
     Some(19157.5),
@@ -83,7 +83,7 @@ class IFPayeEntrySpec extends WordSpec with Matchers {
     Some(validPostGradLoan)
   )
 
-  val invalidPayeEntry = IFPayeEntry(
+  val invalidPayeEntry = IfPayeEntry(
     Some("TEST"),
     Some("TEST"),
     Some(19157.5),
@@ -107,7 +107,7 @@ class IFPayeEntrySpec extends WordSpec with Matchers {
     Some(validPostGradLoan)
   )
 
-  "IFPayeEntry" should {
+  "IfPayeEntry" should {
     "Write to json" in {
       val expectedJson = Json.parse(
         """
@@ -182,13 +182,13 @@ class IFPayeEntrySpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validate successfully when given valid IFPayeEntry" in {
-      val result = Json.toJson(validPayeEntry).validate[IFPayeEntry]
+    "Validate successfully when given valid IfPayeEntry" in {
+      val result = Json.toJson(validPayeEntry).validate[IfPayeEntry]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when given invalid IFPayeEntry" in {
-      val result = Json.toJson(invalidPayeEntry).validate[IFPayeEntry]
+    "Validate unsuccessfully when given invalid IfPayeEntry" in {
+      val result = Json.toJson(invalidPayeEntry).validate[IfPayeEntry]
       result.isError shouldBe true
     }
   }

@@ -16,11 +16,11 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFBenefits, IFEmployeeNics, IFEmployeePensionContribs, IFGrossEarningsForNics, IFPayeEntry, IFPostGradLoan, IFStudentLoan, IFTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStudentLoan, IfTotalEmployerNics}
 
 trait IncomePayeHelpers {
   def createValidPayeEntry() =
-    IFPayeEntry(
+    IfPayeEntry(
       Some("K971"),
       Some("36"),
       Some(19157.5),
@@ -45,7 +45,7 @@ trait IncomePayeHelpers {
     )
 
   private def createValidEmployeeNics() =
-    IFEmployeeNics(
+    IfEmployeeNics(
       Some(15797.45),
       Some(13170.69),
       Some(16193.76),
@@ -57,7 +57,7 @@ trait IncomePayeHelpers {
     )
 
   private def createValidTotalEmployerNics() =
-    IFTotalEmployerNics(
+    IfTotalEmployerNics(
       Some(15797.45),
       Some(13170.69),
       Some(16193.76),
@@ -69,14 +69,14 @@ trait IncomePayeHelpers {
     )
 
   private def createValidEmployeePensionContribs() =
-    IFEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+    IfEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
-  private def createValidBenefits() = IFBenefits(Some(506328.1), Some(246594.83))
+  private def createValidBenefits() = IfBenefits(Some(506328.1), Some(246594.83))
 
-  private def createValidStudentLoan() = IFStudentLoan(Some("02"), Some(88478.16), Some(545.52))
+  private def createValidStudentLoan() = IfStudentLoan(Some("02"), Some(88478.16), Some(545.52))
 
-  private def createValidPostGradLoan() = IFPostGradLoan(Some(15636.22), Some(46849.26))
+  private def createValidPostGradLoan() = IfPostGradLoan(Some(15636.22), Some(46849.26))
 
   private def createValodIFGrossEarningsForNics() =
-    IFGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
+    IfGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 }

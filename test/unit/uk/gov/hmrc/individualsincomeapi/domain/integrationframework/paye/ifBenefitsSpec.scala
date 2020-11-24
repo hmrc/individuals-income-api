@@ -18,15 +18,15 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFPayeEntry._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IFBenefits
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfBenefits
 
-class IFBenefitsSpec extends WordSpec with Matchers {
+class ifBenefitsSpec extends WordSpec with Matchers {
 
-  val validBenefits = IFBenefits(Some(506328.1), Some(246594.83))
-  val invalidBenefits = IFBenefits(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
+  val validBenefits = IfBenefits(Some(506328.1), Some(246594.83))
+  val invalidBenefits = IfBenefits(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
 
-  "IFBenefits" should {
+  "IfBenefits" should {
     "Write to Json" in {
       val expectedJson = Json.parse(
         """
@@ -43,13 +43,13 @@ class IFBenefitsSpec extends WordSpec with Matchers {
     }
   }
 
-  "Validate successfully when given valid IFBenefits" in {
-    val result = Json.toJson(validBenefits).validate[IFBenefits]
+  "Validate successfully when given valid IfBenefits" in {
+    val result = Json.toJson(validBenefits).validate[IfBenefits]
     result.isSuccess shouldBe true
   }
 
-  "Validate unsuccessfully when given invalid IFBenefits" in {
-    val result = Json.toJson(invalidBenefits).validate[IFBenefits]
+  "Validate unsuccessfully when given invalid IfBenefits" in {
+    val result = Json.toJson(invalidBenefits).validate[IfBenefits]
     result.isError shouldBe true
   }
 }
