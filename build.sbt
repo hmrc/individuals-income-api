@@ -29,8 +29,6 @@ lazy val microservice =
       SbtGitVersioning,
       SbtDistributablesPlugin,
       SbtArtifactory) ++ plugins: _*)
-    .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
-    .settings(useSuperShell in ThisBuild := false)
     .settings(playSettings: _*)
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
