@@ -43,12 +43,16 @@ class ShortLivedCacheV2 @Inject()(
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
   def cache[T](id: String, key: String, value: T)(implicit formats: Format[T]): Future[Unit] = {
+
     val jsonEncryptor = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
+
     createOrUpdate(id, key, encryptedValue).map(_ => ())
+
   }
 
   def fetchAndGetEntry[T](id: String, key: String)(implicit formats: Format[T]): Future[Option[T]] = {
+
     val decryptor = new JsonDecryptor[T]()
 
     findById(id) map {
@@ -61,6 +65,7 @@ class ShortLivedCacheV2 @Inject()(
       case None => None
     }
   }
+
 }
 
 @Singleton

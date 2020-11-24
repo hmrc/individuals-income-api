@@ -44,16 +44,21 @@ trait CacheServiceV2 {
     } else {
       fallbackFunction
     }
+
 }
 
 @Singleton
 class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf: CacheConfigurationV2)
     extends CacheServiceV2 {
+
   val key = conf.saKey
+
 }
 
 @Singleton
 class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf: CacheConfigurationV2)
     extends CacheServiceV2 {
+
   val key: String = conf.payeKey
+
 }
