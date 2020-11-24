@@ -28,7 +28,8 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.EmpRef
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, SandboxIncomeController}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
-import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.Future

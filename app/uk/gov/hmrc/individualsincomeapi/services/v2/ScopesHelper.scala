@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.services
+package uk.gov.hmrc.individualsincomeapi.services.v2
 
 import javax.inject.Inject
 import play.api.hal.Hal.{linksSeq, state}

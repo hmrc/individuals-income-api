@@ -23,7 +23,8 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
-import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 
 import scala.concurrent.ExecutionContext
 

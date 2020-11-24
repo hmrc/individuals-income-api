@@ -34,7 +34,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.v1.{LiveIncomeController, Sa
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.paymentJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
-import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxIncomeService}
 import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}

@@ -30,7 +30,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.individualsincomeapi.services.{SandboxCitizenMatchingService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.SandboxCitizenMatchingService
+import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.ExecutionContext

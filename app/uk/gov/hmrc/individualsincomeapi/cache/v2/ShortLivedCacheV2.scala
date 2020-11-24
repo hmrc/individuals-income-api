@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.cache
+package uk.gov.hmrc.individualsincomeapi.cache.v2
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.cache.TimeToLive
-import uk.gov.hmrc.cache.repository.{CacheMongoRepository, CacheRepository}
+import uk.gov.hmrc.cache.repository.CacheMongoRepository
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShortLivedCache @Inject()(
-  val cacheConfig: CacheConfiguration,
+class ShortLivedCacheV2 @Inject()(
+  val cacheConfig: CacheConfigurationV2,
   configuration: Configuration,
   mongo: ReactiveMongoComponent)(implicit ec: ExecutionContext)
-    extends CacheMongoRepository("shortLivedCache", cacheConfig.cacheTtl)(mongo.mongoConnector.db, ec) with TimeToLive {
+    extends CacheMongoRepository(
+      cacheConfig.collName,
+      cacheConfig.cacheTtl
+    )(
+      mongo.mongoConnector.db,
+      ec
+    ) with TimeToLive {
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
@@ -58,7 +64,36 @@ class ShortLivedCache @Inject()(
 }
 
 @Singleton
-class CacheConfiguration @Inject()(configuration: Configuration) {
-  lazy val cacheEnabled = configuration.getOptional[Boolean]("cache.enabled").getOrElse(true)
-  lazy val cacheTtl = configuration.getOptional[Int]("cache.ttlInSeconds").getOrElse(60 * 15)
+class CacheConfigurationV2 @Inject()(configuration: Configuration) {
+
+  lazy val cacheEnabled = configuration
+    .getOptional[Boolean](
+      "cacheV2.enabled"
+    )
+    .getOrElse(true)
+
+  lazy val cacheTtl = configuration
+    .getOptional[Int](
+      "cacheV2.ttlInSeconds"
+    )
+    .getOrElse(60 * 15)
+
+  lazy val collName = configuration
+    .getOptional[String](
+      "cacheV2.collName"
+    )
+    .getOrElse("individuals-employments-v1-cache")
+
+  lazy val saKey = configuration
+    .getOptional[String](
+      "cacheV2.saKey"
+    )
+    .getOrElse("sa-income")
+
+  lazy val payeKey = configuration
+    .getOptional[String](
+      "cacheV2.payeKey"
+    )
+    .getOrElse("paye-income")
+
 }
