@@ -18,50 +18,50 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfGrossEarningsForNics
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfEmployeePensionContribs
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class ifGrossEarningsForNicsSpec extends WordSpec with Matchers {
+class IfEmployeePensionContribsSpec extends WordSpec with Matchers {
 
-  val validGrossEarningsForNics = IfGrossEarningsForNics(
-    Some(995979.04),
-    Some(606456.38),
-    Some(797877.34),
-    Some(166334.69)
+  val validEmployeePensionContribs = IfEmployeePensionContribs(
+    Some(169731.51),
+    Some(173987.07),
+    Some(822317.49),
+    Some(818841.65)
   )
 
-  val invalidGrossEarningsForNics = IfGrossEarningsForNics(
+  val invalidEmployeePensionContribs = IfEmployeePensionContribs(
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1)
   )
 
-  "IfGrossEarningsForNics" should {
-    "Write to Json" in {
+  "IfEmployeePensionContribs" should {
+    "WriteToJson" in {
       val expectedJson = Json.parse(
         """
           |{
-          |  "inPayPeriod1": 995979.04,
-          |  "inPayPeriod2": 606456.38,
-          |  "inPayPeriod3": 797877.34,
-          |  "inPayPeriod4": 166334.69
+          |    "paidYTD": 169731.51,
+          |    "notPaidYTD": 173987.07,
+          |    "paid": 822317.49,
+          |    "notPaid": 818841.65
           |}
           |""".stripMargin
       )
 
-      val result = Json.toJson(validGrossEarningsForNics)
+      val result = Json.toJson(validEmployeePensionContribs)
 
       result shouldBe expectedJson
     }
 
-    "Validates successfully when given a valid IfGrossEarningsForNics" in {
-      val result = Json.toJson(validGrossEarningsForNics).validate[IfGrossEarningsForNics]
+    "Validate successfully when given valid IfEmployeePensionContribs" in {
+      val result = Json.toJson(validEmployeePensionContribs).validate[IfEmployeePensionContribs]
       result.isSuccess shouldBe true
     }
 
-    "Validates unsuccessfully when given an invalid IfGrossEarningsForNics" in {
-      val result = Json.toJson(invalidGrossEarningsForNics).validate[IfGrossEarningsForNics]
+    "Validate unsuccessfully when given invalid IfEmployeePensionContribs" in {
+      val result = Json.toJson(invalidEmployeePensionContribs).validate[IfEmployeePensionContribs]
       result.isError shouldBe true
     }
   }

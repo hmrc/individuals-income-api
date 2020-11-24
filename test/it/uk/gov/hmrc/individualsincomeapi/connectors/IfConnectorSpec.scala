@@ -24,18 +24,18 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
-import uk.gov.hmrc.individualsincomeapi.connector.IFConnector
+import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSa
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSa
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class IFConnectorSpec
+class IfConnectorSpec
     extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
     with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
 
@@ -59,7 +59,7 @@ class IFConnectorSpec
   trait Setup {
     implicit val hc = HeaderCarrier()
 
-    val underTest = fakeApplication.injector.instanceOf[IFConnector]
+    val underTest = fakeApplication.injector.instanceOf[IfConnector]
   }
 
   def externalServices: Seq[String] = Seq.empty
@@ -76,9 +76,9 @@ class IFConnectorSpec
   val incomePayeNoData = IfPaye(Seq())
   val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
   val incomePayeMulti = IfPaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
-  val incomeSaNoData = IFSa(Seq())
-  val incomeSaSingle = IFSa(Seq(createValidSaTaxYearEntry()))
-  val incomeSaMulti = IFSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
+  val incomeSaNoData = IfSa(Seq())
+  val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
+  val incomeSaMulti = IfSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
 
   "fetchPaye" should {
 

@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json.{Format, JsPath}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSa.paymentAmountValidator
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSa.paymentAmountValidator
 
-case class IFAddress(
+case class IfAddress(
   line1: Option[String],
   line2: Option[String],
   line3: Option[String],
@@ -30,7 +30,7 @@ case class IFAddress(
   postcode: Option[String]
 )
 
-case class IFSaIncome(
+case class IfSaIncome(
   selfAssessment: Option[Double],
   allEmployments: Option[Double],
   ukInterest: Option[Double],
@@ -47,7 +47,7 @@ case class IFSaIncome(
   other: Option[Double]
 )
 
-case class IFSaReturn(
+case class IfSaReturn(
   utr: Option[String],
   caseStartDate: Option[String],
   receivedDate: Option[String],
@@ -60,17 +60,17 @@ case class IFSaReturn(
   turnover: Option[Double],
   otherBusinessIncome: Option[Double],
   tradingIncomeAllowance: Option[Double],
-  address: Option[IFAddress],
-  income: Option[IFSaIncome]
+  address: Option[IfAddress],
+  income: Option[IfSaIncome]
 )
 
-case class IFSaEntry(
+case class IfSaEntry(
   taxYear: Option[String],
   income: Option[Double],
-  returnList: Option[Seq[IFSaReturn]]
+  returnList: Option[Seq[IfSaReturn]]
 )
 
-object IFSaEntry {
+object IfSaEntry {
 
   val taxYearPattern = "^20[0-9]{2}$".r
 
@@ -82,7 +82,7 @@ object IFSaEntry {
 
   val utrPattern = "^[0-9]{10}$".r
 
-  implicit val addressFormat: Format[IFAddress] = Format(
+  implicit val addressFormat: Format[IfAddress] = Format(
     (
       (JsPath \ "line1").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "line2").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
@@ -90,7 +90,7 @@ object IFSaEntry {
         (JsPath \ "line4").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "line5").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "postcode").readNullable[String](minLength[String](1).andKeep(maxLength[String](10)))
-    )(IFAddress.apply _),
+    )(IfAddress.apply _),
     (
       (JsPath \ "line1").writeNullable[String] and
         (JsPath \ "line2").writeNullable[String] and
@@ -98,10 +98,10 @@ object IFSaEntry {
         (JsPath \ "line4").writeNullable[String] and
         (JsPath \ "line5").writeNullable[String] and
         (JsPath \ "postcode").writeNullable[String]
-    )(unlift(IFAddress.unapply))
+    )(unlift(IfAddress.unapply))
   )
 
-  implicit val saIncomeFormat: Format[IFSaIncome] = Format(
+  implicit val saIncomeFormat: Format[IfSaIncome] = Format(
     (
       (JsPath \ "selfAssessment").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "allEmployments").readNullable[Double](paymentAmountValidator) and
@@ -117,7 +117,7 @@ object IFSaEntry {
         (JsPath \ "lifePolicies").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "shares").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "other").readNullable[Double](paymentAmountValidator)
-    )(IFSaIncome.apply _),
+    )(IfSaIncome.apply _),
     (
       (JsPath \ "selfAssessment").writeNullable[Double] and
         (JsPath \ "allEmployments").writeNullable[Double] and
@@ -133,10 +133,10 @@ object IFSaEntry {
         (JsPath \ "lifePolicies").writeNullable[Double] and
         (JsPath \ "shares").writeNullable[Double] and
         (JsPath \ "other").writeNullable[Double]
-    )(unlift(IFSaIncome.unapply))
+    )(unlift(IfSaIncome.unapply))
   )
 
-  implicit val saReturnTypeFormat: Format[IFSaReturn] = Format(
+  implicit val saReturnTypeFormat: Format[IfSaReturn] = Format(
     (
       (JsPath \ "utr").readNullable[String](pattern(utrPattern, "Invalid UTR")) and
         (JsPath \ "caseStartDate").readNullable[String](pattern(dateStringPattern, "Invalid Case Start Date")) and
@@ -150,9 +150,9 @@ object IFSaEntry {
         (JsPath \ "turnover").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "otherBusIncome").readNullable[Double](paymentAmountValidator) and
         (JsPath \ "tradingIncomeAllowance").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "address").readNullable[IFAddress] and
-        (JsPath \ "income").readNullable[IFSaIncome]
-    )(IFSaReturn.apply _),
+        (JsPath \ "address").readNullable[IfAddress] and
+        (JsPath \ "income").readNullable[IfSaIncome]
+    )(IfSaReturn.apply _),
     (
       (JsPath \ "utr").writeNullable[String] and
         (JsPath \ "caseStartDate").writeNullable[String] and
@@ -166,22 +166,22 @@ object IFSaEntry {
         (JsPath \ "turnover").writeNullable[Double] and
         (JsPath \ "otherBusIncome").writeNullable[Double] and
         (JsPath \ "tradingIncomeAllowance").writeNullable[Double] and
-        (JsPath \ "address").writeNullable[IFAddress] and
-        (JsPath \ "income").writeNullable[IFSaIncome]
-    )(unlift(IFSaReturn.unapply))
+        (JsPath \ "address").writeNullable[IfAddress] and
+        (JsPath \ "income").writeNullable[IfSaIncome]
+    )(unlift(IfSaReturn.unapply))
   )
 
-  implicit val saTaxYearEntryFormat: Format[IFSaEntry] = Format(
+  implicit val saTaxYearEntryFormat: Format[IfSaEntry] = Format(
     (
       (JsPath \ "taxYear").readNullable[String](pattern(taxYearPattern, "Invalid Tax Year")) and
         (JsPath \ "income").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "returnList").readNullable[Seq[IFSaReturn]]
-    )(IFSaEntry.apply _),
+        (JsPath \ "returnList").readNullable[Seq[IfSaReturn]]
+    )(IfSaEntry.apply _),
     (
       (JsPath \ "taxYear").writeNullable[String] and
         (JsPath \ "income").writeNullable[Double] and
-        (JsPath \ "returnList").writeNullable[Seq[IFSaReturn]]
-    )(unlift(IFSaEntry.unapply))
+        (JsPath \ "returnList").writeNullable[Seq[IfSaReturn]]
+    )(unlift(IfSaEntry.unapply))
   )
 
 }

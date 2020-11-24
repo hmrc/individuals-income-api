@@ -18,50 +18,62 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfEmployeePensionContribs
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfEmployeeNics
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class ifEmployeePensionContribsSpec extends WordSpec with Matchers {
+class IfEmployeeNicsSpec extends WordSpec with Matchers {
 
-  val validEmployeePensionContribs = IfEmployeePensionContribs(
-    Some(169731.51),
-    Some(173987.07),
-    Some(822317.49),
-    Some(818841.65)
+  val validEmployeeNics = IfEmployeeNics(
+    Some(15797.45),
+    Some(13170.69),
+    Some(16193.76),
+    Some(30846.56),
+    Some(10633.5),
+    Some(15579.18),
+    Some(110849.27),
+    Some(162081.23)
   )
 
-  val invalidEmployeePensionContribs = IfEmployeePensionContribs(
+  val invalidEmployeeNics = IfEmployeeNics(
+    Some(9999999999.99 + 1),
+    Some(9999999999.99 + 1),
+    Some(9999999999.99 + 1),
+    Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1),
     Some(9999999999.99 + 1)
   )
 
-  "IfEmployeePensionContribs" should {
-    "WriteToJson" in {
+  "IfEmployeeNics" should {
+    "Write to Json" in {
       val expectedJson = Json.parse(
         """
           |{
-          |    "paidYTD": 169731.51,
-          |    "notPaidYTD": 173987.07,
-          |    "paid": 822317.49,
-          |    "notPaid": 818841.65
+          |    "inPayPeriod1": 15797.45,
+          |    "inPayPeriod2": 13170.69,
+          |    "inPayPeriod3": 16193.76,
+          |    "inPayPeriod4": 30846.56,
+          |    "ytd1": 10633.5,
+          |    "ytd2": 15579.18,
+          |    "ytd3": 110849.27,
+          |    "ytd4": 162081.23
           |}
           |""".stripMargin
       )
 
-      val result = Json.toJson(validEmployeePensionContribs)
+      val result = Json.toJson(validEmployeeNics)
 
       result shouldBe expectedJson
     }
 
-    "Validate successfully when given valid IfEmployeePensionContribs" in {
-      val result = Json.toJson(validEmployeePensionContribs).validate[IfEmployeePensionContribs]
+    "Validates successfully when passed a valid IfEmployeeNics" in {
+      val result = Json.toJson(validEmployeeNics).validate[IfEmployeeNics]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when given invalid IfEmployeePensionContribs" in {
-      val result = Json.toJson(invalidEmployeePensionContribs).validate[IfEmployeePensionContribs]
+    "Validates unsuccessfully when passed an invalid IfEmployeeNics" in {
+      val result = Json.toJson(invalidEmployeeNics).validate[IfEmployeeNics]
       result.isError shouldBe true
     }
   }

@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfBenefits
 
-class ifBenefitsSpec extends WordSpec with Matchers {
+class IfBenefitsSpec extends WordSpec with Matchers {
 
   val validBenefits = IfBenefits(Some(506328.1), Some(246594.83))
   val invalidBenefits = IfBenefits(Some(9999999999.99 + 1), Some(9999999999.99 + 1))

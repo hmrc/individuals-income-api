@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStudentLoan, IfTotalEmployerNics}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
-class ifPayeEntrySpec extends WordSpec with Matchers {
+class IfPayeEntrySpec extends WordSpec with Matchers {
 
   val validEmployeeNics =
     IfEmployeeNics(

@@ -24,13 +24,13 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye, IfPayeEntry}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFSa, IFSaEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IFConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext) {
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext) {
 
   val serviceUrl = servicesConfig.baseUrl("integration-framework")
 
@@ -61,14 +61,14 @@ class IFConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String])(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Seq[IFSaEntry]] = {
+    ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
 
     val startYear = taxYearInterval.fromTaxYear.endYr
     val endYear = taxYearInterval.toTaxYear.endYr
     val saUrl = s"$serviceUrl/individuals/income/sa/" +
       s"nino/$nino?startYear=$startYear&endYear=$endYear&fields=$filter"
 
-    recover[IFSaEntry](http.GET[IFSa](saUrl)(implicitly, header(), ec).map(_.sa))
+    recover[IfSaEntry](http.GET[IfSa](saUrl)(implicitly, header(), ec).map(_.sa))
 
   }
 

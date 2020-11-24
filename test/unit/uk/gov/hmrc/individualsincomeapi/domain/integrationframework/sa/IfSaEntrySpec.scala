@@ -18,16 +18,16 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaEntry, IFSaIncome, IFSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
 
-class IFSaEntrySpec extends WordSpec with Matchers {
+class IfSaEntrySpec extends WordSpec with Matchers {
 
   val returnTypeList = Seq(createValidSaReturnType())
 
-  val validSaTaxYearEntry = IFSaEntry(Some("2020"), Some(100.01), Some(returnTypeList))
-  val invalidSaTaxYearEntry = IFSaEntry(Some("-42"), Some(100.001), Some(returnTypeList))
+  val validSaTaxYearEntry = IfSaEntry(Some("2020"), Some(100.01), Some(returnTypeList))
+  val invalidSaTaxYearEntry = IfSaEntry(Some("-42"), Some(100.001), Some(returnTypeList))
 
-  "IFSaEntry" should {
+  "IfSaEntry" should {
     "WriteToJson" in {
       val expectedJson = Json.parse(
         """
@@ -79,19 +79,19 @@ class IFSaEntrySpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validate successfully when provided valid IFSaEntry" in {
-      val result = Json.toJson(validSaTaxYearEntry).validate[IFSaEntry]
+    "Validate successfully when provided valid IfSaEntry" in {
+      val result = Json.toJson(validSaTaxYearEntry).validate[IfSaEntry]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully when provided invalid IFSaEntry" in {
-      val result = Json.toJson(invalidSaTaxYearEntry).validate[IFSaEntry]
+    "Validate unsuccessfully when provided invalid IfSaEntry" in {
+      val result = Json.toJson(invalidSaTaxYearEntry).validate[IfSaEntry]
       result.isError shouldBe true
     }
   }
 
   private def createValidSaReturnType() = {
-    val validSaIncome = IFSaIncome(
+    val validSaIncome = IfSaIncome(
       Some(100.0),
       Some(100.0),
       Some(100.0),
@@ -108,7 +108,7 @@ class IFSaEntrySpec extends WordSpec with Matchers {
       Some(100.0)
     )
 
-    IFSaReturn(
+    IfSaReturn(
       Some("1234567890"),
       Some("2020-01-01"),
       Some("2020-01-01"),
@@ -121,7 +121,7 @@ class IFSaEntrySpec extends WordSpec with Matchers {
       Some(100.01),
       Some(100.01),
       Some(100.01),
-      Some(IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
+      Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
       Some(validSaIncome)
     )
   }

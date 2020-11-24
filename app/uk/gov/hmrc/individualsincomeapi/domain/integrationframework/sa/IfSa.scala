@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 import play.api.libs.json.Reads.{verifying}
 import play.api.libs.json.{Format, JsPath, Json, Reads}
 
-case class IFSa(sa: Seq[IFSaEntry])
+case class IfSa(sa: Seq[IfSaEntry])
 
-object IFSa {
+object IfSa {
 
   val minValue = -9999999999.99
   val maxValue = 9999999999.99
@@ -33,9 +33,9 @@ object IFSa {
   def paymentAmountValidator(implicit rds: Reads[Double]): Reads[Double] =
     verifying[Double](value => isInRange(value) && isMultipleOfPointZeroOne(value))
 
-  implicit val incomeSaFormat: Format[IFSa] = Format(
-    (JsPath \ "sa").read[Seq[IFSaEntry]].map(value => IFSa(value)),
-    (JsPath \ "sa").write[Seq[IFSaEntry]].contramap(value => value.sa)
+  implicit val incomeSaFormat: Format[IfSa] = Format(
+    (JsPath \ "sa").read[Seq[IfSaEntry]].map(value => IfSa(value)),
+    (JsPath \ "sa").write[Seq[IfSaEntry]].contramap(value => value.sa)
   )
 
 }

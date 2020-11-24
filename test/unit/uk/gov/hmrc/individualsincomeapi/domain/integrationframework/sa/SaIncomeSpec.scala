@@ -18,12 +18,12 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaEntry._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaIncome
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSaEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSaIncome
 
 class SaIncomeSpec extends WordSpec with Matchers {
 
-  val validSaIncome = IFSaIncome(
+  val validSaIncome = IfSaIncome(
     Some(100.0),
     Some(100.0),
     Some(100.0),
@@ -40,7 +40,7 @@ class SaIncomeSpec extends WordSpec with Matchers {
     Some(100.0)
   )
 
-  val invalidSaIncome = IFSaIncome(
+  val invalidSaIncome = IfSaIncome(
     Some(100.001),
     Some(100.001),
     Some(100.001),
@@ -83,12 +83,12 @@ class SaIncomeSpec extends WordSpec with Matchers {
     }
 
     "Validate successfully when SA Income is valid" in {
-      val result = Json.toJson(validSaIncome).validate[IFSaIncome]
+      val result = Json.toJson(validSaIncome).validate[IfSaIncome]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when SA Income is invalid" in {
-      val result = Json.toJson(invalidSaIncome).validate[IFSaIncome]
+      val result = Json.toJson(invalidSaIncome).validate[IfSaIncome]
       result.isError shouldBe true
     }
   }

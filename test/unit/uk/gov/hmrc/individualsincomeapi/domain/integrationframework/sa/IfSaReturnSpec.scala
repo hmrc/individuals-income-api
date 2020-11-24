@@ -18,12 +18,12 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaEntry._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IFAddress, IFSaIncome, IFSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSaEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfAddress, IfSaIncome, IfSaReturn}
 
-class IFSaReturnSpec extends WordSpec with Matchers {
+class IfSaReturnSpec extends WordSpec with Matchers {
 
-  val validSaReturnType = IFSaReturn(
+  val validSaReturnType = IfSaReturn(
     Some("1234567890"),
     Some("2020-01-01"),
     Some("2020-01-01"),
@@ -36,11 +36,11 @@ class IFSaReturnSpec extends WordSpec with Matchers {
     Some(100.01),
     Some(100.01),
     Some(100.01),
-    Some(IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
+    Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
     Some(createValidSaIncome)
   )
 
-  val invalidSaReturnType = IFSaReturn(
+  val invalidSaReturnType = IfSaReturn(
     Some(""),
     Some(""),
     Some(""),
@@ -53,11 +53,11 @@ class IFSaReturnSpec extends WordSpec with Matchers {
     Some(100.001),
     Some(100.001),
     Some(100.001),
-    Some(IFAddress(Some(""), Some(""), Some(""), Some(""), None, Some(""))),
+    Some(IfAddress(Some(""), Some(""), Some(""), Some(""), None, Some(""))),
     Some(createValidSaIncome)
   )
 
-  "IFSaReturn" should {
+  "IfSaReturn" should {
     "Write to Json" in {
       val result = Json.toJson(validSaReturnType)
       val expectedJson = Json.parse("""
@@ -103,20 +103,20 @@ class IFSaReturnSpec extends WordSpec with Matchers {
       result shouldBe expectedJson
     }
 
-    "Validate successfully for valid IFSaReturn" in {
-      val result = Json.toJson(validSaReturnType).validate[IFSaReturn]
+    "Validate successfully for valid IfSaReturn" in {
+      val result = Json.toJson(validSaReturnType).validate[IfSaReturn]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully for invalid IFSaReturn" in {
-      val result = Json.toJson(invalidSaReturnType).validate[IFSaReturn]
+    "Validate unsuccessfully for invalid IfSaReturn" in {
+      val result = Json.toJson(invalidSaReturnType).validate[IfSaReturn]
       result.isError shouldBe true
     }
 
   }
 
   private def createValidSaIncome() =
-    IFSaIncome(
+    IfSaIncome(
       Some(100.0),
       Some(100.0),
       Some(100.0),

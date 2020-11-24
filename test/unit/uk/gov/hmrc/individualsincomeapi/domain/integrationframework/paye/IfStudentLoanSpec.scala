@@ -18,37 +18,37 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPostGradLoan
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfStudentLoan
 
-class ifPostGradLoanSpec extends WordSpec with Matchers {
+class IfStudentLoanSpec extends WordSpec with Matchers {
+  val validStudentLoan = IfStudentLoan(Some("01"), Some(100), Some(100))
+  val invalidStudentLoan = IfStudentLoan(Some("NotValid"), Some(9999999999.99 + 1), Some(9999999999.99 + 1))
 
-  val validPostGradLoan = IfPostGradLoan(Some(1588498.34), Some(2217757.33))
-  val invalidPostGradLoan = IfPostGradLoan(Some(9999999999.99 + 1), Some(9999999999.99 + 1))
-
-  "IfPostGradLoan" should {
-    "Write to json" in {
+  "Student Loan" should {
+    "WriteToJson" in {
       val expectedJson = Json.parse(
         """
           |{
-          |  "repaymentsInPayPeriod": 1588498.34,
-          |  "repaymentsYTD": 2217757.33
+          |  "planType" : "01",
+          |  "repaymentsInPayPeriod" : 100,
+          |  "repaymentsYTD" : 100
           |}
           |""".stripMargin
       )
 
-      val result = Json.toJson(validPostGradLoan)
+      val result = Json.toJson(validStudentLoan)
 
-      result shouldBe expectedJson
+      result shouldBe (expectedJson)
     }
 
-    "Validate successfully with valid IfPostGradLoan" in {
-      val result = Json.toJson(validPostGradLoan).validate[IfPostGradLoan]
+    "Validate successfully when given a valid Student Loan" in {
+      val result = Json.toJson(validStudentLoan).validate[IfStudentLoan]
       result.isSuccess shouldBe true
     }
 
-    "Validate unsuccessfully with invalid IfPostGradLoan" in {
-      val result = Json.toJson(invalidPostGradLoan).validate[IfPostGradLoan]
+    "Validate unsuccessfully when given an invalid Student Loan" in {
+      val result = Json.toJson(invalidStudentLoan).validate[IfStudentLoan]
       result.isError shouldBe true
     }
   }

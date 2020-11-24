@@ -18,16 +18,16 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFAddress
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IFSaEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfAddress
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSaEntry._
 
-class IFAddressSpec extends WordSpec with Matchers {
+class IfAddressSpec extends WordSpec with Matchers {
 
-  val validAddress = IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))
+  val validAddress = IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))
   val invalidAddress =
-    IFAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("1234567891011121314151617181920"))
+    IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("1234567891011121314151617181920"))
 
-  "IFAddress" should {
+  "IfAddress" should {
     "Write to Json" in {
       val expectedJson = Json.parse("""
                                       |{
@@ -45,12 +45,12 @@ class IFAddressSpec extends WordSpec with Matchers {
     }
 
     "Validate successfully when address is valid" in {
-      val result = Json.toJson(validAddress).validate[IFAddress]
+      val result = Json.toJson(validAddress).validate[IfAddress]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when address is invalid" in {
-      val result = Json.toJson(invalidAddress).validate[IFAddress]
+      val result = Json.toJson(invalidAddress).validate[IfAddress]
       result.isError shouldBe true
     }
   }
