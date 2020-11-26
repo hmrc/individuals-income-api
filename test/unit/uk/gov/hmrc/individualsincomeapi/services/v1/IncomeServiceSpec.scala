@@ -157,7 +157,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     }
   }
 
-  "SandboxIncomeService fetch income by matchId function" should {
+  "SandboxIncomeServiceV2 fetch income by matchId function" should {
 
     "return income for the entire available history ordered by date descending" in new Setup {
 

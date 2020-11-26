@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.EmpRef
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, SandboxIncomeController}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
-import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeServiceV2, SandboxIncomeServiceV2}
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
@@ -48,13 +48,13 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
     Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
 
   trait Setup {
-    val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
+    val mockIncomeService: LiveIncomeServiceV2 = mock[LiveIncomeServiceV2]
     val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
     lazy val scopeService: ScopesService = mock[ScopesService]
 
     val liveIncomeController = new LiveIncomeController(mockIncomeService, scopeService, mockAuthConnector, cc)
     val sandboxIncomeController =
-      new SandboxIncomeController(new SandboxIncomeService, scopeService, mockAuthConnector, cc)
+      new SandboxIncomeController(new SandboxIncomeServiceV2, scopeService, mockAuthConnector, cc)
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
   }
 
@@ -66,8 +66,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
 
     "return 500 when matching succeeds and service returns payments" in new Setup {
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-        .willReturn(successful(payments))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      //  .willReturn(successful(payments))
 
       val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(fakeRequest)) }
       assert(result.getMessage == "NOT_IMPLEMENTED")
@@ -75,8 +76,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
 
     "return 500 when matching succeeds and service returns no payments" in new Setup {
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-        .willReturn(successful(Seq.empty))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      //  .willReturn(successful(Seq.empty))
 
       val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(fakeRequest)) }
       assert(result.getMessage == "NOT_IMPLEMENTED")
@@ -86,8 +88,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
 
       val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-        .willReturn(successful(payments))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      //  .willReturn(successful(payments))
 
       val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(fakeRequest)) }
       assert(result.getMessage == "NOT_IMPLEMENTED")
@@ -95,8 +98,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
 
     "return 500 for an invalid matchId" in new Setup {
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(fakeRequest)) }
       assert(result.getMessage == "NOT_IMPLEMENTED")

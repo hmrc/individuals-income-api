@@ -23,7 +23,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.{sandboxMatchId, sandboxNino}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.individualsincomeapi.services.v1.SandboxCitizenMatchingService
+import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
 import utils.TestSupport
 
 class CitizenMatchingServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {

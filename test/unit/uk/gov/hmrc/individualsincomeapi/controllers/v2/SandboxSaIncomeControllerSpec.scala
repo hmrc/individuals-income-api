@@ -29,7 +29,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.services.v1.SandboxSaIncomeService
+import uk.gov.hmrc.individualsincomeapi.services.v2.SandboxSaIncomeServiceV2
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
@@ -48,7 +48,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
-    val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
+    val mockSandboxSaIncomeService: SandboxSaIncomeServiceV2 = mock[SandboxSaIncomeServiceV2]
     val mockAuthConnector = fakeAuthConnector(Future.successful(enrolments))
     lazy val scopeService: ScopesService = mock[ScopesService]
     val sandboxSaIncomeController =
@@ -65,8 +65,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     )
 
     "return 500 with the registration information and self assessment returns for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saFootprint))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saFootprint))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -78,8 +80,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saFootprint))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saFootprint))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -88,8 +91,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -104,8 +109,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 9000))))
 
     "return 500 with the employments income returns for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(employmentsIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(employmentsIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -118,8 +125,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(employmentsIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(employmentsIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -128,8 +136,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -144,8 +154,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500))))
 
     "return 500 with the self employments income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(selfEmploymentIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(selfEmploymentIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -158,8 +170,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(selfEmploymentIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(selfEmploymentIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -168,8 +181,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -183,8 +198,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(sandboxUtr, 20500))))
 
     "return 500 with the self tax return summaries for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(taxReturnSummaries))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(taxReturnSummaries))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -197,8 +214,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(taxReturnSummaries))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(taxReturnSummaries))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -207,8 +225,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -222,8 +242,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val saTrustIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(sandboxUtr, 20500))))
 
     "return 500 with the self tax return trusts for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saTrustIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saTrustIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -236,8 +258,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saTrustIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saTrustIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -246,8 +269,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -262,8 +287,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
     "return 500 with the self tax return foreign income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saForeignIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saForeignIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -276,8 +303,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saForeignIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saForeignIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -286,8 +314,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -302,8 +332,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       Seq(SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 123.65))))
 
     "return 500 with the self tax return partnerships income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saPartnershipIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saPartnershipIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -316,8 +348,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saPartnershipIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saPartnershipIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -326,8 +359,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -344,9 +379,11 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
         Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))))
 
     "return 500 with the self tax return pensions and state benefits income for the period" in new Setup {
-      given(
-        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saPensionsAndStateBenefitsIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(
+      //  mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -359,9 +396,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
 
-      given(
-        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saPensionsAndStateBenefitsIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(
+      //  mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
       val result = intercept[Exception] {
         await(
@@ -372,9 +410,11 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(
-        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(
+      //  mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -391,8 +431,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
         Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 10.56, 56.34, 52.56))))
 
     "return 500 with the self tax return interests and dividends income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saInterestsAndDividendsIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saInterestsAndDividendsIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -405,8 +447,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saInterestsAndDividendsIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saInterestsAndDividendsIncomes))
 
       val result = intercept[Exception] {
         await(
@@ -417,8 +460,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -433,8 +478,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
     "return 500 with the UK properties income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saUkPropertiesIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saUkPropertiesIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -447,8 +494,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saUkPropertiesIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saUkPropertiesIncomes))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -457,8 +505,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -473,8 +523,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       SaAnnualAdditionalInformations(TaxYear("2015-16"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 76.67, 13.56))))
 
     "return 500 with the additional information income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saAdditionalInformation))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saAdditionalInformation))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
@@ -487,8 +539,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saAdditionalInformation))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saAdditionalInformation))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -497,8 +550,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
@@ -512,8 +567,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val otherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70))))
 
     "return 500 with the other income for the period" in new Setup {
-      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(otherIncome))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(otherIncome))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -526,8 +583,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(otherIncome))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(otherIncome))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -536,8 +594,10 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
