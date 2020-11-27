@@ -24,13 +24,29 @@ object IfPaye {
 
   val minValue = -9999999999.99
   val maxValue = 9999999999.99
+  val payeWholeUnitsPaymentTypeMinValue = -99999
+  val payeWholeUnitsPaymentTypeMaxValue = 99999
+  val payeWholeUnitsPositivePaymentTypeMinValue = 0
+  val payeWholeUnitsPositivePaymentTypeMaxValue = 99999
 
   def isMultipleOfPointZeroOne(value: Double): Boolean = (BigDecimal(value) * 100.0) % 1 == 0
 
-  def isInRange(value: Double): Boolean = value > minValue && value < maxValue
+  def isInRange(value: Double): Boolean = value >= minValue && value <= maxValue
+
+  def isInRangeWholeUnits(value: Double): Boolean =
+    value >= payeWholeUnitsPaymentTypeMinValue && value <= payeWholeUnitsPaymentTypeMaxValue
+
+  def isInRangePositiveWholeUnits(value: Double): Boolean =
+    value >= payeWholeUnitsPositivePaymentTypeMinValue && value <= payeWholeUnitsPositivePaymentTypeMaxValue
 
   def paymentAmountValidator(implicit rds: Reads[Double]): Reads[Double] =
     verifying[Double](value => isInRange(value) && isMultipleOfPointZeroOne(value))
+
+  def payeWholeUnitsPaymentTypeValidator(implicit rds: Reads[Int]): Reads[Int] =
+    verifying[Int](value => isInRangeWholeUnits(value))
+
+  def payeWholeUnitsPositivePaymentTypeValidator(implicit rds: Reads[Int]): Reads[Int] =
+    verifying[Int](value => isInRangePositiveWholeUnits(value))
 
   implicit val incomePayeFormat: Format[IfPaye] = Format(
     (JsPath \ "paye").read[Seq[IfPayeEntry]].map(value => IfPaye(value)),

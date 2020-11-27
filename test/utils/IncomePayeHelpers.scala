@@ -73,9 +73,9 @@ trait IncomePayeHelpers {
 
   private def createValidBenefits() = IfBenefits(Some(506328.1), Some(246594.83))
 
-  private def createValidStudentLoan() = IfStudentLoan(Some("02"), Some(88478.16), Some(545.52))
+  private def createValidStudentLoan() = IfStudentLoan(Some("02"), Some(88478), Some(545))
 
-  private def createValidPostGradLoan() = IfPostGradLoan(Some(15636.22), Some(46849.26))
+  private def createValidPostGradLoan() = IfPostGradLoan(Some(15636), Some(46849))
 
   private def createValodIFGrossEarningsForNics() =
     IfGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))

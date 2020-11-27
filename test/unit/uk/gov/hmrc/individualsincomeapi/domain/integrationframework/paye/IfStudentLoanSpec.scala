@@ -23,7 +23,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfStude
 
 class IfStudentLoanSpec extends WordSpec with Matchers {
   val validStudentLoan = IfStudentLoan(Some("01"), Some(100), Some(100))
-  val invalidStudentLoan = IfStudentLoan(Some("NotValid"), Some(9999999999.99 + 1), Some(9999999999.99 + 1))
+  val invalidStudentLoan = IfStudentLoan(Some("NotValid"), Some(99999 + 1), Some(99999 + 1))
 
   "Student Loan" should {
     "WriteToJson" in {

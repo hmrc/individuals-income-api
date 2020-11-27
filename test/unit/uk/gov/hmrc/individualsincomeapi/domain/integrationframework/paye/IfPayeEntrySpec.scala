@@ -52,9 +52,9 @@ class IfPayeEntrySpec extends WordSpec with Matchers {
 
   val validBenefits = IfBenefits(Some(506328.1), Some(246594.83))
 
-  val validStudentLoan = IfStudentLoan(Some("02"), Some(88478.16), Some(545.52))
+  val validStudentLoan = IfStudentLoan(Some("02"), Some(88478), Some(545))
 
-  val validPostGradLoan = IfPostGradLoan(Some(15636.22), Some(46849.26))
+  val validPostGradLoan = IfPostGradLoan(Some(99999), Some(46849))
 
   val validGrossEarningsForNics =
     IfGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
@@ -166,12 +166,12 @@ class IfPayeEntrySpec extends WordSpec with Matchers {
           |    },
           |    "studentLoan": {
           |        "planType": "02",
-          |        "repaymentsInPayPeriod": 88478.16,
-          |        "repaymentsYTD": 545.52
+          |        "repaymentsInPayPeriod": 88478,
+          |        "repaymentsYTD": 545
           |    },
           |    "postGradLoan": {
-          |        "repaymentsInPayPeriod": 15636.22,
-          |        "repaymentsYTD": 46849.26
+          |        "repaymentsInPayPeriod": 99999,
+          |        "repaymentsYTD": 46849
           |    }
           |}
           |""".stripMargin
