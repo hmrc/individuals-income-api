@@ -29,7 +29,8 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.services.{LiveSaIncomeService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.LiveSaIncomeServiceV2
+import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.Future
@@ -48,7 +49,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
 
   trait Setup {
     val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
-    val mockLiveSaIncomeService: LiveSaIncomeService = mock[LiveSaIncomeService]
+    val mockLiveSaIncomeService: LiveSaIncomeServiceV2 = mock[LiveSaIncomeServiceV2]
     lazy val scopeService: ScopesService = mock[ScopesService]
 
     val liveSaIncomeController =
@@ -65,8 +66,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     )
 
     "return 500 with the self assessment footprint for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saFootprint))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saFootprint))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -78,8 +81,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saFootprint))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saFootprint))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -88,8 +92,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
+      //.willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -103,8 +109,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val saReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2018-19"), Seq(SaTaxReturnSummary(utr, 30500.55))))
 
     "return 500 when there are sa tax returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturnSummaries))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saReturnSummaries))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -117,8 +125,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saReturnSummaries))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saReturnSummaries))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -127,8 +136,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -143,8 +154,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2018-19"), Seq(SaEmploymentsIncome(utr, 9000))))
 
     "return 500 with the employments income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(employmentsIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(employmentsIncomes))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -157,8 +170,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(employmentsIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(employmentsIncomes))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -167,8 +181,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -183,8 +199,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val saIncomes = Seq(SaAnnualSelfEmployments(TaxYear("2018-19"), Seq(SaSelfEmploymentsIncome(utr, 9000.55))))
 
     "return 500 with the employments income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //   .willReturn(successful(saIncomes))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -197,8 +215,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saIncomes))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -207,8 +226,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -222,8 +243,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val saIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2018-19"), Seq(SaAnnualTrustIncome(utr, 9000.55))))
 
     "return 500 with the trusts income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saIncomes))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saIncomes))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -236,8 +259,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saIncomes))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saIncomes))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -246,8 +270,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -262,8 +288,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       Seq(SaAnnualForeignIncomes(TaxYear("2018-19"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
     "return 500 with the foreign income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saForeignIncome))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saForeignIncome))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -276,8 +304,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saForeignIncome))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saForeignIncome))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -286,8 +315,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -302,8 +333,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       Seq(SaAnnualUkPropertiesIncomes(TaxYear("2018-19"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
     "return 500 with the uk properties income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saUkPropertiesIncome))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saUkPropertiesIncome))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -316,8 +349,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saUkPropertiesIncome))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saUkPropertiesIncome))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -326,8 +360,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -341,8 +377,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val saOtherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2018-19"), Seq(SaAnnualOtherIncome(sandboxUtr, 134.56))))
 
     "return 500 with the other income returns for the period" in new Setup {
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saOtherIncome))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saOtherIncome))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -355,8 +393,9 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(successful(saOtherIncome))
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(successful(saOtherIncome))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -365,8 +404,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     }
 
     "return 500 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-        .willReturn(failed(new MatchNotFoundException()))
+
+      // TODO reinstate when the V2 Income Service is coded up
+      //given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+      //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {
         await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))

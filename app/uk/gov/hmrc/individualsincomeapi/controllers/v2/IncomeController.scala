@@ -24,11 +24,12 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
-import uk.gov.hmrc.individualsincomeapi.services.{IncomeService, LiveIncomeService, SandboxIncomeService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeServiceV2, LiveIncomeServiceV2, SandboxIncomeServiceV2}
+import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(incomeService: IncomeService, scopeService: ScopesService, cc: ControllerComponents)
+abstract class IncomeController(incomeService: IncomeServiceV2, scopeService: ScopesService, cc: ControllerComponents)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
@@ -45,7 +46,7 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
 
 @Singleton
 class LiveIncomeController @Inject()(
-  val incomeService: LiveIncomeService,
+  val incomeService: LiveIncomeServiceV2,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
   cc: ControllerComponents)
@@ -55,7 +56,7 @@ class LiveIncomeController @Inject()(
 
 @Singleton
 class SandboxIncomeController @Inject()(
-  val incomeService: SandboxIncomeService,
+  val incomeService: SandboxIncomeServiceV2,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
   cc: ControllerComponents)

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.cache
+package uk.gov.hmrc.individualsincomeapi.services.v1
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
 import scala.concurrent.ExecutionContext.Implicits.global

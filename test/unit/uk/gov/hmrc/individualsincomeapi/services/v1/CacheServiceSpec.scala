@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.cache
+package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import java.util.UUID
 
@@ -25,7 +25,8 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.cache._
+import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheConfiguration, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService}
 import utils.TestSupport
 
 import scala.concurrent.Future

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.services
+package uk.gov.hmrc.individualsincomeapi.services.v1
 
 import java.util.UUID
 
 import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.individualsincomeapi.cache.{CacheId, PayeIncomeCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
+import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployments, MatchNotFoundException, Payment}
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

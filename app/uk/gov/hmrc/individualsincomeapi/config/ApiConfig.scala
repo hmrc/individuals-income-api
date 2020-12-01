@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.config
 
 import com.typesafe.config.Config
 import play.api.ConfigLoader
-import uk.gov.hmrc.individualsincomeapi.services.PathTree
+import uk.gov.hmrc.individualsincomeapi.services.v2.PathTree
 
 import scala.collection.JavaConverters._
 

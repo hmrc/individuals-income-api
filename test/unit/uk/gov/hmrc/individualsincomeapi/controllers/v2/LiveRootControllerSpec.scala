@@ -29,7 +29,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
+import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.Future.{failed, successful}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.services
+package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import java.util.UUID
 
@@ -28,11 +28,10 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.{EmpRef, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.individualsincomeapi.cache.{CacheId, PayeIncomeCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData._
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.services.{LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, LiveIncomeService, PayeIncomeCache, SandboxIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.SpecBase
 

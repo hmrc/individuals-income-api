@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package unit.uk.gov.hmrc.individualsincomeapi.services
+package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import java.util.UUID
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.{sandboxMatchId, sandboxNino}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.TestSupport
 
 class CitizenMatchingServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {

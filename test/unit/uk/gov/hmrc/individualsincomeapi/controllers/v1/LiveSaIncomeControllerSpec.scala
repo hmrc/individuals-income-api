@@ -34,7 +34,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.v1.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.services.LiveSaIncomeService
+import uk.gov.hmrc.individualsincomeapi.services.v1.LiveSaIncomeService
 import utils.SpecBase
 
 import scala.concurrent.Future.{failed, successful}

@@ -32,7 +32,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, Privilege
 import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.getClientIdHeader
-import uk.gov.hmrc.individualsincomeapi.services._
+import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
