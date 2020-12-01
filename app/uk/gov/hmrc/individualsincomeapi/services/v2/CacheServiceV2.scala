@@ -16,10 +16,16 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
+import java.util.UUID
+
 import javax.inject.{Inject, Singleton}
+import org.joda.time.Interval
 import play.api.libs.json.Format
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfigurationV2, ShortLivedCacheV2}
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
+import uk.gov.hmrc.individualsincomeapi.util.CacheKeyHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -60,5 +66,28 @@ class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf
     extends CacheServiceV2 {
 
   val key: String = conf.payeKey
+
+}
+
+// Cache ID implementations
+// This can then be concatenated for multiple scopes.
+// Example;
+// read:scope-1 =  [A, B, C]
+// read:scope-2 = [D, E, F]
+// The cache key (if two scopes alone) would be;
+// `id + from + to +  [A, B, C, D, E, F]` Or formatted to `id-from-to-ABCDEF`
+// We can base encode the fields to keep the key short
+
+case class CacheId(matchId: UUID, interval: Interval, fields: String) extends CacheKeyHelper {
+
+  lazy val id: String =
+    s"$matchId-${interval.getStart}-${interval.getEnd}-${encodeFields(fields)}"
+
+}
+
+case class SaCacheId(nino: Nino, interval: TaxYearInterval, fields: String) extends CacheKeyHelper {
+
+  lazy val id =
+    s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-${encodeFields(fields)}"
 
 }
