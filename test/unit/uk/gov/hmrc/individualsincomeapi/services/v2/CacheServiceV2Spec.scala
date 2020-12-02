@@ -18,15 +18,18 @@ package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
 import java.util.UUID
 
+import org.joda.time.{Interval, LocalDate}
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfigurationV2, ShortLivedCacheV2}
-import uk.gov.hmrc.individualsincomeapi.services.v2.CacheServiceV2
+import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheServiceV2, PayeCacheIdV2, SaCacheIdV2}
 import utils.TestSupport
 
 import scala.concurrent.Future
@@ -80,6 +83,43 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
       verifyNoInteractions(mockClient)
 
     }
+  }
+
+  "PayeCacheIdV2" should {
+
+    "produce a cache id based on matchId and scopes" in {
+
+      val matchId = UUID.randomUUID()
+      val fromDateString = "2017-03-02"
+      val toDateString = "2017-05-31"
+
+      val interval = new Interval(
+        new LocalDate(fromDateString).toDateTimeAtStartOfDay,
+        new LocalDate(toDateString).toDateTimeAtStartOfDay)
+
+      val fields = "ABDFH"
+
+      PayeCacheIdV2(matchId, interval, fields).id shouldBe
+        s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
+
+    }
+
+  }
+
+  "SaCacheIdV2" should {
+
+    "produce a cache id based on nino and scopes" in {
+
+      val nino = Nino("NA000799C")
+      val interval = TaxYearInterval(TaxYear("2015-16"), TaxYear("2016-17"))
+
+      val fields = "ABDFH"
+
+      SaCacheIdV2(nino, interval, fields).id shouldBe
+        s"${nino.toString}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
+
+    }
+
   }
 }
 

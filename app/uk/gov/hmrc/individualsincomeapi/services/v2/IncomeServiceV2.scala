@@ -28,7 +28,7 @@ class LiveIncomeServiceV2 @Inject()(
   matchingConnector: IndividualsMatchingApiConnector,
   desConnector: DesConnector, // TODO - replace with IfConnector
   @Named("retryDelay") retryDelay: Int,
-  cache: PayeIncomeCache)
+  cache: PayeIncomeCacheService)
     extends IncomeServiceV2 {
 
   // TODO - to implement when we wire up the endpoints (See V1 for reference)

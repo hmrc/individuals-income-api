@@ -17,7 +17,6 @@
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
 import java.util.UUID
-
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.libs.json.Format
@@ -25,7 +24,6 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfigurationV2, ShortLivedCacheV2}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
-import uk.gov.hmrc.individualsincomeapi.util.CacheKeyHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -62,7 +60,7 @@ class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, val
 }
 
 @Singleton
-class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf: CacheConfigurationV2)
+class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf: CacheConfigurationV2)
     extends CacheServiceV2 {
 
   val key: String = conf.payeKey
@@ -76,18 +74,18 @@ class PayeIncomeCache @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf
 // read:scope-2 = [D, E, F]
 // The cache key (if two scopes alone) would be;
 // `id + from + to +  [A, B, C, D, E, F]` Or formatted to `id-from-to-ABCDEF`
-// We can base encode the fields to keep the key short
+// The `fields` param is obtained with scopeService.getValidFieldsForCacheKey(scopes: List[String])
 
-case class CacheId(matchId: UUID, interval: Interval, fields: String) extends CacheKeyHelper {
+case class PayeCacheIdV2(matchId: UUID, interval: Interval, fields: String) {
 
   lazy val id: String =
-    s"$matchId-${interval.getStart}-${interval.getEnd}-${encodeFields(fields)}"
+    s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
 
 }
 
-case class SaCacheId(nino: Nino, interval: TaxYearInterval, fields: String) extends CacheKeyHelper {
+case class SaCacheIdV2(nino: Nino, interval: TaxYearInterval, fields: String) {
 
-  lazy val id =
-    s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-${encodeFields(fields)}"
+  lazy val id: String =
+    s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
 
 }
