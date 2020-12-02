@@ -99,8 +99,10 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
 
       val fields = "ABDFH"
 
+      println("ACHI: " + PayeCacheIdV2(matchId, interval, fields).id)
+
       PayeCacheIdV2(matchId, interval, fields).id shouldBe
-        s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
+        s"$matchId-${interval.getStart}-${interval.getEnd}-ABDFH"
 
     }
 
@@ -113,10 +115,10 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
       val nino = Nino("NA000799C")
       val interval = TaxYearInterval(TaxYear("2015-16"), TaxYear("2016-17"))
 
-      val fields = "ABDFH"
+      val fields = "ABCDGK"
 
       SaCacheIdV2(nino, interval, fields).id shouldBe
-        s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
+        "NA000799C-2016-2017-ABCDGK"
 
     }
 
