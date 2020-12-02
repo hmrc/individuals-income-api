@@ -99,8 +99,6 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
 
       val fields = "ABDFH"
 
-      println("ACHI: " + PayeCacheIdV2(matchId, interval, fields).id)
-
       PayeCacheIdV2(matchId, interval, fields).id shouldBe
         s"$matchId-${interval.getStart}-${interval.getEnd}-ABDFH"
 
