@@ -36,13 +36,13 @@ trait CacheServiceV2 {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: String, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
-    if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId, key) flatMap {
+  def get[T: Format](cacheId: CacheIdV2, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
+    if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)
       case None =>
         fallbackFunction map { result =>
-          shortLivedCache.cache(cacheId, key, result)
+          shortLivedCache.cache(cacheId.id, key, result)
           result
         }
     } else {
@@ -76,14 +76,20 @@ class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, v
 // `id + from + to +  [A, B, C, D, E, F]` Or formatted to `id-from-to-ABCDEF`
 // The `fields` param is obtained with scopeService.getValidFieldsForCacheKey(scopes: List[String])
 
-case class PayeCacheIdV2(matchId: UUID, interval: Interval, fields: String) {
+trait CacheIdV2 {
+  val id: String
+
+  override def toString: String = id
+}
+
+case class PayeCacheIdV2(matchId: UUID, interval: Interval, fields: String) extends CacheIdV2 {
 
   lazy val id: String =
     s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
 
 }
 
-case class SaCacheIdV2(nino: Nino, interval: TaxYearInterval, fields: String) {
+case class SaCacheIdV2(nino: Nino, interval: TaxYearInterval, fields: String) extends CacheIdV2 {
 
   lazy val id: String =
     s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"

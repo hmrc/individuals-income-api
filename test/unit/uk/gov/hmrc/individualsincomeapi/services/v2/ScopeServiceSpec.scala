@@ -67,6 +67,12 @@ class ScopesServiceSpec extends UnitSpec with ScopesConfig with BeforeAndAfterEa
       result shouldBe "ABFCDEG"
     }
 
+    "get valid data items keys for multiple scopes including no match" in {
+      val result =
+        scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2, "not-exists"))
+      result shouldBe "ABFCDEG"
+    }
+
     "identity accesssible endpoints" in {
       val result = scopesService.getAccessibleEndpoints(List(mockScope3)).toList
       result.contains(mockEndpoint1) shouldBe true
