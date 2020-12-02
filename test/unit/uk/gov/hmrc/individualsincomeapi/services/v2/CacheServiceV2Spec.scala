@@ -116,7 +116,7 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
       val fields = "ABDFH"
 
       SaCacheIdV2(nino, interval, fields).id shouldBe
-        s"${nino.toString}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
+        s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
 
     }
 
