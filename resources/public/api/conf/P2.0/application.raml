@@ -23,3 +23,48 @@ uses:
   headers: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/headers.raml
   annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
+
+/individuals/income:
+  /:
+    get:
+      displayName: Get a list of available endpoints
+      description: Use this endpoint to get a list of available endpoints for Individuals Income.
+      is: [headers.acceptHeader]
+      (annotations.sandboxData): !include sandbox/root.md
+      (annotations.scope): "The scopes you have been assigned"
+      headers:
+        Authorization:
+          description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
+      queryParameters:
+        matchId:
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      responses:
+        200:
+          description: The resources available to view an individual's income
+          body:
+            application/json:
+              example: !include examples/root.json
+              type: !include schemas/root.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND

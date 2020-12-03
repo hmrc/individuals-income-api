@@ -1,0 +1,68 @@
+{
+  "_links": {
+    "self": {
+      "href": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "additionalInformation": {
+      "href": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "employments": {
+      "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "foreign": {
+      "href": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "interestsAndDividends": {
+      "href": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "other": {
+      "href": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "partnerships": {
+      "href": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "pensionsAndStateBenefits": {
+      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "selfEmployments": {
+      "href": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "summary": {
+      "href": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "trusts": {
+      "href": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    },
+    "ukProperties": {
+      "href": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+    }
+  },
+  "selfAssessment": {
+    "registrations": [
+      {
+        "utr": "2432552635",
+        "registrationDate": "2012-01-06"
+      }
+    ],
+    "taxReturns": [
+      {
+        "taxYear": "2014-15",
+        "submissions": [
+          {
+            "utr": "2432552635",
+            "receivedDate": "2015-10-06"
+          }
+        ]
+      },
+      {
+        "taxYear": "2013-14",
+        "submissions": [
+          {
+            "utr": "2432552635",
+            "receivedDate": "2014-06-06"
+          }
+        ]
+      }
+    ]
+  }
+}

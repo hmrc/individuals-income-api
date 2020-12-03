@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "SA other income",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI to this resource",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of self-assessments tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2013-14"
+              },
+              "other": {
+                "type": "array",
+                "description": "Other income for the tax year",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "The 10 digit self-assessment unique tax reference",
+                      "example": "2432552635"
+                    },
+                    "otherIncome": {
+                      "type": "number",
+                      "description": "Other income",
+                      "example": "26.70"
+                    }
+                  },
+                  "required": [
+                    "utr",
+                    "otherIncome"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "other"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}
