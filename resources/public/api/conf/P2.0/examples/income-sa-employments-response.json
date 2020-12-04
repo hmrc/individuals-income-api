@@ -1,7 +1,7 @@
 {
   "_links": {
     "self": {
-      "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+      "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&startYear=2018-19&endYear=2019-20"
     }
   },
   "selfAssessment": {
@@ -10,7 +10,6 @@
         "taxYear": "2014-15",
         "employments": [
           {
-            "utr": "2432552635",
             "employmentIncome": 0
           }
         ]
@@ -19,7 +18,6 @@
         "taxYear": "2013-14",
         "employments": [
           {
-            "utr": "2432552635",
             "employmentIncome": 5000
           }
         ]
