@@ -242,8 +242,325 @@ pre code {
       "href": "/individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
     }
   }
-}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.errorResponse</p><p><strong>Example</strong>:</p><div class="examples"><p><strong>BadRequest</strong>:<br>Invalid request</p><pre><code>{
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>BadRequest</strong>:<br>Invalid request</p><pre><code>{
   "code": "INVALID_REQUEST"
-}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.errorResponse</p><p><strong>Example</strong>:</p><div class="examples"><p><strong>NotFound</strong>:<br>Not found</p><pre><code>{
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>NotFound</strong>:<br>Not found</p><pre><code>{
   "code": "NOT_FOUND"
-}</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#individuals_income">/individuals/income</a></li></ul></div></div></div></div></body></html>
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_individuals_income_sa"><span class="parent">/individuals/income</span>/sa</a> <span class="methods"><a href="#individuals_income_sa_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_individuals_income_sa" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#individuals_income_sa_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>This endpoint returns an individual’s tax returns submission history for the requested time period. Where there are submissions to return, self-assessment registration information comprising the UTR and registration date, is included.</p><p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="individuals_income_sa_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/individuals/income</span>/sa</h4></div><div class="modal-body"><div class="alert alert-info"><p>This endpoint returns an individual’s tax returns submission history for the requested time period. Where there are submissions to return, self-assessment registration information comprising the UTR and registration date, is included.</p><p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b></b> with scopes:<ul><li>read:individuals-income-sa</li></ul></div><ul class="nav nav-tabs"><li class="active"><a href="#individuals_income_sa_get_request" data-toggle="tab">Request</a></li><li><a href="#individuals_income_sa_get_response" data-toggle="tab">Response</a></li><li><a href="#individuals_income_sa_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="individuals_income_sa_get_request"><h3>Annotations</h3><ul><li><strong>annotations.sandboxData</strong><pre><code>"<table>\n    <col width='\"25%\"'>\n    <col width='\"35%\"'>\n    <col width='\"40%\"'>\n    <thead>\n    <tr>\n        <th>Scenario</th>\n        <th>Parameters</th>\n        <th>Response</th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr>\n        <td><p>Happy path</p></td>\n        <td><p>matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430</p><p>fromTaxYear=2013-14</p><p>toTaxYear=2015-16</p></td>\n        <td><p>200 (OK)</p><p>Payload as response example above</p></td>\n    </tr>\n    <tr>\n        <td>Missing matchId</td>\n        <td>matchId query parameter missing</td>\n        <td><p>400 (Bad Request)</p>\n        <p>{ "code" : "INVALID_REQUEST",<br>"message" : "matchId is required" }</p>\n        </td>\n    </tr>\n    <tr>\n        <td>Missing fromTaxYear</td>\n        <td>fromTaxYear query parameter missing</td>\n        <td><p>400 (Bad Request)</p>\n        <p>{ "code" : "INVALID_REQUEST",<br>"message" : "fromTaxYear is required" }</p>\n        </td>\n    </tr>\n    <tr>\n         <td><p>toTaxYear earlier than fromTaxYear</p></td>\n         <td><p>e.g. fromTaxYear=2016-17 toTaxYear=2015-16</p></td>\n         <td><p>400 (Bad Request)</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "Invalid time period requested" }</p></td>\n    </tr>\n    <tr>\n         <td><p>toTaxYear later than the current tax year</p></td>\n         <td><p>e.g. fromTaxYear=2016-17 toTaxYear=2098-99</p></td>\n         <td><p>400 (Bad Request)</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "toTaxYear is later than the current tax year" }</p></td>\n    </tr>\n    <tr>\n         <td>From tax year requested is earlier than current tax year minus 6</td>\n         <td><p>e.g. fromTaxYear=2008-09</p>\n         </td>\n         <td>\n           <p>400 (Bad Request)</p>\n           <p>{ "code" : "INVALID_REQUEST",<br>"message" : "fromTaxYear earlier than maximum allowed" }</p>\n         </td>\n    </tr>\n    <tr>\n         <td><p>Invalid tax year format</p></td>\n         <td><p>Any tax year that is not in the format YYYY-YY</p>\n         <p>e.g. 2017-2018</p></td>\n         <td><p>400 (Bad Request)</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "fromTaxYear: invalid tax year format" }</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "toTaxYear: invalid tax year format" }</p></td>\n    </tr>\n    <tr>\n        <td><p>Incorrect matchId</p></td>\n        <td><p>The matchId is not valid</p></td>\n        <td><p>404 (Not Found)</p>\n        <p>{ "code" : "NOT_FOUND",<br>"message" : "The resource cannot be found" }</p></td>\n    </tr>\n    </tbody>\n</table>"</code></pre></li><li><strong>annotations.scope</strong><pre><code>"read:individuals-income-sa"</code></pre></li></ul><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em><span class="required">required</span>(string)</em><p>OAuth 2.0 Bearer Token with the read:individuals-income-sa scope.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>Bearer &lt;BEARER_TOKEN&gt;</code></pre></div></li><li><strong>Accept</strong>: <em><span class="required">required</span>(string)</em><p>Specifies the response format and the <a href="/api-documentation/docs/reference-guide#versioning">version</a> of the API to be used.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>application/vnd.hmrc.1.0+json</code></pre></div></li></ul><h3>Query Parameters</h3><ul><li><strong>matchId</strong>: <em><span class="required">required</span>(string)</em><p>A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>57072660-1df9-4aeb-b4ea-cd2d7f96e430</code></pre></div></li><li><strong>fromTaxYear</strong>: <em><span class="required">required</span>(string)</em><p>The tax year from which data is requested</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>2013-14</code></pre></div></li><li><strong>toTaxYear</strong>: <em>(string)</em><p>The tax year until when data is requested; if absent it defaults to the current tax year</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>2015-16</code></pre></div></li></ul></div><div class="tab-pane" id="individuals_income_sa_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>The individual SA income for the given period</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>:</p><pre><code>{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "SA History",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI to this resource",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "additionalInformation": {
+          "type": "object",
+          "description": "Additional information",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "employments": {
+          "type": "object",
+          "description": "The income from employments",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "foreign": {
+          "type": "object",
+          "description": "The foreign income",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "interestsAndDividends": {
+          "type": "object",
+          "description": "The income from interests and dividends",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "other": {
+          "type": "object",
+          "description": "Other income",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "partnerships": {
+          "type": "object",
+          "description": "The income from partnerships",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "pensionsAndStateBenefits": {
+          "type": "object",
+          "description": "The income from pensions and state benefits",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/pensions-and-state-benefits  ?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "selfEmployments": {
+          "type": "object",
+          "description": "The income from self-employments",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "summary": {
+          "type": "object",
+          "description": "The self-assessment income summary",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "trusts": {
+          "type": "object",
+          "description": "The income from trusts",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "ukProperties": {
+          "type": "object",
+          "description": "The income from UK properties",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self", "additionalInformation", "employments", "foreign", "interestsAndDividends", "other", "partnerships", "pensionsAndStateBenefits", "selfEmployments", "summary", "trusts", "ukProperties"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "registrations": {
+          "type": "array",
+          "description": "Self-assessment registrations",
+          "items": {
+            "type": "object",
+            "properties": {
+              "utr": {
+                "type": "string",
+                "description": "The 10 digit self-assessment unique tax reference",
+                "example": "2432552635"
+              },
+              "registrationDate": {
+                "type": "string",
+                "description": "Self-assessment registration date",
+                "example": "2012-01-06"
+              }
+            },
+            "required": [
+              "utr"
+            ]
+          }
+        },
+        "taxReturns": {
+          "type": "array",
+          "description": "List of self-assessments tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2015-16"
+              },
+              "submissions": {
+                "type": "array",
+                "description": "Tax return submissions for the year",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "The 10 digit self-assessment unique tax reference",
+                      "example": "2432552635"
+                    },
+                    "receivedDate": {
+                      "type": "string",
+                      "description": "Tax return received date",
+                      "example": "2014-06-06"
+                    }
+                  },
+                  "required": [
+                    "utr"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "submissions"
+            ]
+          }
+        }
+      },
+      "required": [
+        "registrations",
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}
+</code></pre><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_links": {
+    "self": {
+      "href": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "additionalInformation": {
+      "href": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "employments": {
+      "href": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "foreign": {
+      "href": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "interestsAndDividends": {
+      "href": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "other": {
+      "href": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "partnerships": {
+      "href": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "pensionsAndStateBenefits": {
+      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "selfEmployments": {
+      "href": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "summary": {
+      "href": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "trusts": {
+      "href": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    },
+    "ukProperties": {
+      "href": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;fromTaxYear=2013-14&amp;toTaxYear=2015-16"
+    }
+  },
+  "selfAssessment": {
+    "registrations": [
+      {
+        "utr": "2432552635",
+        "registrationDate": "2012-01-06"
+      }
+    ],
+    "taxReturns": [
+      {
+        "taxYear": "2014-15",
+        "submissions": [
+          {
+            "utr": "2432552635",
+            "receivedDate": "2015-10-06"
+          }
+        ]
+      },
+      {
+        "taxYear": "2013-14",
+        "submissions": [
+          {
+            "utr": "2432552635",
+            "receivedDate": "2014-06-06"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>BadRequest</strong>:<br>Invalid request</p><pre><code>{
+  "code": "INVALID_REQUEST"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>NotFound</strong>:<br>Not found</p><pre><code>{
+  "code": "NOT_FOUND"
+}</code></pre></div></div><div class="tab-pane" id="individuals_income_sa_get_securedby"><h1>Secured by</h1></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#individuals_income">/individuals/income</a></li></ul></div></div></div></div></body></html>

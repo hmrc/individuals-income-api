@@ -11,8 +11,8 @@
     </thead>
     <tbody>
     <tr>
-        <td><p>Happy path</p></td>
-        <td><p>matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430</p><p>fromTaxYear=2013-14</p><p>toTaxYear=2015-16</p></td>
+        <td><p>Self Assessment data found</p></td>
+        <td><p>&lt;obtained from Individuals Matching API. example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>fromTaxYear=2013-14</p><p>toTaxYear=2015-16</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
@@ -23,27 +23,27 @@
         </td>
     </tr>
     <tr>
-        <td>Missing fromTaxYear</td>
-        <td>fromTaxYear query parameter missing</td>
+        <td>Missing startYear</td>
+        <td>startYear query parameter missing</td>
         <td><p>400 (Bad Request)</p>
-        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear is required&quot; }</p>
+        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;startYear is required&quot; }</p>
         </td>
     </tr>
     <tr>
-         <td><p>toTaxYear earlier than fromTaxYear</p></td>
-         <td><p>e.g. fromTaxYear=2016-17 toTaxYear=2015-16</p></td>
+         <td><p>endYear earlier than startYear</p></td>
+         <td><p>Any valid dates where endYear is earlier than startYear. For example, startYear=2016-17 endYear=2015-16</p></td>
          <td><p>400 (Bad Request)</p>
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Invalid time period requested&quot; }</p></td>
     </tr>
     <tr>
-         <td><p>toTaxYear later than the current tax year</p></td>
-         <td><p>e.g. fromTaxYear=2016-17 toTaxYear=2098-99</p></td>
+         <td><p>endYear later than the current tax year</p></td>
+         <td><p>For example, startYear=2016-17 endYear=2098-99</p></td>
          <td><p>400 (Bad Request)</p>
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear is later than the current tax year&quot; }</p></td>
     </tr>
     <tr>
-         <td>From tax year requested is earlier than current tax year minus 6</td>
-         <td><p>e.g. fromTaxYear=2008-09</p>
+         <td>startYear earlier than the current tax year minus 6</td>
+         <td><p>For example, fromTaxYear=2008-09</p>
          </td>
          <td>
            <p>400 (Bad Request)</p>
@@ -53,7 +53,7 @@
     <tr>
          <td><p>Invalid tax year format</p></td>
          <td><p>Any tax year that is not in the format YYYY-YY</p>
-         <p>e.g. 2017-2018</p></td>
+         <p>For example, 2017-2018</p></td>
          <td><p>400 (Bad Request)</p>
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear: invalid tax year format&quot; }</p>
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear: invalid tax year format&quot; }</p></td>
