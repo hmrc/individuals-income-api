@@ -39,7 +39,7 @@
               "taxYear": {
                 "type": "string",
                 "description": "Tax year",
-                "example": "2013-14"
+                "example": "2018-19"
               },
               "employments": {
                 "type": "array",
