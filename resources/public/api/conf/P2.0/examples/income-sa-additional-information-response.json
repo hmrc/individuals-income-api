@@ -1,26 +1,24 @@
 {
   "_links": {
     "self": {
-      "href": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+      "href": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startDate,endDate}"
     }
   },
   "selfAssessment": {
     "taxReturns": [
       {
-        "taxYear": "2014-15",
+        "taxYear": "2018-19",
         "additionalInformation": [
           {
-            "utr": "2432552635",
             "gainsOnLifePolicies": 0,
             "sharesOptionsIncome": 0
           }
         ]
       },
       {
-        "taxYear": "2013-14",
+        "taxYear": "2019-20",
         "additionalInformation": [
           {
-            "utr": "2432552635",
             "gainsOnLifePolicies": 44.54,
             "sharesOptionsIncome": 52.34
           }

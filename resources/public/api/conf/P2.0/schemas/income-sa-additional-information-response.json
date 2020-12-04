@@ -1,10 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "SA additional information",
+  "description": "The individual’s Self Assessment additional information (SA101) for a requested time period",
   "type": "object",
   "properties": {
     "_links": {
       "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
       "properties": {
         "self": {
           "type": "object",
@@ -12,7 +13,8 @@
           "properties": {
             "href": {
               "type": "string",
-              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
             }
           },
           "required": [
@@ -26,10 +28,11 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "The individual’s Self Assessment additional information (SA101) for a requested time period",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of self-assessments tax returns in the requested period",
+          "description": "List of Self Assessment tax returns in the requested period",
           "items": {
             "type": "object",
             "properties": {
@@ -44,11 +47,6 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "utr": {
-                      "type": "string",
-                      "description": "The 10 digit self-assessment unique tax reference",
-                      "example": "2432552635"
-                    },
                     "gainsOnLifePolicies": {
                       "type": "number",
                       "description": "Gains on life policies",
@@ -61,7 +59,6 @@
                     }
                   },
                   "required": [
-                    "utr",
                     "gainsOnLifePolicies",
                     "sharesOptionsIncome"
                   ]
