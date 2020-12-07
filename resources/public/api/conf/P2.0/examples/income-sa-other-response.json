@@ -1,25 +1,23 @@
 {
   "_links": {
     "self": {
-      "href": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+      "href": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&startYear=2018-19&endYear=2018-19"
     }
   },
   "selfAssessment": {
     "taxReturns": [
       {
-        "taxYear": "2014-15",
+        "taxYear": "2018-19",
         "other": [
           {
-            "utr": "2432552635",
             "otherIncome": 0
           }
         ]
       },
       {
-        "taxYear": "2013-14",
+        "taxYear": "2019-20",
         "other": [
           {
-            "utr": "2432552635",
             "otherIncome": 26.70
           }
         ]
