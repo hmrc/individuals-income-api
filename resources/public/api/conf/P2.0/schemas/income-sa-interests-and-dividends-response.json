@@ -1,17 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "SA interests and dividends income",
+  "description": "Interest and dividends income data Self Assessment",
   "type": "object",
   "properties": {
     "_links": {
       "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
       "properties": {
         "self": {
           "type": "object",
-          "description": "The URI to this resource",
+          "description": "The Unique Resource Identifier (URI) for this endpoint. ",
           "properties": {
             "href": {
               "type": "string",
+              "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
             }
           },
@@ -26,29 +28,25 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "Interest and dividends income data Self Assessment",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of self-assessments tax returns in the requested period",
+          "description": "List of Self Assessment tax returns in the requested period",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
                 "description": "Tax year",
-                "example": "2013-14"
+                "example": "2018-19"
               },
               "interestsAndDividends": {
                 "type": "array",
-                "description": "Interests and dividends income for the tax year",
+                "description": "Interests and dividends income for the requested tax year",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "utr": {
-                      "type": "string",
-                      "description": "The 10 digit self-assessment unique tax reference",
-                      "example": "2432552635"
-                    },
                     "ukInterestsIncome": {
                       "type": "number",
                       "description": "UK interests received before tax",
@@ -66,7 +64,6 @@
                     }
                   },
                   "required": [
-                    "utr",
                     "ukInterestsIncome",
                     "foreignDividendsIncome",
                     "ukDividendsIncome"

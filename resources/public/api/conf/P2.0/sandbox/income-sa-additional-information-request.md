@@ -12,7 +12,7 @@
     <tbody>
     <tr>
         <td><p>Additional information data found</p></td>
-        <td><p>&lt;obtained from Individuals Matching API. example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>fromTaxYear=2013-14</p><p>toTaxYear=2015-16</p></td>
+        <td><p>&lt;obtained from Individuals Matching API. example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>fromTaxYear=2018-19</p><p>toTaxYear=2019-20</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>

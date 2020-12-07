@@ -1,16 +1,15 @@
 {
   "_links": {
     "self": {
-      "href": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+      "href": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&startYear=2018-19&endYear=2019-20"
     }
   },
   "selfAssessment": {
     "taxReturns": [
       {
-        "taxYear": "2014-15",
+        "taxYear": "2018-19",
         "interestsAndDividends": [
           {
-            "utr": "2432552635",
             "ukInterestsIncome": 0,
             "foreignDividendsIncome": 0,
             "ukDividendsIncome": 0
@@ -18,10 +17,9 @@
         ]
       },
       {
-        "taxYear": "2013-14",
+        "taxYear": "2019-20",
         "interestsAndDividends": [
           {
-            "utr": "2432552635",
             "ukInterestsIncome": 12.46,
             "foreignDividendsIncome": 25.86,
             "ukDividendsIncome": 657.89
