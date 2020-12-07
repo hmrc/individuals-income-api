@@ -9,7 +9,7 @@
       "properties": {
         "self": {
           "type": "object",
-          "description": "The Unique Resource Identifier (URI) for this endpoint. ",
+          "description": "The Unique Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",

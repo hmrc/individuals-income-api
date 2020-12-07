@@ -1379,7 +1379,7 @@ pre code {
       "properties": {
         "self": {
           "type": "object",
-          "description": "The Unique Resource Identifier (URI) for this endpoint. ",
+          "description": "The Unique Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
@@ -1473,6 +1473,111 @@ pre code {
   }
 }
 </code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>BadRequest</strong>:<br>Invalid request</p><pre><code>{
+  "code": "INVALID_REQUEST"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>NotFound</strong>:<br>Not found</p><pre><code>{
+  "code": "NOT_FOUND"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_individuals_income_sa_summary"><span class="parent">/individuals/income</span>/sa/summary</a> <span class="methods"><a href="#individuals_income_sa_summary_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_individuals_income_sa_summary" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#individuals_income_sa_summary_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Use this endpoint to get an individual’s Self Assessment summary for a requested time period.</p><p>The startYear and endYear are inclusive, so the data returned is for the time period that includes the startYear and endYear.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="individuals_income_sa_summary_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/individuals/income</span>/sa/summary</h4></div><div class="modal-body"><div class="alert alert-info"><p>Use this endpoint to get an individual’s Self Assessment summary for a requested time period.</p><p>The startYear and endYear are inclusive, so the data returned is for the time period that includes the startYear and endYear.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#individuals_income_sa_summary_get_request" data-toggle="tab">Request</a></li><li><a href="#individuals_income_sa_summary_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="individuals_income_sa_summary_get_request"><h3>Annotations</h3><ul><li><strong>annotations.sandboxData</strong><pre><code>"<table>\n    <col width='\"25%\"'>\n    <col width='\"35%\"'>\n    <col width='\"40%\"'>\n    <thead>\n    <tr>\n        <th>Scenario</th>\n        <th>Parameters</th>\n        <th>Response</th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr>\n        <td><p>Self Assessment summary found</p></td>\n        <td><p>&lt;obtained from Individuals Matching API. example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>startYear=2018-18</p><p>endYear=2019-20</p></td>\n        <td><p>200 (OK)</p><p>Payload as response example above</p></td>\n    </tr>\n    <tr>\n        <td>Missing matchId</td>\n        <td>matchId query parameter missing</td>\n        <td><p>400 (Bad Request)</p>\n        <p>{ "code" : "INVALID_REQUEST",<br>"message" : "matchId is required" }</p>\n        </td>\n    </tr>\n    <tr>\n        <td>Missing startYear</td>\n        <td>startYear query parameter missing</td>\n        <td><p>400 (Bad Request)</p>\n        <p>{ "code" : "INVALID_REQUEST",<br>"message" : "startYear is required" }</p>\n        </td>\n    </tr>\n    <tr>\n         <td><p>endYear earlier than startYear</p></td>\n         <td><p>Any valid dates where endYear is earlier than startYear. For example, startYear=2018-19 endYear=2019-20</p></td>\n         <td><p>400 (Bad Request)</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "Invalid time period requested" }</p></td>\n    </tr>\n    <tr>\n         <td><p>endYear later than the current tax year</p></td>\n         <td><p>For example, startYear=2016-17 endYear=2098-99</p></td>\n         <td><p>400 (Bad Request)</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "endYear is later than the current tax year" }</p></td>\n    </tr>\n    <tr>\n         <td>startYear earlier than the current tax year minus 6</td>\n         <td><p>For example, startYear=2008-09</p>\n         </td>\n         <td>\n           <p>400 (Bad Request)</p>\n           <p>{ "code" : "INVALID_REQUEST",<br>"message" : "startYear earlier than maximum allowed" }</p>\n         </td>\n    </tr>\n    <tr>\n         <td><p>Invalid tax year format</p></td>\n         <td><p>Any tax year that is not in the format YYYY-YY</p>\n         <p>For example, 2017-2018</p></td>\n         <td><p>400 (Bad Request)</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "startYear: invalid tax year format" }</p>\n         <p>{ "code" : "INVALID_REQUEST",<br>"message" : "endYear: invalid tax year format" }</p></td>\n    </tr>\n    <tr>\n        <td><p>Incorrect matchId</p></td>\n        <td><p>The matchId is not valid</p></td>\n        <td><p>404 (Not Found)</p>\n        <p>{ "code" : "NOT_FOUND",<br>"message" : "The resource cannot be found" }</p></td>\n    </tr>\n    </tbody>\n</table>"</code></pre></li><li><strong>annotations.scope</strong><pre><code>"The scopes you have been assigned"</code></pre></li></ul><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em><span class="required">required</span>(string)</em><p>An OAuth 2.0 Bearer Token with the scopes you have been assigned.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>Bearer &lt;BEARER_TOKEN&gt;</code></pre></div></li><li><strong>Accept</strong>: <em><span class="required">required</span>(string)</em><p>Specifies the response format and the <a href="/api-documentation/docs/reference-guide#versioning">version</a> of the API to be used.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>application/vnd.hmrc.1.0+json</code></pre></div></li></ul><h3>Query Parameters</h3><ul><li><strong>matchId</strong>: <em><span class="required">required</span>(string)</em><p>A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>57072660-1df9-4aeb-b4ea-cd2d7f96e430</code></pre></div></li><li><strong>startYear</strong>: <em><span class="required">required</span>(string)</em><p>The first tax year to be included in the dataset requested.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>2018-19</code></pre></div></li><li><strong>endYear</strong>: <em>(string)</em><p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>2019-20</code></pre></div></li></ul></div><div class="tab-pane" id="individuals_income_sa_summary_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>The individual&#39;s Self Assessment tax returns summary for the given period</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>:</p><pre><code>{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The individual&#39;s Self Assessment tax returns summary for the given period",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Unique Resource Identifier (URI) for this endpoint.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint",
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&amp;fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of summaries of Self Assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2018-19"
+              },
+              "summary": {
+                "type": "array",
+                "description": "Tax return summary for the year",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "totalIncome": {
+                      "type": "number",
+                      "description": "Income from self employment",
+                      "example": "30000"
+                    }
+                  },
+                  "required": [
+                    "totalIncome"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "summary"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}
+</code></pre><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_links": {
+    "self": {"href": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&amp;startYear=2018-19&amp;endYear=2019-20"}
+  },
+  "selfAssessment": {
+    "taxReturns": [
+      {
+        "taxYear": "2018-19",
+        "summary": [
+          {
+            "totalIncome": 0
+          }
+        ]
+      },
+      {
+        "taxYear": "2019-20",
+        "summary": [
+          {
+            "totalIncome": 30000
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>BadRequest</strong>:<br>Invalid request</p><pre><code>{
   "code": "INVALID_REQUEST"
 }</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>code</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><p><strong>NotFound</strong>:<br>Not found</p><pre><code>{
   "code": "NOT_FOUND"
