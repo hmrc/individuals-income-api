@@ -1,18 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "SA trusts income",
+  "description": "The individual's trusts income from Self Assessment",
   "type": "object",
   "properties": {
     "_links": {
       "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
       "properties": {
         "self": {
           "type": "object",
-          "description": "The URI to this resource",
+          "description": "The Unique Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
-              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16"
+              "description": "The URL of the endpoint",
+              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
             }
           },
           "required": [
@@ -29,14 +31,14 @@
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of self-assessments tax returns in the requested period",
+          "description": "List of Self Assessment tax returns in the requested period",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
                 "description": "Tax year",
-                "example": "2013-14"
+                "example": "2018-19"
               },
               "trusts": {
                 "type": "array",
@@ -44,11 +46,6 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "utr": {
-                      "type": "string",
-                      "description": "The 10 digit self-assessment unique tax reference",
-                      "example": "2432552635"
-                    },
                     "trustIncome": {
                       "type": "number",
                       "description": "Trust income",
@@ -56,7 +53,6 @@
                     }
                   },
                   "required": [
-                    "utr",
                     "trustIncome"
                   ]
                 }
