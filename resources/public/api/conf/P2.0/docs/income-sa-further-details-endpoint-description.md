@@ -1,0 +1,2 @@
+<p>Use this endpoint to get further Self Assessment income details for an individual for a requested time period. This includes business expenses, and tax and National Insurance on Self Assessment income.</p>
+<p>The startYear and endYear are inclusive, so the data returned is for the time period that includes the startYear and endYear.</p>
