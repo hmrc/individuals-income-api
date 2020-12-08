@@ -68,6 +68,7 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
+
   /sa:
     get:
       displayName: Get Self Assessment history
@@ -121,6 +122,61 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
+
+  /paye:
+    get:
+      displayName: Get PAYE income history
+      description: !include docs/income-endpoint-description.md
+      is: [headers.acceptHeader]
+      (annotations.sandboxData): !include sandbox/income-request.md
+      (annotations.scope): "The scopes you have been assigned"
+      headers:
+        Authorization:
+          description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+          type: string
+          required: true
+          example: Bearer <BEARER_TOKEN>
+      queryParameters:
+        matchId:
+          description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        startDate:
+          description: The start date for data requested.
+          type: string
+          required: true
+          example: 2018-01-01
+        endDate:
+          description: The end date for data requested. If missing, it defaults to today's date.
+          type: string
+          required: false
+          example: 2019-01-01
+      responses:
+        200:
+          description: The individual PAYE income for the given period
+          body:
+            application/json:
+              example: !include examples/income-response.json
+              type: !include schemas/income-response.json
+        400:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        404:
+          body:
+            application/json:
+              type: types.errorResponse
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+
   /sa/additional-information:
       get:
         displayName: Get additional information from Self Assessment
