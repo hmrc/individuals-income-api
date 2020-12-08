@@ -38,32 +38,55 @@
                 "description": "Employer PAYE Reference",
                 "example": "123/AI45678"
               },
-              "taxablePayment": {
-                "type": "number",
-                "description": "Includes pay, wages, salaries, fees, overtime, bonuses, commission, pension income from registered schemes, employer-financed retirement benefits, statutory payments and payrolled benefits in kind",
-                "example": "1000.50"
+              "taxYear": {
+                "type": "string",
+                "description": "The tax year of submission, format YY-YY.",
+                "example": "2018-19"
+              },
+              "employee": {
+                "description": "A collection of properties related to the employee in the submission",
+                "type": "object",
+                "properties": {
+                  "hasPartner": {
+                    "type": "boolean",
+                    "description": "Will only be true if the partner object is present",
+                    "example": "true"
+                  }
+                }
+              },
+              "payroll": {
+                "description": "Properties relevant to the employee's payroll",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Identifier assigned by the employer to the individual. Pattern: ^[^ ].{0,34}$",
+                    "example": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+                  }
+                }
+              },
+              "payFrequency": {
+                "description": "The frequency of payments. W1 Weekly, W2 Fortnightly, W4 Four weekly, M1 Monthly, M3 Quarterly, M6 Bi-annually, MA Annually, IO One off, IR Irregular",
+                "type": "string",
+                "example": "W1"
+              },
+              "weeklyPayNumber": {
+                "description": "If paid weekly, the period number. Range 1 - 54, and 56. Pattern: ^([1-9]|[1-4][0-9]|5[0-46])$",
+                "type": "string",
+                "example": "1"
+              },
+              "monthlyPayNumber": {
+                "description": "If paid monthly, the period number. Range 1 - 12. Pattern: ^([1-9]|1[0-2])$",
+                "type": "string",
+                "example": "12"
               },
               "paymentDate": {
                 "type": "string",
                 "format": "date",
                 "description": "Payment date",
                 "example": "2016-02-28"
-              },
-              "weekPayNumber": {
-                "type": "number",
-                "description": "The number corresponding to the week the payment was made. As pay dates may not align with calendar weeks, the range of permitted values is 1 through to 54 (inclusive), and 56",
-                "example": "45"
-              },
-              "monthPayNumber": {
-                "type": "number",
-                "description": "The number between 1 and 12, corresponding to the month the payment was made. As the tax year starts in April, so does the monthPayNumber, with 1 corresponding to April",
-                "example": "10"
               }
-            },
-            "required": [
-              "taxablePayment",
-              "paymentDate"
-            ]
+            }
           }
         }
       },
