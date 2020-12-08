@@ -12,7 +12,7 @@
     <tbody>
     <tr>
         <td><p>Foreign income data found</p></td>
-        <td><p>&lt;obtained from Individuals Matching API. example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>startYear=2018-19</p><p>endYear=2019-20</p></td>
+        <td><p>matchId=&lt;obtained from Individuals Matching API. example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>startYear=2018-19</p><p>endYear=2019-20</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
