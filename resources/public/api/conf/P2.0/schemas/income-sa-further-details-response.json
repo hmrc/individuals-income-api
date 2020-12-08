@@ -42,18 +42,18 @@
               },
               "further-details": {
                 "type": "array",
-                "description": "Further details for income from Self Assessment for the tax year",
+                "description": "Further details for income from Self Assessment for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {
                     "busStartDate": {
-                      "description": "Start date in the format YYYY-MM-DD",
+                      "description": "Business start date in the format YYYY-MM-DD",
                       "type": "string",
                       "format": "date",
                       "example": "2020-08-18"
                     },
                     "busEndDate": {
-                      "description": "End date in the format YYYY-MM-DD",
+                      "description": "Business end date in the format YYYY-MM-DD",
                       "type": "string",
                       "example": "2020-12-01"
                     },

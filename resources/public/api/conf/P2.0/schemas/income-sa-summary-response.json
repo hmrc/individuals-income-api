@@ -42,7 +42,7 @@
               },
               "summary": {
                 "type": "array",
-                "description": "Tax return summary for the year",
+                "description": "Tax return summary for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

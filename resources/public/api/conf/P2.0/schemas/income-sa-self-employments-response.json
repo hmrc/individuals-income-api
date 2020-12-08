@@ -42,7 +42,7 @@
               },
               "selfEmployments": {
                 "type": "array",
-                "description": "Self-employments for the tax year",
+                "description": "Self-employments for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

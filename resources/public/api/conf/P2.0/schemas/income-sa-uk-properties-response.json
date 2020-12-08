@@ -42,7 +42,7 @@
               },
               "ukProperties": {
                 "type": "array",
-                "description": "Income from UK properties for the tax year",
+                "description": "Income from UK properties for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

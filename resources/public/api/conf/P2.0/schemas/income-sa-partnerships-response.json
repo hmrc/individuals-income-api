@@ -42,7 +42,7 @@
               },
               "partnerships": {
                 "type": "array",
-                "description": "Partnerships income for the tax year",
+                "description": "Partnerships income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

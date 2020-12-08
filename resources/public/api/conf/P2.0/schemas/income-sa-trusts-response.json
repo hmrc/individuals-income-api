@@ -42,13 +42,13 @@
               },
               "trusts": {
                 "type": "array",
-                "description": "Trusts income for the tax year",
+                "description": "Trusts income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {
                     "trustIncome": {
                       "type": "number",
-                      "description": "Trust income",
+                      "description": "Income from trusts",
                       "example": "2143.32"
                     }
                   },

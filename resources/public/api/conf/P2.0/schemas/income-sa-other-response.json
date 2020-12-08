@@ -42,7 +42,7 @@
               },
               "other": {
                 "type": "array",
-                "description": "Other income for the tax year",
+                "description": "Other income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

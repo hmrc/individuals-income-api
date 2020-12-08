@@ -43,7 +43,7 @@
               },
               "additionalInformation": {
                 "type": "array",
-                "description": "Additional information for the tax year",
+                "description": "Additional information for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

@@ -43,7 +43,7 @@
               },
               "employments": {
                 "type": "array",
-                "description": "Employments income for the tax year",
+                "description": "Employments income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

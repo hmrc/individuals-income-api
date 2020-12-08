@@ -43,7 +43,7 @@
               },
               "interestsAndDividends": {
                 "type": "array",
-                "description": "Interests and dividends income for the requested tax year",
+                "description": "Interests and dividends income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

@@ -43,7 +43,7 @@
               },
               "foreign": {
                 "type": "array",
-                "description": "Foreign income for the tax year",
+                "description": "Foreign income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {

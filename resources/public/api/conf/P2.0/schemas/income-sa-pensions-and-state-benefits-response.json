@@ -42,13 +42,13 @@
               },
               "pensionsAndStateBenefits": {
                 "type": "array",
-                "description": "Pensions and state benefits income for the tax year",
+                "description": "Pensions and state benefits income for the requested period",
                 "items": {
                   "type": "object",
                   "properties": {
                     "totalIncome": {
                       "type": "number",
-                      "description": "Income from pensions and state benefits",
+                      "description": "Total income from pensions and state benefits",
                       "example": "52.79"
                     }
                   },

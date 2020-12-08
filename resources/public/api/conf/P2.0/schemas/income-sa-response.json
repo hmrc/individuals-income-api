@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "The individual SA income for the given period",
+  "description": "The individual's SA income for the given period",
   "type": "object",
   "properties": {
     "_links": {
@@ -112,7 +112,7 @@
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/pensions-and-state-benefits  ?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
             }
           },
           "required": [
@@ -177,7 +177,7 @@
         },
         "incomeSources": {
           "type": "object",
-          "description": "Income sources.",
+          "description": "The URI for the endpoint to get income sources.",
           "properties": {
             "href": {
               "type": "string",

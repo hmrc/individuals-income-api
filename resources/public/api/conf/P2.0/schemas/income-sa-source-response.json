@@ -42,7 +42,7 @@
               },
               "sources": {
                 "type": "array",
-                "description": "description and address for each income source, if known",
+                "description": "Description and address for each income source, if known",
                 "items": {
                   "type": "object",
                   "properties": {
