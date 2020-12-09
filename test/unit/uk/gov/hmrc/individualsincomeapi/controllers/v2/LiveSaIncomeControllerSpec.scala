@@ -29,7 +29,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.services.v2.LiveSaIncomeServiceV2
+import uk.gov.hmrc.individualsincomeapi.services.v2.LiveSaIncomeService
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
@@ -49,7 +49,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
 
   trait Setup {
     val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
-    val mockLiveSaIncomeService: LiveSaIncomeServiceV2 = mock[LiveSaIncomeServiceV2]
+    val mockLiveSaIncomeService: LiveSaIncomeService = mock[LiveSaIncomeService]
     lazy val scopeService: ScopesService = mock[ScopesService]
 
     val liveSaIncomeController =

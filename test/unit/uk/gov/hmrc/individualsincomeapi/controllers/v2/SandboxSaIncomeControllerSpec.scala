@@ -29,7 +29,7 @@ import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.services.v2.SandboxSaIncomeServiceV2
+import uk.gov.hmrc.individualsincomeapi.services.v2.SandboxSaIncomeService
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
@@ -48,7 +48,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
   trait Setup {
-    val mockSandboxSaIncomeService: SandboxSaIncomeServiceV2 = mock[SandboxSaIncomeServiceV2]
+    val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
     val mockAuthConnector = fakeAuthConnector(Future.successful(enrolments))
     lazy val scopeService: ScopesService = mock[ScopesService]
     val sandboxSaIncomeController =

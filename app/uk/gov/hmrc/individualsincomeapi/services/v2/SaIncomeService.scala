@@ -19,24 +19,26 @@ package uk.gov.hmrc.individualsincomeapi.services.v2
 import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 
-trait IncomeServiceV2 {
+trait SaIncomeService {
+
   // TODO - to implement when we wire up the endpoints (See V1 for reference)
+
 }
 
 @Singleton
-class LiveIncomeServiceV2 @Inject()(
+class SandboxSaIncomeService extends SaIncomeService {
+
+  // TODO - to implement when we wire up the endpoints (See V1 for reference)
+
+}
+
+@Singleton
+class LiveSaIncomeService @Inject()(
   matchingConnector: IndividualsMatchingApiConnector,
   desConnector: DesConnector, // TODO - replace with IfConnector
-  @Named("retryDelay") retryDelay: Int,
-  cache: PayeIncomeCache)
-    extends IncomeServiceV2 {
-
-  // TODO - to implement when we wire up the endpoints (See V1 for reference)
-
-}
-
-@Singleton
-class SandboxIncomeServiceV2 extends IncomeServiceV2 {
+  saIncomeCacheService: SaIncomeCacheService,
+  @Named("retryDelay") retryDelay: Int)
+    extends SaIncomeService {
 
   // TODO - to implement when we wire up the endpoints (See V1 for reference)
 

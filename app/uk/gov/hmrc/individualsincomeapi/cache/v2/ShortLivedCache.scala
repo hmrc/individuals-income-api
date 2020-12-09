@@ -28,8 +28,8 @@ import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShortLivedCacheV2 @Inject()(
-  val cacheConfig: CacheConfigurationV2,
+class ShortLivedCache @Inject()(
+  val cacheConfig: CacheConfiguration,
   configuration: Configuration,
   mongo: ReactiveMongoComponent)(implicit ec: ExecutionContext)
     extends CacheMongoRepository(
@@ -69,7 +69,7 @@ class ShortLivedCacheV2 @Inject()(
 }
 
 @Singleton
-class CacheConfigurationV2 @Inject()(configuration: Configuration) {
+class CacheConfiguration @Inject()(configuration: Configuration) {
 
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](
