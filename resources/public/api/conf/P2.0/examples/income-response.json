@@ -18,19 +18,19 @@
         "payFrequency": "W4",
         "weeklyPayNumber": "2",
         "paymentDate": "2006-02-27",
-        "paidHoursWorked": "36",
+        "paidHoursWorked": "35",
         "taxCode": "K971",
         "taxablePayToDate": 19157.5,
         "totalTaxToDate": 3095.89,
         "taxablePayment": 16533.95,
         "taxDeductedOrRefunded": 159228.49,
+        "dednsFromNetPay": 198035.8,
         "employeePensionContribs": {
           "paidYTD": 169731.51,
           "notPaidYTD": 173987.07,
           "paid": 822317.49,
           "notPaid": 818841.65
         },
-        "dednsFromNetPay": 198035.8,
         "statutoryPayYTD": {
           "maternity": 628562.9,
           "paternity": 98600.58,
@@ -41,7 +41,7 @@
           "inPayPeriod1": 995979.04,
           "inPayPeriod2": 606456.38,
           "inPayPeriod3": 797877.34,
-          "inPayPeriod4": 166334.69,
+          "inPayPeriod4": 166334.69
         },
         "totalEmployerNICs": {
           "inPayPeriod1": 18290.8,
@@ -76,7 +76,7 @@
         "payFrequency": "M1",
         "monthlyPayNumber": "1",
         "paymentDate": "2007-02-27",
-        "paidHoursWorked": "36",
+        "paidHoursWorked": "35",
         "taxCode": "K971",
         "taxablePayToDate": 19157.5,
         "totalTaxToDate": 3095.89,
@@ -99,7 +99,7 @@
           "inPayPeriod1": 995979.04,
           "inPayPeriod2": 606456.38,
           "inPayPeriod3": 797877.34,
-          "inPayPeriod4": 166334.69,
+          "inPayPeriod4": 166334.69
         },
         "totalEmployerNICs": {
           "inPayPeriod1": 18290.8,

@@ -68,7 +68,6 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
-
   /sa:
     get:
       displayName: Get Self Assessment history
@@ -122,14 +121,12 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
-
   /paye:
     get:
       displayName: Get PAYE income history
       description: !include docs/income-endpoint-description.md
       is: [headers.acceptHeader]
       (annotations.sandboxData): !include sandbox/income-request.md
-      (annotations.scope): "The scopes you have been assigned"
       headers:
         Authorization:
           description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
@@ -176,7 +173,6 @@ uses:
                   description: Not found
                   value:
                     code: NOT_FOUND
-
   /sa/additional-information:
       get:
         displayName: Get additional information from Self Assessment
