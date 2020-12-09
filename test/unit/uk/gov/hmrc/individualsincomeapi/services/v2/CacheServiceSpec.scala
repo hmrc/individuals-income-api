@@ -28,14 +28,14 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfigurationV2, ShortLivedCacheV2}
+import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdV2, CacheServiceV2, PayeCacheIdV2, SaCacheIdV2}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService, PayeCacheId, SaCacheId}
 import utils.TestSupport
 
 import scala.concurrent.Future
 
-class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures {
+class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   val cacheId = TestCacheId("foo")
   val cachedValue = TestClass("cached value")
@@ -43,11 +43,11 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
 
   trait Setup {
 
-    val mockClient = mock[ShortLivedCacheV2]
-    val mockCacheConfig = mock[CacheConfigurationV2]
-    val cacheService = new CacheServiceV2 {
-      override val shortLivedCache: ShortLivedCacheV2 = mockClient
-      override val conf: CacheConfigurationV2 = mockCacheConfig
+    val mockClient = mock[ShortLivedCache]
+    val mockCacheConfig = mock[CacheConfiguration]
+    val cacheService = new CacheService {
+      override val shortLivedCache: ShortLivedCache = mockClient
+      override val conf: CacheConfiguration = mockCacheConfig
       override val key: String = "test"
     }
 
@@ -86,7 +86,7 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
     }
   }
 
-  "PayeCacheIdV2" should {
+  "PayeCacheId" should {
 
     "produce a cache id based on matchId and scopes" in {
 
@@ -100,14 +100,14 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
 
       val fields = "ABDFH"
 
-      PayeCacheIdV2(matchId, interval, fields).id shouldBe
+      PayeCacheId(matchId, interval, fields).id shouldBe
         s"$matchId-${interval.getStart}-${interval.getEnd}-ABDFH"
 
     }
 
   }
 
-  "SaCacheIdV2" should {
+  "SaCacheId" should {
 
     "produce a cache id based on nino and scopes" in {
 
@@ -116,7 +116,7 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
 
       val fields = "ABCDGK"
 
-      SaCacheIdV2(nino, interval, fields).id shouldBe
+      SaCacheId(nino, interval, fields).id shouldBe
         "NA000799C-2016-2017-ABCDGK"
 
     }
@@ -124,7 +124,7 @@ class CacheServiceV2Spec extends TestSupport with MockitoSugar with ScalaFutures
   }
 }
 
-case class TestCacheId(id: String) extends CacheIdV2
+case class TestCacheId(id: String) extends CacheIdBase
 
 case class TestClass(value: String)
 

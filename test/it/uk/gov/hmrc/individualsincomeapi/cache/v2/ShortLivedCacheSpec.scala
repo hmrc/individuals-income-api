@@ -21,14 +21,14 @@ import java.util.UUID
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
-import uk.gov.hmrc.individualsincomeapi.cache.v2.ShortLivedCacheV2
+import uk.gov.hmrc.individualsincomeapi.cache.v2.ShortLivedCache
 import uk.gov.hmrc.integration.ServiceSpec
 import uk.gov.hmrc.mongo.MongoSpecSupport
 import utils.TestSupport
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ShortLivedCacheV2Spec
+class ShortLivedCacheSpec
     extends WordSpec with Matchers with MongoSpecSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
@@ -41,7 +41,7 @@ class ShortLivedCacheV2Spec
     .bindings(bindModules: _*)
     .build()
 
-  val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCacheV2]
+  val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
 
   def externalServices: Seq[String] = Seq.empty
 

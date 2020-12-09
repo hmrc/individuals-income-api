@@ -24,7 +24,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.services.v1.CacheId
-import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdV2, CacheServiceV2, PayeIncomeCacheService, SaIncomeCacheService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService, PayeIncomeCacheService, SaIncomeCacheService}
 
 import scala.concurrent.Future
 
@@ -125,7 +125,7 @@ class CacheServiceSpec
   }
 }
 
-case class TestCacheId(id: String) extends CacheIdV2
+case class TestCacheId(id: String) extends CacheIdBase
 
 case class TestClass(param: String)
 

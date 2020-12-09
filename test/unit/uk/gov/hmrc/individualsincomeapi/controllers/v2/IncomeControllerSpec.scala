@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.EmpRef
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, SandboxIncomeController}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, Payment}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeServiceV2, SandboxIncomeServiceV2}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import utils.{AuthHelper, SpecBase}
 
@@ -48,13 +48,13 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
     Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
 
   trait Setup {
-    val mockIncomeService: LiveIncomeServiceV2 = mock[LiveIncomeServiceV2]
+    val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
     val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
     lazy val scopeService: ScopesService = mock[ScopesService]
 
     val liveIncomeController = new LiveIncomeController(mockIncomeService, scopeService, mockAuthConnector, cc)
     val sandboxIncomeController =
-      new SandboxIncomeController(new SandboxIncomeServiceV2, scopeService, mockAuthConnector, cc)
+      new SandboxIncomeController(new SandboxIncomeService, scopeService, mockAuthConnector, cc)
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
   }
 

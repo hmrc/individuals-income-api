@@ -22,21 +22,21 @@ import org.joda.time.Interval
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfigurationV2, ShortLivedCacheV2}
+import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CacheServiceV2 {
+trait CacheService {
 
-  val shortLivedCache: ShortLivedCacheV2
-  val conf: CacheConfigurationV2
+  val shortLivedCache: ShortLivedCache
+  val conf: CacheConfiguration
   val key: String
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheIdV2, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
     if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)
@@ -52,16 +52,16 @@ trait CacheServiceV2 {
 }
 
 @Singleton
-class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf: CacheConfigurationV2)
-    extends CacheServiceV2 {
+class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+    extends CacheService {
 
   val key = conf.saKey
 
 }
 
 @Singleton
-class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, val conf: CacheConfigurationV2)
-    extends CacheServiceV2 {
+class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
+    extends CacheService {
 
   val key: String = conf.payeKey
 
@@ -76,20 +76,20 @@ class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCacheV2, v
 // `id + from + to +  [A, B, C, D, E, F]` Or formatted to `id-from-to-ABCDEF`
 // The `fields` param is obtained with scopeService.getValidFieldsForCacheKey(scopes: List[String])
 
-trait CacheIdV2 {
+trait CacheIdBase {
   val id: String
 
   override def toString: String = id
 }
 
-case class PayeCacheIdV2(matchId: UUID, interval: Interval, fields: String) extends CacheIdV2 {
+case class PayeCacheId(matchId: UUID, interval: Interval, fields: String) extends CacheIdBase {
 
   lazy val id: String =
     s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
 
 }
 
-case class SaCacheIdV2(nino: Nino, interval: TaxYearInterval, fields: String) extends CacheIdV2 {
+case class SaCacheId(nino: Nino, interval: TaxYearInterval, fields: String) extends CacheIdBase {
 
   lazy val id: String =
     s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"

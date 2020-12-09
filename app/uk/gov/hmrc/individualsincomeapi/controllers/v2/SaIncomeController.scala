@@ -26,13 +26,13 @@ import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SAN
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.getClientIdHeader
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeServiceV2, SaIncomeServiceV2, SandboxSaIncomeServiceV2}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 sealed abstract class SaIncomeController(
-  saIncomeService: SaIncomeServiceV2,
+  saIncomeService: SaIncomeService,
   scopeService: ScopesService,
   cc: ControllerComponents)
     extends CommonController(cc) with PrivilegedAuthentication {
@@ -210,7 +210,7 @@ sealed abstract class SaIncomeController(
 
 @Singleton
 class SandboxSaIncomeController @Inject()(
-  val saIncomeService: SandboxSaIncomeServiceV2,
+  val saIncomeService: SandboxSaIncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
   cc: ControllerComponents)
@@ -220,7 +220,7 @@ class SandboxSaIncomeController @Inject()(
 
 @Singleton
 class LiveSaIncomeController @Inject()(
-  val saIncomeService: LiveSaIncomeServiceV2,
+  val saIncomeService: LiveSaIncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
   cc: ControllerComponents)
