@@ -38,10 +38,47 @@
                 "description": "Employer PAYE Reference",
                 "example": "123/AI45678"
               },
-              "taxablePayment": {
-                "type": "number",
-                "description": "Includes pay, wages, salaries, fees, overtime, bonuses, commission, pension income from registered schemes, employer-financed retirement benefits, statutory payments and payrolled benefits in kind",
-                "example": "1000.50"
+              "taxYear": {
+                "type": "string",
+                "description": "The tax year of submission, format YY-YY.",
+                "example": "2018-19"
+              },
+              "employee": {
+                "description": "A collection of properties related to the employee in the submission",
+                "type": "object",
+                "properties": {
+                  "hasPartner": {
+                    "type": "boolean",
+                    "description": "Will only be true if the partner object is present",
+                    "example": "true"
+                  }
+                }
+              },
+              "payroll": {
+                "description": "Properties relevant to the employee's payroll",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Identifier assigned by the employer to the individual. Pattern: ^[^ ].{0,34}$",
+                    "example": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+                  }
+                }
+              },
+              "payFrequency": {
+                "description": "The frequency of payments. W1 Weekly, W2 Fortnightly, W4 Four weekly, M1 Monthly, M3 Quarterly, M6 Bi-annually, MA Annually, IO One off, IR Irregular",
+                "type": "string",
+                "example": "W1"
+              },
+              "weeklyPayNumber": {
+                "description": "If paid weekly, the period number. Range 1 - 54, and 56. Pattern: ^([1-9]|[1-4][0-9]|5[0-46])$",
+                "type": "string",
+                "example": "1"
+              },
+              "monthlyPayNumber": {
+                "description": "If paid monthly, the period number. Range 1 - 12. Pattern: ^([1-9]|1[0-2])$",
+                "type": "string",
+                "example": "12"
               },
               "paymentDate": {
                 "type": "string",
@@ -49,21 +86,186 @@
                 "description": "Payment date",
                 "example": "2016-02-28"
               },
-              "weekPayNumber": {
-                "type": "number",
-                "description": "The number corresponding to the week the payment was made. As pay dates may not align with calendar weeks, the range of permitted values is 1 through to 54 (inclusive), and 56",
-                "example": "45"
+              "paidHoursWorked": {
+                "type": "string",
+                "description": "Tax code associated with the payment. Pattern: ^([1-9][0-9]{0,5}[LMNPTY])|(BR)|(0T)|(NT)|(D[0-8])|([K][1-9][0-9]{0,5})$",
+                "example": "35"
               },
-              "monthPayNumber": {
+              "taxCode": {
+                "type": "string",
+                "description": "Number of normal hours worked. Pattern: ^[^ ].{0,34}$",
+                "example": "K971"
+              },
+              "taxablePayToDate": {
                 "type": "number",
-                "description": "The number between 1 and 12, corresponding to the month the payment was made. As the tax year starts in April, so does the monthPayNumber, with 1 corresponding to April",
-                "example": "10"
+                "description": "Taxable pay in this pay period including payrolled benefits in kind to date in the range -999999999.99 to 999999999.99",
+                "example": "163068.82"
+              },
+              "totalTaxToDate": {
+                "type": "number",
+                "description": "Total tax to date in this employment in the range -999999999.99 to 999999999.99",
+                "example": "163068.82"
+              },
+              "taxablePayment": {
+                "type": "number",
+                "description": "Taxable pay in this pay period including payrolled benefits in kind in the range -999999999.99 to 999999999.99",
+                "example": "163068.82"
+              },
+              "taxDeductedOrRefunded": {
+                "type": "number",
+                "description": "Value of tax deducted or refunded from this payment in the range -9999999999.99 to 9999999999.99",
+                "example": "159228.45"
+              },
+              "dednsFromNetPay": {
+                "type": "number",
+                "description": "Value of deductions from net pay in pay period in the range -9999999999.99 to 9999999999.99",
+                "example": "159228.45"
+              },
+              "employeePensionContribs": {
+                "description": "A set of properties relevant to employee pension contributions",
+                "type": "object",
+                "properties": {
+                  "paidYTD": {
+                    "type": "number",
+                    "description": "Value of employee pension contributions to date in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "notPaidYTD": {
+                    "type": "number",
+                    "description": "Value of employee pension contributions that are not paid under a net pay arrangement in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "paid": {
+                    "type": "number",
+                    "description": "Value of employee pension contributions paid under net pay arrangements in pay period in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "notPaid": {
+                    "type": "number",
+                    "description": "Value of employee pension contributions that are not paid under a net pay arrangement in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  }
+                }
+              },
+              "grossEarningsForNICs": {
+                "description": "A set of properties relevant to gross earnings for National Insurance Contributions",
+                "type": "object",
+                "properties": {
+                  "inPayPeriod1": {
+                    "type": "number",
+                    "description": "Value in pay period one in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod2": {
+                    "type": "number",
+                    "description": "Value in pay period two in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod3": {
+                    "type": "number",
+                    "description": "Value in pay period three in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod4": {
+                    "type": "number",
+                    "description": "Value in pay period four in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  }
+                }
+              },
+              "totalEmployerNICs": {
+                "description": "A set of properties relevant to the totals of employer National Insurance Contributions",
+                "type": "object",
+                "properties": {
+                  "inPayPeriod1": {
+                    "type": "number",
+                    "description": "Value in pay period one in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod2": {
+                    "type": "number",
+                    "description": "Value in pay period two in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod3": {
+                    "type": "number",
+                    "description": "Value in pay period three in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod4": {
+                    "type": "number",
+                    "description": "Value in pay period four in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd1": {
+                    "type": "number",
+                    "description": "Value year to date one in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd2": {
+                    "type": "number",
+                    "description": "Value year to date two in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd3": {
+                    "type": "number",
+                    "description": "Value year to date three in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd4": {
+                    "type": "number",
+                    "description": "Value year to date four in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  }
+                }
+              },
+              "employeeNICs": {
+                "description": "A set of properties relevant to the employee's National Insurance Contributions due on all earnings",
+                "type": "object",
+                "properties": {
+                  "inPayPeriod1": {
+                    "type": "number",
+                    "description": "Value in pay period one in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod2": {
+                    "type": "number",
+                    "description": "Value in pay period two in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod3": {
+                    "type": "number",
+                    "description": "Value in pay period three in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "inPayPeriod4": {
+                    "type": "number",
+                    "description": "Value in pay period four in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd1": {
+                    "type": "number",
+                    "description": "Value year to date one in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd2": {
+                    "type": "number",
+                    "description": "Value year to date two in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd3": {
+                    "type": "number",
+                    "description": "Value year to date three in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "ytd4": {
+                    "type": "number",
+                    "description": "Value year to date four in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  }
+                }
               }
-            },
-            "required": [
-              "taxablePayment",
-              "paymentDate"
-            ]
+            }
           }
         }
       },
