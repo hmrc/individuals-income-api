@@ -19,7 +19,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json.{Format, JsPath, Reads}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye.paymentAmountValidator
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye._
 
 case class IfGrossEarningsForNics(
                                    inPayPeriod1: Option[Double],
@@ -64,13 +64,13 @@ case class IfBenefits(
 
 case class IfStudentLoan(
                           planType: Option[String],
-                          repaymentsInPayPeriod: Option[Double],
-                          repaymentsYTD: Option[Double]
+                          repaymentsInPayPeriod: Option[Int],
+                          repaymentsYTD: Option[Int]
                         )
 
 case class IfPostGradLoan(
-                           repaymentsInPayPeriod: Option[Double],
-                           repaymentsYtd: Option[Double]
+                           repaymentsInPayPeriod: Option[Int],
+                           repaymentsYtd: Option[Int]
                          )
 
 case class IfPayeEntry(
@@ -208,24 +208,24 @@ object IfPayeEntry {
     (
       (JsPath \ "planType")
         .readNullable[String](pattern(studentLoanPlanTypePattern, "Invalid student loan plan type")) and
-        (JsPath \ "repaymentsInPayPeriod").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "repaymentsYTD").readNullable[Double](paymentAmountValidator)
+        (JsPath \ "repaymentsInPayPeriod").readNullable[Int](payeWholeUnitsPaymentTypeValidator) and
+        (JsPath \ "repaymentsYTD").readNullable[Int](payeWholeUnitsPositivePaymentTypeValidator)
       )(IfStudentLoan.apply _),
     (
       (JsPath \ "planType").writeNullable[String] and
-        (JsPath \ "repaymentsInPayPeriod").writeNullable[Double] and
-        (JsPath \ "repaymentsYTD").writeNullable[Double]
+        (JsPath \ "repaymentsInPayPeriod").writeNullable[Int] and
+        (JsPath \ "repaymentsYTD").writeNullable[Int]
       )(unlift(IfStudentLoan.unapply))
   )
 
   implicit val postGradLoanFormat: Format[IfPostGradLoan] = Format(
     (
-      (JsPath \ "repaymentsInPayPeriod").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "repaymentsYTD").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "repaymentsInPayPeriod").readNullable[Int](payeWholeUnitsPaymentTypeValidator) and
+        (JsPath \ "repaymentsYTD").readNullable[Int](payeWholeUnitsPositivePaymentTypeValidator)
       )(IfPostGradLoan.apply _),
     (
-      (JsPath \ "repaymentsInPayPeriod").writeNullable[Double] and
-        (JsPath \ "repaymentsYTD").writeNullable[Double]
+      (JsPath \ "repaymentsInPayPeriod").writeNullable[Int] and
+        (JsPath \ "repaymentsYTD").writeNullable[Int]
       )(unlift(IfPostGradLoan.unapply))
   )
 
