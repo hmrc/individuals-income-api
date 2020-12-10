@@ -43,11 +43,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSa")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -55,11 +53,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaSummary")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -67,11 +63,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaTrusts")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -79,11 +73,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaForeign")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -91,11 +83,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaPartnerships")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -103,11 +93,9 @@ sealed abstract class SaIncomeController(
     Action.async { implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaInterestsAndDividends")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
     }
 
@@ -115,11 +103,9 @@ sealed abstract class SaIncomeController(
     Action.async { implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaPensionsAndStateBenefits")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
     }
 
@@ -127,11 +113,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaUkProperties")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -139,11 +123,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaAdditionalInformation")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -151,11 +133,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaOther")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -163,11 +143,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaSource")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -175,11 +153,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaEmployments")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -187,11 +163,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaSelfEmployments")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 
@@ -199,11 +173,9 @@ sealed abstract class SaIncomeController(
     implicit request =>
       {
         val scopes = scopeService.getEndPointScopes("incomeSaFurtherDetails")
-        requiresPrivilegedAuthentication(scopes)
-          .flatMap { authScopes =>
-            throw new Exception("NOT_IMPLEMENTED")
-          }
-          .recover(recovery)
+        requiresPrivilegedAuthentication(scopes) { authScopes =>
+          throw new Exception("NOT_IMPLEMENTED")
+        }.recover(recovery)
       }
   }
 }
