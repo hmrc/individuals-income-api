@@ -70,16 +70,6 @@
                 "type": "string",
                 "example": "W1"
               },
-              "weeklyPayNumber": {
-                "description": "If paid weekly, the period number. Range 1 - 54, and 56. Pattern: ^([1-9]|[1-4][0-9]|5[0-46])$",
-                "type": "string",
-                "example": "1"
-              },
-              "monthlyPayNumber": {
-                "description": "If paid monthly, the period number. Range 1 - 12. Pattern: ^([1-9]|1[0-2])$",
-                "type": "string",
-                "example": "12"
-              },
               "paymentDate": {
                 "type": "string",
                 "format": "date",
@@ -104,11 +94,6 @@
               "totalTaxToDate": {
                 "type": "number",
                 "description": "Total tax to date in this employment in the range -999999999.99 to 999999999.99",
-                "example": "163068.82"
-              },
-              "taxablePayment": {
-                "type": "number",
-                "description": "Taxable pay in this pay period including payrolled benefits in kind in the range -999999999.99 to 999999999.99",
                 "example": "163068.82"
               },
               "taxDeductedOrRefunded": {

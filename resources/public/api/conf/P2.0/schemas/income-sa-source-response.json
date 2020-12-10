@@ -54,22 +54,28 @@
                       "type": "object",
                       "properties": {
                         "line1": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Address line one"
                         },
                         "line2": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Address line two"
                         },
                         "line3": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Address line three"
                         },
                         "line4": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Address line four"
                         },
                         "line5": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Address line five"
                         },
-                        "postcode": {
-                          "type": "string"
+                        "postalCode": {
+                          "type": "string",
+                          "description": "Postcode"
                         },
                         "addressType": {
                           "type": "string",
