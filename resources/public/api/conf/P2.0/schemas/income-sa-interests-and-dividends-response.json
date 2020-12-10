@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Interest and dividends income data Self Assessment",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Unique Resource Identifier (URI) for this endpoint. ",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "description": "Interest and dividends income data Self Assessment",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of Self Assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2018-19"
+              },
+              "interestsAndDividends": {
+                "type": "array",
+                "description": "Interests and dividends income for the requested period",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ukInterestsIncome": {
+                      "type": "number",
+                      "description": "UK interests received before tax",
+                      "example": "12.46"
+                    },
+                    "foreignDividendsIncome": {
+                      "type": "number",
+                      "description": "Foreign dividends income",
+                      "example": "25.86"
+                    },
+                    "ukDividendsIncome": {
+                      "type": "number",
+                      "description": "UK dividends income",
+                      "example": "657.89"
+                    }
+                  },
+                  "required": [
+                    "ukInterestsIncome",
+                    "foreignDividendsIncome",
+                    "ukDividendsIncome"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "interestsAndDividends"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

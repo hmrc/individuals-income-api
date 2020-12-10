@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The individual's UK properties income data from Self Assessment",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Unique Resource Identifier (URI) for this endpoint.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint",
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of Self Assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2018-19"
+              },
+              "ukProperties": {
+                "type": "array",
+                "description": "Income from UK properties for the requested period",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "totalProfit": {
+                      "type": "number",
+                      "description": "Profit from UK properties",
+                      "example": "1276.67"
+                    }
+                  },
+                  "required": [
+                    "totalProfit"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "ukProperties"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

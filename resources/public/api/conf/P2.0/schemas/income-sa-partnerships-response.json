@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Partnerships income from Self Assessment",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Unique Resource Identifier (URI) for this endpoint. ",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint",
+              "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of Self Assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2018-19"
+              },
+              "partnerships": {
+                "type": "array",
+                "description": "Partnerships income for the requested period",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "partnershipProfit": {
+                      "type": "number",
+                      "description": "Partnership profit",
+                      "example": "324.54"
+                    }
+                  },
+                  "required": [
+                    "partnershipProfit"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "partnerships"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Employments income data from Self Assessment",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI to this resource",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "description": "Employments income data from Self Assessment",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of Self Assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2018-19"
+              },
+              "employments": {
+                "type": "array",
+                "description": "Employments income for the requested period",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "employmentIncome": {
+                      "type": "number",
+                      "description": "Employments income",
+                      "example": "5000"
+                    }
+                  },
+                  "required": [
+                    "employmentIncome"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "employments"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

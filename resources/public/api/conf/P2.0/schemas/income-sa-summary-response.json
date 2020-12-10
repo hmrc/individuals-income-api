@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The individual's Self Assessment tax returns summary for the given period",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Unique Resource Identifier (URI) for this endpoint.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint",
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "taxReturns": {
+          "type": "array",
+          "description": "List of summaries of Self Assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2018-19"
+              },
+              "summary": {
+                "type": "array",
+                "description": "Tax return summary for the requested period",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "totalIncome": {
+                      "type": "number",
+                      "description": "Income from self employment",
+                      "example": "30000"
+                    }
+                  },
+                  "required": [
+                    "totalIncome"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "summary"
+            ]
+          }
+        }
+      },
+      "required": [
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

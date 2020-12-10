@@ -1,0 +1,271 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The individual's SA income for the given period",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of links for possible actions related to this endpoint.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The URI for this endpoint.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "additionalInformation": {
+          "type": "object",
+          "description": "The Uniform Resource Identifier (URI) for the endpoint to get additional information.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "employments": {
+          "type": "object",
+          "description": "The URI for the endpoint to get the income from employments.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "foreign": {
+          "type": "object",
+          "description": "The URI for the endpoint to get foreign income data.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "interestsAndDividends": {
+          "type": "object",
+          "description": "The URI for the endpoint to get the income from interests and dividends.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "other": {
+          "type": "object",
+          "description": "The URI for the endpoint to get other income.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "partnerships": {
+          "type": "object",
+          "description": "The URI for the endpoint to get the income from partnerships.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "pensionsAndStateBenefits": {
+          "type": "object",
+          "description": "The URI for the endpoint to get income from pensions and state benefits.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "selfEmployments": {
+          "type": "object",
+          "description": "The URI for the endpoint to get the income from self-employments.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "summary": {
+          "type": "object",
+          "description": "The URI for the endpoint to get a Self Assessment income summary.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "trusts": {
+          "type": "object",
+          "description": "The URI for the endpoint to get income from trusts.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "ukProperties": {
+          "type": "object",
+          "description": "The URI for the endpoint to get income from UK properties.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "incomeSources": {
+          "type": "object",
+          "description": "The URI for the endpoint to get income sources.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        },
+        "furtherDetails": {
+          "type": "object",
+          "description": "The URI for the endpoint to get further details about income. This includes business expenses and National Insurance on Self Assessment income.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "description": "The URL of the endpoint.",
+              "example": "/individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+            }
+          },
+          "required": [
+            "href"
+          ]
+        }
+      },
+      "required": [
+        "self"
+      ]
+    },
+    "selfAssessment": {
+      "type": "object",
+      "properties": {
+        "registrations": {
+          "type": "array",
+          "description": "Self Assessment registrations",
+          "items": {
+            "type": "object",
+            "properties": {
+              "registrationDate": {
+                "type": "string",
+                "description": "Self Assessment registration date",
+                "example": "2012-01-06"
+              }
+            }
+          }
+        },
+        "taxReturns": {
+          "type": "array",
+          "description": "List of self assessment tax returns in the requested period",
+          "items": {
+            "type": "object",
+            "properties": {
+              "taxYear": {
+                "type": "string",
+                "description": "Tax year",
+                "example": "2015-16"
+              },
+              "submissions": {
+                "type": "array",
+                "description": "Tax return submissions for the year",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "receivedDate": {
+                      "type": "string",
+                      "description": "Tax return received date",
+                      "example": "2014-06-06"
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "taxYear",
+              "submissions"
+            ]
+          }
+        }
+      },
+      "required": [
+        "registrations",
+        "taxReturns"
+      ]
+    }
+  },
+  "required": [
+    "_links",
+    "selfAssessment"
+  ]
+}

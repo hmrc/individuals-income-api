@@ -1,0 +1,2 @@
+<p>Use this endpoint to get an individual’s Self Assessment summary for a requested time period.</p>
+<p>The startYear and endYear are inclusive, so the data returned is for the time period that includes the startYear and endYear.</p>

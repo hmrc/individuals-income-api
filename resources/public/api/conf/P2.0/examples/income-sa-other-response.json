@@ -1,0 +1,27 @@
+{
+  "_links": {
+    "self": {
+      "href": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&startYear=2018-19&endYear=2018-19"
+    }
+  },
+  "selfAssessment": {
+    "taxReturns": [
+      {
+        "taxYear": "2018-19",
+        "other": [
+          {
+            "otherIncome": 0
+          }
+        ]
+      },
+      {
+        "taxYear": "2019-20",
+        "other": [
+          {
+            "otherIncome": 26.70
+          }
+        ]
+      }
+    ]
+  }
+}
