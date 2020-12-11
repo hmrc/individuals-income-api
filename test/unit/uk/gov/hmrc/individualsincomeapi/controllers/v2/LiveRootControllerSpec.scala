@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
-import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.Future.{failed, successful}
@@ -43,10 +43,11 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
     val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
     lazy val scopeService: ScopesService = mock[ScopesService]
+    lazy val scopeHelper: ScopesHelper = mock[ScopesHelper]
     implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
     val liveMatchCitizenController =
-      new LiveRootController(mockLiveCitizenMatchingService, scopeService, mockAuthConnector, cc)
+      new LiveRootController(mockLiveCitizenMatchingService, scopeService, scopeHelper, mockAuthConnector, cc)
 
     when(scopeService.getAllScopes).thenReturn(List("hello-world"))
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))

@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
-import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.ExecutionContext
@@ -47,11 +47,12 @@ class RootControllerSpec extends SpecBase with AuthHelper with MockitoSugar with
     val matchedCitizen = MatchedCitizen(matchId, nino)
     implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = mock[ScopesService]
+    lazy val scopeHelper: ScopesHelper = mock[ScopesHelper]
 
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockAuthConnector = mock[AuthConnector]
     val sandboxController =
-      new SandboxRootController(mockSandboxCitizenMatchingService, scopeService, mockAuthConnector, cc)
+      new SandboxRootController(mockSandboxCitizenMatchingService, scopeService, scopeHelper, mockAuthConnector, cc)
 
     when(scopeService.getAllScopes).thenReturn(List("hello-world"))
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))

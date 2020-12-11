@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException, TooManyRequestException, Upstream4xxResponse}
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye, IfPayeEntry}
@@ -42,8 +42,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
     "microservice.services.integration-framework.environment"
   )
 
-  private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) =
-    // The correlationId should be passed in by the caller and will already be present in hc
+  private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier): HeaderCarrier =
     hc.copy(authorization = Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
       .withExtraHeaders(Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
@@ -54,7 +53,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
     val startDate = interval.getStart.toLocalDate
     val endDate = interval.getEnd.toLocalDate
     val payeUrl = s"$serviceUrl/individuals/income/paye/" +
-      s"nino/$nino?startDate=$startDate&endDate=$endDate&fields=$filter"
+      s"nino/$nino?startDate=$startDate&endDate=$endDate&fields=${filter.map(f => s"&fields=$f").getOrElse("")}"
 
     recover[IfPayeEntry](http.GET[IfPaye](payeUrl)(implicitly, header(), ec).map(_.paye))
   }
@@ -77,6 +76,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
     case Upstream4xxResponse(msg, 429, _, _) => {
       Logger.warn(s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
+    }
+    case e: Exception => {
+      Logger.warn(s"IfConnector:Exception: ${e.getMessage}")
+      Future.failed(e)
     }
   }
 

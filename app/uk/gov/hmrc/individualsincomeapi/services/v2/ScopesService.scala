@@ -35,7 +35,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     getScopeItemsKeys(scope)
       .flatMap(fieldId => apiConfig.endpoints.flatMap(e => e.fields.get(fieldId)))
 
-  private[services] def getEndpointFieldKeys(endpointKey: String): Iterable[String] =
+  def getEndpointFieldKeys(endpointKey: String): Iterable[String] =
     apiConfig
       .getEndpoint(endpointKey)
       .map(endpoint => endpoint.fields.keys.toList.sorted)
@@ -60,7 +60,7 @@ class ScopesService @Inject()(configuration: Configuration) {
   def getValidFieldsForCacheKey(scopes: List[String]): String =
     scopes.flatMap(getScopeItemsKeys).distinct.reduce(_ + _)
 
-  private[services] def getAccessibleEndpoints(scopes: Iterable[String]): Iterable[String] = {
+  def getAccessibleEndpoints(scopes: Iterable[String]): Iterable[String] = {
     val scopeKeys = scopes.flatMap(s => getScopeItemsKeys(s)).toSeq
     apiConfig.endpoints
       .filter(endpoint => endpoint.fields.keySet.exists(scopeKeys.contains))

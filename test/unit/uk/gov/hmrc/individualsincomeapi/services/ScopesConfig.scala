@@ -44,6 +44,7 @@ trait ScopesConfig extends MockitoSugar {
     (s"api-config.scopes.$mockScope6.fields", List("Q", "R")),
     (s"api-config.scopes.$mockScope7.fields", List("Q", "R", "S", "T")),
     (s"api-config.endpoints.$mockEndpoint1.endpoint", "/a/b/c?matchId=<matchId>{&fromDate,toDate}"),
+    (s"api-config.endpoints.$mockEndpoint1.title", "test"),
     (s"api-config.endpoints.$mockEndpoint1.fields.A", "payments"),
     (s"api-config.endpoints.$mockEndpoint1.fields.B", "employer/employerName"),
     (s"api-config.endpoints.$mockEndpoint1.fields.C", "employer/employerAddress/line1"),
@@ -57,11 +58,13 @@ trait ScopesConfig extends MockitoSugar {
     (s"api-config.endpoints.$mockEndpoint1.fields.K", "employeeAddress"),
     (s"api-config.endpoints.$mockEndpoint1.fields.L", "payrollId"),
     (s"api-config.endpoints.$mockEndpoint2.endpoint", "/a/b/d?matchId=<matchId>{&fromDate,toDate}"),
+    (s"api-config.endpoints.$mockEndpoint2.title", "test"),
     (s"api-config.endpoints.$mockEndpoint2.fields.M", "field1"),
     (s"api-config.endpoints.$mockEndpoint2.fields.N", "field2"),
     (s"api-config.endpoints.$mockEndpoint2.fields.Q", "field2"),
     (s"api-config.endpoints.$mockEndpoint2.fields.R", "field2"),
     (s"api-config.endpoints.$mockEndpoint3.endpoint", "/a/b/e?matchId=<matchId>{&fromDate,toDate}"),
+    (s"api-config.endpoints.$mockEndpoint3.title", "test"),
     (s"api-config.endpoints.$mockEndpoint3.fields.O", "field3"),
     (s"api-config.endpoints.$mockEndpoint3.fields.P", "field4")
   )
@@ -78,6 +81,7 @@ trait ScopesConfig extends MockitoSugar {
       EndpointConfig(
         name = mockEndpoint1,
         link = "/a/b/c?matchId=<matchId>{&fromDate,toDate}",
+        title = "test",
         fields = Map(
           "A" -> "payments",
           "B" -> "employer/employerName",
@@ -96,6 +100,7 @@ trait ScopesConfig extends MockitoSugar {
       EndpointConfig(
         name = mockEndpoint2,
         link = "/a/b/d?matchId=<matchId>{&fromDate,toDate}",
+        title = "test",
         fields = Map(
           "M" -> "field1",
           "N" -> "field2"
@@ -103,6 +108,7 @@ trait ScopesConfig extends MockitoSugar {
       EndpointConfig(
         name = mockEndpoint3,
         link = "/a/b/e?matchId=<matchId>{&fromDate,toDate}",
+        title = "test",
         fields = Map(
           "O" -> "field3",
           "P" -> "field4"

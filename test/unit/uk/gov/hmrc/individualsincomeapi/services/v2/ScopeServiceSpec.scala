@@ -81,11 +81,11 @@ class ScopesServiceSpec extends UnitSpec with ScopesConfig with BeforeAndAfterEa
     }
 
     "get links for valid endpoints" in {
-      val result = scopesService.getLinks(List(mockScope1))
-      result shouldBe Map(mockEndpoint1 -> "/a/b/c?matchId=<matchId>{&fromDate,toDate}")
+      val result = scopesService.getEndpointLink(mockEndpoint1)
+      result shouldBe Some("/a/b/c?matchId=<matchId>{&fromDate,toDate}")
 
-      val result2 = scopesService.getLinks(List(mockScope4))
-      result2 shouldBe Map(mockEndpoint2 -> "/a/b/d?matchId=<matchId>{&fromDate,toDate}")
+      val result2 = scopesService.getEndpointLink(mockEndpoint2)
+      result2 shouldBe Some("/a/b/d?matchId=<matchId>{&fromDate,toDate}")
     }
 
     "get the scopes associated to an endpoint" in {
