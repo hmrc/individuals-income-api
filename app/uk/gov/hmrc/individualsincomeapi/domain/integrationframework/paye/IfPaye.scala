@@ -17,6 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 import play.api.libs.json.Reads.verifying
 import play.api.libs.json.{Format, JsPath, Reads}
+import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
 case class IfPaye(paye: Seq[IfPayeEntry])
 
@@ -52,5 +53,4 @@ object IfPaye {
     (JsPath \ "paye").read[Seq[IfPayeEntry]].map(value => IfPaye(value)),
     (JsPath \ "paye").write[Seq[IfPayeEntry]].contramap(value => value.paye)
   )
-
 }

@@ -27,9 +27,10 @@ import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SAN
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
-
-import play.api.hal.Hal.{state}
-import play.api.hal.{HalLink}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry.incomeJsonFormat
+import play.api.hal.Hal.state
+import play.api.hal.HalLink
+import play.api.libs.json.Json.{obj, toJson}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -44,9 +45,10 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
           val selfLink =
             HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
 
-          val employmentsJsObject = Json.obj("paye" -> Json.toJson(paye))
+          val incomeJsObject = Json.obj("income" -> toJson(paye))
+          val payeJsObject = obj("paye"          -> incomeJsObject)
 
-          Ok(Json.toJson(state(employmentsJsObject) ++ selfLink))
+          Ok(Json.toJson(state(payeJsObject) ++ selfLink))
         }
       }.recover(recovery)
     }

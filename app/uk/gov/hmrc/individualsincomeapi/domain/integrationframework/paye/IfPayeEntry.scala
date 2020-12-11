@@ -17,9 +17,10 @@
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.{Format, JsPath, Reads}
+import play.api.libs.json.{Format, JsPath, Json, Reads}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye._
+import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
 case class IfGrossEarningsForNics(
                                    inPayPeriod1: Option[Double],
@@ -288,4 +289,29 @@ object IfPayeEntry {
         (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan]
       ) (unlift(IfPayeEntry.unapply))
   )
+
+  implicit val incomeJsonFormat = Json.format[Income]
+
+  def toIncome(entries: Seq[IfPayeEntry]): Seq[Income] = {
+
+    entries.map { paye =>
+      Income(
+        paye.employerPayeRef,
+        paye.taxYear,
+        paye.payFrequency,
+        paye.paymentDate,
+        paye.paidHoursWorked,
+        paye.taxCode,
+        paye.taxablePayToDate,
+        paye.totalTaxToDate,
+        paye.taxDeductedOrRefunded,
+        paye.dednsFromNetPay,
+        paye.employeePensionContribs,
+        paye.grossEarningsForNics,
+        paye.totalEmployerNics,
+        paye.employeeNics
+      )
+    }
+
+  }
 }

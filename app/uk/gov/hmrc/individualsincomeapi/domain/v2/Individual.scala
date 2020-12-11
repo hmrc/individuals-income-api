@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import java.util.UUID
 
+import org.joda.time.LocalDate
 import org.joda.time.LocalDate.parse
-import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStudentLoan, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
@@ -34,6 +34,26 @@ case class Individual(
   dateOfBirth: LocalDate,
   income: Seq[IfPayeEntry],
   saIncome: Seq[IfSaEntry])
+
+case class Income(
+  employerPayeReference: Option[String],
+  taxYear: Option[String],
+  //TODO - employee
+  //TODO - payroll
+  payFrequency: Option[String],
+  paymentDate: Option[String],
+  paidHoursWorked: Option[String],
+  taxCode: Option[String],
+  taxablePayToDate: Option[Double],
+  totalTaxToDate: Option[Double],
+  taxDeductedOrRefunded: Option[Double],
+  dednsFromNetPay: Option[Double],
+  employeePensionContribs: Option[IfEmployeePensionContribs],
+  //TODO statutoryPayYTD
+  grossEarningsForNics: Option[IfGrossEarningsForNics],
+  totalEmployerNics: Option[IfTotalEmployerNics],
+  employeeNics: Option[IfEmployeeNics]
+)
 
 object SandboxIncomeData {
 
@@ -71,27 +91,27 @@ object SandboxIncomeData {
 case class IncomePayeHelpers() {
   def createValidPayeEntry() =
     IfPayeEntry(
-      Some("K971"),
-      Some("36"),
-      Some(19157.5),
-      Some(3095.89),
-      Some(159228.49),
-      Some(createValodIFGrossEarningsForNics),
-      Some("345/34678"),
-      Some("2006-02-27"),
-      Some(16533.95),
-      Some("18-19"),
-      Some("3"),
-      Some("2"),
-      Some("W4"),
-      Some(198035.8),
-      Some(createValidTotalEmployerNics()),
-      Some(createValidEmployeeNics()),
-      Some(createValidEmployeePensionContribs()),
-      Some(createValidBenefits()),
-      Some(39708.7),
-      Some(createValidStudentLoan()),
-      Some(createValidPostGradLoan())
+      taxCode = Some("K971"),
+      paidHoursWorked = Some("36"),
+      taxablePayToDate = Some(19157.5),
+      totalTaxToDate = Some(3095.89),
+      taxDeductedOrRefunded = Some(159228.49),
+      grossEarningsForNics = Some(createValodIFGrossEarningsForNics),
+      employerPayeRef = Some("345/34678"),
+      paymentDate = Some("2019-02-27"),
+      taxablePay = None,
+      taxYear = Some("18-19"),
+      monthlyPeriodNumber = None,
+      weeklyPeriodNumber = None,
+      payFrequency = Some("W4"),
+      dednsFromNetPay = Some(198035.8),
+      totalEmployerNics = Some(createValidTotalEmployerNics()),
+      employeeNics = Some(createValidEmployeeNics()),
+      employeePensionContribs = Some(createValidEmployeePensionContribs()),
+      benefits = None,
+      parentalBereavement = None,
+      studentLoan = None,
+      postGradLoan = None
     )
 
   private def createValidEmployeeNics() =
@@ -120,12 +140,6 @@ case class IncomePayeHelpers() {
 
   private def createValidEmployeePensionContribs() =
     IfEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
-
-  private def createValidBenefits() = IfBenefits(Some(506328.1), Some(246594.83))
-
-  private def createValidStudentLoan() = IfStudentLoan(Some("02"), Some(88478), Some(545))
-
-  private def createValidPostGradLoan() = IfPostGradLoan(Some(15636), Some(46849))
 
   private def createValodIFGrossEarningsForNics() =
     IfGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))

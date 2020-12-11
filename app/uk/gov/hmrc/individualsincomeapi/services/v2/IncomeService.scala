@@ -22,9 +22,10 @@ import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.SandboxIncomeData.findByMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
+import uk.gov.hmrc.individualsincomeapi.domain.v2.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye, IfPayeEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,7 +35,7 @@ trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
   def fetchIncomeByMatchId(matchId: UUID, interval: Interval, endpoint: String, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[Seq[IfPayeEntry]]
+    implicit hc: HeaderCarrier): Future[Seq[Income]]
 }
 
 @Singleton
@@ -47,9 +48,8 @@ class LiveIncomeService @Inject()(
   scopesHelper: ScopesHelper)
     extends IncomeService {
 
-  // TODO - Write domain models and conv method(s) to convert IfPayeEntry to OGD JSON format
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, endpoint: String, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[Seq[IfPayeEntry]] =
+    implicit hc: HeaderCarrier): Future[Seq[Income]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       payeIncome <- cache.get(
@@ -66,7 +66,7 @@ class LiveIncomeService @Inject()(
                        )
                      )
                    )
-    } yield payeIncome.sortBy(_.paymentDate).reverse
+    } yield IfPayeEntry.toIncome(payeIncome).sortBy(_.paymentDate).reverse
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
@@ -91,21 +91,10 @@ class SandboxIncomeService extends IncomeService {
   }
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, endpoint: String, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[Seq[IfPayeEntry]] =
+    implicit hc: HeaderCarrier): Future[Seq[Income]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payeIncome) =>
-        successful(
-          payeIncome
-            .filter(
-              paymentFilter(
-                interval
-              )
-            )
-            .sortBy(
-              _.paymentDate
-            )
-            .reverse
-        )
+        successful(IfPayeEntry.toIncome(payeIncome.filter(paymentFilter(interval))).sortBy(_.paymentDate).reverse)
       case None => failed(new MatchNotFoundException)
     }
 }
