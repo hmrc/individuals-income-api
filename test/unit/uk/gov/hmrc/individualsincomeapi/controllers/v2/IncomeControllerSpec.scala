@@ -45,17 +45,6 @@ import scala.concurrent.Future.{failed, successful}
 class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar with IncomePayeHelpers {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
-//  trait Setup {
-//    val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]
-//    val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
-//    lazy val scopeService: ScopesService = mock[ScopesService]
-//
-//    val liveIncomeController = new LiveIncomeController(mockIncomeService, scopeService, mockAuthConnector, cc)
-//    val sandboxIncomeController =
-//      new SandboxIncomeController(new SandboxIncomeService, scopeService, mockAuthConnector, cc)
-//    given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
-//  }
-
   trait Setup extends ScopesConfigHelper {
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
