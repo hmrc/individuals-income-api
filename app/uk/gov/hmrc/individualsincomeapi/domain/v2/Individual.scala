@@ -83,13 +83,15 @@ object SandboxIncomeData {
       "Amanda",
       "Joseph",
       parse("1960-01-15"),
-      Seq(IncomePayeHelpers().createValidPayeEntry()),
+      Seq(
+        SandboxIncomePaye().createValidPayeEntry("2019-05-27"),
+        SandboxIncomePaye().createValidPayeEntry("2019-02-27")),
       Seq(IncomeSaHelpers().createValidSaTaxYearEntry())
     )
 }
 
-case class IncomePayeHelpers() {
-  def createValidPayeEntry() =
+case class SandboxIncomePaye() {
+  def createValidPayeEntry(date: String) =
     IfPayeEntry(
       taxCode = Some("K971"),
       paidHoursWorked = Some("36"),
@@ -98,7 +100,7 @@ case class IncomePayeHelpers() {
       taxDeductedOrRefunded = Some(159228.49),
       grossEarningsForNics = Some(createValodIFGrossEarningsForNics),
       employerPayeRef = Some("345/34678"),
-      paymentDate = Some("2019-02-27"),
+      paymentDate = Some(date),
       taxablePay = None,
       taxYear = Some("18-19"),
       monthlyPeriodNumber = None,

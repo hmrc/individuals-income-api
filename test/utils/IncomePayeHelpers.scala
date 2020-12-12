@@ -44,7 +44,7 @@ trait IncomePayeHelpers {
       Some(createValidPostGradLoan())
     )
 
-  private def createValidEmployeeNics() =
+  def createValidEmployeeNics() =
     IfEmployeeNics(
       Some(15797.45),
       Some(13170.69),
@@ -56,7 +56,7 @@ trait IncomePayeHelpers {
       Some(162081.23)
     )
 
-  private def createValidTotalEmployerNics() =
+  def createValidTotalEmployerNics() =
     IfTotalEmployerNics(
       Some(15797.45),
       Some(13170.69),
@@ -68,15 +68,15 @@ trait IncomePayeHelpers {
       Some(162081.23)
     )
 
-  private def createValidEmployeePensionContribs() =
+  def createValidEmployeePensionContribs() =
     IfEmployeePensionContribs(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 
-  private def createValidBenefits() = IfBenefits(Some(506328.1), Some(246594.83))
+  def createValidBenefits() = IfBenefits(Some(506328.1), Some(246594.83))
 
-  private def createValidStudentLoan() = IfStudentLoan(Some("02"), Some(88478), Some(545))
+  def createValidStudentLoan() = IfStudentLoan(Some("02"), Some(88478), Some(545))
 
-  private def createValidPostGradLoan() = IfPostGradLoan(Some(15636), Some(46849))
+  def createValidPostGradLoan() = IfPostGradLoan(Some(15636), Some(46849))
 
-  private def createValodIFGrossEarningsForNics() =
+  def createValodIFGrossEarningsForNics() =
     IfGrossEarningsForNics(Some(169731.51), Some(173987.07), Some(822317.49), Some(818841.65))
 }

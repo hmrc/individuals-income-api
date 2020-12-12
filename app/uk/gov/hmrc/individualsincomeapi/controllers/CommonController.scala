@@ -61,22 +61,22 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
   val environment: String
 
   def authPredicate(scopes: Iterable[String]): Predicate =
-    scopes.map(Enrolment(_): Predicate).reduce(_ or _)
+    scopes.map(Enrolment(_): Predicate).reduce(_ and _)
 
   def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(f: Iterable[String] => Future[Result])(
     implicit hc: HeaderCarrier): Future[Result] = {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
-    //TODO - put this back in after local testing!!
-    //if (environment == Environment.SANDBOX)
-    f(endpointScopes.toList)
-    //else {
-    //  authorised(authPredicate(endpointScopes))
-    //    .retrieve(Retrievals.allEnrolments) {
-    //      case scopes => f(scopes.enrolments.map(e => e.key).toList)
-    //    }
-    //}
+    if (environment == Environment.SANDBOX)
+      f(endpointScopes.toList)
+    else {
+      authorised(authPredicate(endpointScopes))
+        .retrieve(Retrievals.allEnrolments) {
+          case scopes => f(scopes.enrolments.map(e => e.key).toList)
+        }
+    }
+
   }
 
   def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
