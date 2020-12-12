@@ -53,7 +53,7 @@ class IndividualIncomeSpec extends BaseSpec {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
-      And("IF will return employments for the NINO")
+      And("IF will return income data for the NINO")
       // TODO: Fill in
 
       When("I request individual income for the existing matchId")

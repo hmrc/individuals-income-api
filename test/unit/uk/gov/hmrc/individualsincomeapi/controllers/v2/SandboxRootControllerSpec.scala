@@ -19,29 +19,30 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 import java.util.UUID
 
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{refEq}
+import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.mvc.ControllerComponents
-import play.api.test._
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import play.api.libs.json.Json
+import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveRootController, SandboxRootController}
+import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, LiveRootController, SandboxIncomeController, SandboxRootController}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import play.api.http.Status._
-import play.api.libs.json.Json
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import play.api.mvc.ControllerComponents
 
-import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future.{failed, successful}
 
-class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
+class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar with ScalaFutures {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup extends ScopesConfigHelper {
@@ -81,28 +82,13 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
   }
 
-  "Live match citizen controller match citizen function" should {
+  "sandbox match citizen function" should {
 
-    val randomMatchId = UUID.randomUUID()
+    "return 200 for a valid matchId" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(successful(matchedCitizen))
 
-    "return a 404 when a match id does not match live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
-        .thenReturn(failed(new MatchNotFoundException))
-      val result = await(liveRootController.root(randomMatchId).apply(FakeRequest()))
-
-      status(result) shouldBe NOT_FOUND
-
-      jsonBodyOf(result) shouldBe Json.parse(
-        """{"code" : "NOT_FOUND", "message" : "The resource can not be found"}"""
-      )
-    }
-
-    "return a 200 when a match id matches live data" in new Setup {
-
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
-        .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
-
-      val result = await(liveRootController.root(matchId).apply(FakeRequest()))
+      val result = await(sandboxRootController.root(matchId)(fakeRequest))
 
       status(result) shouldBe OK
 
@@ -120,19 +106,28 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
          }""")
     }
 
-    "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
+    "return 400 for an invalid matchId" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(failed(new MatchNotFoundException))
 
-      given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
-        .willReturn(Future.failed(new InsufficientEnrolments()))
+      val result = await(sandboxRootController.root(matchId)(fakeRequest))
 
-      val result = await(liveRootController.root(randomMatchId).apply(FakeRequest()))
+      status(result) shouldBe NOT_FOUND
 
-      status(result) shouldBe UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.parse(
+        """{"code" : "NOT_FOUND", "message" : "The resource can not be found"}"""
+      )
+    }
 
-      jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
-      verifyNoInteractions(mockLiveCitizenMatchingService)
+    "not require bearer token authentication" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(successful(matchedCitizen))
+
+      val result = await(sandboxRootController.root(matchId)(fakeRequest))
+
+      status(result) shouldBe OK
+      verifyNoInteractions(mockAuthConnector)
     }
 
   }
-
 }

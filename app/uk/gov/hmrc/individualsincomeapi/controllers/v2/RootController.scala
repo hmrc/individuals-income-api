@@ -39,10 +39,9 @@ abstract class RootController(
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
-    val scopes = scopeService.getAllScopes
-    requiresPrivilegedAuthentication(scopes) { authScopes =>
+    requiresPrivilegedAuthentication(scopeService.getAllScopes) { authScopes =>
       citizenMatchingService.matchCitizen(matchId) map { _: MatchedCitizen =>
-        val selfLink = HalLink("self", s"/individuals/employments/?matchId=$matchId")
+        val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
         Ok(Json.toJson(scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink))
       }
     }.recover(recovery)
