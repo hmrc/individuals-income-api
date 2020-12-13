@@ -35,6 +35,7 @@ import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, Sa
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.verifyNoInteractions
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry
@@ -63,9 +64,11 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     val fromDateString = "2017-03-02"
     val toDateString = "2017-05-31"
+
     val interval = new Interval(
       new LocalDate(fromDateString).toDateTimeAtStartOfDay,
-      new LocalDate(toDateString).toDateTimeAtStartOfDay)
+      new LocalDate(toDateString).toDateTimeAtStartOfDay
+    )
 
     val ifPaye = Seq(createValidPayeEntry())
 
@@ -154,39 +157,91 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     }
 
-    "return 500 when matching succeeds and service returns no payments" in new Setup {
+    "return 200 when matching succeeds and service returns no income" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-      //  .willReturn(successful(Seq.empty))
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+        .willReturn(successful(Seq.empty))
 
-      val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(FakeRequest())) }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links":{
+           |    "self":{
+           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
+           |    }
+           |  },
+           |  "paye":{
+           |    "income":[
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 with correct self link response when toDate is not provided in the request" in new Setup {
+    "return 200 with correct self link response when toDate is not provided in the request" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-      //  .willReturn(successful(payments))
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(FakeRequest())) }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+        .willReturn(successful(Seq.empty))
+
+      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links":{
+           |    "self":{
+           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
+           |    }
+           |  },
+           |  "paye":{
+           |    "income":[
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] { await(liveIncomeController.income(matchId, interval)(FakeRequest())) }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
+
     }
 
     "not require bearer token authentication for Sandbox" in new Setup {
-      val result = intercept[Exception] { await(sandboxIncomeController.income(matchId, interval)(FakeRequest())) }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      given(mockSandboxIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+        .willReturn(successful(Seq.empty))
+
+      val result = await(sandboxIncomeController.income(matchId, interval)(FakeRequest()))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links":{
+           |    "self":{
+           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
+           |    }
+           |  },
+           |  "paye":{
+           |    "income":[
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
+      verifyNoInteractions(mockAuthConnector)
     }
 
   }
