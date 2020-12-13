@@ -19,6 +19,7 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 import java.util.UUID
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IndividualsMatchingApiStub}
+import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
 import play.api.test.Helpers._
 import scalaj.http.{Http, HttpResponse}
@@ -116,9 +117,17 @@ class LiveRootControllerSpec extends BaseSpec {
       When("the root entry point to the API is invoked with an invalid match id")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
-      Then("the response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("the response status should be 404")
+      assertResponseIs(
+        response,
+        NOT_FOUND,
+        """
+          {
+             "code" : "NOT_FOUND",
+             "message" : "The resource can not be found"
+          }
+        """
+      )
     }
 
     scenario("valid request to the live implementation") {
@@ -136,9 +145,65 @@ class LiveRootControllerSpec extends BaseSpec {
       When("the root entry point to the API is invoked with a valid match id")
       val response = invokeEndpoint(s"$serviceUrl/?matchId=$matchId")
 
-      Then("the response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("the response status should be 200")
+      response.code shouldBe OK
+
+      Json.parse(response.body) shouldBe
+        Json.parse(s"""
+         {
+            "_links":{
+              "incomeSaUkProperties":{
+                "href":"individuals/income/sa/uk-properties?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA UK properties data"
+              },"incomeSaTrusts":{
+                "href":"individuals/income/sa/trusts?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA trusts data"
+              },"incomeSaSelfEmployments":{
+                "href":"individuals/income/sa/self-employments?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA self employments data"
+              },"incomeSaPartnerships":{
+                "href":"individuals/income/sa/partnerships?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA partnerships data"
+              },"self":{
+                "href":"/individuals/income/?matchId=$matchId"
+              },
+              "incomeSaInterestsAndDividends":{
+                "href":"individuals/income/sa/interests-and-dividends?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA interest and dividends data"
+              },
+              "incomeSaFurtherDetails":{
+                "href":"individuals/income/sa/further-details?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA further details data"
+              },"incomeSaAdditionalInformation":{
+                "href":"individuals/income/sa/additional-information?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA additional information data"
+              },"incomeSaOther":{
+                "href":"individuals/income/sa/other?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA other data"
+              },"incomeSaForeign":{
+                "href":"individuals/income/sa/foreign?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA foreign income data"
+              },"incomePaye":{
+                "href":"individuals/income/paye?matchId=$matchId{&startDate,endDate}",
+                "title":"Get an individual's PAYE income data"
+              },"incomeSaSummary":{
+                "href":"individuals/income/sa/summary?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA summary data"
+              },"incomeSaEmployments":{
+                "href":"individuals/income/sa/employments?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA employments data"
+              },"incomeSa":{
+                "href":"individuals/income/sa?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA income data"
+              },"incomeSaPensionsAndStateBenefits":{
+                "href":"individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA pensions and state benefits data"
+              },"incomeSaSource":{
+                "href":"/individuals/income/sa/source?matchId=$matchId{&startYear,endYear}",
+                "title":"Get an individual's SA source data"
+              }
+            }
+         }""")
     }
 
   }
