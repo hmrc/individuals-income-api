@@ -1,7 +1,13 @@
 @import play.api.libs.json.Json
-@(privilegedWhitelistedApplicationIds: Seq[String])
+@(  V1WhitelistedApplicationIDs: Seq[String],
+    V2WhitelistedApplicationIDs: Seq[String])
 {
   "scopes": [
+    {
+      "key": "The scopes you have been assigned",
+      "name": "The scopes you have been assigned",
+      "description": "An OAuth 2.0 Bearer Token with the scopes you have been assigned"
+    },
     {
       "key": "read:individuals-income",
       "name": "access income information for all individuals",
@@ -92,7 +98,12 @@
       {
         "version": "P1.0",
         "status": "PUBLISHED",
-        "access" : {"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(privilegedWhitelistedApplicationIds)}
+        "access" : {"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(V1WhitelistedApplicationIDs)}
+      },
+      {
+        "version":"P2.0",
+        "status":"PUBLISHED",
+        "access":{"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(V2WhitelistedApplicationIDs)}
       }
     ]
   }
