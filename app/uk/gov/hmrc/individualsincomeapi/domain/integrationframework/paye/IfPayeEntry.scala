@@ -120,10 +120,10 @@ object IfPayeEntry {
 
   implicit val grossEarningsForNicsFormat: Format[IfGrossEarningsForNics] = Format(
     (
-      (JsPath \ "inPayPeriod1").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod2").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod3").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod4").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "inPayPeriod1").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod2").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod3").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod4").readNullable[Double](verifying(paymentAmountValidator))
       )(IfGrossEarningsForNics.apply _),
     (
       (JsPath \ "inPayPeriod1").writeNullable[Double] and
@@ -135,14 +135,14 @@ object IfPayeEntry {
 
   implicit val totalEmployerNicsFormat: Format[IfTotalEmployerNics] = Format(
     (
-      (JsPath \ "inPayPeriod1").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod2").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod3").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod4").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd1").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd2").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd3").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd4").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "inPayPeriod1").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod2").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod3").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod4").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd1").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd2").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd3").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd4").readNullable[Double](verifying(paymentAmountValidator))
       )(IfTotalEmployerNics.apply _),
     (
       (JsPath \ "inPayPeriod1").writeNullable[Double] and
@@ -158,14 +158,14 @@ object IfPayeEntry {
 
   implicit val employeeNicsFormat: Format[IfEmployeeNics] = Format(
     (
-      (JsPath \ "inPayPeriod1").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod2").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod3").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "inPayPeriod4").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd1").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd2").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd3").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ytd4").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "inPayPeriod1").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod2").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod3").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "inPayPeriod4").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd1").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd2").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd3").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ytd4").readNullable[Double](verifying(paymentAmountValidator))
       )(IfEmployeeNics.apply _),
     (
       (JsPath \ "inPayPeriod1").writeNullable[Double] and
@@ -181,10 +181,10 @@ object IfPayeEntry {
 
   implicit val employeePensionContribsFormat: Format[IfEmployeePensionContribs] = Format(
     (
-      (JsPath \ "paidYTD").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "notPaidYTD").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "paid").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "notPaid").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "paidYTD").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "notPaidYTD").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "paid").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "notPaid").readNullable[Double](verifying(paymentAmountValidator))
       )(IfEmployeePensionContribs.apply _),
     (
       (JsPath \ "paidYTD").writeNullable[Double] and
@@ -196,8 +196,8 @@ object IfPayeEntry {
 
   implicit val benefitsFormat: Format[IfBenefits] = Format(
     (
-      (JsPath \ "taxedViaPayroll").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "taxedViaPayrollYTD").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "taxedViaPayroll").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "taxedViaPayrollYTD").readNullable[Double](verifying(paymentAmountValidator))
       )(IfBenefits.apply _),
     (
       (JsPath \ "taxedViaPayroll").writeNullable[Double] and
@@ -209,8 +209,8 @@ object IfPayeEntry {
     (
       (JsPath \ "planType")
         .readNullable[String](pattern(studentLoanPlanTypePattern, "Invalid student loan plan type")) and
-        (JsPath \ "repaymentsInPayPeriod").readNullable[Int](payeWholeUnitsPaymentTypeValidator) and
-        (JsPath \ "repaymentsYTD").readNullable[Int](payeWholeUnitsPositivePaymentTypeValidator)
+        (JsPath \ "repaymentsInPayPeriod").readNullable[Int](verifying(payeWholeUnitsPaymentTypeValidator)) and
+        (JsPath \ "repaymentsYTD").readNullable[Int](verifying(payeWholeUnitsPositivePaymentTypeValidator))
       )(IfStudentLoan.apply _),
     (
       (JsPath \ "planType").writeNullable[String] and
@@ -221,8 +221,8 @@ object IfPayeEntry {
 
   implicit val postGradLoanFormat: Format[IfPostGradLoan] = Format(
     (
-      (JsPath \ "repaymentsInPayPeriod").readNullable[Int](payeWholeUnitsPaymentTypeValidator) and
-        (JsPath \ "repaymentsYTD").readNullable[Int](payeWholeUnitsPositivePaymentTypeValidator)
+      (JsPath \ "repaymentsInPayPeriod").readNullable[Int](verifying(payeWholeUnitsPaymentTypeValidator)) and
+        (JsPath \ "repaymentsYTD").readNullable[Int](verifying(payeWholeUnitsPositivePaymentTypeValidator))
       )(IfPostGradLoan.apply _),
     (
       (JsPath \ "repaymentsInPayPeriod").writeNullable[Int] and
@@ -239,15 +239,15 @@ object IfPayeEntry {
         (JsPath \ "paidHoursWorked").readNullable[String]
           (maxLength[String](35)
             .keepAnd(pattern(paidHoursWorkPattern, "Invalid Paid Hours Work"))) and
-        (JsPath \ "taxablePayToDate").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "totalTaxToDate").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "taxDeductedOrRefunded").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "taxablePayToDate").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "totalTaxToDate").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "taxDeductedOrRefunded").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "grossEarningsForNICs").readNullable[IfGrossEarningsForNics] and
         (JsPath \ "employerPayeRef").readNullable[String]
           (maxLength[String](10)
             .keepAnd(pattern(employerPayeRefPattern, "Invalid employer PAYE reference"))) and
         (JsPath \ "paymentDate").readNullable[String](pattern(paymentDatePattern, "Invalid Payment Date")) and
-        (JsPath \ "taxablePay").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "taxablePay").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "taxYear").readNullable[String](pattern(payeTaxYearPattern, "Invalid Tax Year")) and
         (JsPath \ "monthlyPeriodNumber").readNullable[String]
           (pattern(monthlyPeriodNumberPattern, "Invalid Monthly Period Number")
@@ -256,12 +256,12 @@ object IfPayeEntry {
           (pattern(weeklyPeriodNumberPattern, "Invalid Weekly Period Number")
             .keepAnd(minLength[String](1)).keepAnd(maxLength[String](2))) and
         (JsPath \ "payFrequency").readNullable[String](isInPayFrequency) and
-        (JsPath \ "dednsFromNetPay").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "dednsFromNetPay").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "totalEmployerNICs").readNullable[IfTotalEmployerNics] and
         (JsPath \ "employeeNICs").readNullable[IfEmployeeNics] and
         (JsPath \ "employeePensionContribs").readNullable[IfEmployeePensionContribs] and
         (JsPath \ "benefits").readNullable[IfBenefits] and
-        (JsPath \ "statutoryPayYTD" \ "parentalBereavement").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "statutoryPayYTD" \ "parentalBereavement").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "studentLoan").readNullable[IfStudentLoan] and
         (JsPath \ "postGradLoan").readNullable[IfPostGradLoan]
       ) (IfPayeEntry.apply _),
