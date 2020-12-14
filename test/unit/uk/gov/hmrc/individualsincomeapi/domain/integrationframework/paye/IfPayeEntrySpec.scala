@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStudentLoan, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStatutoryPayYTD, IfStudentLoan, IfTotalEmployerNics}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
 
 class IfPayeEntrySpec extends WordSpec with Matchers {
@@ -45,6 +45,14 @@ class IfPayeEntrySpec extends WordSpec with Matchers {
       Some(15579.18),
       Some(110849.27),
       Some(162081.23)
+    )
+
+  val validStaturoryPayToDate =
+    IfStatutoryPayYTD(
+      Some(15797.45),
+      Some(13170.69),
+      Some(16193.76),
+      Some(30846.56)
     )
 
   val validEmployeePensionContribs =
@@ -78,7 +86,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers {
     Some(validEmployeeNics),
     Some(validEmployeePensionContribs),
     Some(validBenefits),
-    Some(39708.7),
+    Some(validStaturoryPayToDate),
     Some(validStudentLoan),
     Some(validPostGradLoan)
   )
@@ -102,7 +110,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers {
     Some(validEmployeeNics),
     Some(validEmployeePensionContribs),
     Some(validBenefits),
-    Some(39708.7),
+    Some(validStaturoryPayToDate),
     Some(validStudentLoan),
     Some(validPostGradLoan)
   )
@@ -161,8 +169,11 @@ class IfPayeEntrySpec extends WordSpec with Matchers {
           |        "taxedViaPayroll": 506328.1,
           |        "taxedViaPayrollYTD": 246594.83
           |    },
-          |    "statutoryPayYTD": {
-          |        "parentalBereavement": 39708.7
+          |    "statutoryPayYTD":{
+          |      "maternity":15797.45,
+          |      "paternity":13170.69,
+          |      "adoption":16193.76,
+          |      "parentalBereavement":30846.56
           |    },
           |    "studentLoan": {
           |        "planType": "02",

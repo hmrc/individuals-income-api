@@ -16,7 +16,7 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStudentLoan, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStatutoryPayYTD, IfStudentLoan, IfTotalEmployerNics}
 
 trait IncomePayeHelpers {
   def createValidPayeEntry() =
@@ -39,9 +39,17 @@ trait IncomePayeHelpers {
       Some(createValidEmployeeNics()),
       Some(createValidEmployeePensionContribs()),
       Some(createValidBenefits()),
-      Some(39708.7),
+      Some(createValidStatutoryPayToDate()),
       Some(createValidStudentLoan()),
       Some(createValidPostGradLoan())
+    )
+
+  def createValidStatutoryPayToDate() =
+    IfStatutoryPayYTD(
+      Some(15797.45),
+      Some(13170.69),
+      Some(16193.76),
+      Some(30846.56)
     )
 
   def createValidEmployeeNics() =

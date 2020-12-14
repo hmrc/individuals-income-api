@@ -150,8 +150,42 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc))
 
       result shouldBe List(
-        Income(None, None, None, Some("2006-05-27"), None, None, None, None, None, None, None, None, None, None),
-        Income(None, None, None, Some("2006-02-27"), None, None, None, None, None, None, None, None, None, None)
+        Income(
+          None,
+          None,
+          None,
+          None,
+          None,
+          Some("2006-05-27"),
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None),
+        Income(
+          None,
+          None,
+          None,
+          None,
+          None,
+          Some("2006-02-27"),
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None)
       )
     }
 

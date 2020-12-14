@@ -110,6 +110,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |        "employerPayeReference":"345/34678",
            |        "taxYear":"18-19",
            |        "payFrequency":"W4",
+           |        "monthlyPeriodNumber":"3",
+           |        "weeklyPeriodNumber":"2",
            |        "paymentDate":"2006-02-27",
            |        "paidHoursWorked":"36",
            |        "taxCode":"K971",
@@ -122,6 +124,12 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |          "notPaidYTD":173987.07,
            |          "paid":822317.49,
            |          "notPaid":818841.65
+           |        },
+           |        "statutoryPayYTD":{
+           |          "maternity":15797.45,
+           |          "paternity":13170.69,
+           |          "adoption":16193.76,
+           |          "parentalBereavement":30846.56
            |        },
            |        "grossEarningsForNics":{
            |          "inPayPeriod1":169731.51,

@@ -41,6 +41,8 @@ case class Income(
   //TODO - employee
   //TODO - payroll
   payFrequency: Option[String],
+  monthlyPeriodNumber: Option[String],
+  weeklyPeriodNumber: Option[String],
   paymentDate: Option[String],
   paidHoursWorked: Option[String],
   taxCode: Option[String],
@@ -49,7 +51,7 @@ case class Income(
   taxDeductedOrRefunded: Option[Double],
   dednsFromNetPay: Option[Double],
   employeePensionContribs: Option[IfEmployeePensionContribs],
-  //TODO statutoryPayYTD
+  statutoryPayYTD: Option[IfStatutoryPayYTD],
   grossEarningsForNics: Option[IfGrossEarningsForNics],
   totalEmployerNics: Option[IfTotalEmployerNics],
   employeeNics: Option[IfEmployeeNics]
@@ -111,7 +113,7 @@ case class SandboxIncomePaye() {
       employeeNics = Some(createValidEmployeeNics()),
       employeePensionContribs = Some(createValidEmployeePensionContribs()),
       benefits = None,
-      parentalBereavement = None,
+      None, //TODO parentalBereavement = None,
       studentLoan = None,
       postGradLoan = None
     )
