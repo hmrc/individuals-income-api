@@ -18,17 +18,23 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IndividualsMatchingApiStub}
+import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye
+import utils.IncomePayeHelpers
 
-class IndividualIncomeSpec extends BaseSpec {
+class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
 
   val matchId = UUID.randomUUID().toString
   val nino = "CS700100A"
   val fromDate = "2019-04-01"
   val toDate = "2020-01-01"
+  val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
+  val fields =
+    "paye(dednsFromNetPay,employedPayeRef,employee(hasPartner),employeeNICs(inPayPeriod,inPayPeriod1,inPayPeriod3,inPayPerio4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD),grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity),taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate,totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4),totalTaxToDate,weeklyPeriodNumber)"
 
   val payeIncomeScopes = List(
     "read:individuals-employments-nictsejo-c4",
@@ -54,7 +60,13 @@ class IndividualIncomeSpec extends BaseSpec {
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return income data for the NINO")
-      // TODO: Fill in
+      IfStub.searchPayeIncomeForPeriodReturns(
+        nino,
+        fromDate,
+        toDate,
+        fields,
+        incomePayeSingle
+      )
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
@@ -62,8 +74,10 @@ class IndividualIncomeSpec extends BaseSpec {
         .asString
 
       Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      response.code shouldBe OK
+
+      //TODO - response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      response.body shouldBe Json.toJson(incomePayeSingle).toString()
     }
 
     scenario("Individual has no employment income") {
