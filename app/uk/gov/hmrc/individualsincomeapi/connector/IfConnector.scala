@@ -53,7 +53,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
     val startDate = interval.getStart.toLocalDate
     val endDate = interval.getEnd.toLocalDate
     val payeUrl = s"$serviceUrl/individuals/income/paye/" +
-      s"nino/$nino?startDate=$startDate&endDate=$endDate&fields=${filter.map(f => s"&fields=$f").getOrElse("")}"
+      s"nino/$nino?startDate=$startDate&endDate=$endDate${filter.map(f => s"&fields=$f").getOrElse("")}"
 
     recover[IfPayeEntry](http.GET[IfPaye](payeUrl)(implicitly, header(), ec).map(_.paye))
   }

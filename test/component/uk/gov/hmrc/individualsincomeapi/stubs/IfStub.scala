@@ -25,24 +25,26 @@ object IfStub extends MockHost(24000) {
 
   def searchPayeIncomeForPeriodReturns(nino: String, fromDate: String, toDate: String, fields: String, ifPaye: IfPaye) =
     mock.register(
-      get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino/"))
+      get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
         .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifPaye).toString())))
 
-  def searchPayeIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String) =
+  def searchPayeIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String, fields: String) =
     mock.register(
-      get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino/"))
+      get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
+        .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
 
-  def searchPayeIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String): Unit =
+  def searchPayeIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String, fields: String): Unit =
     mock.register(
-      get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino/"))
+      get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
+        .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
 }

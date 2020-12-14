@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye}
 import utils.IncomePayeHelpers
 
 class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
@@ -33,8 +33,15 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
   val fromDate = "2019-04-01"
   val toDate = "2020-01-01"
   val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
+
   val fields =
-    "paye(dednsFromNetPay,employedPayeRef,employee(hasPartner),employeeNICs(inPayPeriod,inPayPeriod1,inPayPeriod3,inPayPerio4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD),grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity),taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate,totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4),totalTaxToDate,weeklyPeriodNumber)"
+    "paye(dednsFromNetPay,employedPayeRef,employee(hasPartner),employeeNICs(inPayPeriod,inPayPeriod1," +
+      "inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
+      "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber,paidHoursWorked," +
+      "payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
+      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
+      "totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "totalTaxToDate,weeklyPeriodNumber)"
 
   val payeIncomeScopes = List(
     "read:individuals-employments-nictsejo-c4",
@@ -76,11 +83,69 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
       Then("The response status should be 500")
       response.code shouldBe OK
 
-      //TODO - response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-      response.body shouldBe Json.toJson(incomePayeSingle).toString()
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links":{
+               |    "self":{
+               |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2019-04-01&toDate=2020-01-01"
+               |    }
+               |  },
+               |  "paye":{
+               |    "income":[
+               |      {
+               |        "employerPayeReference":"345/34678",
+               |        "taxYear":"18-19",
+               |        "payFrequency":"W4",
+               |        "paymentDate":"2006-02-27",
+               |        "paidHoursWorked":"36",
+               |        "taxCode":"K971",
+               |        "taxablePayToDate":19157.5,
+               |        "totalTaxToDate":3095.89,
+               |        "taxDeductedOrRefunded":159228.49,
+               |        "dednsFromNetPay":198035.8,
+               |        "employeePensionContribs":{
+               |          "paidYTD":169731.51,
+               |          "notPaidYTD":173987.07,
+               |          "paid":822317.49,
+               |          "notPaid":818841.65
+               |        },
+               |        "grossEarningsForNics":{
+               |          "inPayPeriod1":169731.51,
+               |          "inPayPeriod2":173987.07,
+               |          "inPayPeriod3":822317.49,
+               |          "inPayPeriod4":818841.65
+               |        },
+               |        "totalEmployerNics":{
+               |          "inPayPeriod1":15797.45,
+               |          "inPayPeriod2":13170.69,
+               |          "inPayPeriod3":16193.76,
+               |          "inPayPeriod4":30846.56,
+               |          "ytd1":10633.5,
+               |          "ytd2":15579.18,
+               |          "ytd3":110849.27,
+               |          "ytd4":162081.23
+               |        },
+               |        "employeeNics":{
+               |          "inPayPeriod1":15797.45,
+               |          "inPayPeriod2":13170.69,
+               |          "inPayPeriod3":16193.76,
+               |          "inPayPeriod4":30846.56,
+               |          "ytd1":10633.5,
+               |          "ytd2":15579.18,
+               |          "ytd3":110849.27,
+               |          "ytd4":162081.23
+               |        }
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
     }
 
-    scenario("Individual has no employment income") {
+    scenario("Individual has no paye income") {
       val toDate = "2020-02-01"
 
       Given("A valid privileged Auth bearer token")
@@ -89,17 +154,38 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
       And("a valid record in the matching API")
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
-      And("IF will return employments for the NINO")
-      // TODO: Fill in
+      And("IF will return paye for the NINO")
+      IfStub.searchPayeIncomeReturnsNoIncomeFor(
+        nino,
+        fromDate,
+        toDate,
+        fields
+      )
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("The response status should be 200")
+      response.code shouldBe OK
+
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links":{
+               |    "self":{
+               |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2019-04-01&toDate=$toDate"
+               |    }
+               |  },
+               |  "paye":{
+               |    "income":[
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
     }
 
     scenario("The employment income data source is rate limited") {
@@ -112,16 +198,24 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF is rate limited")
-      // TODO: Fill in
+      IfStub.searchPayeIncomeReturnsRateLimitErrorFor(
+        nino,
+        fromDate,
+        toDate,
+        fields
+      )
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("The response status should be 429 Too Many Requests")
+      response.code shouldBe TOO_MANY_REQUESTS
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "TOO_MANY_REQUESTS",
+        "message" -> "Rate limit exceeded"
+      )
     }
   }
 
@@ -135,8 +229,58 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
         .asString
 
       Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      response.code shouldBe OK
+
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{"_links":{
+               |"self":{"href":"/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-04-01&toDate=2020-01-01"}},
+               |"paye":{"income":[{
+               |  "employerPayeReference":"345/34678",
+               |  "taxYear":"18-19",
+               |  "payFrequency":"W4",
+               |  "paymentDate":"2019-05-27",
+               |  "paidHoursWorked":"36",
+               |  "taxCode":"K971",
+               |  "taxablePayToDate":19157.5,
+               |  "totalTaxToDate":3095.89,
+               |  "taxDeductedOrRefunded":159228.49,
+               |  "dednsFromNetPay":198035.8,
+               |  "employeePensionContribs":{
+               |    "paidYTD":169731.51,
+               |    "notPaidYTD":173987.07,
+               |    "paid":822317.49,
+               |    "notPaid":818841.65
+               |  },"grossEarningsForNics":{
+               |    "inPayPeriod1":169731.51,
+               |    "inPayPeriod2":173987.07,
+               |    "inPayPeriod3":822317.49,
+               |    "inPayPeriod4":818841.65},
+               |    "totalEmployerNics":{
+               |      "inPayPeriod1":15797.45,
+               |      "inPayPeriod2":13170.69,
+               |      "inPayPeriod3":16193.76,
+               |      "inPayPeriod4":30846.56,
+               |      "ytd1":10633.5,
+               |      "ytd2":15579.18,
+               |      "ytd3":110849.27,
+               |      "ytd4":162081.23
+               |    },"employeeNics":{
+               |      "inPayPeriod1":15797.45,
+               |      "inPayPeriod2":13170.69,
+               |      "inPayPeriod3":16193.76,
+               |      "inPayPeriod4":30846.56,
+               |      "ytd1":10633.5,
+               |      "ytd2":15579.18,
+               |      "ytd3":110849.27,
+               |      "ytd4":162081.23
+               |    }
+               |  }
+               |]
+               |}}""".stripMargin
+          )
+          .toString()
     }
   }
 }
