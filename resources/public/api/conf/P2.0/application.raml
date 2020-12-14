@@ -30,8 +30,8 @@ uses:
       displayName: Get a list of available endpoints
       description: Use this endpoint to get a list of available endpoints for Individuals Income.
       is: [headers.acceptHeader]
-      (annotations.scope): "The scopes you have been assigned"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "The scopes you have been assigned" ] } ]
+      (annotations.scope): "read:the-scopes-you-have-been-assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:the-scopes-you-have-been-assigned" ] } ]
       (annotations.sandboxData): !include sandbox/root.md
       headers:
         Authorization:
