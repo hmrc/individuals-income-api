@@ -19,9 +19,9 @@ documentation:
 mediaType: [ application/json, application/hal+json ]
 
 uses:
-  sec: !include securitySchemes.raml
+  sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
   headers: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/headers.raml
-  annotations: !include annotations.raml
+  annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 
 /individuals/income:
@@ -30,8 +30,8 @@ uses:
       displayName: Get a list of available endpoints
       description: Use this endpoint to get a list of available endpoints for Individuals Income.
       is: [headers.acceptHeader]
-      (annotations.scope-desc): "An OAuth 2.0 Bearer Token with the scopes you have been assigned."
-      securedBy: [ sec.oauth_2_0: {} ]
+      (annotations.scope): "read:the-scopes-you-have-been-assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:the-scopes-you-have-been-assigned" ] } ]
       (annotations.sandboxData): !include sandbox/root.md
       headers:
         Authorization:
