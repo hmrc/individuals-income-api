@@ -19,7 +19,7 @@ documentation:
 mediaType: [ application/json, application/hal+json ]
 
 uses:
-  sec: !include securitySchemes.raml
+  sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
   headers: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/headers.raml
   annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
@@ -33,12 +33,6 @@ uses:
       (annotations.scope): "assigned:scopes"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
       (annotations.sandboxData): !include sandbox/root.md
-      headers:
-        Authorization:
-          description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-          type: string
-          required: true
-          example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -77,12 +71,6 @@ uses:
       (annotations.scope): "assigned:scopes"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
       (annotations.sandboxData): !include sandbox/income-sa-request.md
-      headers:
-        Authorization:
-          description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-          type: string
-          required: true
-          example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -131,12 +119,6 @@ uses:
       (annotations.scope): "assigned:scopes"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
       (annotations.sandboxData): !include sandbox/income-request.md
-      headers:
-        Authorization:
-          description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-          type: string
-          required: true
-          example: Bearer <BEARER_TOKEN>
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -185,12 +167,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-additional-information-request.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -239,12 +215,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-employments.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -293,12 +263,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-foreign.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -347,12 +311,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-dividends.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -401,12 +359,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-other.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -455,12 +407,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -509,12 +455,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-pensions-benefits.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -563,12 +503,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-self-employments.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -617,12 +551,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-summary.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -671,12 +599,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-trusts.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -725,12 +647,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-uk-properties.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -779,12 +695,6 @@ uses:
         (annotations.scope): "assigned:scopes"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-source.md
-        headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-            type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -833,12 +743,6 @@ uses:
           (annotations.scope): "assigned:scopes"
           securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
           (annotations.sandboxData): !include sandbox/income-sa-request-further-details.md
-          headers:
-            Authorization:
-              description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
-              type: string
-              required: true
-              example: Bearer <BEARER_TOKEN>
           queryParameters:
             matchId:
               description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
