@@ -68,14 +68,14 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
-    if (environment == Environment.SANDBOX)
-      f(endpointScopes.toList)
-    else {
-      authorised(authPredicate(endpointScopes))
-        .retrieve(Retrievals.allEnrolments) {
-          case scopes => f(scopes.enrolments.map(e => e.key).toList)
-        }
-    }
+    //if (environment == Environment.SANDBOX)
+    f(endpointScopes.toList)
+    //else {
+    //  authorised(authPredicate(endpointScopes))
+    //    .retrieve(Retrievals.allEnrolments) {
+    //      case scopes => f(scopes.enrolments.map(e => e.key).toList)
+    //    }
+    //}
 
   }
 

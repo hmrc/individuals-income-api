@@ -81,6 +81,11 @@ case class IfPostGradLoan(
   repaymentsYtd: Option[Int]
 )
 
+case class IFAdditionalFields(
+                             employeeHasPartner: Option[Boolean],
+                             payrollId: Option[String]
+                             )
+
 case class IfPayeEntry(
   taxCode: Option[String],
   paidHoursWorked: Option[String],
@@ -102,7 +107,8 @@ case class IfPayeEntry(
   benefits: Option[IfBenefits],
   statutoryPayYTD: Option[IfStatutoryPayYTD],
   studentLoan: Option[IfStudentLoan],
-  postGradLoan: Option[IfPostGradLoan]
+  postGradLoan: Option[IfPostGradLoan],
+  additionalFields: Option[IFAdditionalFields] = None
 )
 
 object IfPayeEntry {
@@ -252,6 +258,17 @@ object IfPayeEntry {
     )(unlift(IfPostGradLoan.unapply))
   )
 
+  implicit val additionalFieldsFormat: Format[IFAdditionalFields] = Format(
+    (
+      (JsPath \ "employee" \ "hasPartner").readNullable[Boolean] and
+        (JsPath \ "payroll" \ "id").readNullable[String]
+      )(IFAdditionalFields.apply _),
+    (
+      (JsPath \ "employee" \ "hasPartner").writeNullable[Boolean] and
+        (JsPath \ "payroll" \ "id").writeNullable[String]
+      )(unlift(IFAdditionalFields.unapply))
+  )
+
   implicit val payeEntryFormat: Format[IfPayeEntry] = Format(
     (
       (JsPath \ "taxCode").readNullable[String](minLength[String](2)
@@ -282,7 +299,8 @@ object IfPayeEntry {
         (JsPath \ "benefits").readNullable[IfBenefits] and
         (JsPath \ "statutoryPayYTD").readNullable[IfStatutoryPayYTD] and
         (JsPath \ "studentLoan").readNullable[IfStudentLoan] and
-        (JsPath \ "postGradLoan").readNullable[IfPostGradLoan]
+        (JsPath \ "postGradLoan").readNullable[IfPostGradLoan] and
+        (JsPath).readNullable[IFAdditionalFields]
     )(IfPayeEntry.apply _),
     (
       (JsPath \ "taxCode").writeNullable[String] and
@@ -305,15 +323,16 @@ object IfPayeEntry {
         (JsPath \ "benefits").writeNullable[IfBenefits] and
         (JsPath \ "statutoryPayYTD").writeNullable[IfStatutoryPayYTD] and
         (JsPath \ "studentLoan").writeNullable[IfStudentLoan] and
-        (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan]
+        (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan] and
+        (JsPath).writeNullable[IFAdditionalFields]
     )(unlift(IfPayeEntry.unapply))
   )
 
   implicit val incomeJsonFormat = Json.format[Income]
 
   def toIncome(entries: Seq[IfPayeEntry]): Seq[Income] =
-    entries.map { paye =>
 
+    entries.map { paye =>
       Income(
         paye.employerPayeRef,
         paye.taxYear,
