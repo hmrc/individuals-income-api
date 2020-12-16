@@ -34,6 +34,14 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     PathTree(scopesService.getValidItemsFor(scopes, endpoint)).toString
 
   /**
+    * @param scopes The list of scopes associated with the user
+    * @param endpoints The endpoint that the user has called
+    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+    */
+  def getQueryStringFor(scopes: Iterable[String], endpoints: List[String]): String =
+    PathTree(scopesService.getValidItemsFor(scopes, endpoints)).toString
+
+  /**
     * @param endpoint The endpoint that the user has called
     * @param scopes The list of scopes associated with the user
     * @param data The data to be returned from the endpoint

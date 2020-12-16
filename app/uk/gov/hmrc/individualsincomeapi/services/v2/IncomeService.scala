@@ -34,8 +34,11 @@ import scala.concurrent.Future.{failed, successful}
 trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
-  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, endpoint: String, scopes: Iterable[String])(
+  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[Seq[Income]]
+
+  def endpoints =
+    List("incomePaye")
 }
 
 @Singleton
@@ -48,7 +51,7 @@ class LiveIncomeService @Inject()(
   scopesHelper: ScopesHelper)
     extends IncomeService {
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, endpoint: String, scopes: Iterable[String])(
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[Seq[Income]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
@@ -56,13 +59,15 @@ class LiveIncomeService @Inject()(
                      PayeCacheId(
                        matchId,
                        interval,
-                       scopeService.getValidFieldsForCacheKey(scopes.toList)
+                       scopeService
+                         .getValidFieldsForCacheKey(scopes.toList, endpoints)
                      ),
                      withRetry(
                        ifConnector.fetchPayeIncome(
                          ninoMatch.nino,
                          interval,
-                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoint)).filter(_.nonEmpty)
+                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints))
+                           .filter(_.nonEmpty)
                        )
                      )
                    )
@@ -90,7 +95,7 @@ class SandboxIncomeService extends IncomeService {
     interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
   }
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, endpoint: String, scopes: Iterable[String])(
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[Seq[Income]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payeIncome) =>

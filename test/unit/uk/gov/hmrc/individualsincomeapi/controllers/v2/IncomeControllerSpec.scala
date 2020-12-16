@@ -90,7 +90,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 200 when matching succeeds and service returns income" in new Setup {
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any()))
         .willReturn(successful(IfPayeEntry.toIncome(ifPaye)))
 
       val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
@@ -167,7 +167,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 200 when matching succeeds and service returns no income" in new Setup {
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
@@ -193,7 +193,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
       val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
@@ -217,7 +217,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
@@ -228,7 +228,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "not require bearer token authentication for Sandbox" in new Setup {
 
-      given(mockSandboxIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any(), any())(any()))
+      given(mockSandboxIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(sandboxIncomeController.income(matchId, interval)(FakeRequest()))

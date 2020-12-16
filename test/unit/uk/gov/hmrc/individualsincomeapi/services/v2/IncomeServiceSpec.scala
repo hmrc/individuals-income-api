@@ -77,14 +77,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     "return the employment's income" in new Setup {
 
       val ifPaye = Seq(createValidPayeEntry())
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any()))
         .willReturn(successful(ifPaye))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
 
       result shouldBe IfPayeEntry.toIncome(ifPaye)
     }
@@ -140,14 +139,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         )
       )
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any()))
         .willReturn(successful(ifPaye))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
 
       result shouldBe List(
         Income(
@@ -191,33 +189,30 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     "Return empty list when there are no payments for a given period" in new Setup {
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
 
       result shouldBe List.empty
     }
 
     "propagate MatchNotFoundException when the matchId does not exist" in new Setup {
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willThrow(new MatchNotFoundException)
 
       intercept[MatchNotFoundException] {
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
       }
     }
 
     "fail when IF returns an error" in new Setup {
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
@@ -225,14 +220,12 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException](
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc)))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc)))
     }
 
     "retry once if IF returns a 503" in new Setup {
 
       val ifPaye = Seq(createValidPayeEntry())
-
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
@@ -240,7 +233,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(ifPaye))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, endpoint, scopes)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
       result shouldBe IfPayeEntry.toIncome(ifPaye)
 
       verify(mockIfConnector, times(2)).fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any())
@@ -250,7 +243,6 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val paye = Seq(createValidPayeEntry())
       val mockMatching = mock[IndividualsMatchingApiConnector]
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
       val mockIf = mock[IfConnector]
       val scopesHelper = mock[ScopesHelper]
@@ -267,10 +259,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val testService = new LiveIncomeService(mockMatching, mockIf, 1, stubCache, scopesService, scopesHelper)
 
-      val res = await(
-        testService
-          .fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"), endpoint, scopes)(
-            HeaderCarrier()))
+      val res = await(testService
+        .fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"), scopes)(HeaderCarrier()))
       res shouldBe IfPayeEntry.toIncome(paye)
 
       verify(mockIf, never).fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any())
@@ -286,13 +276,12 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         SandboxIncomePaye().createValidPayeEntry("2019-02-27")
       )
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       val result =
         await(
           sandboxIncomeService
-            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2020-03-01"), endpoint, scopes)(hc))
+            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2020-03-01"), scopes)(hc))
       result shouldBe IfPayeEntry.toIncome(ifPaye)
     }
 
@@ -302,37 +291,34 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         SandboxIncomePaye().createValidPayeEntry("2019-05-27")
       )
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       val result =
         await(
           sandboxIncomeService
-            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-05-01", "2019-05-30"), endpoint, scopes)(hc))
+            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-05-01", "2019-05-30"), scopes)(hc))
       result shouldBe IfPayeEntry.toIncome(expected)
     }
 
     "return no income when the individual has no income for a given period" in new Setup {
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       val result =
         await(
           sandboxIncomeService
-            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-08-01", "2016-09-01"), endpoint, scopes)(hc))
+            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-08-01", "2016-09-01"), scopes)(hc))
 
       result shouldBe Seq.empty
     }
 
     "throw not found exception when no individual exists for the given matchId" in new Setup {
 
-      val endpoint = "fetchPayeIncome"
       val scopes = Iterable("scope1")
 
       intercept[MatchNotFoundException](
         await(sandboxIncomeService
-          .fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"), endpoint, scopes)(hc)))
+          .fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"), scopes)(hc)))
     }
   }
 }
