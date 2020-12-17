@@ -27,7 +27,6 @@ import scalaj.http.{Http, HttpResponse}
 class LiveRootControllerSpec extends BaseSpec {
 
   val allIncomeScopes = List(
-    "read:individuals-employments-nictsejo-c4",
     "read:individuals-income-hmcts-c2",
     "read:individuals-income-hmcts-c3",
     "read:individuals-income-hmcts-c4",
@@ -36,7 +35,8 @@ class LiveRootControllerSpec extends BaseSpec {
     "read:individuals-income-laa-c3",
     "read:individuals-income-laa-c4",
     "read:individuals-income-lsani-c1",
-    "read:individuals-income-lsani-c3"
+    "read:individuals-income-lsani-c3",
+    "read:individuals-income-nictsejo-c4"
   )
 
   feature("Root (hateoas) entry point is accessible") {

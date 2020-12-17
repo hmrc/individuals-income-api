@@ -44,7 +44,6 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
       "totalTaxToDate,weeklyPeriodNumber)"
 
   val payeIncomeScopes = List(
-    "read:individuals-employments-nictsejo-c4",
     "read:individuals-income-hmcts-c2",
     "read:individuals-income-hmcts-c3",
     "read:individuals-income-hmcts-c4",
@@ -53,7 +52,8 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
     "read:individuals-income-laa-c3",
     "read:individuals-income-laa-c4",
     "read:individuals-income-lsani-c1",
-    "read:individuals-income-lsani-c3"
+    "read:individuals-income-lsani-c3",
+    "read:individuals-income-nictsejo-c4"
   )
 
   feature("Live individual income") {
