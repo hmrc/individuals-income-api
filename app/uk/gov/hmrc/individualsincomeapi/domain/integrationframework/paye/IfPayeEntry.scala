@@ -20,7 +20,7 @@ import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json.{Format, JsPath, Json, Reads}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye._
-import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
+import uk.gov.hmrc.individualsincomeapi.domain.v2.{Employee, Income, Payroll}
 
 case class IfGrossEarningsForNics(
   inPayPeriod1: Option[Double],
@@ -108,7 +108,7 @@ case class IfPayeEntry(
   statutoryPayYTD: Option[IfStatutoryPayYTD],
   studentLoan: Option[IfStudentLoan],
   postGradLoan: Option[IfPostGradLoan],
-  additionalFields: Option[IFAdditionalFields] = None
+  additionalFields: Option[IFAdditionalFields]
 )
 
 object IfPayeEntry {
@@ -328,7 +328,23 @@ object IfPayeEntry {
     )(unlift(IfPayeEntry.unapply))
   )
 
+  implicit val employeeJsonFormat = Json.format[Employee]
+  implicit val payrollJsonFormat = Json.format[Payroll]
   implicit val incomeJsonFormat = Json.format[Income]
+
+  private def toEmployee(additionalFields: Option[IFAdditionalFields]): Option[Employee] = {
+    additionalFields match {
+      case Some(value) => Some(Employee(value.employeeHasPartner))
+      case None => None
+    }
+  }
+
+  private def toPayroll(additionalFields: Option[IFAdditionalFields]): Option[Payroll] = {
+    additionalFields match {
+      case Some(value) => Some(Payroll(value.payrollId))
+      case None => None
+    }
+  }
 
   def toIncome(entries: Seq[IfPayeEntry]): Seq[Income] =
 
@@ -336,6 +352,8 @@ object IfPayeEntry {
       Income(
         paye.employerPayeRef,
         paye.taxYear,
+        toEmployee(paye.additionalFields),
+        toPayroll(paye.additionalFields),
         paye.payFrequency,
         paye.monthlyPeriodNumber,
         paye.weeklyPeriodNumber,

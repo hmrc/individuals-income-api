@@ -16,9 +16,13 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStatutoryPayYTD, IfStudentLoan, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFAdditionalFields, IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStatutoryPayYTD, IfStudentLoan, IfTotalEmployerNics}
 
 trait IncomePayeHelpers {
+
+  def createInvalidPayeEntry() =
+    createValidPayeEntry().copy(payFrequency = Some("MADEUPVAL"))
+
   def createValidPayeEntry() =
     IfPayeEntry(
       Some("K971"),
@@ -41,8 +45,12 @@ trait IncomePayeHelpers {
       Some(createValidBenefits()),
       Some(createValidStatutoryPayToDate()),
       Some(createValidStudentLoan()),
-      Some(createValidPostGradLoan())
+      Some(createValidPostGradLoan()),
+      Some(createValidAdditionalFields())
     )
+
+  private def createValidAdditionalFields() =
+    IFAdditionalFields(Some(false), Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"))
 
   def createValidStatutoryPayToDate() =
     IfStatutoryPayYTD(

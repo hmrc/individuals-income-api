@@ -97,6 +97,12 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
                |      {
                |        "employerPayeReference":"345/34678",
                |        "taxYear":"18-19",
+               |        "employee":{
+               |          "hasPartner": false
+               |        },
+               |        "payroll": {
+               |          "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+               |        },
                |        "payFrequency":"W4",
                |        "monthlyPeriodNumber":"3",
                |        "weeklyPeriodNumber":"2",
@@ -247,6 +253,12 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
                |"paye":{"income":[{
                |  "employerPayeReference":"345/34678",
                |  "taxYear":"18-19",
+               |  "employee":{
+               |    "hasPartner": false
+               |  },
+               |  "payroll": {
+               |    "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+               |  },
                |  "payFrequency":"W4",
                |  "paymentDate":"2019-05-27",
                |  "paidHoursWorked":"36",
@@ -260,7 +272,14 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
                |    "notPaidYTD":173987.07,
                |    "paid":822317.49,
                |    "notPaid":818841.65
-               |  },"grossEarningsForNics":{
+               |  },
+               |  "statutoryPayYTD":{
+               |    "maternity":15797.45,
+               |    "paternity":13170.69,
+               |    "adoption":16193.76,
+               |    "parentalBereavement":30846.56
+               |  },
+               |  "grossEarningsForNics":{
                |    "inPayPeriod1":169731.51,
                |    "inPayPeriod2":173987.07,
                |    "inPayPeriod3":822317.49,

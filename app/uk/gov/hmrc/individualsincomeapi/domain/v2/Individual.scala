@@ -35,11 +35,14 @@ case class Individual(
   income: Seq[IfPayeEntry],
   saIncome: Seq[IfSaEntry])
 
+case class Employee(hasPartner: Option[Boolean])
+case class Payroll(id: Option[String])
+
 case class Income(
   employerPayeReference: Option[String],
   taxYear: Option[String],
-  //TODO - employee
-  //TODO - payroll
+  employee: Option[Employee],
+  payroll: Option[Payroll],
   payFrequency: Option[String],
   monthlyPeriodNumber: Option[String],
   weeklyPeriodNumber: Option[String],
@@ -54,8 +57,7 @@ case class Income(
   statutoryPayYTD: Option[IfStatutoryPayYTD],
   grossEarningsForNics: Option[IfGrossEarningsForNics],
   totalEmployerNics: Option[IfTotalEmployerNics],
-  employeeNics: Option[IfEmployeeNics]
-)
+  employeeNics: Option[IfEmployeeNics])
 
 object SandboxIncomeData {
 
@@ -113,10 +115,17 @@ case class SandboxIncomePaye() {
       employeeNics = Some(createValidEmployeeNics()),
       employeePensionContribs = Some(createValidEmployeePensionContribs()),
       benefits = None,
-      None, //TODO parentalBereavement = None,
+      Some(createValidStatutoryPayYTD()),
       studentLoan = None,
-      postGradLoan = None
+      postGradLoan = None,
+      Some(createValidAdditionalFields())
     )
+
+  private def createValidAdditionalFields() =
+    IFAdditionalFields(Some(false), Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"))
+
+  private def createValidStatutoryPayYTD() =
+    IfStatutoryPayYTD(Some(15797.45), Some(13170.69), Some(16193.76), Some(30846.56))
 
   private def createValidEmployeeNics() =
     IfEmployeeNics(

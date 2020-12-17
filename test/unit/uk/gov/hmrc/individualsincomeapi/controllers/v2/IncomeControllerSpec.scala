@@ -109,6 +109,12 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |      {
            |        "employerPayeReference":"345/34678",
            |        "taxYear":"18-19",
+           |        "employee": {
+           |          "hasPartner": false
+           |         },
+           |         "payroll": {
+           |           "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+           |        },
            |        "payFrequency":"W4",
            |        "monthlyPeriodNumber":"3",
            |        "weeklyPeriodNumber":"2",
