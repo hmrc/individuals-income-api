@@ -88,6 +88,56 @@
       "name":"access income information",
       "description":"Access personal and employment-based income information",
       "confidenceLevel": 200
+    },
+    {
+      "key":"read:individuals-income-laa-c1",
+      "name":"access all self assessment information of individuals for laa use case 1",
+      "description":"Scope for LAA use case 1 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-laa-c2",
+      "name":"access all self assessment information of individuals for laa use case 2",
+      "description":"Scope for LAA use case 2 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-laa-c3",
+      "name":"access all self assessment information of individuals for laa use case 3",
+      "description":"Scope for LAA use case 3 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-laa-c4",
+      "name":"access all self assessment information of individuals for laa use case 4",
+      "description":"Scope for LAA use case 4 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-hmcts-c2",
+      "name":"access all self assessment information of individuals for hmcts use case 2",
+      "description":"Scope for HMCTS use case 2 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-hmcts-c3",
+      "name":"access all self assessment information of individuals for hmcts use case 3",
+      "description":"Scope for HMCTS use case 3 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-hmcts-c4",
+      "name":"access all self assessment information of individuals for hmcts use case 4",
+      "description":"Scope for HMCTS use case 4 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-lsani-c1",
+      "name":"access all self assessment information of individuals for lsani use case 1",
+      "description":"Scope for LSANI use case 1 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-lsani-c3",
+      "name":"access all self assessment information of individuals for lsani use case 3",
+      "description":"Scope for LSANI use case 3 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-nictsejo-c4",
+      "name":"access all self assessment information of individuals for nictsejo use case 4",
+      "description":"Scope for NICTSEJO use case 4 to access all self assessment information of individuals"
     }
   ],
   "api": {
