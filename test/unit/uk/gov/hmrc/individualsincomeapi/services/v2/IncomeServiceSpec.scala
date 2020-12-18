@@ -85,7 +85,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
 
-      result shouldBe IfPayeEntry.toIncome(ifPaye)
+      result shouldBe (ifPaye map IfPayeEntry.toIncome)
     }
 
     "Sort the payments by payment date descending" in new Setup {
@@ -240,7 +240,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(successful(ifPaye))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc))
-      result shouldBe IfPayeEntry.toIncome(ifPaye)
+      result shouldBe (ifPaye map IfPayeEntry.toIncome)
 
       verify(mockIfConnector, times(2)).fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any())
     }
@@ -267,7 +267,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val res = await(testService
         .fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"), scopes)(HeaderCarrier()))
-      res shouldBe IfPayeEntry.toIncome(paye)
+      res shouldBe (paye map IfPayeEntry.toIncome)
 
       verify(mockIf, never).fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any())
     }
@@ -284,11 +284,12 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val scopes = Iterable("scope1")
 
-      val result =
-        await(
-          sandboxIncomeService
-            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2020-03-01"), scopes)(hc))
-      result shouldBe IfPayeEntry.toIncome(ifPaye)
+      val result = await(
+        sandboxIncomeService.fetchIncomeByMatchId(
+          sandboxMatchId, toInterval("2019-01-01", "2020-03-01"), scopes
+        )(hc)
+      )
+      result shouldBe (ifPaye map IfPayeEntry.toIncome)
     }
 
     "return income for a limited period" in new Setup {
@@ -303,7 +304,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         await(
           sandboxIncomeService
             .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-05-01", "2019-05-30"), scopes)(hc))
-      result shouldBe IfPayeEntry.toIncome(expected)
+      result shouldBe (expected map IfPayeEntry.toIncome)
     }
 
     "return no income when the individual has no income for a given period" in new Setup {

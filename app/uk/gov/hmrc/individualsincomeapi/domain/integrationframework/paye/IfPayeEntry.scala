@@ -360,9 +360,8 @@ object IfPayeEntry {
 
   }
 
-  def toIncome(entries: Seq[IfPayeEntry]): Seq[Income] =
+  def toIncome(paye: IfPayeEntry): Income =
 
-    entries.map { paye =>
       Income(
         paye.employerPayeRef,
         paye.taxYear,
@@ -384,6 +383,4 @@ object IfPayeEntry {
         paye.totalEmployerNics,
         paye.employeeNics
       )
-    }
-
 }

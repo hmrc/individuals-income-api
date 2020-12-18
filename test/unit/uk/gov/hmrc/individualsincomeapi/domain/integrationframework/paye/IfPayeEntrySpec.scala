@@ -117,7 +117,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
     }
 
     "transform to income type correctly" in {
-      val converted = IfPayeEntry.toIncome(Seq(createValidPayeEntry()))
+      val converted = Seq(createValidPayeEntry()) map IfPayeEntry.toIncome
       val result = Json.toJson(converted)
 
       val expectedJson = Json.parse(
@@ -187,11 +187,14 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
     }
 
     "transform to income type correctly no employee" in {
-      val converted = IfPayeEntry.toIncome(
-        Seq(
-          createValidPayeEntry().copy(
-            additionalFields = Some(IFAdditionalFields(None, Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW")))))
+
+      val ifPaye = Seq(
+        createValidPayeEntry().copy(
+          additionalFields = Some(IFAdditionalFields(None, Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW")))
+        )
       )
+
+      val converted = ifPaye map IfPayeEntry.toIncome
 
       val result = Json.toJson(converted)
 
@@ -259,9 +262,14 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
     }
 
     "transform to income type correctly no payroll id" in {
-      val converted = IfPayeEntry.toIncome(
-        Seq(createValidPayeEntry().copy(additionalFields = Some(IFAdditionalFields(Some(true), None))))
+
+      val ifPaye = Seq(
+        createValidPayeEntry().copy(
+          additionalFields = Some(IFAdditionalFields(Some(true), None))
+        )
       )
+
+      val converted = ifPaye map IfPayeEntry.toIncome
 
       val result = Json.toJson(converted)
 
@@ -329,9 +337,10 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
     }
 
     "transform to income type correctly no payroll id or employee" in {
-      val converted = IfPayeEntry.toIncome(
-        Seq(createValidPayeEntry().copy(additionalFields = None))
-      )
+
+      val ifPaye = Seq(createValidPayeEntry().copy(additionalFields = None))
+
+      val converted = ifPaye map IfPayeEntry.toIncome
 
       val result = Json.toJson(converted)
 

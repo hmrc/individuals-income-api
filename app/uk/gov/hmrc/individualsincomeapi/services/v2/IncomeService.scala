@@ -39,6 +39,8 @@ trait IncomeService {
 
   def endpoints =
     List("incomePaye")
+
+  def cacheId = {}
 }
 
 @Singleton
@@ -56,22 +58,16 @@ class LiveIncomeService @Inject()(
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       payeIncome <- cache.get(
-                     PayeCacheId(
-                       matchId,
-                       interval,
-                       scopeService
-                         .getValidFieldsForCacheKey(scopes.toList, endpoints)
-                     ),
+                     PayeCacheId(matchId, interval, scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)),
                      withRetry(
                        ifConnector.fetchPayeIncome(
                          ninoMatch.nino,
                          interval,
-                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints))
-                           .filter(_.nonEmpty)
+                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty)
                        )
                      )
                    )
-    } yield IfPayeEntry.toIncome(payeIncome).sortBy(_.paymentDate).reverse
+    } yield (payeIncome map IfPayeEntry.toIncome).sortBy(_.paymentDate).reverse
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
@@ -86,9 +82,7 @@ class SandboxIncomeService extends IncomeService {
 
     val paymentDate = LocalDate
       .parse(
-        payeEntry.paymentDate.getOrElse(
-          LocalDate.now.toString
-        )
+        payeEntry.paymentDate.getOrElse(LocalDate.now.toString)
       )
       .toDateTimeAtStartOfDay
 
@@ -99,7 +93,9 @@ class SandboxIncomeService extends IncomeService {
     implicit hc: HeaderCarrier): Future[Seq[Income]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payeIncome) =>
-        successful(IfPayeEntry.toIncome(payeIncome.filter(paymentFilter(interval))).sortBy(_.paymentDate).reverse)
+        successful(
+          (payeIncome.filter(paymentFilter(interval)) map IfPayeEntry.toIncome).sortBy(_.paymentDate).reverse
+        )
       case None => failed(new MatchNotFoundException)
     }
 }

@@ -91,7 +91,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     "return 200 when matching succeeds and service returns income" in new Setup {
 
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any()))
-        .willReturn(successful(IfPayeEntry.toIncome(ifPaye)))
+        .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
 
       val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
 
