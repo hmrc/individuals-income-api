@@ -333,17 +333,31 @@ object IfPayeEntry {
   implicit val incomeJsonFormat = Json.format[Income]
 
   private def toEmployee(additionalFields: Option[IFAdditionalFields]): Option[Employee] = {
+
     additionalFields match {
-      case Some(value) => Some(Employee(value.employeeHasPartner))
+      case Some(fields) => {
+        fields.employeeHasPartner match {
+          case Some(hasPartner) => Some(Employee(Some(hasPartner)))
+          case None => None
+        }
+      }
       case None => None
     }
+
   }
 
   private def toPayroll(additionalFields: Option[IFAdditionalFields]): Option[Payroll] = {
+
     additionalFields match {
-      case Some(value) => Some(Payroll(value.payrollId))
+      case Some(fields) => {
+        fields.payrollId match {
+          case Some(payrollId) => Some(Payroll(Some(payrollId)))
+          case None => None
+        }
+      }
       case None => None
     }
+
   }
 
   def toIncome(entries: Seq[IfPayeEntry]): Seq[Income] =
