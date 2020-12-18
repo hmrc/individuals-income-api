@@ -17,13 +17,8 @@
 package uk.gov.hmrc.individualsincomeapi.domain
 
 import java.util.UUID
-
 import play.api.libs.json._
-
 import scala.util.{Failure, Try}
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
-import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
 object JsonFormatters {
 

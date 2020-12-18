@@ -49,9 +49,7 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
     val mockSandboxIncomeService = mock[SandboxIncomeService]
-    val mockLiveIncomeService = mock[LiveIncomeService]
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
-    val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
 
     implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
@@ -64,13 +62,6 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
 
     val sandboxRootController = new SandboxRootController(
       mockSandboxCitizenMatchingService,
-      scopeService,
-      scopesHelper,
-      mockAuthConnector,
-      controllerComponent)
-
-    val liveRootController = new LiveRootController(
-      mockLiveCitizenMatchingService,
       scopeService,
       scopesHelper,
       mockAuthConnector,

@@ -47,9 +47,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
   trait Setup extends ScopesConfigHelper {
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
-    val mockSandboxIncomeService = mock[SandboxIncomeService]
     val mockLiveIncomeService = mock[LiveIncomeService]
-    val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
 
     implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
@@ -60,13 +58,6 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val matchId = UUID.randomUUID()
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
-
-    val sandboxRootController = new SandboxRootController(
-      mockSandboxCitizenMatchingService,
-      scopeService,
-      scopesHelper,
-      mockAuthConnector,
-      controllerComponent)
 
     val liveRootController = new LiveRootController(
       mockLiveCitizenMatchingService,
