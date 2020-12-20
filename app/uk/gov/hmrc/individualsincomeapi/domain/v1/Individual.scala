@@ -18,8 +18,11 @@ package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import java.util.UUID
 
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 import org.joda.time.LocalDate.parse
 import org.joda.time.{Interval, LocalDate}
+import play.api.libs.json.Json
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
@@ -44,6 +47,10 @@ case class Payment(
   def isPaidWithin(interval: Interval): Boolean =
     interval.contains(paymentDate.toDateTimeAtStartOfDay)
 
+}
+
+object Payment {
+  implicit val paymentJsonFormat = Json.format[Payment]
 }
 
 object SandboxIncomeData {

@@ -19,7 +19,7 @@ package uk.gov.hmrc.individualsincomeapi.domain
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Results
-import JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 
 sealed abstract class ErrorResponse(val httpStatusCode: Int, val errorCode: String, val message: String) {
 

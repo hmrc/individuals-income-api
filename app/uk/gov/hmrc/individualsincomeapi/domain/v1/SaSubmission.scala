@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters.formatTaxYear
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear.formatTaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome}
 
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])

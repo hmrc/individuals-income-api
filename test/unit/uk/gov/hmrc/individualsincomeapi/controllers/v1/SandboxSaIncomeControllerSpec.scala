@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}

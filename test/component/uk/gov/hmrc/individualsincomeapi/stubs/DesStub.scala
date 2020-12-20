@@ -21,7 +21,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployments, DesSAIncome}
 
 object DesStub extends MockHost(23000) {
