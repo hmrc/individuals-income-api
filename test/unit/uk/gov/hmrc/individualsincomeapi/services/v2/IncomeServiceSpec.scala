@@ -30,11 +30,12 @@ import uk.gov.hmrc.individualsincomeapi.cache.v2.CacheConfiguration
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v2.{Income, SandboxIncomePaye}
+import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, LiveIncomeService, PayeIncomeCacheService, SandboxIncomeService, ScopesHelper, ScopesService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.{IncomePayeHelpers, SpecBase}
-import uk.gov.hmrc.individualsincomeapi.domain.v2.SandboxIncomeData._
+import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData._
+import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomePaye
 
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
@@ -286,7 +287,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val result = await(
         sandboxIncomeService.fetchIncomeByMatchId(
-          sandboxMatchId, toInterval("2019-01-01", "2020-03-01"), scopes
+          sandboxMatchId,
+          toInterval("2019-01-01", "2020-03-01"),
+          scopes
         )(hc)
       )
       result shouldBe (ifPaye map IfPayeEntry.toIncome)

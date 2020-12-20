@@ -16,20 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import java.util.UUID
+import play.api.libs.json.Json
 
-import org.joda.time.LocalDate
-import uk.gov.hmrc.domain.{Nino}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfSaEntry}
+case class Employee(hasPartner: Option[Boolean])
 
-case class MatchedCitizen(matchId: UUID, nino: Nino)
-
-case class Individual(
-  matchId: UUID,
-  nino: String,
-  firstName: String,
-  lastName: String,
-  dateOfBirth: LocalDate,
-  income: Seq[IfPayeEntry],
-  saIncome: Seq[IfSaEntry])
+object Employee {
+  implicit val employeeJsonFormat = Json.format[Employee]
+}

@@ -300,7 +300,7 @@ object IfPayeEntry {
         (JsPath \ "statutoryPayYTD").readNullable[IfStatutoryPayYTD] and
         (JsPath \ "studentLoan").readNullable[IfStudentLoan] and
         (JsPath \ "postGradLoan").readNullable[IfPostGradLoan] and
-        (JsPath).readNullable[IFAdditionalFields]
+        JsPath.readNullable[IFAdditionalFields]
     )(IfPayeEntry.apply _),
     (
       (JsPath \ "taxCode").writeNullable[String] and
@@ -324,13 +324,9 @@ object IfPayeEntry {
         (JsPath \ "statutoryPayYTD").writeNullable[IfStatutoryPayYTD] and
         (JsPath \ "studentLoan").writeNullable[IfStudentLoan] and
         (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan] and
-        (JsPath).writeNullable[IFAdditionalFields]
+        JsPath.writeNullable[IFAdditionalFields]
     )(unlift(IfPayeEntry.unapply))
   )
-
-  implicit val employeeJsonFormat = Json.format[Employee]
-  implicit val payrollJsonFormat = Json.format[Payroll]
-  implicit val incomeJsonFormat = Json.format[Income]
 
   private def toEmployee(additionalFields: Option[IFAdditionalFields]): Option[Employee] = {
 
@@ -383,4 +379,5 @@ object IfPayeEntry {
         paye.totalEmployerNics,
         paye.employeeNics
       )
+
 }

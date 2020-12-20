@@ -27,7 +27,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SAN
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry.incomeJsonFormat
+import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
