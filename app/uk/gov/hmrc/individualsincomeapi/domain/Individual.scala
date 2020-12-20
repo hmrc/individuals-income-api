@@ -21,6 +21,7 @@ import java.util.UUID
 import org.joda.time.LocalDate.parse
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 

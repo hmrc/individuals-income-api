@@ -30,6 +30,7 @@ import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheConfiguration, ShortLived
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome, DesSAReturn, SAIncome}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaCacheId, SaIncomeCacheService, SandboxSaIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport

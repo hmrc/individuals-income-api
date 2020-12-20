@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain
+package uk.gov.hmrc.individualsincomeapi.domain.des
 
 import org.joda.time.LocalDate
+import play.api.libs.json.JodaReads._
+import play.api.libs.json.JodaWrites._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.SaUtr
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
 case class DesSAIncome(taxYear: String, returnList: Seq[DesSAReturn]) {
 

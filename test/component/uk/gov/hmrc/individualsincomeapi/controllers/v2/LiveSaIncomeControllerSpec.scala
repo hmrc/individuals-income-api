@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, SAIncome, TaxYear}
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 
 class LiveSaIncomeControllerSpec extends BaseSpec {
 

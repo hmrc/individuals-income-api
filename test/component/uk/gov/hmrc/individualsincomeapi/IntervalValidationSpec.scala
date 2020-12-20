@@ -23,11 +23,10 @@ import org.joda.time.LocalDate
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployment, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.util.Dates
 import uk.gov.hmrc.time.DateTimeUtils
-
 import scalaj.http.Http
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
 
 class IntervalValidationSpec extends BaseSpec {
 
