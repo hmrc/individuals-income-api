@@ -23,7 +23,7 @@ import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
 
 class IndividualIncomeSpec extends BaseSpec {

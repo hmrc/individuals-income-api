@@ -30,7 +30,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.{EmpRef, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, LiveRootController, SandboxIncomeController, SandboxRootController}
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen, Payment}
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
@@ -38,7 +38,8 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.verifyNoInteractions
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
+import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}

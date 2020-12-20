@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
-import play.api.libs.json.Reads.{verifying}
-import play.api.libs.json.{Format, JsPath, Json, Reads}
+import play.api.libs.json.Reads.verifying
+import play.api.libs.json.{Format, JsPath, Reads}
 
 case class IfSa(sa: Seq[IfSaEntry])
 

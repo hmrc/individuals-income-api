@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 import java.util.UUID
 
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{refEq}
+import org.mockito.ArgumentMatchers.refEq
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,13 +30,14 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveRootController, SandboxRootController}
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen}
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 
 import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}

@@ -22,7 +22,7 @@ import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.{sandboxMatchId, sandboxUtr}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.{sandboxMatchId, sandboxUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 
 class SandboxSaIncomeControllerSpec extends BaseSpec {

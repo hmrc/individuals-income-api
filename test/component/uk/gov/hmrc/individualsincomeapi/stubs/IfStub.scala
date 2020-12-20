@@ -19,7 +19,7 @@ package component.uk.gov.hmrc.individualsincomeapi.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye
 
 object IfStub extends MockHost(24000) {
 

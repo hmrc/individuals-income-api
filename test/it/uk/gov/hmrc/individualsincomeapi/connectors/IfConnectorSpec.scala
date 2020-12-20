@@ -29,9 +29,8 @@ import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSa
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

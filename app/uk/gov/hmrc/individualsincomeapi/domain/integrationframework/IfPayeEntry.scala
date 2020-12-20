@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
 import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.{Format, JsPath, Json, Reads}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPaye._
+import play.api.libs.json.{Format, JsPath, Reads}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye._
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{Employee, Income, Payroll}
 
 case class IfGrossEarningsForNics(

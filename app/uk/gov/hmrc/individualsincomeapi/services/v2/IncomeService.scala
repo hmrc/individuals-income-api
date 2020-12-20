@@ -23,8 +23,8 @@ import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.findByMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye, IfPayeEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
 import scala.concurrent.ExecutionContext.Implicits.global

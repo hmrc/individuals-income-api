@@ -29,7 +29,8 @@ import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.v2.CacheConfiguration
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
+import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, LiveIncomeService, PayeIncomeCacheService, SandboxIncomeService, ScopesHelper, ScopesService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates

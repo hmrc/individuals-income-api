@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain
+package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import java.util.UUID
 

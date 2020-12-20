@@ -28,9 +28,10 @@ import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
-import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
+import uk.gov.hmrc.individualsincomeapi.domain.{v1, _}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome, DesSAReturn, SAIncome}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaIncomeSource, SaIncomeSources, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaCacheId, SaIncomeCacheService, SandboxSaIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
@@ -54,7 +55,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
         registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2017-06-06")))),
         taxReturns = Seq(
           SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-06"))))),
-          SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(utr, Some(LocalDate.parse("2018-10-06")))))
+          v1.SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(utr, Some(LocalDate.parse("2018-10-06")))))
         )
       )
     }
@@ -78,8 +79,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval)) shouldBe SaFootprint(
         registrations = Seq(SaRegistration(utr, Some(LocalDate.parse("2017-06-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-06"))))),
-          SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(utr, Some(LocalDate.parse("2018-10-06")))))
+          v1.SaTaxReturn(TaxYear("2018-19"), Seq(SaSubmission(utr, Some(LocalDate.parse("2019-06-06"))))),
+          v1.SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(utr, Some(LocalDate.parse("2018-10-06")))))
         )
       )
 
@@ -94,8 +95,12 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       result shouldBe SaFootprint(
         registrations = Seq(SaRegistration(SaUtr("2432552635"), Some(LocalDate.parse("2015-01-06")))),
         taxReturns = Seq(
-          SaTaxReturn(TaxYear("2017-18"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2018-10-06"))))),
-          SaTaxReturn(TaxYear("2016-17"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2017-06-06")))))
+          v1.SaTaxReturn(
+            TaxYear("2017-18"),
+            Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2018-10-06"))))),
+          v1.SaTaxReturn(
+            TaxYear("2016-17"),
+            Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2017-06-06")))))
         )
       )
     }
@@ -105,7 +110,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
         sandboxSaIncomeService.fetchSaFootprint(sandboxMatchId, taxYearInterval.copy(toTaxYear = TaxYear("2016-17"))))
 
       result.taxReturns shouldBe Seq(
-        SaTaxReturn(TaxYear("2016-17"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2017-06-06"))))))
+        v1.SaTaxReturn(TaxYear("2016-17"), Seq(SaSubmission(SaUtr("2432552635"), Some(LocalDate.parse("2017-06-06"))))))
     }
 
     "return an empty footprint when no annual return exists for the requested period" in new Setup {
@@ -136,7 +141,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualEmployments(TaxYear("2018-19"), Seq(SaEmploymentsIncome(utr, 1555.55))),
-        SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(utr, 0.0)))
+        v1.SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(utr, 0.0)))
       )
     }
 
@@ -156,8 +161,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2018-19"))))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(sandboxUtr, 0))),
-        SaAnnualEmployments(TaxYear("2016-17"), Seq(SaEmploymentsIncome(sandboxUtr, 5000)))
+        v1.SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(sandboxUtr, 0))),
+        v1.SaAnnualEmployments(TaxYear("2016-17"), Seq(SaEmploymentsIncome(sandboxUtr, 5000)))
       )
     }
 
@@ -167,7 +172,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchEmploymentsIncome(sandboxMatchId, taxYearInterval.copy(fromTaxYear = TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(sandboxUtr, 0)))
+        v1.SaAnnualEmployments(TaxYear("2017-18"), Seq(SaEmploymentsIncome(sandboxUtr, 0)))
       )
     }
 
@@ -199,7 +204,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualSelfEmployments(TaxYear("2018-19"), Seq(SaSelfEmploymentsIncome(utr, 2500.55))),
-        SaAnnualSelfEmployments(TaxYear("2017-18"), Seq(SaSelfEmploymentsIncome(utr, 0.0)))
+        v1.SaAnnualSelfEmployments(TaxYear("2017-18"), Seq(SaSelfEmploymentsIncome(utr, 0.0)))
       )
     }
 
@@ -219,8 +224,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchSelfEmploymentsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualSelfEmployments(TaxYear("2017-18"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 0.0))),
-        SaAnnualSelfEmployments(TaxYear("2016-17"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500)))
+        v1.SaAnnualSelfEmployments(TaxYear("2017-18"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 0.0))),
+        v1.SaAnnualSelfEmployments(TaxYear("2016-17"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500)))
       )
     }
 
@@ -251,7 +256,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaTaxReturnSummaries(TaxYear("2018-19"), Seq(SaTaxReturnSummary(utr, 0.0))),
-        SaTaxReturnSummaries(TaxYear("2017-18"), Seq(SaTaxReturnSummary(utr, 35000.55)))
+        v1.SaTaxReturnSummaries(TaxYear("2017-18"), Seq(SaTaxReturnSummary(utr, 35000.55)))
       )
     }
 
@@ -271,8 +276,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchReturnsSummary(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaTaxReturnSummaries(TaxYear("2017-18"), Seq(SaTaxReturnSummary(sandboxUtr, 0.0))),
-        SaTaxReturnSummaries(TaxYear("2016-17"), Seq(SaTaxReturnSummary(sandboxUtr, 30000)))
+        v1.SaTaxReturnSummaries(TaxYear("2017-18"), Seq(SaTaxReturnSummary(sandboxUtr, 0.0))),
+        v1.SaTaxReturnSummaries(TaxYear("2016-17"), Seq(SaTaxReturnSummary(sandboxUtr, 30000)))
       )
     }
 
@@ -303,7 +308,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualTrustIncomes(TaxYear("2018-19"), Seq(SaAnnualTrustIncome(utr, 0.0))),
-        SaAnnualTrustIncomes(TaxYear("2017-18"), Seq(SaAnnualTrustIncome(utr, 2600.55)))
+        v1.SaAnnualTrustIncomes(TaxYear("2017-18"), Seq(SaAnnualTrustIncome(utr, 2600.55)))
       )
     }
 
@@ -323,8 +328,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchTrustsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualTrustIncomes(TaxYear("2017-18"), Seq(SaAnnualTrustIncome(sandboxUtr, 0))),
-        SaAnnualTrustIncomes(TaxYear("2016-17"), Seq(SaAnnualTrustIncome(sandboxUtr, 2143.32)))
+        v1.SaAnnualTrustIncomes(TaxYear("2017-18"), Seq(SaAnnualTrustIncome(sandboxUtr, 0))),
+        v1.SaAnnualTrustIncomes(TaxYear("2016-17"), Seq(SaAnnualTrustIncome(sandboxUtr, 2143.32)))
       )
     }
 
@@ -355,7 +360,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualForeignIncomes(TaxYear("2018-19"), Seq(SaAnnualForeignIncome(utr, 0.0))),
-        SaAnnualForeignIncomes(TaxYear("2017-18"), Seq(SaAnnualForeignIncome(utr, 500.55)))
+        v1.SaAnnualForeignIncomes(TaxYear("2017-18"), Seq(SaAnnualForeignIncome(utr, 500.55)))
       )
     }
 
@@ -375,8 +380,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchForeignIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualForeignIncomes(TaxYear("2017-18"), Seq(SaAnnualForeignIncome(sandboxUtr, 0))),
-        SaAnnualForeignIncomes(TaxYear("2016-17"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65)))
+        v1.SaAnnualForeignIncomes(TaxYear("2017-18"), Seq(SaAnnualForeignIncome(sandboxUtr, 0))),
+        v1.SaAnnualForeignIncomes(TaxYear("2016-17"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65)))
       )
     }
 
@@ -407,7 +412,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualPartnershipIncomes(TaxYear("2018-19"), Seq(SaAnnualPartnershipIncome(utr, 0.0))),
-        SaAnnualPartnershipIncomes(TaxYear("2017-18"), Seq(SaAnnualPartnershipIncome(utr, 555.55)))
+        v1.SaAnnualPartnershipIncomes(TaxYear("2017-18"), Seq(SaAnnualPartnershipIncome(utr, 555.55)))
       )
     }
 
@@ -427,8 +432,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchPartnershipsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualPartnershipIncomes(TaxYear("2017-18"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 0))),
-        SaAnnualPartnershipIncomes(TaxYear("2016-17"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 324.54)))
+        v1.SaAnnualPartnershipIncomes(TaxYear("2017-18"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 0))),
+        v1.SaAnnualPartnershipIncomes(TaxYear("2016-17"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 324.54)))
       )
     }
 
@@ -461,7 +466,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
         SaAnnualInterestAndDividendIncomes(
           TaxYear("2018-19"),
           Seq(SaAnnualInterestAndDividendIncome(utr, 0.0, 0.0, 0.0))),
-        SaAnnualInterestAndDividendIncomes(
+        v1.SaAnnualInterestAndDividendIncomes(
           TaxYear("2017-18"),
           Seq(SaAnnualInterestAndDividendIncome(utr, 43.56, 72.57, 16.32)))
       )
@@ -483,10 +488,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchInterestsAndDividendsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualInterestAndDividendIncomes(
+        v1.SaAnnualInterestAndDividendIncomes(
           TaxYear("2017-18"),
           Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 0, 0, 0))),
-        SaAnnualInterestAndDividendIncomes(
+        v1.SaAnnualInterestAndDividendIncomes(
           TaxYear("2016-17"),
           Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 12.46, 25.86, 657.89)))
       )
@@ -518,7 +523,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualUkPropertiesIncomes(TaxYear("2018-19"), Seq(SaAnnualUkPropertiesIncome(utr, 0.0))),
-        SaAnnualUkPropertiesIncomes(TaxYear("2017-18"), Seq(SaAnnualUkPropertiesIncome(utr, 1276.67)))
+        v1.SaAnnualUkPropertiesIncomes(TaxYear("2017-18"), Seq(SaAnnualUkPropertiesIncome(utr, 1276.67)))
       )
     }
 
@@ -538,8 +543,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchUkPropertiesIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualUkPropertiesIncomes(TaxYear("2017-18"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 0))),
-        SaAnnualUkPropertiesIncomes(TaxYear("2016-17"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67)))
+        v1.SaAnnualUkPropertiesIncomes(TaxYear("2017-18"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 0))),
+        v1.SaAnnualUkPropertiesIncomes(TaxYear("2016-17"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67)))
       )
     }
 
@@ -570,7 +575,9 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualPensionAndStateBenefitIncomes(TaxYear("2018-19"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 0.0))),
-        SaAnnualPensionAndStateBenefitIncomes(TaxYear("2017-18"), Seq(SaAnnualPensionAndStateBenefitIncome(utr, 52.56)))
+        v1.SaAnnualPensionAndStateBenefitIncomes(
+          TaxYear("2017-18"),
+          Seq(SaAnnualPensionAndStateBenefitIncome(utr, 52.56)))
       )
     }
 
@@ -590,10 +597,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchPensionsAndStateBenefitsIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualPensionAndStateBenefitIncomes(
+        v1.SaAnnualPensionAndStateBenefitIncomes(
           TaxYear("2017-18"),
           Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 0))),
-        SaAnnualPensionAndStateBenefitIncomes(
+        v1.SaAnnualPensionAndStateBenefitIncomes(
           TaxYear("2016-17"),
           Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 52.79)))
       )
@@ -627,7 +634,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualAdditionalInformations(TaxYear("2018-19"), Seq(SaAnnualAdditionalInformation(utr, 0.0, 0.0))),
-        SaAnnualAdditionalInformations(TaxYear("2017-18"), Seq(SaAnnualAdditionalInformation(utr, 45.20, 12.45)))
+        v1.SaAnnualAdditionalInformations(TaxYear("2017-18"), Seq(SaAnnualAdditionalInformation(utr, 45.20, 12.45)))
       )
     }
 
@@ -647,8 +654,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchAdditionalInformation(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualAdditionalInformations(TaxYear("2017-18"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 0, 0))),
-        SaAnnualAdditionalInformations(TaxYear("2016-17"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 44.54, 52.34)))
+        v1.SaAnnualAdditionalInformations(TaxYear("2017-18"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 0, 0))),
+        v1.SaAnnualAdditionalInformations(
+          TaxYear("2016-17"),
+          Seq(SaAnnualAdditionalInformation(sandboxUtr, 44.54, 52.34)))
       )
     }
 
@@ -679,7 +688,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
       result shouldBe Seq(
         SaAnnualOtherIncomes(TaxYear("2018-19"), Seq(SaAnnualOtherIncome(utr, 0.0))),
-        SaAnnualOtherIncomes(TaxYear("2017-18"), Seq(SaAnnualOtherIncome(utr, 134.56)))
+        v1.SaAnnualOtherIncomes(TaxYear("2017-18"), Seq(SaAnnualOtherIncome(utr, 134.56)))
       )
     }
 
@@ -699,8 +708,8 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           .fetchOtherIncome(sandboxMatchId, TaxYearInterval(TaxYear("2016-17"), TaxYear("2017-18"))))
 
       result shouldBe Seq(
-        SaAnnualOtherIncomes(TaxYear("2017-18"), Seq(SaAnnualOtherIncome(sandboxUtr, 0))),
-        SaAnnualOtherIncomes(TaxYear("2016-17"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70)))
+        v1.SaAnnualOtherIncomes(TaxYear("2017-18"), Seq(SaAnnualOtherIncome(sandboxUtr, 0))),
+        v1.SaAnnualOtherIncomes(TaxYear("2016-17"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70)))
       )
     }
 
@@ -794,7 +803,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       val result = await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
 
       result shouldBe Seq(
-        SaIncomeSources(
+        v1.SaIncomeSources(
           TaxYear("2018-19"),
           Seq(
             SaIncomeSource(
@@ -836,7 +845,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
           val result = await(liveSaIncomeService.fetchSaIncomeSources(liveMatchId, taxYearInterval))
 
           result shouldBe Seq(
-            SaIncomeSources(
+            v1.SaIncomeSources(
               TaxYear("2018-19"),
               Seq(
                 SaIncomeSource(

@@ -16,7 +16,7 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IFAdditionalFields, IfBenefits, IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfPayeEntry, IfPostGradLoan, IfStatutoryPayYTD, IfStudentLoan, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
 
 trait IncomePayeHelpers {
 

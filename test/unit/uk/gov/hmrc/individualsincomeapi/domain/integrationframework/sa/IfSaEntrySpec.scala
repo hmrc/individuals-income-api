@@ -18,14 +18,15 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
 
 class IfSaEntrySpec extends WordSpec with Matchers {
 
   val returnTypeList = Seq(createValidSaReturnType())
 
   val validSaTaxYearEntry = IfSaEntry(Some("2020"), Some(100.01), Some(returnTypeList))
-  val invalidSaTaxYearEntry = IfSaEntry(Some("-42"), Some(100.001), Some(returnTypeList))
+  val invalidSaTaxYearEntry = integrationframework.IfSaEntry(Some("-42"), Some(100.001), Some(returnTypeList))
 
   "IfSaEntry" should {
     "WriteToJson" in {

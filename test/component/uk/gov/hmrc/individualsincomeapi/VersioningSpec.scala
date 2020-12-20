@@ -22,7 +22,7 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.{ACCEPT, AUTHORIZATION}
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 
 import scalaj.http.{Http, HttpResponse}
 

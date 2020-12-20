@@ -22,8 +22,8 @@ import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfS
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import utils.IncomePayeHelpers
 
 class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {

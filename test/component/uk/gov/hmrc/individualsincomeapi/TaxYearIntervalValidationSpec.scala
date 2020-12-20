@@ -21,7 +21,7 @@ import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 
 import scalaj.http.Http

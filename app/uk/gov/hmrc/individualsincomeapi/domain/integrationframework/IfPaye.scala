@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
-import play.api.libs.json.Reads.verifying
-import play.api.libs.json.{Format, JsPath, Reads}
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+
+import play.api.libs.json.{Format, JsPath}
 
 case class IfPaye(paye: Seq[IfPayeEntry])
 

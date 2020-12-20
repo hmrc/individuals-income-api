@@ -16,7 +16,7 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
 
 trait IncomeSaHelpers {
   def createValidSaTaxYearEntry() = {

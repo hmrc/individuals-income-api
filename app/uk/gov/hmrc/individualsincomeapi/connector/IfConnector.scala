@@ -23,8 +23,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException, TooManyRequestException, Upstream4xxResponse}
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfPaye, IfPayeEntry}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfSa, IfSaEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}

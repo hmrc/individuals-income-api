@@ -17,8 +17,8 @@
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.{IfEmployeeNics, IfEmployeePensionContribs, IfGrossEarningsForNics, IfStatutoryPayYTD, IfTotalEmployerNics}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 
 case class Income(
   employerPayeReference: Option[String],

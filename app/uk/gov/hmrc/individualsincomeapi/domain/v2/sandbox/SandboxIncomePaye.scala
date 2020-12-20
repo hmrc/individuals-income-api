@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
 
 case class SandboxIncomePaye() {
   def createValidPayeEntry(date: String) =

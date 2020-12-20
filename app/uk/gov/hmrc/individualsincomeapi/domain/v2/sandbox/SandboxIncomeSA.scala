@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
 
 case class SandboxIncomeSA() {
   def createValidSaTaxYearEntry() = {
