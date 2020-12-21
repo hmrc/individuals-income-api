@@ -40,7 +40,7 @@ trait IncomeService {
   def endpoints =
     List("incomePaye")
 
-  def cacheId = {}
+  def cacheId{}
 }
 
 @Singleton

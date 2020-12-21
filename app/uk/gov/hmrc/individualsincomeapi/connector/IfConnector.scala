@@ -64,7 +64,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
     val startYear = taxYearInterval.fromTaxYear.endYr
     val endYear = taxYearInterval.toTaxYear.endYr
     val saUrl = s"$serviceUrl/individuals/income/sa/" +
-      s"nino/$nino?startYear=$startYear&endYear=$endYear&fields=$filter"
+      s"nino/$nino?startYear=$startYear&endYear=$endYear${filter.map(f => s"&fields=$f").getOrElse("")}"
 
     recover[IfSaEntry](http.GET[IfSa](saUrl)(implicitly, header(), ec).map(_.sa))
 

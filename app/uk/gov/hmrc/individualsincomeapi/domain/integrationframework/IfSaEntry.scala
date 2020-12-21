@@ -20,6 +20,7 @@ import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern}
 import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa._
+import uk.gov.hmrc.individualsincomeapi.domain.v2.{Registration, SelfAssessment, TaxReturn}
 
 case class IfAddress(
   line1: Option[String],
@@ -183,5 +184,13 @@ object IfSaEntry {
         (JsPath \ "returnList").writeNullable[Seq[IfSaReturn]]
     )(unlift(IfSaEntry.unapply))
   )
+
+  def toSelfAssessment(ifSaEntry: Seq[IfSaEntry]) = {
+
+    // TODO - build out convert method from IF response
+
+    SelfAssessment(Seq(Registration()), Seq(TaxReturn()))
+
+  }
 
 }

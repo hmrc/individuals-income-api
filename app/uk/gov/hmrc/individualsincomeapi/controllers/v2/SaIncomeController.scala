@@ -19,6 +19,10 @@ package uk.gov.hmrc.individualsincomeapi.controllers.v2
 import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
+import play.api.hal.Hal.state
+import play.api.hal.HalLink
+import play.api.libs.json.Json
+import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,14 +30,14 @@ import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SAN
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.getClientIdHeader
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService}
-import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService, ScopesHelper, ScopesService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 sealed abstract class SaIncomeController(
   saIncomeService: SaIncomeService,
   scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
   cc: ControllerComponents)
     extends CommonController(cc) with PrivilegedAuthentication {
 
@@ -41,12 +45,19 @@ sealed abstract class SaIncomeController(
 
   def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSa")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSa")) { authScopes =>
+        saIncomeService.fetchSaIncomeRoot(matchId, taxYearInterval, authScopes).map { sa =>
+
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
