@@ -80,7 +80,7 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 500")
+      Then("The response status should be 200")
       response.code shouldBe OK
 
       response.body shouldBe
@@ -104,8 +104,8 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
                |          "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
                |        },
                |        "payFrequency":"W4",
-               |        "monthlyPeriodNumber":"3",
-               |        "weeklyPeriodNumber":"2",
+               |        "monthPayNumber":"3",
+               |        "weekPayNumber":"2",
                |        "paymentDate":"2006-02-27",
                |        "paidHoursWorked":"36",
                |        "taxCode":"K971",
@@ -242,7 +242,7 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
-      Then("The response status should be 500")
+      Then("The response status should be 200")
       response.code shouldBe OK
 
       response.body shouldBe

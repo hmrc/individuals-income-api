@@ -16,7 +16,7 @@
           "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
         },
         "payFrequency": "W4",
-        "weeklyPeriodNumber": "2",
+        "weekPayNumber": "2",
         "paymentDate": "2006-02-27",
         "paidHoursWorked": "35",
         "taxCode": "K971",
@@ -73,7 +73,7 @@
           "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
         },
         "payFrequency": "M1",
-        "monthlyPeriodNumber": "3",
+        "monthPayNumber": "3",
         "paymentDate": "2007-02-27",
         "paidHoursWorked": "35",
         "taxCode": "K971",
