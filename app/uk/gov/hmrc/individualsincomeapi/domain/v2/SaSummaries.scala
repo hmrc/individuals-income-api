@@ -20,48 +20,31 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaSummaries(taxReturns: Seq[SaSummaryTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaSummaries {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      toSaFootprintRegistrations(ifSaEntry),
-      toSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saReturnSummaryJsonFormat = Json.format[SaSummaries]
 
-  private def toSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { rList =>
-          rList.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]): SaSummaries =
+    SaSummaries(toSaSummaryTaxReturn(ifSaEntry))
+
+  private def toSaSummary(entry: IfSaEntry) =
+    entry.returnList.map { rList =>
+      rList.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaSummary(maybeIncome.selfAssessment)
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def toSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { rList =>
-      rList
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def toSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def toSaSummaryTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { e =>
         e.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaSummaryTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            toSaFootprintSubmissions(e)
+            toSaSummary(e)
           )
         }
       }

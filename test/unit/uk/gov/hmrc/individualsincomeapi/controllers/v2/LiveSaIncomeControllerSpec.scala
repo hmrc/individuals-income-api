@@ -112,7 +112,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     "return 500 when there are sa tax returns for the period" in new Setup {
 
       // TODO reinstate when the V2 Income Service is coded up
-      //given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
       //  .willReturn(successful(saReturnSummaries))
 
       val result = intercept[Exception] {
@@ -127,7 +127,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
       // TODO reinstate when the V2 Income Service is coded up
-      //given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
       //  .willReturn(successful(saReturnSummaries))
 
       val result = intercept[Exception] {
@@ -139,7 +139,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     "return 500 for an invalid matchId" in new Setup {
 
       // TODO reinstate when the V2 Income Service is coded up
-      //given(mockLiveSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
       //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {

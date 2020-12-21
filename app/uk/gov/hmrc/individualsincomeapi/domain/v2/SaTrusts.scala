@@ -20,50 +20,34 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaTrusts(taxReturns: Seq[SaTrustsTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaTrusts {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      toSaFootprintRegistrations(ifSaEntry),
-      toSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saSummaryJsonFormat = Json.format[SaTrusts]
 
-  private def toSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { rList =>
-          rList.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]): SaTrusts =
+    SaTrusts(toSaTrustsTaxReturn(ifSaEntry))
+
+  private def toSaTrust(entry: IfSaEntry) =
+    entry.returnList.map { rList =>
+      rList.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaTrust(maybeIncome.trusts)
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def toSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { rList =>
-      rList
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def toSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def toSaTrustsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { e =>
         e.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaTrustsTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            toSaFootprintSubmissions(e)
+            toSaTrust(e)
           )
         }
       }
       .sortBy(_.taxYear)
+
 }

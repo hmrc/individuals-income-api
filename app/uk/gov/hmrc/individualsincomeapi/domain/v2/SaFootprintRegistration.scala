@@ -21,5 +21,5 @@ import play.api.libs.json.Json
 case class SaFootprintRegistration(registrationDate: Option[String])
 
 object SaFootprintRegistration {
-  implicit val payrollJsonFormat = Json.format[SaFootprintRegistration]
+  implicit val saFootprintRegistration = Json.format[SaFootprintRegistration]
 }

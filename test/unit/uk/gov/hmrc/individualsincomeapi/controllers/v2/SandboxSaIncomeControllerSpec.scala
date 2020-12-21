@@ -201,7 +201,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     "return 500 with the self tax return summaries for the period" in new Setup {
 
       // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
       //  .willReturn(successful(taxReturnSummaries))
 
       val result = intercept[Exception] {
@@ -216,7 +216,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
       // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
       //  .willReturn(successful(taxReturnSummaries))
 
       val result = intercept[Exception] {
@@ -228,7 +228,7 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     "return 500 for an invalid matchId" in new Setup {
 
       // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchReturnsSummary(refEq(matchId), refEq(taxYearInterval))(any()))
+      //given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
       //  .willReturn(failed(new MatchNotFoundException()))
 
       val result = intercept[Exception] {

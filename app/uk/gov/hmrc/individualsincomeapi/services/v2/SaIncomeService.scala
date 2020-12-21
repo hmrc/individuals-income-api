@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v2.SaFootprint
+import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaFootprint, SaSummaries, SaTrusts}
 import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.findByMatchId
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,6 +52,12 @@ trait SaIncomeService {
 
   def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[SaFootprint]
+
+  def fetchSummary(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaSummaries]
+
+  def fetchTrusts(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaTrusts]
 }
 
 @Singleton
@@ -88,7 +94,21 @@ class LiveSaIncomeService @Inject()(
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
-    } yield SaFootprint(ifSaEntries)
+    } yield SaFootprint.transform(ifSaEntries)
+
+  override def fetchSummary(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaSummaries] =
+    for {
+      ninoMatch   <- matchingConnector.resolve(matchId)
+      ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
+    } yield SaSummaries.transform(ifSaEntries)
+
+  override def fetchTrusts(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaTrusts] =
+    for {
+      ninoMatch   <- matchingConnector.resolve(matchId)
+      ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
+    } yield SaTrusts.transform(ifSaEntries)
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
@@ -108,6 +128,18 @@ class SandboxSaIncomeService extends SaIncomeService {
 
   override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[SaFootprint] =
-    fetchSaIncome(matchId, taxYearInterval, scopes).map(saFootprint => SaFootprint(saFootprint))
+    fetchSaIncome(matchId, taxYearInterval, scopes).map(ifEntry => SaFootprint.transform(ifEntry))
+
+  override def fetchSummary(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaSummaries] =
+    fetchSaIncome(matchId, taxYearInterval, scopes).map(
+      ifEntry => SaSummaries.transform(ifEntry)
+    )
+
+  override def fetchTrusts(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaTrusts] =
+    fetchSaIncome(matchId, taxYearInterval, scopes).map(
+      ifEntry => SaTrusts.transform(ifEntry)
+    )
 
 }

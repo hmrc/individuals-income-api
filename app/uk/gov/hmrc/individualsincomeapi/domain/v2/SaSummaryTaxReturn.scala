@@ -18,11 +18,11 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaFootprintTaxReturn(
+case class SaSummaryTaxReturn(
   taxYear: Option[String],
-  submissions: Option[Seq[SaFootprintSubmission]]
+  summary: Option[Seq[SaSummary]]
 )
 
-object SaFootprintTaxReturn {
-  implicit val saFootprintTaxReturn = Json.format[SaFootprintTaxReturn]
+object SaSummaryTaxReturn {
+  implicit val saSummaryTaxReturnJsonFormat = Json.format[SaSummaryTaxReturn]
 }

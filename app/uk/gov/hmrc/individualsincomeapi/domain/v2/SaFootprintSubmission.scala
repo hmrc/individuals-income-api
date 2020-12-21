@@ -21,5 +21,5 @@ import play.api.libs.json.Json
 case class SaFootprintSubmission(receivedDate: Option[String])
 
 object SaFootprintSubmission {
-  implicit val payrollJsonFormat = Json.format[SaFootprintSubmission]
+  implicit val saFootprintSubmissionJsonFormat = Json.format[SaFootprintSubmission]
 }
