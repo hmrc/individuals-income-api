@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IFAdditionalFields, IfPayeEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfPayeEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 import utils.IncomePayeHelpers
 
@@ -132,8 +132,8 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |      "id":"yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
           |    },
           |    "payFrequency":"W4",
-          |    "monthPayNumber":"3",
-          |    "weekPayNumber":"2",
+          |    "monthPayNumber": 3,
+          |    "weekPayNumber": 2,
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
@@ -190,7 +190,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
 
       val ifPaye = Seq(
         createValidPayeEntry().copy(
-          additionalFields = Some(IFAdditionalFields(None, Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW")))
+          additionalFields = Some(IfAdditionalFields(None, Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW")))
         )
       )
 
@@ -207,8 +207,8 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |      "id":"yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
           |    },
           |    "payFrequency":"W4",
-          |    "monthPayNumber":"3",
-          |    "weekPayNumber":"2",
+          |    "monthPayNumber": 3,
+          |    "weekPayNumber": 2,
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
@@ -265,7 +265,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
 
       val ifPaye = Seq(
         createValidPayeEntry().copy(
-          additionalFields = Some(IFAdditionalFields(Some(true), None))
+          additionalFields = Some(IfAdditionalFields(Some(true), None))
         )
       )
 
@@ -282,8 +282,8 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |      "hasPartner":true
           |    },
           |    "payFrequency":"W4",
-          |    "monthPayNumber":"3",
-          |    "weekPayNumber":"2",
+          |    "monthPayNumber": 3,
+          |    "weekPayNumber": 2,
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
@@ -350,8 +350,8 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |    "employerPayeReference":"345/34678",
           |    "taxYear":"18-19",
           |    "payFrequency":"W4",
-          |    "monthPayNumber":"3",
-          |    "weekPayNumber":"2",
+          |    "monthPayNumber": 3,
+          |    "weekPayNumber": 2,
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",

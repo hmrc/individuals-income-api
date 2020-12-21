@@ -1,2 +1,2 @@
 <p>Use this endpoint to get an individual's Self Assessment income sources for a requested time period. This includes description of business activities and addresses.</p>
-<p>The startYear and endYear are inclusive, so the data returned is for the time period that includes the startYear and endYear.</p>
+<p>The fromTaxYear and toTaxYear are inclusive, so the data returned is for the time period that includes the fromTaxYear and toTaxYear.</p>

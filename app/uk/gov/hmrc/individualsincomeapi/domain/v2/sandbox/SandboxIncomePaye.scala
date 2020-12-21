@@ -46,7 +46,7 @@ case class SandboxIncomePaye() {
     )
 
   private def createValidAdditionalFields() =
-    IFAdditionalFields(Some(false), Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"))
+    IfAdditionalFields(Some(false), Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"))
 
   private def createValidStatutoryPayYTD() =
     IfStatutoryPayYTD(Some(15797.45), Some(13170.69), Some(16193.76), Some(30846.56))
