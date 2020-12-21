@@ -117,53 +117,53 @@ class VersioningSpec extends BaseSpec {
          {
             "_links":{
               "incomeSaUkProperties":{
-                "href":"individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA UK properties data"
               },"incomeSaTrusts":{
-                "href":"individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA trusts data"
               },"incomeSaSelfEmployments":{
-                "href":"individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA self employments data"
               },"incomeSaPartnerships":{
-                "href":"individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA partnerships data"
               },"self":{
                 "href":"/individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
               },
               "incomeSaInterestsAndDividends":{
-                "href":"individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA interest and dividends data"
               },
               "incomeSaFurtherDetails":{
-                "href":"individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA further details data"
               },"incomeSaAdditionalInformation":{
-                "href":"individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA additional information data"
               },"incomeSaOther":{
-                "href":"individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA other data"
               },"incomeSaForeign":{
-                "href":"individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA foreign income data"
               },"incomePaye":{
-                "href":"individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startDate,endDate}",
+                "href":"individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}",
                 "title":"Get an individual's PAYE income data"
               },"incomeSaSummary":{
-                "href":"individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA summary data"
               },"incomeSaEmployments":{
-                "href":"individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA employments data"
               },"incomeSa":{
-                "href":"individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA income data"
               },"incomeSaPensionsAndStateBenefits":{
-                "href":"individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA pensions and state benefits data"
               },"incomeSaSource":{
-                "href":"/individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}",
+                "href":"/individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}",
                 "title":"Get an individual's SA source data"
               }
             }

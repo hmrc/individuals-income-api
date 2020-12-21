@@ -17,10 +17,11 @@
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
 import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.Reads.{maxLength, minLength, pattern}
+import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
 import play.api.libs.json.{Format, JsPath}
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa._
-import uk.gov.hmrc.individualsincomeapi.domain.v2.{Registration, SelfAssessment, TaxReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaFootprint, SaFootprintRegistration, SaFootprintSubmission, SaFootprintTaxReturn}
 
 case class IfAddress(
   line1: Option[String],
@@ -104,20 +105,20 @@ object IfSaEntry {
 
   implicit val saIncomeFormat: Format[IfSaIncome] = Format(
     (
-      (JsPath \ "selfAssessment").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "allEmployments").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ukInterest").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "foreignDivs").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ukDivsAndInterest").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "partnerships").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "pensions").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "selfEmployment").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "trusts").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "ukProperty").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "foreign").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "lifePolicies").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "shares").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "other").readNullable[Double](paymentAmountValidator)
+      (JsPath \ "selfAssessment").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "allEmployments").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ukInterest").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "foreignDivs").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ukDivsAndInterest").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "partnerships").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "pensions").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "selfEmployment").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "trusts").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "ukProperty").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "foreign").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "lifePolicies").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "shares").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "other").readNullable[Double](verifying(paymentAmountValidator))
     )(IfSaIncome.apply _),
     (
       (JsPath \ "selfAssessment").writeNullable[Double] and
@@ -146,11 +147,11 @@ object IfSaEntry {
         (JsPath \ "telephoneNumber").readNullable[String](minLength[String](0).keepAnd(maxLength[String](100))) and
         (JsPath \ "busStartDate").readNullable[String](pattern(dateStringPattern, "Invalid Business Start Date")) and
         (JsPath \ "busEndDate").readNullable[String](pattern(dateStringPattern, "Invalid Business End Date")) and
-        (JsPath \ "totalTaxPaid").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "totalNIC").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "turnover").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "otherBusIncome").readNullable[Double](paymentAmountValidator) and
-        (JsPath \ "tradingIncomeAllowance").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "totalTaxPaid").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "totalNIC").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "turnover").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "otherBusIncome").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "tradingIncomeAllowance").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "address").readNullable[IfAddress] and
         (JsPath \ "income").readNullable[IfSaIncome]
     )(IfSaReturn.apply _),
@@ -175,7 +176,7 @@ object IfSaEntry {
   implicit val saTaxYearEntryFormat: Format[IfSaEntry] = Format(
     (
       (JsPath \ "taxYear").readNullable[String](pattern(taxYearPattern, "Invalid Tax Year")) and
-        (JsPath \ "income").readNullable[Double](paymentAmountValidator) and
+        (JsPath \ "income").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "returnList").readNullable[Seq[IfSaReturn]]
     )(IfSaEntry.apply _),
     (
@@ -184,13 +185,5 @@ object IfSaEntry {
         (JsPath \ "returnList").writeNullable[Seq[IfSaReturn]]
     )(unlift(IfSaEntry.unapply))
   )
-
-  def toSelfAssessment(ifSaEntry: Seq[IfSaEntry]) = {
-
-    // TODO - build out convert method from IF response
-
-    SelfAssessment(Seq(Registration()), Seq(TaxReturn()))
-
-  }
 
 }

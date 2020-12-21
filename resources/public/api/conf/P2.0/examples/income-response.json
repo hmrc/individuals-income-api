@@ -1,7 +1,7 @@
 {
   "_links": {
     "self": {
-      "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&startDate=2019-01-01&endDate=2020-03-01"
+      "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-01-01&toDate=2020-03-01"
     }
   },
   "paye": {
@@ -16,7 +16,7 @@
           "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
         },
         "payFrequency": "W4",
-        "weekPayNumber": "2",
+        "weekPayNumber": 2,
         "paymentDate": "2006-02-27",
         "paidHoursWorked": "35",
         "taxCode": "K971",
@@ -73,7 +73,7 @@
           "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
         },
         "payFrequency": "M1",
-        "monthPayNumber": "3",
+        "monthPayNumber": 3,
         "paymentDate": "2007-02-27",
         "paidHoursWorked": "35",
         "taxCode": "K971",

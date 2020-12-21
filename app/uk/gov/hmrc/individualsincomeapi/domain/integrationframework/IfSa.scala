@@ -23,15 +23,15 @@ case class IfSa(sa: Seq[IfSaEntry])
 
 object IfSa {
 
-  val minValue = -9999999999.99
-  val maxValue = 9999999999.99
+  val minValue = -99999999999.99
+  val maxValue = 99999999999.99
 
   def isMultipleOfPointZeroOne(value: Double): Boolean = (BigDecimal(value) * 100.0) % 1 == 0
 
-  def isInRange(value: Double): Boolean = value > minValue && value < maxValue
+  def isInRange(value: Double): Boolean = value >= minValue && value <= maxValue
 
-  def paymentAmountValidator(implicit rds: Reads[Double]): Reads[Double] =
-    verifying[Double](value => isInRange(value) && isMultipleOfPointZeroOne(value))
+  def paymentAmountValidator(value: Double): Boolean =
+    isInRange(value) && isMultipleOfPointZeroOne(value)
 
   implicit val incomeSaFormat: Format[IfSa] = Format(
     (JsPath \ "sa").read[Seq[IfSaEntry]].map(value => IfSa(value)),

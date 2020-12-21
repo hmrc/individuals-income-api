@@ -45,10 +45,8 @@ sealed abstract class SaIncomeController(
 
   def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSa")) { authScopes =>
-        saIncomeService.fetchSaIncomeRoot(matchId, taxYearInterval, authScopes).map { sa =>
-
+        saIncomeService.fetchSaFootprint(matchId, taxYearInterval, authScopes).map { sa =>
           val selfLink =
             HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
 
@@ -195,9 +193,10 @@ sealed abstract class SaIncomeController(
 class SandboxSaIncomeController @Inject()(
   val saIncomeService: SandboxSaIncomeService,
   val scopeService: ScopesService,
+  val scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
   cc: ControllerComponents)
-    extends SaIncomeController(saIncomeService, scopeService, cc) {
+    extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc) {
   override val environment = SANDBOX
 }
 
@@ -205,8 +204,9 @@ class SandboxSaIncomeController @Inject()(
 class LiveSaIncomeController @Inject()(
   val saIncomeService: LiveSaIncomeService,
   val scopeService: ScopesService,
+  val scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
   cc: ControllerComponents)
-    extends SaIncomeController(saIncomeService, scopeService, cc) {
+    extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc) {
   override val environment = PRODUCTION
 }

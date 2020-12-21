@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v2.SelfAssessment
+import uk.gov.hmrc.individualsincomeapi.domain.v2.SaFootprint
 import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.findByMatchId
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,52 +34,61 @@ trait SaIncomeService {
 
   def endpoints =
     List(
-      "incomeSa", "incomeSaSummary", "incomeSaTrusts", "incomeSaForeign", "incomeSaPartnerships",
-      "incomeSaInterestsAndDividends", "incomeSaPensionsAndStateBenefits", "incomeSaUkProperties",
-      "incomeSaAdditionalInformation", "incomeSaOther", "incomeSaSource", "incomeSaEmployments",
-      "incomeSaSelfEmployments", "incomeSaFurtherDetails"
+      "incomeSa",
+      "incomeSaSummary",
+      "incomeSaTrusts",
+      "incomeSaForeign",
+      "incomeSaPartnerships",
+      "incomeSaInterestsAndDividends",
+      "incomeSaPensionsAndStateBenefits",
+      "incomeSaUkProperties",
+      "incomeSaAdditionalInformation",
+      "incomeSaOther",
+      "incomeSaSource",
+      "incomeSaEmployments",
+      "incomeSaSelfEmployments",
+      "incomeSaFurtherDetails"
     )
 
-  def cacheId{}
-
-  def fetchSaIncomeRoot(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[SelfAssessment]
+  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaFootprint]
 }
 
 @Singleton
 class LiveSaIncomeService @Inject()(
-                                     matchingConnector: IndividualsMatchingApiConnector,
-                                     ifConnector: IfConnector,
-                                     cache: SaIncomeCacheService,
-                                     scopeService: ScopesService,
-                                     scopesHelper: ScopesHelper,
-                                     @Named("retryDelay") retryDelay: Int)
+  matchingConnector: IndividualsMatchingApiConnector,
+  ifConnector: IfConnector,
+  cache: SaIncomeCacheService,
+  scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
+  @Named("retryDelay") retryDelay: Int)
     extends SaIncomeService {
 
   private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[Seq[IfSaEntry]] =
-
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
-      saIncome  <- cache.get(
-        SaCacheId(matchId, taxYearInterval, scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)),
-        withRetry(
-          ifConnector.fetchSelfAssessmentIncome(
-            ninoMatch.nino,
-            taxYearInterval,
-            Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty)
-          )
-        )
-      )
+      saIncome <- cache.get(
+                   SaCacheId(
+                     matchId,
+                     taxYearInterval,
+                     scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)),
+                   withRetry(
+                     ifConnector.fetchSelfAssessmentIncome(
+                       ninoMatch.nino,
+                       taxYearInterval,
+                       Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty)
+                     )
+                   )
+                 )
     } yield saIncome
 
-  override def fetchSaIncomeRoot(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                (implicit hc: HeaderCarrier): Future[SelfAssessment] = {
+  override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaFootprint] =
     for {
-      ninoMatch    <- matchingConnector.resolve(matchId)
-      ifSaEntries  <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
-    } yield IfSaEntry.toSelfAssessment(ifSaEntries)
-  }
+      ninoMatch   <- matchingConnector.resolve(matchId)
+      ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
+    } yield SaFootprint(ifSaEntries)
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
@@ -90,21 +99,15 @@ class LiveSaIncomeService @Inject()(
 @Singleton
 class SandboxSaIncomeService extends SaIncomeService {
 
-  private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                            (implicit hc: HeaderCarrier): Future[Seq[IfSaEntry]] = {
-
+  private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[Seq[IfSaEntry]] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncome) => successful(saIncome)
       case None           => failed(new MatchNotFoundException)
     }
 
-  }
-
-  override def fetchSaIncomeRoot(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                (implicit hc: HeaderCarrier): Future[SelfAssessment] = {
-
-    fetchSaIncome(matchId, taxYearInterval, scopes).map( sa => IfSaEntry.toSelfAssessment(sa))
-
-  }
+  override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
+    implicit hc: HeaderCarrier): Future[SaFootprint] =
+    fetchSaIncome(matchId, taxYearInterval, scopes).map(saFootprint => SaFootprint(saFootprint))
 
 }

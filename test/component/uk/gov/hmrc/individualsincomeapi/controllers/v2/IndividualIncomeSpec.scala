@@ -58,6 +58,177 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
 
   feature("Live individual income") {
 
+    scenario("not authorized") {
+
+      Given("an invalid privileged Auth bearer token")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 401 (unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "UNAUTHORIZED",
+        "message" -> "Bearer token is missing or not authorized"
+      )
+
+    }
+
+    scenario("missing match id") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the API is invoked with a missing match id")
+      val response = Http(s"$serviceUrl/paye?fromDate=$fromDate&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (bad request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "matchId is required"
+      )
+
+    }
+
+    scenario("malformed match id") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the API is invoked with a malformed match id")
+      val response = Http(s"$serviceUrl/paye?matchId=malformed-match-id-value&fromDate=$fromDate&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (bad request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "matchId format is invalid"
+      )
+
+    }
+
+    scenario("invalid match id") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 404 (not found)")
+      response.code shouldBe NOT_FOUND
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "NOT_FOUND",
+        "message" -> "The resource can not be found"
+      )
+
+    }
+
+    scenario("missing fromDate") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "fromDate is required"
+      )
+
+    }
+
+    scenario("toDate earlier than fromDate") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$toDate&toDate=$fromDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "Invalid time period requested"
+      )
+
+    }
+
+    scenario("From date requested is earlier than 31st March 2013") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=2012-01-01&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "fromDate earlier than 31st March 2013"
+      )
+
+    }
+
+    scenario("Invalid fromDate") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=20xx-01-01&toDate=$toDate")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "fromDate: invalid date format"
+      )
+
+    }
+
+    scenario("Invalid toDate") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$toDate&toDate=20xx-01-01")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "toDate: invalid date format"
+      )
+
+    }
+
     scenario("Individual has employment income") {
 
       Given("A valid privileged Auth bearer token")
@@ -104,8 +275,8 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
                |          "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
                |        },
                |        "payFrequency":"W4",
-               |        "monthPayNumber":"3",
-               |        "weekPayNumber":"2",
+               |        "monthPayNumber": 3,
+               |        "weekPayNumber": 2,
                |        "paymentDate":"2006-02-27",
                |        "paidHoursWorked":"36",
                |        "taxCode":"K971",

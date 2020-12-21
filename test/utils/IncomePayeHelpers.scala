@@ -50,7 +50,7 @@ trait IncomePayeHelpers {
     )
 
   private def createValidAdditionalFields() =
-    IFAdditionalFields(Some(false), Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"))
+    IfAdditionalFields(Some(false), Some("yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"))
 
   def createValidStatutoryPayToDate() =
     IfStatutoryPayYTD(
