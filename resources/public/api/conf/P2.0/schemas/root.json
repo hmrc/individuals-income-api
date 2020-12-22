@@ -14,7 +14,7 @@
             "href": {
              "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startDate,endDate}"
+              "example": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
             },
             "title": {
               "type": "string",
@@ -30,7 +30,7 @@
             "href": {
               "type": "string",
               "description":"The URL of the endpoint.",
-              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&startYear,endYear}"
+              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             },
             "title": {
               "type": "string",

@@ -70,6 +70,16 @@
                 "type": "string",
                 "example": "W1"
               },
+              "weekPayNumber": {
+                "type": "number",
+                "description": "The number corresponding to the week the payment was made. As pay dates may not align with calendar weeks, the range of permitted values is 1 through to 54 (inclusive), and 56",
+                "example": "45"
+              },
+              "monthPayNumber": {
+                "type": "number",
+                "description": "The number between 1 and 12, corresponding to the month the payment was made. As the tax year starts in April, so does the monthPayNumber, with 1 corresponding to April",
+                "example": "10"
+              },
               "paymentDate": {
                 "type": "string",
                 "format": "date",

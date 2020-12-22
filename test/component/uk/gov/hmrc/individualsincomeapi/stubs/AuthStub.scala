@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 object AuthStub extends MockHost(22000) {
 
   def authPredicate(scopes: Iterable[String]): Predicate =
-    scopes.map(Enrolment(_): Predicate).reduce(_ and _)
+    scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
   private def privilegedAuthority(scope: String) = obj(
     "authorise" -> arr(toJson(Enrolment(scope))),
@@ -55,7 +55,9 @@ object AuthStub extends MockHost(22000) {
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
         .willReturn(aResponse()
           .withStatus(Status.OK)
-          .withBody("""{"internalId": "some-id", "allEnrolments": [ { "key": "key", "value": "hello-world" } ]}""")))
+          .withBody(s"""{"internalId": "some-id", "allEnrolments": [ ${scopes
+            .map(scope => s"""{ "key": "$scope", "value": ""}""")
+            .reduce((a, b) => s"$a, $b")} ]}""")))
 
   def willAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): StubMapping =
     mock.register(
@@ -64,7 +66,7 @@ object AuthStub extends MockHost(22000) {
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
         .willReturn(aResponse()
           .withStatus(Status.OK)
-          .withBody("""{"internalId": "some-id", "allEnrolments": [ { "key": "key", "value": "hello-world" } ]}""")))
+          .withBody(s"""{"internalId": "some-id", "allEnrolments": [ { "key": "$scope", "value": "" } ]}""")))
 
   def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scopes: List[String]): StubMapping =
     mock.register(
@@ -83,10 +85,4 @@ object AuthStub extends MockHost(22000) {
         .willReturn(aResponse()
           .withStatus(Status.UNAUTHORIZED)
           .withHeader(HeaderNames.WWW_AUTHENTICATE, """MDTP detail="Bearer token is missing or not authorized"""")))
-
-  def willAuthorizeNinoWithAuthToken(nino: String, authBearerToken: String) =
-    mock.register(
-      get(urlEqualTo(s"/authorise/read/paye/$nino?confidenceLevel=50"))
-        .withHeader(AUTHORIZATION, equalTo(authBearerToken))
-        .willReturn(aResponse().withStatus(Status.OK)))
 }

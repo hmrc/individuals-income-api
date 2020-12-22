@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeService, SandboxIncomeService}
 
 import scala.concurrent.ExecutionContext.Implicits.global

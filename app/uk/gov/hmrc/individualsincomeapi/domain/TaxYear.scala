@@ -17,6 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.{DateTime, DateTimeZone, LocalDate, MonthDay}
+import play.api.libs.json.{Format, JsResult, JsString, JsSuccess, JsValue}
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
@@ -29,6 +30,11 @@ case class TaxYear(formattedTaxYear: String) {
 }
 
 object TaxYear {
+
+  implicit val formatTaxYear = new Format[TaxYear] {
+    override def reads(json: JsValue): JsResult[TaxYear] = JsSuccess(TaxYear(json.asInstanceOf[JsString].value))
+    override def writes(taxYear: TaxYear): JsValue = JsString(taxYear.formattedTaxYear)
+  }
 
   private final val TaxYearRegex = "^(\\d{4})-(\\d{2})$"
 

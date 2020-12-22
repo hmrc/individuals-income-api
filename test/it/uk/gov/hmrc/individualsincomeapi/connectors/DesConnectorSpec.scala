@@ -27,6 +27,7 @@ import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment, DesSAIncome, DesSAReturn, SAIncome}
 import uk.gov.hmrc.integration.ServiceSpec
 import utils.TestSupport
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates

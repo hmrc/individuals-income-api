@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
-import play.api.libs.json.Reads.verifying
-import play.api.libs.json.{Format, JsPath, Reads}
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+
+import play.api.libs.json.{Format, JsPath}
 
 case class IfPaye(paye: Seq[IfPayeEntry])
 
@@ -39,18 +39,14 @@ object IfPaye {
   def isInRangePositiveWholeUnits(value: Double): Boolean =
     value >= payeWholeUnitsPositivePaymentTypeMinValue && value <= payeWholeUnitsPositivePaymentTypeMaxValue
 
-  def paymentAmountValidator(implicit rds: Reads[Double]): Reads[Double] =
-    verifying[Double](value => isInRange(value) && isMultipleOfPointZeroOne(value))
+  def paymentAmountValidator(value: Double): Boolean =
+    isInRange(value) && isMultipleOfPointZeroOne(value)
 
-  def payeWholeUnitsPaymentTypeValidator(implicit rds: Reads[Int]): Reads[Int] =
-    verifying[Int](value => isInRangeWholeUnits(value))
-
-  def payeWholeUnitsPositivePaymentTypeValidator(implicit rds: Reads[Int]): Reads[Int] =
-    verifying[Int](value => isInRangePositiveWholeUnits(value))
+  def payeWholeUnitsPaymentTypeValidator(value: Int): Boolean = isInRangeWholeUnits(value)
+  def payeWholeUnitsPositivePaymentTypeValidator(value: Int): Boolean = isInRangePositiveWholeUnits(value)
 
   implicit val incomePayeFormat: Format[IfPaye] = Format(
     (JsPath \ "paye").read[Seq[IfPayeEntry]].map(value => IfPaye(value)),
     (JsPath \ "paye").write[Seq[IfPayeEntry]].contramap(value => value.paye)
   )
-
 }

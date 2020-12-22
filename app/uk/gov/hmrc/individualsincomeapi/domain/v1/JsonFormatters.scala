@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain
+package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import java.util.UUID
+
 import play.api.libs.json._
-import scala.util.{Failure, Try}
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmploymentPayFrequency, DesEmployments, DesPayment}
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorResponse}
+
+import scala.util.{Failure, Try}
 
 object JsonFormatters {
 
@@ -43,12 +47,6 @@ object JsonFormatters {
     override def reads(json: JsValue) = JsSuccess(UUID.fromString(json.asInstanceOf[JsString].value))
   }
 
-  implicit val formatTaxYear = new Format[TaxYear] {
-    override def reads(json: JsValue): JsResult[TaxYear] = JsSuccess(TaxYear(json.asInstanceOf[JsString].value))
-    override def writes(taxYear: TaxYear): JsValue = JsString(taxYear.formattedTaxYear)
-  }
-
-  implicit val paymentJsonFormat = Json.format[Payment]
   implicit val matchedCitizenJsonFormat = Json.format[MatchedCitizen]
 
   implicit val desPaymentJsonFormat = Json.format[DesPayment]

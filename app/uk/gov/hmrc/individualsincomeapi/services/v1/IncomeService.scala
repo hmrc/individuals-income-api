@@ -22,9 +22,11 @@ import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.{DesEmployments, MatchNotFoundException, Payment}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
+import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

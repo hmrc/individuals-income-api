@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
+package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
 import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.{Format, JsPath}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern}
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa.IfSa.paymentAmountValidator
+import play.api.libs.json.{Format, JsPath}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa._
 
 case class IfAddress(
   line1: Option[String],

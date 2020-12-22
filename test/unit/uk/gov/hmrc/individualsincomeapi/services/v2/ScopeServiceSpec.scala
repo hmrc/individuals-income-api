@@ -55,21 +55,36 @@ class ScopesServiceSpec extends UnitSpec with ScopesConfig with BeforeAndAfterEa
       result shouldBe List("payments", "employer/employerName", "employer/employerDistrictNumber")
     }
 
+    "get valid data items for scope and multiple endpoints" in {
+      val result =
+        scopesService.getValidItemsFor(List(mockScope8), List(mockEndpoint1, mockEndpoint2))
+      result shouldBe Set(
+        "payments",
+        "employer/employerName",
+        "employer/employerDistrictNumber",
+        "field1",
+        "field2",
+        "field3",
+        "field4"
+      )
+    }
+
     "get valid data items keys for single scope" in {
       val result =
-        scopesService.getValidFieldsForCacheKey(List(mockScope1))
+        scopesService.getValidFieldsForCacheKey(List(mockScope1), List(mockEndpoint1))
       result shouldBe "ABF"
     }
 
     "get valid data items keys for multiple scopes" in {
       val result =
-        scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2))
+        scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2), List(mockEndpoint1, mockEndpoint2))
       result shouldBe "ABFCDEG"
     }
 
     "get valid data items keys for multiple scopes including no match" in {
       val result =
-        scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2, "not-exists"))
+        scopesService
+          .getValidFieldsForCacheKey(List(mockScope1, mockScope2, "not-exists"), List(mockEndpoint1, mockEndpoint2))
       result shouldBe "ABFCDEG"
     }
 
@@ -81,16 +96,16 @@ class ScopesServiceSpec extends UnitSpec with ScopesConfig with BeforeAndAfterEa
     }
 
     "get links for valid endpoints" in {
-      val result = scopesService.getLinks(List(mockScope1))
-      result shouldBe Map(mockEndpoint1 -> "/a/b/c?matchId=<matchId>{&fromDate,toDate}")
+      val result = scopesService.getEndpointLink(mockEndpoint1)
+      result shouldBe Some("/a/b/c?matchId=<matchId>{&fromDate,toDate}")
 
-      val result2 = scopesService.getLinks(List(mockScope4))
-      result2 shouldBe Map(mockEndpoint2 -> "/a/b/d?matchId=<matchId>{&fromDate,toDate}")
+      val result2 = scopesService.getEndpointLink(mockEndpoint2)
+      result2 shouldBe Some("/a/b/d?matchId=<matchId>{&fromDate,toDate}")
     }
 
     "get the scopes associated to an endpoint" in {
       val result = scopesService.getEndPointScopes(mockEndpoint2)
-      result shouldBe Iterable(mockScope4, mockScope6, mockScope7)
+      result shouldBe Iterable(mockScope4, mockScope6, mockScope7, mockScope8)
     }
   }
 }

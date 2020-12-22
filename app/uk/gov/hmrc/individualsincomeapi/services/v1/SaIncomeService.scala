@@ -22,8 +22,10 @@ import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
+import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncomes, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncomes, SaFootprint, SaIncomeSources, SaTaxReturnSummaries}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

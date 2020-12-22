@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.individualsincomeapi.domain.{DesSAIncome, DesSAReturn, SAIncome, TaxYear}
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 
 class LiveSaIncomeControllerSpec extends BaseSpec {
 
@@ -36,7 +36,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA root endpoint") {
 
     val rootScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-hmcts-c4",
@@ -45,7 +44,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       "read:individuals-income-laa-c3",
       "read:individuals-income-laa-c4",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment annual returns") {
@@ -112,12 +112,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA employments endpoint") {
 
     val employmentScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4",
     )
 
     scenario("Fetch Self Assessment employments") {
@@ -160,11 +160,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA self employments endpoint") {
 
     val selfAssessmentScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment self employments") {
@@ -207,14 +207,14 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA summary endpoint") {
 
     val summaryScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment summary") {
@@ -256,12 +256,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA trusts endpoint") {
 
     val trustsScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4",
     )
 
     scenario("Fetch Self Assessment trusts income") {
@@ -351,12 +351,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA partnerships endpoint") {
 
     val partnershipsScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4",
     )
 
     scenario("Fetch Self Assessment partnerships income") {
@@ -400,14 +400,14 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA interests and dividends income") {
 
     val interestsAndDividendsScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4",
     )
 
     scenario("Fetch Self Assessment interests and dividends income") {
@@ -451,12 +451,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA pensions and state benefits income") {
 
     val pensionsAndStateBenefitsScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment pensions and state benefits income") {
@@ -500,14 +500,14 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA UK properties income") {
 
     val ukPropertiesScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment UK properties income") {
@@ -551,12 +551,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA additional information") {
 
     val additionalInformationScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment additional information") {
@@ -600,12 +600,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   feature("SA other income") {
 
     val otherIncomeScopes = List(
-      "read:individuals-employments-nictsejo-c4",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-nictsejo-c4"
     )
 
     scenario("Fetch Self Assessment other income") {

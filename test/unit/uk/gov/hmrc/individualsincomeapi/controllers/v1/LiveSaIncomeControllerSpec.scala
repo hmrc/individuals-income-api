@@ -31,9 +31,10 @@ import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.LiveSaIncomeController
-import uk.gov.hmrc.individualsincomeapi.domain.JsonFormatters._
-import uk.gov.hmrc.individualsincomeapi.domain.SandboxIncomeData.sandboxUtr
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
 import uk.gov.hmrc.individualsincomeapi.services.v1.LiveSaIncomeService
 import utils.SpecBase
 

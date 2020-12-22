@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.domain
+package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.SaUtr
-import JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear.formatTaxYear
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome}
 
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 

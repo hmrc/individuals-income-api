@@ -21,7 +21,8 @@ import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, MatchedCitizen, SandboxIncomeData}
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
+import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, SandboxIncomeData}
 
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}

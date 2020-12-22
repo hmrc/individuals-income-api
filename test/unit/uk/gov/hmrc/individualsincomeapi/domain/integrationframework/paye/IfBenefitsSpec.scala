@@ -18,8 +18,8 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfPayeEntry._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye.IfBenefits
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfBenefits
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 
 class IfBenefitsSpec extends WordSpec with Matchers {
 

@@ -19,30 +19,32 @@ package uk.gov.hmrc.individualsincomeapi.controllers.v2
 import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
+import play.api.hal.HalLink
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
-import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 
 import scala.concurrent.ExecutionContext
 
 abstract class RootController(
   citizenMatchingService: CitizenMatchingService,
   scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
   cc: ControllerComponents)(implicit ec: ExecutionContext)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
-    {
-      val scopes = scopeService.getAllScopes
-      requiresPrivilegedAuthentication(scopes)
-        .flatMap { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }
-        .recover(recovery)
-    }
+    requiresPrivilegedAuthentication(scopeService.getAllScopes) { authScopes =>
+      citizenMatchingService.matchCitizen(matchId) map { _: MatchedCitizen =>
+        val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
+        Ok(Json.toJson(scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink))
+      }
+    }.recover(recovery)
   }
 }
 
@@ -50,9 +52,10 @@ abstract class RootController(
 class SandboxRootController @Inject()(
   val citizenMatchingService: SandboxCitizenMatchingService,
   val scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
   cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends RootController(citizenMatchingService, scopeService, cc) {
+    extends RootController(citizenMatchingService, scopeService, scopesHelper, cc) {
   override val environment = SANDBOX
 }
 
@@ -60,8 +63,9 @@ class SandboxRootController @Inject()(
 class LiveRootController @Inject()(
   val citizenMatchingService: LiveCitizenMatchingService,
   val scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
   cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends RootController(citizenMatchingService, scopeService, cc) {
+    extends RootController(citizenMatchingService, scopeService, scopesHelper, cc) {
   override val environment = PRODUCTION
 }

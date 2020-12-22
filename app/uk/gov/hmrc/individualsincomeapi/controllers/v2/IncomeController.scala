@@ -20,12 +20,17 @@ import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
+import play.api.hal.Hal.state
+import play.api.hal.HalLink
+import play.api.libs.json.Json.{obj, toJson}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -34,12 +39,17 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     {
-      val scopes = scopeService.getEndPointScopes("incomePaye")
-      requiresPrivilegedAuthentication(scopes)
-        .flatMap { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomePaye")) { authScopes =>
+        incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
+          val selfLink =
+            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+
+          val incomeJsObject = Json.obj("income" -> toJson(paye))
+          val payeJsObject = obj("paye"          -> incomeJsObject)
+
+          Ok(Json.toJson(state(payeJsObject) ++ selfLink))
         }
-        .recover(recovery)
+      }.recover(recovery)
     }
   }
 }
