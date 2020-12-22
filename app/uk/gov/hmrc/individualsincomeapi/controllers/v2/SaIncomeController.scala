@@ -88,112 +88,169 @@ sealed abstract class SaIncomeController(
 
   def saForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaForeign")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaForeign")) { authScopes =>
+        saIncomeService.fetchForeign(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaPartnerships")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaPartnerships")) { authScopes =>
+        saIncomeService.fetchPartnerships(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] =
     Action.async { implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaInterestsAndDividends")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaInterestsAndDividends")) { authScopes =>
+        saIncomeService.fetchInterestAndDividends(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
     }
 
   def saPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] =
     Action.async { implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaPensionsAndStateBenefits")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaPensionsAndStateBenefits")) {
+        authScopes =>
+          saIncomeService.fetchPensionAndStateBenefits(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink(
+                "self",
+                urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId"))
+
+            val saJsObject = obj("selfAssessment" -> sa)
+
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
+      }.recover(recovery)
+
     }
 
   def saUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaUkProperties")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaUkProperties")) { authScopes =>
+        saIncomeService.fetchUkProperties(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaAdditionalInformation")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaAdditionalInformation")) { authScopes =>
+        saIncomeService.fetchAdditionalInformation(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaOther")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaOther")) { authScopes =>
+        saIncomeService.fetchOtherIncome(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/other?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saIncomeSource(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaSource")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaSource")) { authScopes =>
+        saIncomeService.fetchSources(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/source?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def employmentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaEmployments")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaEmployments")) { authScopes =>
+        saIncomeService.fetchEmployments(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def selfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaSelfEmployments")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaSelfEmployments")) { authScopes =>
+        saIncomeService.fetchSelfEmployments(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 
   def saFurtherDetails(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      {
-        val scopes = scopeService.getEndPointScopes("incomeSaFurtherDetails")
-        requiresPrivilegedAuthentication(scopes) { authScopes =>
-          throw new Exception("NOT_IMPLEMENTED")
-        }.recover(recovery)
-      }
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaFurtherDetails")) { authScopes =>
+        saIncomeService.fetchFurtherDetails(matchId, taxYearInterval, authScopes).map { sa =>
+          val selfLink =
+            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/further-details?matchId=$matchId"))
+
+          val saJsObject = obj("selfAssessment" -> sa)
+
+          Ok(Json.toJson(state(saJsObject) ++ selfLink))
+        }
+      }.recover(recovery)
+
   }
 }
 

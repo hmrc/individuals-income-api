@@ -20,48 +20,34 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaAdditionalInformationRecords(taxReturns: Seq[SaAdditionalInformationRecordsTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaAdditionalInformationRecords {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      TransformSaFootprintRegistrations(ifSaEntry),
-      TransformSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saAdditionalInformationRecordsJsonFormat = Json.format[SaAdditionalInformationRecords]
 
-  private def TransformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { returns =>
-          returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]): SaAdditionalInformationRecords =
+    SaAdditionalInformationRecords(TransformSaAdditionalInformationTaxReturn(ifSaEntry))
+
+  private def TransformSaAdditionalInformationRecord(entry: IfSaEntry) =
+    entry.returnList.map { returns =>
+      returns.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaAdditionalInformationRecord(
+            maybeIncome.lifePolicies,
+            maybeIncome.shares
+          )
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def TransformSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def TransformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def TransformSaAdditionalInformationTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaAdditionalInformationRecordsTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            TransformSaFootprintSubmissions(entry)
+            TransformSaAdditionalInformationRecord(entry)
           )
         }
       }

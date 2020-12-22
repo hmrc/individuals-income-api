@@ -20,50 +20,34 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaPartnerships(taxReturns: Seq[SaPartnershipsTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaPartnerships {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      TransformSaFootprintRegistrations(ifSaEntry),
-      TransformSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saPartnershipsJsonFormat = Json.format[SaPartnerships]
 
-  private def TransformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { returns =>
-          returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]): SaPartnerships =
+    SaPartnerships(TransformSaPartnershipsTaxReturn(ifSaEntry))
+
+  private def TransformSaPartnership(entry: IfSaEntry) =
+    entry.returnList.map { returns =>
+      returns.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaPartnership(maybeIncome.partnerships)
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def TransformSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def TransformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def TransformSaPartnershipsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaPartnershipsTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            TransformSaFootprintSubmissions(entry)
+            TransformSaPartnership(entry)
           )
         }
       }
       .sortBy(_.taxYear)
+
 }

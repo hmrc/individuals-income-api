@@ -27,24 +27,24 @@ object SaSummaries {
   implicit val saReturnSummaryJsonFormat = Json.format[SaSummaries]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaSummaries =
-    SaSummaries(toSaSummaryTaxReturn(ifSaEntry))
+    SaSummaries(TransformSaSummaryTaxReturn(ifSaEntry))
 
-  private def toSaSummary(entry: IfSaEntry) =
-    entry.returnList.map { rList =>
-      rList.flatMap { entry =>
+  private def TransformSaSummary(entry: IfSaEntry) =
+    entry.returnList.map { returns =>
+      returns.flatMap { entry =>
         entry.income.map { maybeIncome =>
           SaSummary(maybeIncome.selfAssessment)
         }
       }
     }
 
-  private def toSaSummaryTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def TransformSaSummaryTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
-      .flatMap { e =>
-        e.taxYear.map { ty =>
+      .flatMap { entry =>
+        entry.taxYear.map { ty =>
           SaSummaryTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            toSaSummary(e)
+            TransformSaSummary(entry)
           )
         }
       }

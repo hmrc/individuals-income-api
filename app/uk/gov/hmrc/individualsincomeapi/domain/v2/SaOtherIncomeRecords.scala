@@ -20,50 +20,36 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaOtherIncomeRecords(taxReturns: Seq[SaOtherIncomeRecordsTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaOtherIncomeRecords {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      TransformSaFootprintRegistrations(ifSaEntry),
-      TransformSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saOtherIncomeRecordsJsonFormat = Json.format[SaOtherIncomeRecords]
 
-  private def TransformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { returns =>
-          returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]): SaOtherIncomeRecords =
+    SaOtherIncomeRecords(TransformSaOtherIncomeTaxReturn(ifSaEntry))
+
+  private def TransformSaOtherIncomeRecord(entry: IfSaEntry) =
+    entry.returnList.map { returns =>
+      returns.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaOtherIncomeRecord(
+            maybeIncome.other
+          )
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def TransformSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def TransformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def TransformSaOtherIncomeTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaOtherIncomeRecordsTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            TransformSaFootprintSubmissions(entry)
+            TransformSaOtherIncomeRecord(entry)
           )
         }
       }
       .sortBy(_.taxYear)
+
 }

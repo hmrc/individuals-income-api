@@ -42,6 +42,11 @@ case class SandboxIncomeSA() {
       Some(100.0)
     )
 
+    val validDeducts = IfDeducts(
+      Some(200.00),
+      Some(200.00)
+    )
+
     IfSaReturn(
       Some("1234567890"),
       Some("2020-01-01"),
@@ -56,7 +61,8 @@ case class SandboxIncomeSA() {
       Some(100.01),
       Some(100.01),
       Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
-      Some(validSaIncome)
+      Some(validSaIncome),
+      Some(validDeducts)
     )
   }
 }

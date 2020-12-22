@@ -49,6 +49,11 @@ case class IfSaIncome(
   other: Option[Double]
 )
 
+case class IfDeducts(
+  totalBusExpenses: Option[Double],
+  totalDisallowBusExp: Option[Double]
+)
+
 case class IfSaReturn(
   utr: Option[String],
   caseStartDate: Option[String],
@@ -63,7 +68,8 @@ case class IfSaReturn(
   otherBusinessIncome: Option[Double],
   tradingIncomeAllowance: Option[Double],
   address: Option[IfAddress],
-  income: Option[IfSaIncome]
+  income: Option[IfSaIncome],
+  deducts: Option[IfDeducts]
 )
 
 case class IfSaEntry(
@@ -138,6 +144,17 @@ object IfSaEntry {
     )(unlift(IfSaIncome.unapply))
   )
 
+  implicit val saDeductsFormat: Format[IfDeducts] = Format(
+    (
+      (JsPath \ "totalBusExpenses").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "totalDisallowBusExp").readNullable[Double](verifying(paymentAmountValidator))
+    )(IfDeducts.apply _),
+    (
+      (JsPath \ "totalBusExpenses").writeNullable[Double] and
+        (JsPath \ "totalDisallowBusExp").writeNullable[Double]
+    )(unlift(IfDeducts.unapply))
+  )
+
   implicit val saReturnTypeFormat: Format[IfSaReturn] = Format(
     (
       (JsPath \ "utr").readNullable[String](pattern(utrPattern, "Invalid UTR")) and
@@ -153,7 +170,8 @@ object IfSaEntry {
         (JsPath \ "otherBusIncome").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "tradingIncomeAllowance").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "address").readNullable[IfAddress] and
-        (JsPath \ "income").readNullable[IfSaIncome]
+        (JsPath \ "income").readNullable[IfSaIncome] and
+        (JsPath \ "deducts").readNullable[IfDeducts]
     )(IfSaReturn.apply _),
     (
       (JsPath \ "utr").writeNullable[String] and
@@ -169,7 +187,8 @@ object IfSaEntry {
         (JsPath \ "otherBusIncome").writeNullable[Double] and
         (JsPath \ "tradingIncomeAllowance").writeNullable[Double] and
         (JsPath \ "address").writeNullable[IfAddress] and
-        (JsPath \ "income").writeNullable[IfSaIncome]
+        (JsPath \ "income").writeNullable[IfSaIncome] and
+        (JsPath \ "deducts").writeNullable[IfDeducts]
     )(unlift(IfSaReturn.unapply))
   )
 

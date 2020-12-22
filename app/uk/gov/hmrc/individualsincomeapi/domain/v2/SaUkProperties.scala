@@ -20,50 +20,34 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaUkProperties(taxReturn: Seq[SaUkPropertiesTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaUkProperties {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      TransformSaFootprintRegistrations(ifSaEntry),
-      TransformSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saUkPropertiesJsonFormat = Json.format[SaUkProperties]
 
-  private def TransformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { returns =>
-          returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]): SaUkProperties =
+    SaUkProperties(TransformSaUkPropertiesTaxReturn(ifSaEntry))
+
+  private def TransformUkProperty(entry: IfSaEntry) =
+    entry.returnList.map { returns =>
+      returns.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaUkProperty(maybeIncome.ukProperty)
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def TransformSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def TransformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def TransformSaUkPropertiesTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaUkPropertiesTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            TransformSaFootprintSubmissions(entry)
+            TransformUkProperty(entry)
           )
         }
       }
       .sortBy(_.taxYear)
+
 }

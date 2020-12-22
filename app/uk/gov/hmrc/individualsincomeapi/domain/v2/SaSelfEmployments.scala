@@ -20,50 +20,34 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaFootprint(
-  registrations: Seq[SaFootprintRegistration],
-  taxReturns: Seq[SaFootprintTaxReturn]
-)
+case class SaSelfEmployments(taxReturns: Seq[SaSelfEmploymentsTaxReturn])
 
-object SaFootprint {
-  implicit val saFootprintJsonFormat = Json.format[SaFootprint]
+object SaSelfEmployments {
 
-  def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
-    SaFootprint(
-      TransformSaFootprintRegistrations(ifSaEntry),
-      TransformSaFootprintTaxReturn(ifSaEntry)
-    )
+  implicit val saSelfEmploymentsJsonFormat = Json.format[SaSelfEmployments]
 
-  private def TransformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
-    ifSaEntry
-      .flatMap { entryList =>
-        entryList.returnList.map { returns =>
-          returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
-          }
+  def transform(ifSaEntry: Seq[IfSaEntry]) =
+    SaSelfEmployments(TransformSaSelfEmploymentsTaxReturn(ifSaEntry))
+
+  private def TransformSaSelfEmployment(entry: IfSaEntry) =
+    entry.returnList.map { returns =>
+      returns.flatMap { entry =>
+        entry.income.map { maybeIncome =>
+          SaSelfEmployment(maybeIncome.selfEmployment)
         }
       }
-      .flatten
-      .sortBy(_.registrationDate)
-
-  private def TransformSaFootprintSubmissions(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns
-        .map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
-        }
-        .sortBy(_.receivedDate)
     }
 
-  private def TransformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def TransformSaSelfEmploymentsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
-          SaFootprintTaxReturn(
+          SaSelfEmploymentsTaxReturn(
             Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
-            TransformSaFootprintSubmissions(entry)
+            TransformSaSelfEmployment(entry)
           )
         }
       }
       .sortBy(_.taxYear)
+
 }
