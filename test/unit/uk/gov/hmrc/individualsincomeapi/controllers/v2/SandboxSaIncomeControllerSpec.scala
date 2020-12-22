@@ -30,8 +30,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
-import uk.gov.hmrc.individualsincomeapi.services.v2.SandboxSaIncomeService
-import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{SandboxSaIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.Future
@@ -52,8 +51,9 @@ class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBa
     val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
     val mockAuthConnector = fakeAuthConnector(Future.successful(enrolments))
     lazy val scopeService: ScopesService = mock[ScopesService]
+    lazy val scopeHelper: ScopesHelper = mock[ScopesHelper]
     val sandboxSaIncomeController =
-      new SandboxSaIncomeController(mockSandboxSaIncomeService, scopeService, mockAuthConnector, cc)
+      new SandboxSaIncomeController(mockSandboxSaIncomeService, scopeService, scopeHelper, mockAuthConnector, cc)
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
   }
 

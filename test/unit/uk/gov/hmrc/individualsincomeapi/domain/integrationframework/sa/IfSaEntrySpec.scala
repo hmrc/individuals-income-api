@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfDeducts, IfSaEntry, IfSaIncome, IfSaReturn}
 
 class IfSaEntrySpec extends WordSpec with Matchers {
 
@@ -109,6 +109,11 @@ class IfSaEntrySpec extends WordSpec with Matchers {
       Some(100.0)
     )
 
+    val validDeducts = IfDeducts(
+      Some(200.0),
+      Some(200.0)
+    )
+
     IfSaReturn(
       Some("1234567890"),
       Some("2020-01-01"),
@@ -123,7 +128,8 @@ class IfSaEntrySpec extends WordSpec with Matchers {
       Some(100.01),
       Some(100.01),
       Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
-      Some(validSaIncome)
+      Some(validSaIncome),
+      Some(validDeducts)
     )
   }
 }

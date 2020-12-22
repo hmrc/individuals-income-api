@@ -30,8 +30,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
-import uk.gov.hmrc.individualsincomeapi.services.v2.LiveSaIncomeService
-import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
 
 import scala.concurrent.Future
@@ -52,9 +51,10 @@ class LiveSaIncomeControllerSpec extends SpecBase with AuthHelper with MockitoSu
     val mockAuthConnector: AuthConnector = fakeAuthConnector(Future.successful(enrolments))
     val mockLiveSaIncomeService: LiveSaIncomeService = mock[LiveSaIncomeService]
     lazy val scopeService: ScopesService = mock[ScopesService]
+    lazy val scopeHelper: ScopesHelper = mock[ScopesHelper]
 
     val liveSaIncomeController =
-      new LiveSaIncomeController(mockLiveSaIncomeService, scopeService, mockAuthConnector, cc)
+      new LiveSaIncomeController(mockLiveSaIncomeService, scopeService, scopeHelper, mockAuthConnector, cc)
 
     given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
   }

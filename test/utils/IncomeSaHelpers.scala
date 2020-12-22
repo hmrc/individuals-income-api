@@ -16,7 +16,7 @@
 
 package utils
 
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfSaEntry, IfSaIncome, IfSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfDeducts, IfSaEntry, IfSaIncome, IfSaReturn}
 
 trait IncomeSaHelpers {
   def createValidSaTaxYearEntry() = {
@@ -42,6 +42,11 @@ trait IncomeSaHelpers {
       Some(100.0)
     )
 
+    val validDeducts = IfDeducts(
+      Some(200.0),
+      Some(200.0)
+    )
+
     IfSaReturn(
       Some("1234567890"),
       Some("2020-01-01"),
@@ -56,7 +61,8 @@ trait IncomeSaHelpers {
       Some(100.01),
       Some(100.01),
       Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
-      Some(validSaIncome)
+      Some(validSaIncome),
+      Some(validDeducts)
     )
   }
 }
