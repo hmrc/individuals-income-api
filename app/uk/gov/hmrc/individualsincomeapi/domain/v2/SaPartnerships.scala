@@ -29,13 +29,20 @@ object SaPartnerships {
   def transform(ifSaEntry: Seq[IfSaEntry]): SaPartnerships =
     SaPartnerships(TransformSaPartnershipsTaxReturn(ifSaEntry))
 
+  private def default = SaPartnership(0.0)
+
   private def TransformSaPartnership(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaPartnership(maybeIncome.partnerships)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaPartnership(value.partnerships.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaPartnershipsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaPartnerships {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaPartnershipsTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaPartnership(entry)
           )
         }

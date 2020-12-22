@@ -41,15 +41,20 @@ object SaSources {
       )
     }
 
+  private def default = SaSource(None, None, None)
+
   private def TransformSaSource(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.map { entry =>
-        SaSource(
-          entry.businessDescription,
-          TransformSaSourceAddress(entry.address),
-          entry.telephoneNumber
-        )
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          SaSource(
+            entry.businessDescription,
+            TransformSaSourceAddress(entry.address),
+            entry.telephoneNumber
+          )
+        }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaSourcesTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -57,7 +62,7 @@ object SaSources {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaSourcesTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaSource(entry)
           )
         }

@@ -76,18 +76,6 @@
                         "postalCode": {
                           "type": "string",
                           "description": "Postcode"
-                        },
-                        "addressType": {
-                          "type": "string",
-                          "enum": [
-                            "homeAddress",
-                            "correspondenceAddress",
-                            "other"
-                          ]
-                        },
-                        "effectiveDate": {
-                          "type": "string",
-                          "description": "The effective date of the Business Address"
                         }
                       }
                     },

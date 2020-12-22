@@ -19,8 +19,8 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaInterestAndDividendsTaxReturn(
-  taxYear: Option[String],
-  interestsAndDividends: Option[Seq[SaInterestAndDividend]]
+  taxYear: String,
+  interestsAndDividends: Seq[SaInterestAndDividend]
 )
 
 object SaInterestAndDividendsTaxReturn {

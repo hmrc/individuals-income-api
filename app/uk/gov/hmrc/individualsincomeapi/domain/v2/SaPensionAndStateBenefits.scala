@@ -29,13 +29,20 @@ object SaPensionAndStateBenefits {
   def transform(ifSaEntry: Seq[IfSaEntry]) =
     SaPensionAndStateBenefits(TransformSaPensionAndStateBenefitTaxReturn(ifSaEntry))
 
+  private def default = SaPensionAndStateBenefit(0.0)
+
   private def TransformSaPensionAndStateBenefit(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaPensionAndStateBenefit(maybeIncome.pensions)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaPensionAndStateBenefit(value.pensions.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaPensionAndStateBenefitTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaPensionAndStateBenefits {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaPensionAndStateBenefitsTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaPensionAndStateBenefit(entry)
           )
         }

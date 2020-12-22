@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaSummary(totalIncome: Option[Double])
+case class SaSummary(totalIncome: Double)
 
 object SaSummary {
 

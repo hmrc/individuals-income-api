@@ -29,13 +29,20 @@ object SaSelfEmployments {
   def transform(ifSaEntry: Seq[IfSaEntry]) =
     SaSelfEmployments(TransformSaSelfEmploymentsTaxReturn(ifSaEntry))
 
+  def default = SaSelfEmployment(0.0)
+
   private def TransformSaSelfEmployment(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaSelfEmployment(maybeIncome.selfEmployment)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaSelfEmployment(value.selfEmployment.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaSelfEmploymentsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaSelfEmployments {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaSelfEmploymentsTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaSelfEmployment(entry)
           )
         }

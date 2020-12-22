@@ -29,13 +29,20 @@ object SaUkProperties {
   def transform(ifSaEntry: Seq[IfSaEntry]): SaUkProperties =
     SaUkProperties(TransformSaUkPropertiesTaxReturn(ifSaEntry))
 
+  private def default = SaUkProperty(0.0)
+
   private def TransformUkProperty(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaUkProperty(maybeIncome.ukProperty)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaUkProperty(value.ukProperty.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaUkPropertiesTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaUkProperties {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaUkPropertiesTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformUkProperty(entry)
           )
         }

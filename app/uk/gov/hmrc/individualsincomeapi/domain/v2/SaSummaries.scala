@@ -29,13 +29,20 @@ object SaSummaries {
   def transform(ifSaEntry: Seq[IfSaEntry]): SaSummaries =
     SaSummaries(TransformSaSummaryTaxReturn(ifSaEntry))
 
+  private def default = SaSummary(0.0)
+
   private def TransformSaSummary(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaSummary(maybeIncome.selfAssessment)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaSummary(value.selfAssessment.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaSummaryTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaSummaries {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaSummaryTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaSummary(entry)
           )
         }

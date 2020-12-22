@@ -29,13 +29,20 @@ object SaForeignIncomes {
   def transform(ifSaEntry: Seq[IfSaEntry]) =
     SaForeignIncomes(TransformSaForeignTaxReturn(ifSaEntry))
 
+  private def default = SaForeignIncome(0.0)
+
   private def TransformSaForeignIncome(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaForeignIncome(maybeIncome.foreign)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaForeignIncome(value.foreign.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaForeignTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaForeignIncomes {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaForeignTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaForeignIncome(entry)
           )
         }

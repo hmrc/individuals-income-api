@@ -19,8 +19,8 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaFootprintTaxReturn(
-  taxYear: Option[String],
-  submissions: Option[Seq[SaFootprintSubmission]]
+  taxYear: String,
+  submissions: Seq[SaFootprintSubmission]
 )
 
 object SaFootprintTaxReturn {

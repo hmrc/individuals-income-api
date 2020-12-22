@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaTrust(trustIncome: Option[Double])
+case class SaTrust(trustIncome: Double)
 
 object SaTrust {
 

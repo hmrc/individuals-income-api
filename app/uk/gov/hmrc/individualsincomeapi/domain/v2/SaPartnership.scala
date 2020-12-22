@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaPartnership(partnershipProfit: Option[Double])
+case class SaPartnership(partnershipProfit: Double)
 
 object SaPartnership {
 

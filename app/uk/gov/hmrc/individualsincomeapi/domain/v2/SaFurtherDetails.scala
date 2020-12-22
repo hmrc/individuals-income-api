@@ -37,20 +37,24 @@ object SaFurtherDetails {
       )
     }
 
+  private def default = SaFurtherDetail(None, None, None, None, None, None, None, None)
+
   private def TransformSaFurtherDetail(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.map { entry =>
-        SaFurtherDetail(
-          entry.busStartDate,
-          entry.busEndDate,
-          entry.totalTaxPaid,
-          entry.totalNIC,
-          entry.turnover,
-          entry.otherBusinessIncome,
-          entry.tradingIncomeAllowance,
-          TransformSaFurtherDetailDeducts(entry)
-        )
-      }
+    entry.returnList match {
+      case Some(list) =>
+        list.map { entry =>
+          SaFurtherDetail(
+            entry.busStartDate,
+            entry.busEndDate,
+            entry.totalTaxPaid,
+            entry.totalNIC,
+            entry.turnover,
+            entry.otherBusinessIncome,
+            entry.tradingIncomeAllowance,
+            TransformSaFurtherDetailDeducts(entry)
+          )
+        }
+      case _ => Seq(default)
     }
 
   private def TransformSaFurtherDetailsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -58,7 +62,7 @@ object SaFurtherDetails {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaFurtherDetailsTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaFurtherDetail(entry)
           )
         }

@@ -29,13 +29,20 @@ object SaTrusts {
   def transform(ifSaEntry: Seq[IfSaEntry]): SaTrusts =
     SaTrusts(TransformSaTrustsTaxReturn(ifSaEntry))
 
+  private def default = SaTrust(0.0)
+
   private def TransformSaTrust(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaTrust(maybeIncome.trusts)
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaTrust(value.trusts.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaTrustsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -43,7 +50,7 @@ object SaTrusts {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaTrustsTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaTrust(entry)
           )
         }

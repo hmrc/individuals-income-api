@@ -29,15 +29,20 @@ object SaOtherIncomeRecords {
   def transform(ifSaEntry: Seq[IfSaEntry]): SaOtherIncomeRecords =
     SaOtherIncomeRecords(TransformSaOtherIncomeTaxReturn(ifSaEntry))
 
+  private def default = SaOtherIncomeRecord(0.0)
+
   private def TransformSaOtherIncomeRecord(entry: IfSaEntry) =
-    entry.returnList.map { returns =>
-      returns.flatMap { entry =>
-        entry.income.map { maybeIncome =>
-          SaOtherIncomeRecord(
-            maybeIncome.other
-          )
+    entry.returnList match {
+      case Some(list) => {
+        list.map { entry =>
+          entry.income match {
+            case Some(value) =>
+              SaOtherIncomeRecord(value.other.getOrElse(0.0))
+            case _ => default
+          }
         }
       }
+      case _ => Seq(default)
     }
 
   private def TransformSaOtherIncomeTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
@@ -45,7 +50,7 @@ object SaOtherIncomeRecords {
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaOtherIncomeRecordsTaxReturn(
-            Some(TaxYear.fromEndYear(ty.toInt).formattedTaxYear),
+            TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
             TransformSaOtherIncomeRecord(entry)
           )
         }
