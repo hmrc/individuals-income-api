@@ -39,6 +39,14 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifSa).toString())))
 
+  def searchSaAnyForPeriodReturns(url: String, fromTaxYear: String, toTaxYear: String, fields: String, ifSa: IfSa) =
+    mock.register(
+      get(urlPathEqualTo(url))
+        .withQueryParam("startYear", equalTo(fromTaxYear))
+        .withQueryParam("endYear", equalTo(toTaxYear))
+        .withQueryParam("fields", equalTo(fields))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifSa).toString())))
+
   def searchPayeIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String, fields: String) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
@@ -50,6 +58,14 @@ object IfStub extends MockHost(24000) {
   def searchSaIncomeReturnsNoIncomeFor(nino: String, fromTaxYear: String, toTaxYear: String, fields: String) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
+        .withQueryParam("startYear", equalTo(fromTaxYear))
+        .withQueryParam("endYear", equalTo(toTaxYear))
+        .withQueryParam("fields", equalTo(fields))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
+
+  def searchSaAnyNoIncomeFor(url: String, fromTaxYear: String, toTaxYear: String, fields: String) =
+    mock.register(
+      get(urlPathEqualTo(url))
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))
@@ -70,6 +86,14 @@ object IfStub extends MockHost(24000) {
     fields: String): Unit =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
+        .withQueryParam("startYear", equalTo(fromTaxYear))
+        .withQueryParam("endYear", equalTo(toTaxYear))
+        .withQueryParam("fields", equalTo(fields))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+
+  def searchSaAnysRateLimitErrorFor(url: String, fromTaxYear: String, toTaxYear: String, fields: String): Unit =
+    mock.register(
+      get(urlPathEqualTo(url))
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))

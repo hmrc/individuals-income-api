@@ -18,13 +18,10 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IfStub, IndividualsMatchingApiStub}
-import org.joda.time.LocalDate
+import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa
 import utils.IncomeSaHelpers
 
@@ -186,7 +183,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
         "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than 31st March 2013"
+        "message" -> "fromTaxYear earlier than allowed (CY-6)"
       )
 
     }
@@ -205,7 +202,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
         "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid date format"
+        "message" -> "fromTaxYear: invalid tax year format"
       )
 
     }
@@ -224,12 +221,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
         "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid date format"
+        "message" -> "toTaxYear: invalid tax year format"
       )
 
     }
 
     scenario("Fetch Self Assessment annual returns") {
+
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
@@ -296,10 +294,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |      "href": "individuals/income/sa/foreign?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA foreign income data"
                |    },
-               |    "incomePaye": {
-               |      "href": "individuals/income/paye?matchId=$matchId{&fromTaxYear,toTaxYear}",
-               |      "title": "Get an individual's PAYE income data"
-               |    },
                |    "incomeSaSummary": {
                |      "href": "individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA summary data"
@@ -340,6 +334,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
 
     scenario("Fetch Self Assessment annual returns no root data") {
+
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -406,10 +401,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |      "href": "individuals/income/sa/foreign?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA foreign income data"
                |    },
-               |    "incomePaye": {
-               |      "href": "individuals/income/paye?matchId=$matchId{&fromTaxYear,toTaxYear}",
-               |      "title": "Get an individual's PAYE income data"
-               |    },
                |    "incomeSaSummary": {
                |      "href": "individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA summary data"
@@ -437,6 +428,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
 
     scenario("Invalid token") {
+
       Given("A token WITHOUT the scope read:individuals-income-sa")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
@@ -453,6 +445,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
 
     scenario("The self assessment data source is rate limited") {
+
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)

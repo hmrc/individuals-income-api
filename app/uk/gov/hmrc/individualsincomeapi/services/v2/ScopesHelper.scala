@@ -59,15 +59,17 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
 
   def getHalLinks(
     matchId: UUID,
-    endpoint: String,
+    excludeList: Option[List[String]],
     scopes: Iterable[String],
-    endpointsFilter: Option[List[String]]): HalResource =
+    allowedList: Option[List[String]]): HalResource =
     linksSeq(
       scopesService
         .getEndpoints(scopes)
-        .filter(c =>
-          !c.name.equals(endpoint) &&
-            endpointsFilter.getOrElse(scopesService.getEndpoints(scopes).map(e => e.name).toList).contains(c.name))
+        .filter(
+          c =>
+            //!c.name.equals(exclude) &&
+            !excludeList.getOrElse(List()).contains(c.name) &&
+              allowedList.getOrElse(scopesService.getEndpoints(scopes).map(e => e.name).toList).contains(c.name))
         .map(endpoint =>
           HalLink(
             rel = endpoint.name,
