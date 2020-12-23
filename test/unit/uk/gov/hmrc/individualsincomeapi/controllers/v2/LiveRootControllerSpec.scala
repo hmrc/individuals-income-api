@@ -45,6 +45,34 @@ import scala.concurrent.{ExecutionContext, Future}
 class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
+//  trait Setup extends ScopesConfigHelper {
+//
+//    val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
+//    val mockLiveIncomeService = mock[LiveIncomeService]
+//    val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
+//
+//    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+//    lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
+//    lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
+//    val mockAuthConnector: AuthConnector = mock[AuthConnector]
+//    val fakeRequest = FakeRequest()
+//    val matchId = UUID.randomUUID()
+//    val nino = Nino("NA000799C")
+//    val matchedCitizen = MatchedCitizen(matchId, nino)
+//
+//    val liveRootController = new LiveRootController(
+//      mockLiveCitizenMatchingService,
+//      scopeService,
+//      scopesHelper,
+//      mockAuthConnector,
+//      controllerComponent)
+//
+//    implicit val hc: HeaderCarrier = HeaderCarrier()
+//
+//    given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+//      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+//  }
+
   trait Setup extends ScopesConfigHelper {
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
@@ -70,7 +98,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
-      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope"), Enrolment("test-scope-1")))))
   }
 
   "Live match citizen controller match citizen function" should {
@@ -93,24 +121,28 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     "return a 200 when a match id matches live data" in new Setup {
 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
-        .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
+        .thenReturn(successful(matchedCitizen))
 
       val result = await(liveRootController.root(matchId).apply(FakeRequest()))
 
       status(result) shouldBe OK
 
       jsonBodyOf(result) shouldBe
-        Json.parse(s"""
-         {"_links":{
-           "incomePaye":{
-             "href":"/individuals/income/paye?matchId=$matchId{&startDate,endDate}",
-             "title":"Get an individual's income paye data"
-             },
-             "self":{
-               "href":"/individuals/income/?matchId=$matchId"
-             }
-           }
-         }""")
+        Json.parse(s"""{
+                      |  "_links": {
+                      |    "incomeSa": {
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "title": "Get an individual's income sa data"
+                      |    },
+                      |    "incomePaye": {
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "title": "Get an individual's income paye data"
+                      |    },
+                      |    "self": {
+                      |      "href": "/individuals/income/?matchId=$matchId"
+                      |    }
+                      |  }
+                      |}""".stripMargin)
     }
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {

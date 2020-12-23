@@ -122,6 +122,10 @@ class LiveSaIncomeService @Inject()(
                  )
     } yield saIncome
 
+  private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
+    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+  }
+
   override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[SaFootprint] =
     for {
@@ -219,10 +223,6 @@ class LiveSaIncomeService @Inject()(
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaFurtherDetails.transform(ifSaEntries)
-
-  private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
-  }
 
 }
 

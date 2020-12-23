@@ -44,7 +44,7 @@ abstract class RootController(
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
         val endpointList = Some(List("incomeSa", "incomePaye"))
 
-        Ok(Json.toJson(scopesHelper.getHalLinks(matchId, "incomeSa", authScopes, endpointList) ++ selfLink))
+        Ok(Json.toJson(scopesHelper.getHalLinks(matchId, "/", authScopes, endpointList) ++ selfLink))
       }
     }.recover(recovery)
   }
