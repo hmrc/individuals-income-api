@@ -69,7 +69,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+    given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
       .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
   }
 
@@ -80,6 +80,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     "return a 404 when a match id does not match live data" in new Setup {
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
         .thenReturn(failed(new MatchNotFoundException))
+
       val result = await(liveRootController.root(randomMatchId).apply(FakeRequest()))
 
       status(result) shouldBe NOT_FOUND
@@ -114,7 +115,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
 
-      given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+      given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
         .willReturn(Future.failed(new InsufficientEnrolments()))
 
       val result = await(liveRootController.root(randomMatchId).apply(FakeRequest()))

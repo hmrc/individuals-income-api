@@ -52,7 +52,8 @@ sealed abstract class SaIncomeController(
 
           val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink))
+          Ok(Json.toJson(
+            state(saJsObject) ++ scopesHelper.getHalLinks(matchId, "incomeSa", authScopes, None) ++ selfLink))
         }
       }.recover(recovery)
 

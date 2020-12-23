@@ -39,7 +39,7 @@ import org.mockito.Mockito.verifyNoInteractions
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
+import uk.gov.hmrc.individualsincomeapi.domain.v2.MatchedCitizen
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}

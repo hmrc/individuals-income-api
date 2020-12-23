@@ -103,6 +103,10 @@ class IfSaReturnSpec extends WordSpec with Matchers {
                                       |    "lifePolicies" : 100,
                                       |    "shares" : 100,
                                       |    "other" : 100
+                                      |  },
+                                      |  "deducts":{
+                                      |    "totalBusExpenses":200,
+                                      |    "totalDisallowBusExp":200
                                       |  }
                                       |}
                                       |""".stripMargin)

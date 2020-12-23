@@ -19,591 +19,1289 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 import java.util.UUID
 
 import akka.stream.Materializer
-import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
-import org.scalatest.WordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxSaIncomeController
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
+import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSummaries, SaTrusts, SaUkProperties}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{SandboxSaIncomeService, ScopesHelper, ScopesService}
-import utils.{AuthHelper, SpecBase}
+import utils.{AuthHelper, IncomeSaHelpers, SpecBase, TestSupport}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import play.api.mvc.ControllerComponents
+import uk.gov.hmrc.http.HeaderCarrier
+import play.api.http.Status._
+import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
 
-class SandboxSaIncomeControllerSpec extends WordSpec with AuthHelper with SpecBase with MockitoSugar {
+class SandboxSaIncomeControllerSpec
+    extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
-  val matchId = UUID.randomUUID()
-  val utr = SaUtr("2432552644")
-  val fromTaxYear = TaxYear("2018-19")
-  val toTaxYear = TaxYear("2019-20")
-  val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
-  val requestParameters =
-    s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
+  trait Setup extends ScopesConfigHelper {
 
-  trait Setup {
-    val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]
-    val mockAuthConnector = fakeAuthConnector(Future.successful(enrolments))
-    lazy val scopeService: ScopesService = mock[ScopesService]
-    lazy val scopeHelper: ScopesHelper = mock[ScopesHelper]
+    val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
+    val mockSandboxSaIncomeService = mock[SandboxSaIncomeService]
+    val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
+
+    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
+    lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+    val matchId = UUID.randomUUID()
+    val utr = SaUtr("2432552644")
+    val fromTaxYear = TaxYear("2018-19")
+    val toTaxYear = TaxYear("2019-20")
+    val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
+    val requestParameters =
+      s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
+
+    val ifSa = Seq(createValidSaTaxYearEntry())
+
     val sandboxSaIncomeController =
-      new SandboxSaIncomeController(mockSandboxSaIncomeService, scopeService, scopeHelper, mockAuthConnector, cc)
-    given(scopeService.getEndPointScopes(any())).willReturn(Seq("hello-world"))
+      new SandboxSaIncomeController(
+        mockSandboxSaIncomeService,
+        scopeService,
+        scopesHelper,
+        mockAuthConnector,
+        controllerComponent)
+
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
+    given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope-1")), refEq(Retrievals.allEnrolments))(any(), any()))
+      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope-1")))))
   }
 
   "SandboxSaIncomeController.saFootprint" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
-    val saFootprint = SaFootprint(
-      registrations = Seq(SaRegistration(SaUtr("1234567890"), Some(LocalDate.parse("2014-05-01")))),
-      taxReturns = Seq(
-        SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(SaUtr("1234567890"), Some(LocalDate.parse("2016-06-01"))))))
-    )
 
-    "return 500 with the registration information and self assessment returns for the period" in new Setup {
+    "return 200 with the registration information and self assessment returns for the period" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saFootprint))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "incomeSaUkProperties": {
+           |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's uk-properties sa data"
+           |    },
+           |    "incomeSaTrusts": {
+           |      "href": "/individuals/income/sa/trusts?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa trusts data"
+           |    },
+           |    "incomeSaSelfEmployments": {
+           |      "href": "/individuals/income/sa/self-employments?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's self-employments sa data"
+           |    },
+           |    "incomeSaPartnerships": {
+           |      "href": "/individuals/income/sa/partnerships?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa partnerships data"
+           |    },
+           |    "self": {
+           |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    },
+           |    "incomeSaInterestsAndDividends": {
+           |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's interests-and-dividends sa data"
+           |    },
+           |    "incomeSaFurtherDetails": {
+           |      "href": "/individuals/income/sa/further-details?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's further-details sa data"
+           |    },
+           |    "incomeSaAdditionalInformation": {
+           |      "href": "/individuals/income/sa/additional-information?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's additional-information sa data"
+           |    },
+           |    "incomeSaOther": {
+           |      "href": "/individuals/income/sa/other?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's other sa data"
+           |    },
+           |    "incomeSaForeign": {
+           |      "href": "/individuals/income/sa/foreign?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa foreign data"
+           |    },
+           |    "incomeSaSummary": {
+           |      "href": "/individuals/income/sa/summary?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa summary data"
+           |    },
+           |    "incomeSaEmployments": {
+           |      "href": "/individuals/income/sa/employments?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's employments sa data"
+           |    },
+           |    "incomeSaPensionsAndStateBenefits": {
+           |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's pensions-and-state-benefits sa data"
+           |    },
+           |    "incomeSaSource": {
+           |      "href": "/individuals/income/sa/source?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's source sa data"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "registrations": [
+           |      {
+           |        "registrationDate": "2020-01-01"
+           |      }
+           |    ],
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "submissions": [
+           |          {
+           |            "receivedDate": "2020-01-01"
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
     }
 
-    "return 500 and the links without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the links without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saFootprint))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "incomeSaUkProperties": {
+           |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's uk-properties sa data"
+           |    },
+           |    "incomeSaTrusts": {
+           |      "href": "/individuals/income/sa/trusts?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa trusts data"
+           |    },
+           |    "incomeSaSelfEmployments": {
+           |      "href": "/individuals/income/sa/self-employments?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's self-employments sa data"
+           |    },
+           |    "incomeSaPartnerships": {
+           |      "href": "/individuals/income/sa/partnerships?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa partnerships data"
+           |    },
+           |    "self": {
+           |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2018-19"
+           |    },
+           |    "incomeSaInterestsAndDividends": {
+           |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's interests-and-dividends sa data"
+           |    },
+           |    "incomeSaFurtherDetails": {
+           |      "href": "/individuals/income/sa/further-details?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's further-details sa data"
+           |    },
+           |    "incomeSaAdditionalInformation": {
+           |      "href": "/individuals/income/sa/additional-information?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's additional-information sa data"
+           |    },
+           |    "incomeSaOther": {
+           |      "href": "/individuals/income/sa/other?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's other sa data"
+           |    },
+           |    "incomeSaForeign": {
+           |      "href": "/individuals/income/sa/foreign?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa foreign data"
+           |    },
+           |    "incomeSaSummary": {
+           |      "href": "/individuals/income/sa/summary?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's income sa summary data"
+           |    },
+           |    "incomeSaEmployments": {
+           |      "href": "/individuals/income/sa/employments?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's employments sa data"
+           |    },
+           |    "incomeSaPensionsAndStateBenefits": {
+           |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's pensions-and-state-benefits sa data"
+           |    },
+           |    "incomeSaSource": {
+           |      "href": "/individuals/income/sa/source?matchId=$matchId{&startDate,endDate}",
+           |      "title": "Get an individual's source sa data"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "registrations": [
+           |      {
+           |        "registrationDate": "2020-01-01"
+           |      }
+           |    ],
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "submissions": [
+           |          {
+           |            "receivedDate": "2020-01-01"
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe NOT_FOUND
     }
 
   }
 
   "SandboxSaIncomeController.employmentsIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
-    val employmentsIncomes = Seq(SaAnnualEmployments(TaxYear("2015-16"), Seq(SaEmploymentsIncome(utr, 9000))))
 
-    "return 500 with the employments income returns for the period" in new Setup {
+    "return 200 with the employments income returns for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/employments?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(employmentsIncomes))
+      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaEmployments.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "employments": [
+           |          {
+           |            "employmentIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/employments?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(employmentsIncomes))
+      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaEmployments.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "employments": [
+           |          {
+           |            "employmentIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.selfEmploymentsIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
-    val selfEmploymentIncomes =
-      Seq(SaAnnualSelfEmployments(TaxYear("2015-16"), Seq(SaSelfEmploymentsIncome(sandboxUtr, 10500))))
 
-    "return 500 with the self employments income for the period" in new Setup {
+    "return 200 with the self employments income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/self-employments?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(selfEmploymentIncomes))
+      given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "selfEmployments": [
+           |          {
+           |            "selfEmploymentProfit": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/self-employments?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(selfEmploymentIncomes))
+      given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "selfEmployments": [
+           |          {
+           |            "selfEmploymentProfit": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSelfEmploymentsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saReturnsSummary" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
-    val taxReturnSummaries = Seq(SaTaxReturnSummaries(TaxYear("2015-16"), Seq(SaTaxReturnSummary(sandboxUtr, 20500))))
 
-    "return 500 with the self tax return summaries for the period" in new Setup {
+    "return 200 with the self tax return summaries for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/summary?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(taxReturnSummaries))
+      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSummaries.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "summary": [
+           |          {
+           |            "totalIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/summary?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(taxReturnSummaries))
+      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSummaries.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "summary": [
+           |          {
+           |            "totalIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saTrustsIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
-    val saTrustIncomes = Seq(SaAnnualTrustIncomes(TaxYear("2015-16"), Seq(SaAnnualTrustIncome(sandboxUtr, 20500))))
 
-    "return 500 with the self tax return trusts for the period" in new Setup {
+    "return 200 with the self tax return trusts for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/trusts?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saTrustIncomes))
+      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaTrusts.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "trusts": [
+           |          {
+           |            "trustIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/trusts?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saTrustIncomes))
+      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaTrusts.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "trusts": [
+           |          {
+           |            "trustIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchTrustsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saForeignIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
-    val saForeignIncomes =
-      Seq(SaAnnualForeignIncomes(TaxYear("2015-16"), Seq(SaAnnualForeignIncome(sandboxUtr, 1054.65))))
 
-    "return 500 with the self tax return foreign income for the period" in new Setup {
+    "return 200 with the self tax return foreign income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/foreign?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saForeignIncomes))
+      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "foreign": [
+           |          {
+           |            "foreignIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/foreign?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saForeignIncomes))
+      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "foreign": [
+           |          {
+           |            "foreignIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchForeignIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saPartnershipsIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
-    val saPartnershipIncomes =
-      Seq(SaAnnualPartnershipIncomes(TaxYear("2015-16"), Seq(SaAnnualPartnershipIncome(sandboxUtr, 123.65))))
 
-    "return 500 with the self tax return partnerships income for the period" in new Setup {
+    "return 200 with the self tax return partnerships income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/partnerships?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saPartnershipIncomes))
+      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPartnerships.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "partnerships": [
+           |          {
+           |            "partnershipProfit": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/partnerships?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saPartnershipIncomes))
+      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPartnerships.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "partnerships": [
+           |          {
+           |            "partnershipProfit": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchPartnershipsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saPensionsAndStateBenefitsIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
-    val saPensionsAndStateBenefitsIncomes = Seq(
-      SaAnnualPensionAndStateBenefitIncomes(
-        TaxYear("2015-16"),
-        Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))))
 
-    "return 500 with the self tax return pensions and state benefits income for the period" in new Setup {
+    "return 200 with the self tax return pensions and state benefits income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/pensions-and-state-benefits?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(
-      //  mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saPensionsAndStateBenefitsIncomes))
+      given(
+        mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "pensionsAndStateBenefits": [
+           |          {
+           |            "totalIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(
-      //  mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saPensionsAndStateBenefitsIncomes))
+      given(
+        mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(
-          sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(
-            fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(
+        sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(
+          fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "pensionsAndStateBenefits": [
+           |          {
+           |            "totalIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
+      given(
+        mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(
-      //  mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      val result =
+        await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(FakeRequest()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saInterestsAndDividendsIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParameters")
-    val saInterestsAndDividendsIncomes = Seq(
-      SaAnnualInterestAndDividendIncomes(
-        TaxYear("2015-16"),
-        Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 10.56, 56.34, 52.56))))
 
-    "return 500 with the self tax return interests and dividends income for the period" in new Setup {
+    "return 200 with the self tax return interests and dividends income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/interests-and-dividends?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saInterestsAndDividendsIncomes))
+      given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "interestsAndDividends": [
+           |          {
+           |            "ukInterestsIncome": 100,
+           |            "foreignDividendsIncome": 100,
+           |            "ukDividendsIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/interests-and-dividends?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saInterestsAndDividendsIncomes))
+      given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(
-          sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(
-            fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(
+        sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "interestsAndDividends": [
+           |          {
+           |            "ukInterestsIncome": 100,
+           |            "foreignDividendsIncome": 100,
+           |            "ukDividendsIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result =
+        await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saUkPropertiesIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
-    val saUkPropertiesIncomes =
-      Seq(SaAnnualUkPropertiesIncomes(TaxYear("2015-16"), Seq(SaAnnualUkPropertiesIncome(sandboxUtr, 1276.67))))
 
-    "return 500 with the UK properties income for the period" in new Setup {
+    "return 200 with the UK properties income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/uk-properties?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saUkPropertiesIncomes))
+      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaUkProperties.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturn": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "ukProperties": [
+           |          {
+           |            "totalProfit": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/uk-properties?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saUkPropertiesIncomes))
+      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaUkProperties.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturn": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "ukProperties": [
+           |          {
+           |            "totalProfit": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchUkPropertiesIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saAdditionalInformation" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
-    val saAdditionalInformation = Seq(
-      SaAnnualAdditionalInformations(TaxYear("2015-16"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 76.67, 13.56))))
 
-    "return 500 with the additional information income for the period" in new Setup {
+    "return 200 with the additional information income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/additional-information?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saAdditionalInformation))
+      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "additionalInformation": [
+           |          {
+           |            "gainsOnLifePolicies": 100,
+           |            "sharesOptionsIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/additional-information?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(saAdditionalInformation))
+      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
-      val result = intercept[Exception] {
+      val result =
         await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "additionalInformation": [
+           |          {
+           |            "gainsOnLifePolicies": 100,
+           |            "sharesOptionsIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 
   "SandboxSaIncomeController.saOtherIncome" should {
-    val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
-    val otherIncome = Seq(SaAnnualOtherIncomes(TaxYear("2015-16"), Seq(SaAnnualOtherIncome(sandboxUtr, 26.70))))
 
-    "return 500 with the other income for the period" in new Setup {
+    "return 200 with the other income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/other?$requestParameters")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(otherIncome))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "other": [
+           |          {
+           |            "otherIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/other?$requestParametersWithoutToTaxYear")
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(successful(otherIncome))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "other": [
+           |          {
+           |            "otherIncome": 100
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
     }
 
-    "return 500 for an invalid matchId" in new Setup {
+    "return 404 for an invalid matchId" in new Setup {
 
-      // TODO reinstate when the V2 Income Service is coded up
-      //given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval))(any()))
-      //  .willReturn(failed(new MatchNotFoundException()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
 
-      val result = intercept[Exception] {
-        await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
-      }
-      assert(result.getMessage == "NOT_IMPLEMENTED")
+      val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
+    }
+  }
+
+  "SandboxSaIncomeController.saFurtherDetails" should {
+
+    "return 200 with the other income for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/further-details?$requestParameters")
+
+      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFurtherDetails.transform(ifSa)))
+
+      val result = await(sandboxSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "furtherDetails": [
+           |          {
+           |            "busStartDate": "2020-01-01",
+           |            "busEndDate": "2020-01-30",
+           |            "totalTaxPaid": 100.01,
+           |            "totalNIC": 100.01,
+           |            "turnover": 100.01,
+           |            "otherBusIncome": 100.01,
+           |            "tradingIncomeAllowance": 100.01,
+           |            "deducts": {
+           |              "totalBusExpenses": 200,
+           |              "totalDisallowBusExp": 200
+           |            }
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+    }
+
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+      val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/further-details?$requestParametersWithoutToTaxYear")
+
+      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFurtherDetails.transform(ifSa)))
+
+      val result =
+        await(sandboxSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "furtherDetails": [
+           |          {
+           |            "busStartDate": "2020-01-01",
+           |            "busEndDate": "2020-01-30",
+           |            "totalTaxPaid": 100.01,
+           |            "totalNIC": 100.01,
+           |            "turnover": 100.01,
+           |            "otherBusIncome": 100.01,
+           |            "tradingIncomeAllowance": 100.01,
+           |            "deducts": {
+           |              "totalBusExpenses": 200,
+           |              "totalDisallowBusExp": 200
+           |            }
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+    }
+
+    "return 404 for an invalid matchId" in new Setup {
+
+      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(failed(new MatchNotFoundException()))
+
+      val result = await(sandboxSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(FakeRequest()))
+
+      status(result) shouldBe NOT_FOUND
     }
   }
 }
