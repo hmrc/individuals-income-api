@@ -973,7 +973,7 @@ class SandboxSaIncomeControllerSpec
            |    }
            |  },
            |  "selfAssessment": {
-           |    "taxReturn": [
+           |    "taxReturns": [
            |      {
            |        "taxYear": "2019-20",
            |        "ukProperties": [
@@ -1009,7 +1009,7 @@ class SandboxSaIncomeControllerSpec
            |    }
            |  },
            |  "selfAssessment": {
-           |    "taxReturn": [
+           |    "taxReturns": [
            |      {
            |        "taxYear": "2019-20",
            |        "ukProperties": [

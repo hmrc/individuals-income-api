@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
-case class SaUkProperties(taxReturn: Seq[SaUkPropertiesTaxReturn])
+case class SaUkProperties(taxReturns: Seq[SaUkPropertiesTaxReturn])
 
 object SaUkProperties {
 

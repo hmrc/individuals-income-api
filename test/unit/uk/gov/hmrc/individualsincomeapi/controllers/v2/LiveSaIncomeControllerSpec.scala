@@ -969,7 +969,7 @@ class LiveSaIncomeControllerSpec
            |    }
            |  },
            |  "selfAssessment": {
-           |    "taxReturn": [
+           |    "taxReturns": [
            |      {
            |        "taxYear": "2019-20",
            |        "ukProperties": [
@@ -1005,7 +1005,7 @@ class LiveSaIncomeControllerSpec
            |    }
            |  },
            |  "selfAssessment": {
-           |    "taxReturn": [
+           |    "taxReturns": [
            |      {
            |        "taxYear": "2019-20",
            |        "ukProperties": [
