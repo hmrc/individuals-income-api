@@ -1,0 +1,12 @@
+{
+  "taxReturns": [
+    {
+      "taxYear": "2019-20",
+      "ukProperties": [
+        {
+          "totalProfit": 100
+        }
+      ]
+    }
+  ]
+}
