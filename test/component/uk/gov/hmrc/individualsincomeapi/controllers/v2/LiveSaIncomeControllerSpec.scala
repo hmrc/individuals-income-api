@@ -244,7 +244,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -351,7 +351,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -462,7 +462,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -677,7 +677,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -727,7 +727,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -785,7 +785,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -1006,7 +1006,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -1056,7 +1056,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -1114,7 +1114,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -1331,7 +1331,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -1381,7 +1381,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -1439,7 +1439,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -1654,7 +1654,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -1704,7 +1704,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -1762,7 +1762,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -1985,7 +1985,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -2035,7 +2035,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -2093,7 +2093,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -2309,7 +2309,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
@@ -2359,7 +2359,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
         .headers(headers)
         .asString
@@ -2417,7 +2417,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
         .headers(headers)
         .asString
@@ -2648,7 +2648,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
           .headers(headers)
@@ -2701,7 +2701,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
           .headers(headers)
@@ -2761,7 +2761,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
           .headers(headers)
@@ -2984,7 +2984,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
           .headers(headers)
@@ -3035,7 +3035,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
           .headers(headers)
@@ -3095,7 +3095,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
           .headers(headers)
@@ -3320,7 +3320,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
           .headers(headers)
@@ -3371,7 +3371,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
           .headers(headers)
@@ -3431,7 +3431,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
           .headers(headers)
@@ -3654,7 +3654,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
           .headers(headers)
@@ -3706,7 +3706,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
           .headers(headers)
@@ -3766,7 +3766,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
           .headers(headers)
@@ -3989,7 +3989,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
           .headers(headers)
@@ -4040,7 +4040,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
           .headers(headers)
@@ -4100,7 +4100,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
           .headers(headers)
@@ -4328,7 +4328,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         incomeSaSingle
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
           .headers(headers)
@@ -4389,7 +4389,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2020-21")
           .headers(headers)
@@ -4449,7 +4449,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields
       )
 
-      When("I request the sa root resources")
+      When("I request the resources")
       val response =
         Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2019-20")
           .headers(headers)
