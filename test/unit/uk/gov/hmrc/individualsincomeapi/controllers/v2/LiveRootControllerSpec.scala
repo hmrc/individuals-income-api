@@ -45,34 +45,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
-//  trait Setup extends ScopesConfigHelper {
-//
-//    val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
-//    val mockLiveIncomeService = mock[LiveIncomeService]
-//    val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
-//
-//    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
-//    lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
-//    lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
-//    val mockAuthConnector: AuthConnector = mock[AuthConnector]
-//    val fakeRequest = FakeRequest()
-//    val matchId = UUID.randomUUID()
-//    val nino = Nino("NA000799C")
-//    val matchedCitizen = MatchedCitizen(matchId, nino)
-//
-//    val liveRootController = new LiveRootController(
-//      mockLiveCitizenMatchingService,
-//      scopeService,
-//      scopesHelper,
-//      mockAuthConnector,
-//      controllerComponent)
-//
-//    implicit val hc: HeaderCarrier = HeaderCarrier()
-//
-//    given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
-//      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
-//  }
-
   trait Setup extends ScopesConfigHelper {
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
