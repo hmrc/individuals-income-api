@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -281,7 +281,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the employments income returns for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/employments?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
@@ -317,7 +317,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/employments?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
@@ -365,7 +365,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self employments income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/self-employments?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
@@ -400,7 +400,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/self-employments?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
@@ -448,7 +448,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self tax return summaries for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/summary?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
@@ -483,7 +483,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/summary?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
@@ -531,7 +531,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self tax return trusts for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/trusts?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
@@ -566,7 +566,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/trusts?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
@@ -614,7 +614,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self tax return foreign income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/foreign?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
@@ -649,7 +649,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/foreign?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
@@ -697,7 +697,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self tax return partnerships income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/partnerships?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
@@ -732,7 +732,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/partnerships?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
@@ -780,7 +780,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self tax return pensions and state benefits income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/pensions-and-state-benefits?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
       given(
         mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
@@ -817,7 +817,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
 
       given(
         mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
@@ -868,7 +868,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the self tax return interests and dividends income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/interests-and-dividends?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
@@ -905,7 +905,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/interests-and-dividends?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
@@ -956,7 +956,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the UK properties income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/uk-properties?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
@@ -991,7 +991,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/uk-properties?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
@@ -1039,7 +1039,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the additional information income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/additional-information?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
@@ -1075,7 +1075,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/additional-information?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
@@ -1124,7 +1124,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the other income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/other?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
@@ -1159,7 +1159,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/other?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
@@ -1206,7 +1206,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 200 with the other income for the period" in new Setup {
       val fakeRequest =
-        FakeRequest("GET", s"/individuals/income/further-details?$requestParameters")
+        FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
@@ -1251,7 +1251,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
-        FakeRequest("GET", s"/individuals/income/further-details?$requestParametersWithoutToTaxYear")
+        FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParametersWithoutToTaxYear")
 
       given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))

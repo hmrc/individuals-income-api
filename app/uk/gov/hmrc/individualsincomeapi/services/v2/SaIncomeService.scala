@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSources, SaSummaries, SaTrusts, SaUkProperties}
 import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.findByMatchId
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
 
 trait SaIncomeService {
@@ -100,7 +99,7 @@ class LiveSaIncomeService @Inject()(
   cache: SaIncomeCacheService,
   scopeService: ScopesService,
   scopesHelper: ScopesHelper,
-  @Named("retryDelay") retryDelay: Int)
+  @Named("retryDelay") retryDelay: Int)(implicit ec: ExecutionContext)
     extends SaIncomeService {
 
   private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
@@ -227,7 +226,7 @@ class LiveSaIncomeService @Inject()(
 }
 
 @Singleton
-class SandboxSaIncomeService extends SaIncomeService {
+class SandboxSaIncomeService @Inject()(implicit ec: ExecutionContext) extends SaIncomeService {
 
   private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
     implicit hc: HeaderCarrier): Future[Seq[IfSaEntry]] =

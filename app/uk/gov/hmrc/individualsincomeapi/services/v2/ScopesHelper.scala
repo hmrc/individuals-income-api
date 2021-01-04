@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,11 +65,9 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     linksSeq(
       scopesService
         .getEndpoints(scopes)
-        .filter(
-          c =>
-            //!c.name.equals(exclude) &&
-            !excludeList.getOrElse(List()).contains(c.name) &&
-              allowedList.getOrElse(scopesService.getEndpoints(scopes).map(e => e.name).toList).contains(c.name))
+        .filter(c =>
+          !excludeList.getOrElse(List()).contains(c.name) &&
+            allowedList.getOrElse(scopesService.getEndpoints(scopes).map(e => e.name).toList).contains(c.name))
         .map(endpoint =>
           HalLink(
             rel = endpoint.name,

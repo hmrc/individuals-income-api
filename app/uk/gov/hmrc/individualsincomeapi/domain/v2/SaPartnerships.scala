@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ object SaPartnerships {
   implicit val saPartnershipsJsonFormat = Json.format[SaPartnerships]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaPartnerships =
-    SaPartnerships(TransformSaPartnershipsTaxReturn(ifSaEntry))
+    SaPartnerships(transformSaPartnershipsTaxReturn(ifSaEntry))
 
   private def default = SaPartnership(0.0)
 
-  private def TransformSaPartnership(entry: IfSaEntry) =
+  private def transformSaPartnership(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaPartnerships {
       case _ => Seq(default)
     }
 
-  private def TransformSaPartnershipsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaPartnershipsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaPartnershipsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaPartnership(entry)
+            transformSaPartnership(entry)
           )
         }
       }
