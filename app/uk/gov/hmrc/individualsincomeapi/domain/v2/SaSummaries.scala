@@ -27,11 +27,11 @@ object SaSummaries {
   implicit val saReturnSummaryJsonFormat = Json.format[SaSummaries]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaSummaries =
-    SaSummaries(TransformSaSummaryTaxReturn(ifSaEntry))
+    SaSummaries(transformSaSummaryTaxReturn(ifSaEntry))
 
   private def default = SaSummary(0.0)
 
-  private def TransformSaSummary(entry: IfSaEntry) =
+  private def transformSaSummary(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaSummaries {
       case _ => Seq(default)
     }
 
-  private def TransformSaSummaryTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaSummaryTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaSummaryTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaSummary(entry)
+            transformSaSummary(entry)
           )
         }
       }

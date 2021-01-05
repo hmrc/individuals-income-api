@@ -27,11 +27,11 @@ object SaUkProperties {
   implicit val saUkPropertiesJsonFormat = Json.format[SaUkProperties]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaUkProperties =
-    SaUkProperties(TransformSaUkPropertiesTaxReturn(ifSaEntry))
+    SaUkProperties(transformSaUkPropertiesTaxReturn(ifSaEntry))
 
   private def default = SaUkProperty(0.0)
 
-  private def TransformUkProperty(entry: IfSaEntry) =
+  private def transformUkProperty(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaUkProperties {
       case _ => Seq(default)
     }
 
-  private def TransformSaUkPropertiesTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaUkPropertiesTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaUkPropertiesTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformUkProperty(entry)
+            transformUkProperty(entry)
           )
         }
       }

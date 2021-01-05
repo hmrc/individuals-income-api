@@ -27,11 +27,11 @@ object SaPensionAndStateBenefits {
   implicit val saPensionAndStateBenefitsJsonFormat = Json.format[SaPensionAndStateBenefits]
 
   def transform(ifSaEntry: Seq[IfSaEntry]) =
-    SaPensionAndStateBenefits(TransformSaPensionAndStateBenefitTaxReturn(ifSaEntry))
+    SaPensionAndStateBenefits(transformSaPensionAndStateBenefitTaxReturn(ifSaEntry))
 
   private def default = SaPensionAndStateBenefit(0.0)
 
-  private def TransformSaPensionAndStateBenefit(entry: IfSaEntry) =
+  private def transformSaPensionAndStateBenefit(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaPensionAndStateBenefits {
       case _ => Seq(default)
     }
 
-  private def TransformSaPensionAndStateBenefitTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaPensionAndStateBenefitTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaPensionAndStateBenefitsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaPensionAndStateBenefit(entry)
+            transformSaPensionAndStateBenefit(entry)
           )
         }
       }

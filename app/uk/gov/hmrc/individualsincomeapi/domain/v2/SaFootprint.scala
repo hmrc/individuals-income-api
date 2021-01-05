@@ -30,11 +30,11 @@ object SaFootprint {
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
     SaFootprint(
-      TransformSaFootprintRegistrations(ifSaEntry),
-      TransformSaFootprintTaxReturn(ifSaEntry)
+      transformSaFootprintRegistrations(ifSaEntry),
+      transformSaFootprintTaxReturn(ifSaEntry)
     )
 
-  private def TransformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaFootprintRegistrations(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entryList =>
         entryList.returnList.map { returns =>
@@ -48,7 +48,7 @@ object SaFootprint {
 
   private def default = SaFootprintSubmission(None)
 
-  private def TransformSaFootprintSubmissions(entry: IfSaEntry) = {
+  private def transformSaFootprintSubmissions(entry: IfSaEntry) = {
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -59,13 +59,13 @@ object SaFootprint {
     }
   }.sortBy(_.receivedDate)
 
-  private def TransformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaFootprintTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaFootprintTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaFootprintSubmissions(entry)
+            transformSaFootprintSubmissions(entry)
           )
         }
       }

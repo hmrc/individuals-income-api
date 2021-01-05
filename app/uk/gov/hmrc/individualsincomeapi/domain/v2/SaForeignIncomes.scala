@@ -27,11 +27,11 @@ object SaForeignIncomes {
   implicit val saForeignIncomesJsonFormat = Json.format[SaForeignIncomes]
 
   def transform(ifSaEntry: Seq[IfSaEntry]) =
-    SaForeignIncomes(TransformSaForeignTaxReturn(ifSaEntry))
+    SaForeignIncomes(transformSaForeignTaxReturn(ifSaEntry))
 
   private def default = SaForeignIncome(0.0)
 
-  private def TransformSaForeignIncome(entry: IfSaEntry) =
+  private def transformSaForeignIncome(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaForeignIncomes {
       case _ => Seq(default)
     }
 
-  private def TransformSaForeignTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaForeignTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaForeignTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaForeignIncome(entry)
+            transformSaForeignIncome(entry)
           )
         }
       }

@@ -27,11 +27,11 @@ object SaInterestAndDividends {
   implicit val saInterestAndDividendsJsonFormat = Json.format[SaInterestAndDividends]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaInterestAndDividends =
-    SaInterestAndDividends(TransformSaInterestAndDividendsTaxReturn(ifSaEntry))
+    SaInterestAndDividends(transformSaInterestAndDividendsTaxReturn(ifSaEntry))
 
   private def default = SaInterestAndDividend(0.0, 0.0, 0.0)
 
-  private def TransformSaInterestAndDividend(entry: IfSaEntry) =
+  private def transformSaInterestAndDividend(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -50,13 +50,13 @@ object SaInterestAndDividends {
       case _ => Seq(default)
     }
 
-  private def TransformSaInterestAndDividendsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaInterestAndDividendsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaInterestAndDividendsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaInterestAndDividend(entry)
+            transformSaInterestAndDividend(entry)
           )
         }
       }

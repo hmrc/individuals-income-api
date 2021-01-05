@@ -27,9 +27,9 @@ object SaFurtherDetails {
   implicit val saFurtherDetailsJsonFormat = Json.format[SaFurtherDetails]
 
   def transform(ifSaEntry: Seq[IfSaEntry]) =
-    SaFurtherDetails(TransformSaFurtherDetailsTaxReturn(ifSaEntry))
+    SaFurtherDetails(transformSaFurtherDetailsTaxReturn(ifSaEntry))
 
-  private def TransformSaFurtherDetailDeducts(ifSaReturn: IfSaReturn) =
+  private def transformSaFurtherDetailDeducts(ifSaReturn: IfSaReturn) =
     ifSaReturn.deducts.map { d =>
       SaFurtherDetailDeducts(
         d.totalBusExpenses,
@@ -39,7 +39,7 @@ object SaFurtherDetails {
 
   private def default = SaFurtherDetail(None, None, None, None, None, None, None, None)
 
-  private def TransformSaFurtherDetail(entry: IfSaEntry) =
+  private def transformSaFurtherDetail(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) =>
         list.map { entry =>
@@ -51,19 +51,19 @@ object SaFurtherDetails {
             entry.turnover,
             entry.otherBusinessIncome,
             entry.tradingIncomeAllowance,
-            TransformSaFurtherDetailDeducts(entry)
+            transformSaFurtherDetailDeducts(entry)
           )
         }
       case _ => Seq(default)
     }
 
-  private def TransformSaFurtherDetailsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaFurtherDetailsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaFurtherDetailsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaFurtherDetail(entry)
+            transformSaFurtherDetail(entry)
           )
         }
       }

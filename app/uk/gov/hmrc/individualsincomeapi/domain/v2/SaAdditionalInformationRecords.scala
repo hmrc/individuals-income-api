@@ -27,12 +27,12 @@ object SaAdditionalInformationRecords {
   implicit val saAdditionalInformationRecordsJsonFormat = Json.format[SaAdditionalInformationRecords]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaAdditionalInformationRecords =
-    SaAdditionalInformationRecords(TransformSaAdditionalInformationTaxReturn(ifSaEntry))
+    SaAdditionalInformationRecords(transformSaAdditionalInformationTaxReturn(ifSaEntry))
 
   private def default =
     SaAdditionalInformationRecord(0.0, 0.0)
 
-  private def TransformSaAdditionalInformationRecord(entry: IfSaEntry) =
+  private def transformSaAdditionalInformationRecord(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -46,13 +46,13 @@ object SaAdditionalInformationRecords {
       case _ => Seq(default)
     }
 
-  private def TransformSaAdditionalInformationTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaAdditionalInformationTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaAdditionalInformationRecordsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaAdditionalInformationRecord(entry)
+            transformSaAdditionalInformationRecord(entry)
           )
         }
       }

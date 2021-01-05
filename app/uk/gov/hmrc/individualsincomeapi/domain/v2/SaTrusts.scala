@@ -27,11 +27,11 @@ object SaTrusts {
   implicit val saSummaryJsonFormat = Json.format[SaTrusts]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaTrusts =
-    SaTrusts(TransformSaTrustsTaxReturn(ifSaEntry))
+    SaTrusts(transformSaTrustsTaxReturn(ifSaEntry))
 
   private def default = SaTrust(0.0)
 
-  private def TransformSaTrust(entry: IfSaEntry) =
+  private def transformSaTrust(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaTrusts {
       case _ => Seq(default)
     }
 
-  private def TransformSaTrustsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaTrustsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaTrustsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaTrust(entry)
+            transformSaTrust(entry)
           )
         }
       }

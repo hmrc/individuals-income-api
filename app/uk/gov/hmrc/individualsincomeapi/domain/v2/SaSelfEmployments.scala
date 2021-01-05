@@ -27,11 +27,11 @@ object SaSelfEmployments {
   implicit val saSelfEmploymentsJsonFormat = Json.format[SaSelfEmployments]
 
   def transform(ifSaEntry: Seq[IfSaEntry]) =
-    SaSelfEmployments(TransformSaSelfEmploymentsTaxReturn(ifSaEntry))
+    SaSelfEmployments(transformSaSelfEmploymentsTaxReturn(ifSaEntry))
 
   def default = SaSelfEmployment(0.0)
 
-  private def TransformSaSelfEmployment(entry: IfSaEntry) =
+  private def transformSaSelfEmployment(entry: IfSaEntry) =
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
@@ -45,13 +45,13 @@ object SaSelfEmployments {
       case _ => Seq(default)
     }
 
-  private def TransformSaSelfEmploymentsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
+  private def transformSaSelfEmploymentsTaxReturn(ifSaEntry: Seq[IfSaEntry]) =
     ifSaEntry
       .flatMap { entry =>
         entry.taxYear.map { ty =>
           SaSelfEmploymentsTaxReturn(
             TaxYear.fromEndYear(ty.toInt).formattedTaxYear,
-            TransformSaSelfEmployment(entry)
+            transformSaSelfEmployment(entry)
           )
         }
       }
