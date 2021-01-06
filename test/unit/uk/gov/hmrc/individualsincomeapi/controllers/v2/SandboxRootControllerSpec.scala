@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,17 +85,21 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       status(result) shouldBe OK
 
       jsonBodyOf(result) shouldBe
-        Json.parse(s"""
-         {"_links":{
-           "incomePaye":{
-             "href":"/individuals/income/paye?matchId=$matchId{&startDate,endDate}",
-             "title":"Get an individual's income paye data"
-             },
-             "self":{
-               "href":"/individuals/income/?matchId=$matchId"
-             }
-           }
-         }""")
+        Json.parse(s"""{
+                      |  "_links": {
+                      |    "incomeSa": {
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "title": "Get an individual's income sa data"
+                      |    },
+                      |    "incomePaye": {
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "title": "Get an individual's income paye data"
+                      |    },
+                      |    "self": {
+                      |      "href": "/individuals/income/?matchId=$matchId"
+                      |    }
+                      |  }
+                      |}""".stripMargin)
     }
 
     "return 400 for an invalid matchId" in new Setup {

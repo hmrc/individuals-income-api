@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,15 +109,15 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   "SaCacheId" should {
 
-    "produce a cache id based on nino and scopes" in {
+    "produce a cache id based on matchId and scopes" in {
 
-      val nino = Nino("NA000799C")
+      val matchId = UUID.randomUUID()
       val interval = TaxYearInterval(TaxYear("2015-16"), TaxYear("2016-17"))
 
       val fields = "ABCDGK"
 
-      SaCacheId(nino, interval, fields).id shouldBe
-        "NA000799C-2016-2017-ABCDGK"
+      SaCacheId(matchId, interval, fields).id shouldBe
+        s"$matchId-2016-2017-ABCDGK"
 
     }
 

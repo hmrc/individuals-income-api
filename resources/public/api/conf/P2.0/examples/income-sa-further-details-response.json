@@ -8,7 +8,7 @@
     "taxReturns": [
       {
         "taxYear": "2018-19",
-        "further-details": [
+        "furtherDetails": [
           {
             "busStartDate": "2018-02-28",
             "busEndDate": "2018-02-28",
@@ -26,7 +26,7 @@
       },
       {
         "taxYear": "2019-20",
-        "further-details": [
+        "furtherDetails": [
           {
             "busStartDate": "2019-02-28",
             "busEndDate": "2019-02-28",

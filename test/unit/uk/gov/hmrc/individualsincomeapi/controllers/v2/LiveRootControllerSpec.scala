@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
-      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
+    given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
+      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope"), Enrolment("test-scope-1")))))
   }
 
   "Live match citizen controller match citizen function" should {
@@ -80,6 +80,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     "return a 404 when a match id does not match live data" in new Setup {
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
         .thenReturn(failed(new MatchNotFoundException))
+
       val result = await(liveRootController.root(randomMatchId).apply(FakeRequest()))
 
       status(result) shouldBe NOT_FOUND
@@ -92,29 +93,33 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     "return a 200 when a match id matches live data" in new Setup {
 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
-        .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
+        .thenReturn(successful(matchedCitizen))
 
       val result = await(liveRootController.root(matchId).apply(FakeRequest()))
 
       status(result) shouldBe OK
 
       jsonBodyOf(result) shouldBe
-        Json.parse(s"""
-         {"_links":{
-           "incomePaye":{
-             "href":"/individuals/income/paye?matchId=$matchId{&startDate,endDate}",
-             "title":"Get an individual's income paye data"
-             },
-             "self":{
-               "href":"/individuals/income/?matchId=$matchId"
-             }
-           }
-         }""")
+        Json.parse(s"""{
+                      |  "_links": {
+                      |    "incomeSa": {
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "title": "Get an individual's income sa data"
+                      |    },
+                      |    "incomePaye": {
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "title": "Get an individual's income paye data"
+                      |    },
+                      |    "self": {
+                      |      "href": "/individuals/income/?matchId=$matchId"
+                      |    }
+                      |  }
+                      |}""".stripMargin)
     }
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
 
-      given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+      given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
         .willReturn(Future.failed(new InsufficientEnrolments()))
 
       val result = await(liveRootController.root(randomMatchId).apply(FakeRequest()))

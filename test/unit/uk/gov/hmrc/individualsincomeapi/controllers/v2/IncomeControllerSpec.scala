@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.mockito.Mockito.verifyNoInteractions
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
+import uk.gov.hmrc.individualsincomeapi.domain.v2.MatchedCitizen
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}

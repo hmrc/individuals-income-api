@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.code shouldBe BAD_REQUEST
 
       And("The correct error message is returned")
-      response.body shouldBe errorResponse("fromTaxYear earlier than maximum allowed")
+      response.body shouldBe errorResponse("fromTaxYear earlier than allowed (CY-6)")
     }
 
     scenario("toTaxYear later than the current tax year") {

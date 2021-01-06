@@ -38,7 +38,7 @@ object Dates {
       throw new ValidationException("Invalid time period requested")
 
     if (fromTaxYear.startYr < TaxYear.current().startYr - selfAssessmentYearHistory)
-      throw new ValidationException("fromTaxYear earlier than maximum allowed")
+      throw new ValidationException("fromTaxYear earlier than allowed (CY-6)")
 
     if (toTaxYear.endYr > TaxYear.current().endYr)
       throw new ValidationException("toTaxYear is later than the current tax year")

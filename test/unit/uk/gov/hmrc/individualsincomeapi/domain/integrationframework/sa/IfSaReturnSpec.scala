@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,15 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfSaIncome, IfSaReturn}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfDeducts, IfSaIncome, IfSaReturn}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry._
 
 class IfSaReturnSpec extends WordSpec with Matchers {
+
+  val validDeducts = IfDeducts(
+    Some(200.0),
+    Some(200.0)
+  )
 
   val validSaReturnType = IfSaReturn(
     Some("1234567890"),
@@ -37,7 +42,8 @@ class IfSaReturnSpec extends WordSpec with Matchers {
     Some(100.01),
     Some(100.01),
     Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
-    Some(createValidSaIncome)
+    Some(createValidSaIncome),
+    Some(validDeducts)
   )
 
   val invalidSaReturnType = IfSaReturn(
@@ -54,7 +60,8 @@ class IfSaReturnSpec extends WordSpec with Matchers {
     Some(100.001),
     Some(100.001),
     Some(IfAddress(Some(""), Some(""), Some(""), Some(""), None, Some(""))),
-    Some(createValidSaIncome)
+    Some(createValidSaIncome),
+    None
   )
 
   "IfSaReturn" should {
@@ -96,6 +103,10 @@ class IfSaReturnSpec extends WordSpec with Matchers {
                                       |    "lifePolicies" : 100,
                                       |    "shares" : 100,
                                       |    "other" : 100
+                                      |  },
+                                      |  "deducts":{
+                                      |    "totalBusExpenses":200,
+                                      |    "totalDisallowBusExp":200
                                       |  }
                                       |}
                                       |""".stripMargin)

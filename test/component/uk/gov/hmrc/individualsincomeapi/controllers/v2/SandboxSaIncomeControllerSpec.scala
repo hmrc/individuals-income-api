@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,167 +18,601 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
+import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.{sandboxMatchId, sandboxUtr}
-import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
+import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.sandboxMatchId
 
 class SandboxSaIncomeControllerSpec extends BaseSpec {
 
-  val matchId = UUID.randomUUID().toString
-  val fromTaxYear = TaxYear("2013-14")
-  val toTaxYear = TaxYear("2015-16")
+  val matchId = sandboxMatchId
+  val fromTaxYear = "2017"
+  val toTaxYear = "2019"
 
-  feature("Sandbox individual income") {
+  feature("SA root endpoint") {
 
-    scenario("SA root endpoint for the sandbox implementation") {
+    scenario("Fetch Self Assessment returns") {
 
-      When("I request the self-assessments for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
+      When("I request the resources")
+      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
         .asString
 
-      Then("The response status should be 500 with a valid payload")
-      val requestParameters = s"matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19"
-
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-    }
-
-    scenario("Employments Income endpoint for the sandbox implementation") {
-
-      When("I request the SA employments for Sandbox")
-      val response =
-        Http(s"$serviceUrl/sandbox/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("The response status should be 500 with a valid payload")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-    }
-
-    scenario("Self Employments Income endpoint for the sandbox implementation") {
-
-      When("I request the SA self employments for Sandbox")
-      val response =
-        Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("The response status should be 500 with a valid payload")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-    }
-
-    scenario("SA returns summary endpoint for the sandbox implementation") {
-
-      When("I request the SA returns summary for Sandbox")
-      val response =
-        Http(s"$serviceUrl/sandbox/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("The response status should be 500 with a valid payload")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-    }
-
-    scenario("SA trusts endpoint for the sandbox implementation") {
-      When("I request the SA trusts income for Sandbox")
-      val response =
-        Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("The response status should be 500 with a valid payload")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-    }
-
-    scenario("SA foreign endpoint for the sandbox implementation") {
-      When("I request the SA foreign income for Sandbox")
-      val response =
-        Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("The response status should be 500 with a valid payload")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-      response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "incomeSaUkProperties": {
+               |      "href": "individuals/income/sa/uk-properties?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA UK properties data"
+               |    },
+               |    "incomeSaTrusts": {
+               |      "href": "individuals/income/sa/trusts?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA trusts data"
+               |    },
+               |    "incomeSaSelfEmployments": {
+               |      "href": "individuals/income/sa/self-employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA self employments data"
+               |    },
+               |    "incomeSaPartnerships": {
+               |      "href": "individuals/income/sa/partnerships?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA partnerships data"
+               |    },
+               |    "self": {
+               |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    },
+               |    "incomeSaInterestsAndDividends": {
+               |      "href": "individuals/income/sa/interests-and-dividends?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA interest and dividends data"
+               |    },
+               |    "incomeSaFurtherDetails": {
+               |      "href": "individuals/income/sa/further-details?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA further details data"
+               |    },
+               |    "incomeSaAdditionalInformation": {
+               |      "href": "individuals/income/sa/additional-information?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA additional information data"
+               |    },
+               |    "incomeSaOther": {
+               |      "href": "individuals/income/sa/other?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA other data"
+               |    },
+               |    "incomeSaForeign": {
+               |      "href": "individuals/income/sa/foreign?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA foreign income data"
+               |    },
+               |    "incomeSaSummary": {
+               |      "href": "individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA summary data"
+               |    },
+               |    "incomeSaEmployments": {
+               |      "href": "individuals/income/sa/employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA employments data"
+               |    },
+               |    "incomeSaPensionsAndStateBenefits": {
+               |      "href": "individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA pensions and state benefits data"
+               |    },
+               |    "incomeSaSource": {
+               |      "href": "/individuals/income/sa/source?matchId=$matchId{&fromTaxYear,toTaxYear}",
+               |      "title": "Get an individual's SA source data"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "registrations": [
+               |      {
+               |        "registrationDate": "2020-01-01"
+               |      }
+               |    ],
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "submissions": [
+               |          {
+               |            "receivedDate": "2020-01-01"
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
     }
   }
 
-  scenario("SA partnerships endpoint for the sandbox implementation") {
-    When("I request the SA partnerships income for Sandbox")
-    val response =
-      Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
+  feature("SA employments endpoint") {
+
+    scenario("Fetch Self Assessment employments returns") {
+
+      When("I request the resources")
+      val response = Http(s"$serviceUrl/sandbox/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
         .asString
 
-    Then("The response status should be 500 with a valid payload")
-    response.code shouldBe INTERNAL_SERVER_ERROR
-    response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "employments": [
+               |          {
+               |            "employmentIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
   }
 
-  scenario("SA pensions and state benefits endpoint for the sandbox implementation") {
-    When("I request the SA pensions and state benefits income for Sandbox")
-    val response = Http(
-      s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-      .headers(requestHeaders(acceptHeaderP2))
-      .asString
+  feature("SA self employments endpoint") {
 
-    Then("The response status should be 500 with a valid payload")
-    response.code shouldBe INTERNAL_SERVER_ERROR
-    response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+    scenario("Fetch Self Assessment self employments returns") {
+
+      When("I request the resources")
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "selfEmployments": [
+               |          {
+               |            "selfEmploymentProfit": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
   }
 
-  scenario("SA interests and dividends endpoint for the sandbox implementation") {
-    When("I request the SA interests and dividends income for Sandbox")
-    val response = Http(
-      s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-      .headers(requestHeaders(acceptHeaderP2))
-      .asString
+  feature("SA summary endpoint") {
 
-    Then("The response status should be 500 with a valid payload")
-    response.code shouldBe INTERNAL_SERVER_ERROR
-    response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
-  }
+    scenario("Fetch Self Assessment summary returns") {
 
-  scenario("SA uk-properties endpoint for the sandbox implementation") {
-    When("I request the SA uk-properties income for Sandbox")
-    val response =
-      Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
+      When("I request the resources")
+      val response = Http(s"$serviceUrl/sandbox/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
         .asString
 
-    Then("The response status should be 500 with a valid payload")
-    response.code shouldBe INTERNAL_SERVER_ERROR
-    response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "summary": [
+               |          {
+               |            "totalIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
   }
 
-  scenario("SA additional-information endpoint for the sandbox implementation") {
-    When("I request the SA additional-information income for Sandbox")
-    val response = Http(
-      s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-      .headers(requestHeaders(acceptHeaderP2))
-      .asString
+  feature("SA trusts endpoint") {
 
-    Then("The response status should be 500 with a valid payload")
-    response.code shouldBe INTERNAL_SERVER_ERROR
-    response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+    scenario("Fetch Self Assessment trusts returns") {
+
+      When("I request the resources")
+      val response = Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
+        .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "trusts": [
+               |          {
+               |            "trustIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
   }
 
-  scenario("SA other endpoint for the sandbox implementation") {
-    When("I request the SA other income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/other?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-      .headers(requestHeaders(acceptHeaderP2))
-      .asString
+  feature("SA foreign endpoint") {
 
-    Then("The response status should be 500 with a valid payload")
-    response.code shouldBe INTERNAL_SERVER_ERROR
-    response.body shouldBe "{\"statusCode\":500,\"message\":\"NOT_IMPLEMENTED\"}"
+    scenario("Fetch Self Assessment foreign returns") {
+
+      When("I request the resources")
+      val response = Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
+        .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "foreign": [
+               |          {
+               |            "foreignIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
   }
+
+  feature("SA partnerships endpoint") {
+
+    scenario("Fetch Self Assessment partnerships returns") {
+
+      When("I request the resources")
+      val response = Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
+        .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "partnerships": [
+               |          {
+               |            "partnershipProfit": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  feature("SA interests and dividends income") {
+
+    scenario("Fetch Self Assessment interests and dividends returns") {
+
+      When("I request the resources")
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "interestsAndDividends": [
+               |          {
+               |            "ukInterestsIncome": 100,
+               |            "foreignDividendsIncome": 100,
+               |            "ukDividendsIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  feature("SA pensions and state benefits income") {
+
+    scenario("Fetch Self Assessment pensions and benefits returns") {
+
+      When("I request the resources")
+      val response =
+        Http(
+          s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "pensionsAndStateBenefits": [
+               |          {
+               |            "totalIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  feature("SA UK properties income") {
+
+    scenario("Fetch Self Assessment uk properties returns") {
+
+      When("I request the resources")
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "ukProperties": [
+               |          {
+               |            "totalProfit": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  feature("SA additional information") {
+
+    scenario("Fetch Self Assessment additional information returns") {
+
+      When("I request the resources")
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "additionalInformation": [
+               |          {
+               |            "gainsOnLifePolicies": 100,
+               |            "sharesOptionsIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  feature("SA other income") {
+
+    scenario("Fetch Self Assessment other income returns") {
+
+      When("I request the resources")
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "other": [
+               |          {
+               |            "otherIncome": 100
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  feature("SA further details") {
+
+    scenario("Fetch Self Assessment further details income returns") {
+
+      When("I request the resources")
+      val response =
+        Http(s"$serviceUrl/sandbox/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+          .headers(headers)
+          .asString
+
+      Then("The response status should be 200 with the self-assessments")
+      response.code shouldBe OK
+      response.body shouldBe
+        Json
+          .parse(
+            s"""{
+               |  "_links": {
+               |    "self": {
+               |      "href": "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
+               |    }
+               |  },
+               |  "selfAssessment": {
+               |    "taxReturns": [
+               |      {
+               |        "taxYear": "2019-20",
+               |        "furtherDetails": [
+               |          {
+               |            "busStartDate": "2020-01-01",
+               |            "busEndDate": "2020-01-30",
+               |            "totalTaxPaid": 100.01,
+               |            "totalNIC": 100.01,
+               |            "turnover": 100.01,
+               |            "otherBusIncome": 100.01,
+               |            "tradingIncomeAllowance": 100.01,
+               |            "deducts": {
+               |              "totalBusExpenses": 200,
+               |              "totalDisallowBusExp": 200
+               |            }
+               |          }
+               |        ]
+               |      }
+               |    ]
+               |  }
+               |}""".stripMargin
+          )
+          .toString()
+    }
+
+  }
+
+  private def headers: Map[String, String] = requestHeaders(acceptHeaderP2) + ("X-Client-ID" -> clientId)
 }

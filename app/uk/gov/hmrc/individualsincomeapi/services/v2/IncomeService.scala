@@ -32,6 +32,7 @@ import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 trait IncomeService {
+
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
   def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
@@ -39,6 +40,7 @@ trait IncomeService {
 
   def endpoints =
     List("incomePaye")
+
 }
 
 @Singleton
@@ -85,6 +87,7 @@ class SandboxIncomeService extends IncomeService {
       .toDateTimeAtStartOfDay
 
     interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
+
   }
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
@@ -96,4 +99,5 @@ class SandboxIncomeService extends IncomeService {
         )
       case None => failed(new MatchNotFoundException)
     }
+
 }

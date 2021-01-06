@@ -89,9 +89,9 @@ case class PayeCacheId(matchId: UUID, interval: Interval, fields: String) extend
 
 }
 
-case class SaCacheId(nino: Nino, interval: TaxYearInterval, fields: String) extends CacheIdBase {
+case class SaCacheId(matchId: UUID, interval: TaxYearInterval, fields: String) extends CacheIdBase {
 
   lazy val id: String =
-    s"${nino.nino}-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
+    s"$matchId-${interval.fromTaxYear.endYr}-${interval.toTaxYear.endYr}-$fields"
 
 }

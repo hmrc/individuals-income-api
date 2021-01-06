@@ -260,7 +260,10 @@
                   }
                 }
               }
-            }
+            },
+            "required": [
+              "paymentDate"
+            ]
           }
         }
       },

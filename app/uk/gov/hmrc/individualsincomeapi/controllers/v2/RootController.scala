@@ -42,7 +42,10 @@ abstract class RootController(
     requiresPrivilegedAuthentication(scopeService.getAllScopes) { authScopes =>
       citizenMatchingService.matchCitizen(matchId) map { _: MatchedCitizen =>
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
-        Ok(Json.toJson(scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink))
+        val allowedList = Some(List("incomeSa", "incomePaye"))
+        val excludeList = Some(List())
+
+        Ok(Json.toJson(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList) ++ selfLink))
       }
     }.recover(recovery)
   }
