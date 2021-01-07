@@ -17,7 +17,6 @@
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
-
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.libs.json.Json
@@ -31,6 +30,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
+import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.extractCorrelationId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -39,6 +39,7 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     {
+      extractCorrelationId(request)
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomePaye")) { authScopes =>
         incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
           val selfLink =
