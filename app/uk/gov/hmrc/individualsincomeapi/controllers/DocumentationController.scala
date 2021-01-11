@@ -40,7 +40,7 @@ class DocumentationController @Inject()(
 
   val v2WhitelistedApplicationIDs = config
     .getOptional[Seq[String]](
-      "api.access.version-P2.0.whitelistedApplicationIds"
+      "api.access.version-2.0.whitelistedApplicationIds"
     )
     .getOrElse(Seq.empty)
 

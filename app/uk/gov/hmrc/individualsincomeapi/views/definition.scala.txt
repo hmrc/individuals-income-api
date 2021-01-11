@@ -155,7 +155,7 @@
         "access" : {"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(v1WhitelistedApplicationIDs)}
       },
       {
-        "version":"P2.0",
+        "version":"2.0",
         "status":@Json.toJson(v2Status),
         "endpointsEnabled":@Json.toJson(v2EndpointsEnabled),
         "access":{"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(v2WhitelistedApplicationIDs)}

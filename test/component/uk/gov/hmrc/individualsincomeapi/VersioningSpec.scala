@@ -54,17 +54,17 @@ class VersioningSpec extends BaseSpec {
       Json.parse(response.body) shouldBe validResponsePayload
     }
 
-    scenario("Requests with an accept header version P2.0") {
+    scenario("Requests with an accept header version 2.0") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
-      When("A request to the match citizen endpoint is made with version P2.0 accept header")
+      When("A request to the match citizen endpoint is made with version 2.0 accept header")
       val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP2)
 
       Then("The response status should be 200")
       response.code shouldBe OK
 
-      And("And the response body should be for api version P2.0")
+      And("And the response body should be for api version 2.0")
       Json.parse(response.body) shouldBe validResponsePayloadP2
     }
 
