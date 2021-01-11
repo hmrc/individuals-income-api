@@ -40,7 +40,7 @@
                 "description": "Tax year",
                 "example": "2018-19"
               },
-              "further-details": {
+              "furtherDetails": {
                 "type": "array",
                 "description": "Further details for income from Self Assessment for the requested period",
                 "items": {
@@ -103,7 +103,7 @@
             },
             "required": [
               "taxYear",
-              "further-details"
+              "furtherDetails"
             ]
           }
         }
