@@ -125,4 +125,113 @@ class IfQueriesSpec extends BaseSpec {
       queryString shouldBe res8
     }
   }
+
+  feature("Query strings for 'sa' endpoint") {
+
+    def endpoints =
+      List(
+        "incomeSa",
+        "incomeSaSummary",
+        "incomeSaTrusts",
+        "incomeSaForeign",
+        "incomeSaPartnerships",
+        "incomeSaInterestsAndDividends",
+        "incomeSaPensionsAndStateBenefits",
+        "incomeSaUkProperties",
+        "incomeSaAdditionalInformation",
+        "incomeSaOther",
+        "incomeSaSource",
+        "incomeSaEmployments",
+        "incomeSaSelfEmployments",
+        "incomeSaFurtherDetails"
+      )
+
+    val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
+
+    val res1 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,businessDescription," +
+      "caseStartDate,income(allEmployments,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),postcode,receivedDate," +
+      "telephoneNumber),taxYear)"
+
+    val res2 =
+      "sa(returnList(caseStartDate,income(foreign,foreignDivs,selfAssessment,selfEmployment," +
+        "ukDivsAndInterest,ukInterest,ukProperty)),taxYear)"
+
+    val res3 = "sa(returnList(caseStartDate,income(foreign,foreignDivs,selfAssessment,selfEmployment," +
+      "ukDivsAndInterest,ukInterest,ukProperty)),taxYear)"
+
+    val res4 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,businessDescription," +
+      "caseStartDate,postcode,telephoneNumber),taxYear)"
+
+    val res5 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+      "caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp),income(allEmployments,foreign,foreignDivs," +
+      "lifePolicies,other,partnerships,pensions,selfAssessment,shares,trusts,ukDivsAndInterest,ukInterest," +
+      "ukProperty),otherBusIncome,postcode,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
+
+    val res6 = "sa(returnList(busEndDate,busStartDate,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment,shares," +
+      "trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,tradingIncomeAllowance,turnover),taxYear)"
+
+    val res7 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+      "businessDescription,deducts(totalBusExpenses,totalDisallowBusExp),income(allEmployments,foreign,foreignDivs," +
+      "lifePolicies,other,partnerships,pensions,selfAssessment,trusts,ukDivsAndInterest,ukInterest,ukProperty)," +
+      "otherBusIncome,postcode,tradingIncomeAllowance,turnover),taxYear)"
+
+    val res8 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,businessDescription," +
+      "postcode,telephoneNumber),taxYear)"
+
+    val res9 = "sa(returnList(busEndDate,busStartDate,deducts(totalBusExpenses),income(allEmployments,foreign,foreignDivs," +
+      "lifePolicies,other,partnerships,pensions,selfAssessment,selfEmployment,shares,trusts,ukDivsAndInterest," +
+      "ukInterest,ukProperty),receivedDate,totalNIC,totalTaxPaid),taxYear)"
+
+    scenario("For read:individuals-income-nictsejo-c4") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-nictsejo-c4"), endpoints)
+      queryString shouldBe res1
+    }
+
+    scenario("For read:individuals-income-hmcts-c2") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c2"), endpoints)
+      queryString shouldBe res2
+    }
+
+    scenario("For read:individuals-income-hmcts-c3") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c3"), endpoints)
+      queryString shouldBe res3
+    }
+
+    scenario("For read:individuals-income-hmcts-c4") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c4"), endpoints)
+      queryString shouldBe res4
+    }
+
+    scenario("For read:individuals-income-laa-c1") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c1"), endpoints)
+      queryString shouldBe res5
+    }
+
+    scenario("For read:individuals-income-laa-c2") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c2"), endpoints)
+      queryString shouldBe res6
+    }
+
+    scenario("For read:individuals-income-laa-c3") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c3"), endpoints)
+      queryString shouldBe res7
+    }
+
+    scenario("For read:individuals-income-laa-c4") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c4"), endpoints)
+      queryString shouldBe res8
+    }
+
+    scenario("For read:individuals-income-lsani-c1") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lsani-c1"), endpoints)
+      queryString shouldBe res9
+    }
+
+    scenario("For read:individuals-income-lsani-c3") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lsani-c3"), endpoints)
+      queryString shouldBe res9
+    }
+  }
 }
