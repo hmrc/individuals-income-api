@@ -23,7 +23,7 @@ case class ApiResponseEvent @Inject() (httpAuditEvent: HttpAuditEvent) {
             reqW: Writes[Request]): DataEvent =
     dataEvent(
       auditType,
-      "API response event",
+      "APIResponseEvent",
       request,
       Map(
         "API Version:"  -> "2.0",
