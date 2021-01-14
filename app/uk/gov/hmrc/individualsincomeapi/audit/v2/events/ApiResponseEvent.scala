@@ -26,7 +26,7 @@ case class ApiResponseEvent @Inject() (httpAuditEvent: HttpAuditEvent) {
       "APIResponseEvent",
       request,
       Map(
-        "API Version:"  -> "2.0",
+        "ApiVersion:"  -> "2.0",
         "matchId"       -> matchId.toString,
         "correlationId" -> correlationId.toString,
         "request"       -> Json.toJson(request).toString,
