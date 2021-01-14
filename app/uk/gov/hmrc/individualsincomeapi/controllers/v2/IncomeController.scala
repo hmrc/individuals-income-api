@@ -31,10 +31,12 @@ import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.individualsincomeapi.audit.ApiResponseEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(incomeService: IncomeService, scopeService: ScopesService, cc: ControllerComponents)
+abstract class IncomeController(incomeService: IncomeService, scopeService: ScopesService, auditConnector: AuditConnector, cc: ControllerComponents)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
@@ -59,8 +61,9 @@ class LiveIncomeController @Inject()(
   val incomeService: LiveIncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
+  auditConnector: AuditConnector,
   cc: ControllerComponents)
-    extends IncomeController(incomeService, scopeService, cc) {
+    extends IncomeController(incomeService, scopeService, auditConnector, cc) {
   override val environment = PRODUCTION
 }
 
@@ -69,7 +72,8 @@ class SandboxIncomeController @Inject()(
   val incomeService: SandboxIncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
+  auditConnector: AuditConnector,
   cc: ControllerComponents)
-    extends IncomeController(incomeService, scopeService, cc) {
+    extends IncomeController(incomeService, scopeService, auditConnector, cc) {
   override val environment = SANDBOX
 }
