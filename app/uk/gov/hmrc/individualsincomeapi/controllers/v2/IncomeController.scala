@@ -32,30 +32,34 @@ import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(incomeService: IncomeService, scopeService: ScopesService, auditHelper: AuditHelper, cc: ControllerComponents)
+abstract class IncomeController(
+  incomeService: IncomeService,
+  scopeService: ScopesService,
+  auditHelper: AuditHelper,
+  cc: ControllerComponents)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     {
       val endpoint = "incomePaye"
-      val correlationId  = "TODO - PR in progress"
 
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes(endpoint)) { authScopes =>
         incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
-
           val selfLink =
             HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
 
           val incomeJsObject = Json.obj("income" -> toJson(paye))
-          val payeJsObject   = obj("paye" -> incomeJsObject)
-          val response       = Json.toJson(state(payeJsObject) ++ selfLink)
+          val payeJsObject = obj("paye"          -> incomeJsObject)
+          val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
-          auditHelper.auditResponse(endpoint, correlationId, matchId, request, response.toString)
+          val correlationId = "TODOPRInProgress"
+          val scopes = authScopes.mkString(",")
+
+          auditHelper.auditResponse(endpoint, correlationId, scopes, matchId, request, response)
           Ok(response)
 
         }

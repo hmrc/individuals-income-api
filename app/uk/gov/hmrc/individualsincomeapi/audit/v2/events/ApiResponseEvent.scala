@@ -1,36 +1,59 @@
+/*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.individualsincomeapi.audit.v2.events
 
 import java.util.UUID
 
 import javax.inject.Inject
-import play.api.libs.json.{Json, Writes}
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HeaderCarrier, Request}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 
-case class ApiResponseEvent @Inject() (httpAuditEvent: HttpAuditEvent) {
+case class ApiResponseEvent @Inject()(httpAuditEvent: HttpAuditEvent) {
 
   import httpAuditEvent.dataEvent
 
-  def apply(auditType: String,
-            correlationId: String,
-            matchId: UUID,
-            request: RequestHeader,
-            response: String)
-           (hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers),
-            reqW: Writes[Request]): DataEvent =
-    dataEvent(
+  def apply(
+    auditType: String,
+    correlationId: String,
+    scopes: String,
+    matchId: UUID,
+    request: RequestHeader,
+    response: String)(
+    implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
+  ): DataEvent = {
+
+    val x = dataEvent(
       auditType,
       "APIResponseEvent",
       request,
       Map(
-        "ApiVersion:"  -> "2.0",
+        "ApiVersion:"   -> "2.0",
         "matchId"       -> matchId.toString,
-        "correlationId" -> correlationId.toString,
-        "request"       -> Json.toJson(request).toString,
+        "correlationId" -> correlationId,
+        "scopes"        -> scopes,
         "response"      -> response
       )
     )
+
+    println("ACHI: " + x)
+
+    x
+  }
 }
