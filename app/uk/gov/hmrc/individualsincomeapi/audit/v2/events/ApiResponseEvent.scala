@@ -19,15 +19,17 @@ package uk.gov.hmrc.individualsincomeapi.audit.v2.events
 import java.util.UUID
 
 import javax.inject.Inject
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.ApiResponseEventModel
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.play.audit.model.DataEvent
-import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
+import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
-case class ApiResponseEvent @Inject()(httpAuditEvent: HttpAuditEvent) {
+case class ApiResponseEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
 
-  import httpAuditEvent.dataEvent
+  import httpAuditEvent.extendedDataEvent
 
   def apply(
     auditType: String,
@@ -37,23 +39,11 @@ case class ApiResponseEvent @Inject()(httpAuditEvent: HttpAuditEvent) {
     request: RequestHeader,
     response: String)(
     implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-  ): DataEvent = {
-
-    val x = dataEvent(
+  ): ExtendedDataEvent =
+    extendedDataEvent(
       auditType,
       "APIResponseEvent",
       request,
-      Map(
-        "ApiVersion:"   -> "2.0",
-        "matchId"       -> matchId.toString,
-        "correlationId" -> correlationId,
-        "scopes"        -> scopes,
-        "response"      -> response
-      )
+      ApiResponseEventModel("2.0", matchId, correlationId, scopes, response).asInstanceOf[JsObject]
     )
-
-    println("ACHI: " + x)
-
-    x
-  }
 }
