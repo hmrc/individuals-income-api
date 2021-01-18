@@ -47,7 +47,7 @@ class TaxYearSpec extends TestSupport with Matchers with BeforeAndAfterEach {
 
   "TaxYear constructor" should {
     validTaxYears.foreach { taxYear =>
-      s"apply a taxYear for a valid argument '$taxYear'" in {
+      s"create a taxYear for a valid argument '$taxYear'" in {
         TaxYear(taxYear).formattedTaxYear == taxYear shouldBe true
       }
     }
