@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfPayeEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfPaye, IfPayeEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 import utils.IncomePayeHelpers
 
