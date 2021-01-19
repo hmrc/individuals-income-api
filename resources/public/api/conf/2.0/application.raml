@@ -32,7 +32,7 @@ uses:
   /:
     get:
       displayName: Get a list of available endpoints
-      description: Use this endpoint to get a list of available endpoints for Individuals Income.
+      description: !include docs/root.md
       is: [headers.acceptHeader]
       (annotations.scope): "assigned"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
