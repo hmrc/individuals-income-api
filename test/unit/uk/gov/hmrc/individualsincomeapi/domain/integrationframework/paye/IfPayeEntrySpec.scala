@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfPayeEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfPaye, IfPayeEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 import utils.IncomePayeHelpers
 
@@ -256,6 +256,51 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |  }
           |]
           |""".stripMargin
+      )
+
+      result shouldBe expectedJson
+    }
+
+    "transform data with scientific notation to income type correctly" in {
+
+      val ifPayeJson = Json.parse(
+        """{
+          |  "paye": [
+          |    {
+          |      "taxYear": "18-19",
+          |      "payFrequency": "W4",
+          |      "weeklyPeriodNumber": "2",
+          |      "monthlyPeriodNumber": "3",
+          |      "paymentDate": "2006-02-27",
+          |      "paidHoursWorked": "36",
+          |      "taxablePayToDate": 9.99999999999e9,
+          |      "totalTaxToDate": 9.99999999999e9,
+          |      "taxablePay": 9.99999999999e9,
+          |      "taxDeductedOrRefunded": 159228.49
+          |    }
+          |  ]
+          |}""".stripMargin
+      )
+
+      val result = Json.toJson(ifPayeJson.as[IfPaye])
+
+      val expectedJson = Json.parse(
+        """{
+          |  "paye": [
+          |    {
+          |      "taxYear": "18-19",
+          |      "payFrequency": "W4",
+          |      "weeklyPeriodNumber": "2",
+          |      "monthlyPeriodNumber": "3",
+          |      "paymentDate": "2006-02-27",
+          |      "paidHoursWorked": "36",
+          |      "taxablePayToDate": 9999999999.99,
+          |      "totalTaxToDate": 9999999999.99,
+          |      "taxablePay": 9999999999.99,
+          |      "taxDeductedOrRefunded": 159228.49
+          |    }
+          |  ]
+          |}""".stripMargin
       )
 
       result shouldBe expectedJson

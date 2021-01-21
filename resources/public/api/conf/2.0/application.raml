@@ -32,10 +32,10 @@ uses:
   /:
     get:
       displayName: Get a list of available endpoints
-      description: Use this endpoint to get a list of available endpoints for Individuals Income.
+      description: !include docs/root.md
       is: [headers.acceptHeader]
-      (annotations.scope): "assigned:scopes"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/root.md
       queryParameters:
         matchId:
@@ -72,8 +72,8 @@ uses:
       displayName: Get Self Assessment history
       description: !include docs/income-sa-endpoint-description.md
       is: [headers.acceptHeader]
-      (annotations.scope): "assigned:scopes"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/income-sa-request.md
       queryParameters:
         matchId:
@@ -120,8 +120,8 @@ uses:
       displayName: Get PAYE income history
       description: !include docs/income-endpoint-description.md
       is: [headers.acceptHeader]
-      (annotations.scope): "assigned:scopes"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+      (annotations.scope): "assigned"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/income-request.md
       queryParameters:
         matchId:
@@ -168,8 +168,8 @@ uses:
         displayName: Get additional information from Self Assessment
         description: !include docs/income-sa-additional-information-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-additional-information-request.md
         queryParameters:
           matchId:
@@ -216,8 +216,8 @@ uses:
         displayName: Get employments income data from Self Assessment
         description: !include docs/income-sa-employments-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-employments.md
         queryParameters:
           matchId:
@@ -264,8 +264,8 @@ uses:
         displayName: Get foreign income data from Self Assessment
         description: !include docs/income-sa-foreign-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-foreign.md
         queryParameters:
           matchId:
@@ -312,8 +312,8 @@ uses:
         displayName: Get interest and dividends income data Self Assessment
         description: !include docs/income-sa-interests-and-dividends-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-dividends.md
         queryParameters:
           matchId:
@@ -360,8 +360,8 @@ uses:
         displayName: Get other income data from Self Assessment
         description: !include docs/income-sa-other-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-other.md
         queryParameters:
           matchId:
@@ -408,8 +408,8 @@ uses:
         displayName: Get partnerships income data from Self Assessment
         description: !include docs/income-sa-partnerships-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request.md
         queryParameters:
           matchId:
@@ -456,8 +456,8 @@ uses:
         displayName: Get pensions and state benefits income data from Self Assessment
         description: !include docs/income-sa-pensions-and-state-benefits-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-pensions-benefits.md
         queryParameters:
           matchId:
@@ -504,8 +504,8 @@ uses:
         displayName: Get self-employments income data from Self Assessment
         description: !include docs/income-sa-self-employments-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-self-employments.md
         queryParameters:
           matchId:
@@ -552,8 +552,8 @@ uses:
         displayName: Get Self Assessment tax returns summary
         description: !include docs/income-sa-summary-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-summary.md
         queryParameters:
           matchId:
@@ -600,8 +600,8 @@ uses:
         displayName: Get trusts income from Self Assessment
         description: !include docs/income-sa-trusts-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-trusts.md
         queryParameters:
           matchId:
@@ -648,8 +648,8 @@ uses:
         displayName: Get UK properties income data from Self Assessment
         description: !include docs/income-sa-uk-properties-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-uk-properties.md
         queryParameters:
           matchId:
@@ -696,8 +696,8 @@ uses:
         displayName: Get details for each income source
         description: !include docs/income-sa-source-endpoint-description.md
         is: [headers.acceptHeader]
-        (annotations.scope): "assigned:scopes"
-        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-source.md
         queryParameters:
           matchId:
@@ -744,8 +744,8 @@ uses:
           displayName: Get further details for income from Self Assessment
           description: !include docs/income-sa-further-details-endpoint-description.md
           is: [headers.acceptHeader]
-          (annotations.scope): "assigned:scopes"
-          securedBy: [ sec.oauth_2_0: { scopes: [ "assigned:scopes" ] } ]
+          (annotations.scope): "assigned"
+          securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
           (annotations.sandboxData): !include sandbox/income-sa-request-further-details.md
           queryParameters:
             matchId:
