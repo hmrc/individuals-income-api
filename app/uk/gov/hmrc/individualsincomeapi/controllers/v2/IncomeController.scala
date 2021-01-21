@@ -31,8 +31,6 @@ import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
-import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -41,9 +39,7 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     {
-      val endpoint = "incomePaye"
-
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes(endpoint)) { authScopes =>
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomePaye")) { authScopes =>
         incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
           val selfLink =
             HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
@@ -52,7 +48,6 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
           val payeJsObject = obj("paye"          -> incomeJsObject)
 
           Ok(Json.toJson(state(payeJsObject) ++ selfLink))
-
         }
       }.recover(recovery)
     }

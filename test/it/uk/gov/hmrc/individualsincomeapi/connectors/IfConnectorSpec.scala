@@ -111,8 +111,6 @@ class IfConnectorSpec
         val result = await(underTest
           .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
 
-        verify(testConnector.auditConnector, times(2)).sendExtendedEvent(any())(any(), any())
-
         result shouldBe incomePayeNoData.paye
 
       }

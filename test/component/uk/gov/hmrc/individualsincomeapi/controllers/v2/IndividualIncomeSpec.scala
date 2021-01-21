@@ -56,6 +56,9 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
     "read:individuals-income-nictsejo-c4"
   )
 
+  val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+  val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
+
   feature("Live individual income") {
 
     scenario("not authorized") {
