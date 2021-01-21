@@ -1,0 +1,15 @@
+{
+  "apiVersion": "2.0",
+  "matchId": "80a6bb14-d888-436e-a541-4000674c60aa",
+  "correlationId": "test",
+  "scopes": "test",
+  "response": "[\"test\",\"response\"]",
+  "method": "GET",
+  "deviceID": "-",
+  "ipAddress": "-",
+  "token": "-",
+  "referrer": "-",
+  "Authorization": "-",
+  "input": "Request to /",
+  "userAgentString": "-"
+}

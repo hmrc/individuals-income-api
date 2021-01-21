@@ -41,7 +41,7 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
       new ApiResponseEvent(
         httpExtendedAuditEvent
       ).apply(
-        s"GET$endpoint",
+        s"GET-$endpoint",
         correlationId,
         scopes,
         matchId,
