@@ -21,40 +21,46 @@ import java.util.UUID
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.audit.v2.{AuditHelper, DefaultHttpExtendedAuditEvent, HttpExtendedAuditEvent}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.{AuditHelper, DefaultHttpExtendedAuditEvent}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import utils.UnitSpec
 import org.mockito.Mockito.{times, verify}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentCaptor
+import org.mockito.{ArgumentCaptor, Mockito}
+import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.components.OneAppPerSuiteWithComponents
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class AuditHelperSpec extends UnitSpec with MockitoSugar {
+class AuditHelperSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
   implicit val hc = HeaderCarrier()
 
-  val endpoint = "testAuditApiResponse"
+  val nino = "CS700100A"
   val correlationId = "test"
   val scopes = Some("test")
   val matchId = Some(UUID.fromString("80a6bb14-d888-436e-a541-4000674c60aa"))
   val request = FakeRequest()
   val response = Json.toJson("some" -> "json")
+  val ifUrl =
+    s"host/individuals/income/paye/nino/$nino?startDate=2019-01-01&endDate=2020-01-01&fields=some(vals(val1),val2)"
 
   val auditConnector = mock[AuditConnector]
   val httpExtendedAuditEvent = new DefaultHttpExtendedAuditEvent("individuals-income-api")
 
   val auditHelper = AuditHelper(auditConnector, httpExtendedAuditEvent)
 
-  val captor = ArgumentCaptor.forClass(classOf[ExtendedDataEvent])
-
   "Auth helper" should {
 
     "auditApiResponse" in {
 
-      auditHelper.auditApiResponse(endpoint, correlationId, scopes, matchId, request, response)
+      Mockito.reset(auditConnector)
+
+      val captor = ArgumentCaptor.forClass(classOf[ExtendedDataEvent])
+
+      auditHelper.auditApiResponse(correlationId, scopes, matchId, request, response)
 
       verify(auditConnector, times(1)).sendExtendedEvent(captor.capture())(any(), any())
 
@@ -78,12 +84,47 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar {
 
       val capturedEvent = captor.getValue
       capturedEvent.asInstanceOf[ExtendedDataEvent].auditSource shouldEqual "individuals-income-api"
-      capturedEvent.asInstanceOf[ExtendedDataEvent].auditType shouldEqual "GET-testAuditApiResponse"
-      capturedEvent.asInstanceOf[ExtendedDataEvent].detail shouldEqual result
+      capturedEvent.asInstanceOf[ExtendedDataEvent].auditType shouldEqual "ApiResponseEvent"
+      capturedEvent.asInstanceOf[ExtendedDataEvent].detail shouldBe result
 
     }
 
-    "auditIfApiResponse" in {}
+    "auditIfApiResponse" in {
+
+      Mockito.reset(auditConnector)
+
+      val captor = ArgumentCaptor.forClass(classOf[ExtendedDataEvent])
+
+      auditHelper.auditIfApiResponse(correlationId, scopes, matchId, request, ifUrl, response)
+
+      verify(auditConnector, times(1)).sendExtendedEvent(captor.capture())(any(), any())
+
+      val result = Json.parse(
+        """
+          |{
+          |  "apiVersion": "2.0",
+          |  "matchId": "80a6bb14-d888-436e-a541-4000674c60aa",
+          |  "correlationId": "test",
+          |  "scopes": "test",
+          |  "requestUrl": "host/individuals/income/paye/nino/CS700100A?startDate=2019-01-01&endDate=2020-01-01&fields=some(vals(val1),val2)",
+          |  "response": "[\"some\",\"json\"]",
+          |  "method": "GET",
+          |  "deviceID": "-",
+          |  "ipAddress": "-",
+          |  "token": "-",
+          |  "referrer": "-",
+          |  "Authorization": "-",
+          |  "input": "Request to /",
+          |  "userAgentString": "-"
+          |}
+          |""".stripMargin)
+
+      val capturedEvent = captor.getValue
+      capturedEvent.asInstanceOf[ExtendedDataEvent].auditSource shouldEqual "individuals-income-api"
+      capturedEvent.asInstanceOf[ExtendedDataEvent].auditType shouldEqual "IfApiResponseEvent"
+      capturedEvent.asInstanceOf[ExtendedDataEvent].detail shouldBe result
+
+    }
 
   }
 

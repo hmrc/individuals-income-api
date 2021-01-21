@@ -31,11 +31,11 @@ abstract case class ResponseEventBase @Inject()(httpAuditEvent: HttpExtendedAudi
 
   import httpAuditEvent.extendedDataEvent
 
-  def transactionName = "ResponseEvent"
+  def auditType = "ApiResponseEvent"
+  def transactionName = "AuditCall"
   def apiVersion = "2.0"
 
   def apply(
-    auditType: String,
     correlationId: String,
     scopes: Option[String],
     matchId: Option[UUID],

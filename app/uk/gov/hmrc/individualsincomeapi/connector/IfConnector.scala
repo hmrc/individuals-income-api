@@ -79,7 +79,6 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
 
       auditHelper
         .auditIfApiResponse(
-          endpoint,
           extractCorrelationId(request),
           None,
           None,

@@ -31,7 +31,6 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
   implicit ec: ExecutionContext) {
 
   def auditApiResponse(
-    endpoint: String,
     correlationId: String,
     scopes: Option[String],
     matchId: Option[UUID],
@@ -41,7 +40,6 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
       new ApiResponseEvent(
         httpExtendedAuditEvent
       ).apply(
-        s"GET-$endpoint",
         correlationId,
         scopes,
         matchId,
@@ -52,7 +50,6 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
     )
 
   def auditIfApiResponse(
-    endpoint: String,
     correlationId: String,
     scopes: Option[String],
     matchId: Option[UUID],
@@ -63,7 +60,6 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
       new IfApiResponseEvent(
         httpExtendedAuditEvent
       ).apply(
-        s"GET$endpoint",
         correlationId,
         scopes,
         matchId,

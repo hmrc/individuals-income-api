@@ -22,7 +22,8 @@ import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
 class ApiResponseEvent @Inject()(override val httpAuditEvent: HttpExtendedAuditEvent)
     extends ResponseEventBase(httpAuditEvent) {
 
-  override def transactionName = "ApiResponseEvent"
+  override def auditType = "ApiResponseEvent"
+  override def transactionName = "AuditCall"
   override def apiVersion = "2.0"
 
 }
