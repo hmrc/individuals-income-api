@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.audit.v2.models
+package uk.gov.hmrc.individualsincomeapi.audit.v2.events
 
-import java.util.UUID
+import javax.inject.Inject
+import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
 
-import play.api.libs.json.Json
+class IfApiResponseEvent @Inject()(override val httpAuditEvent: HttpExtendedAuditEvent)
+    extends ResponseEventBase(httpAuditEvent) {
 
-case class ApiResponseEventModel(
-  apiVersion: String,
-  matchId: Option[UUID],
-  correlationId: String,
-  scopes: Option[String],
-  requestUrl: Option[String],
-  response: String)
+  override def transactionName = "IfApiResponseEvent"
+  override def apiVersion = "2.0"
 
-object ApiResponseEventModel {
-  implicit val formatApiResponseEventModel = Json.format[ApiResponseEventModel]
 }

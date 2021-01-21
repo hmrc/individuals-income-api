@@ -16,20 +16,27 @@
 
 package uk.gov.hmrc.individualsincomeapi.connector
 
+import java.util.UUID
+
 import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Logger
+import play.api.libs.json.Json
+import play.api.mvc.{Request, RequestHeader}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException, TooManyRequestException, Upstream4xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, NotFoundException, TooManyRequestException, Upstream4xxResponse}
 import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext) {
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, auditHelper: AuditHelper)(
+  implicit ec: ExecutionContext) {
 
   val serviceUrl = servicesConfig.baseUrl("integration-framework")
 
@@ -41,20 +48,48 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
     "microservice.services.integration-framework.environment"
   )
 
+  private def extractCorrelationId(requestHeader: RequestHeader) =
+    requestHeader.headers.get("CorrelationId") match {
+      case Some(uuidString) =>
+        Try(UUID.fromString(uuidString)) match {
+          case Success(_) => uuidString
+          case _          => throw new BadRequestException("Malformed CorrelationId")
+        }
+      case None => throw new BadRequestException("CorrelationId is required")
+    }
+
   private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier): HeaderCarrier =
     hc.copy(authorization = Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
       .withExtraHeaders(Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
   def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String])(
     implicit hc: HeaderCarrier,
+    request: RequestHeader,
     ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
+
+    val endpoint = "IfConnector::fetchPayeIncome"
 
     val startDate = interval.getStart.toLocalDate
     val endDate = interval.getEnd.toLocalDate
     val payeUrl = s"$serviceUrl/individuals/income/paye/" +
       s"nino/$nino?startDate=$startDate&endDate=$endDate${filter.map(f => s"&fields=$f").getOrElse("")}"
 
-    recover[IfPayeEntry](http.GET[IfPaye](payeUrl)(implicitly, header(), ec).map(_.paye))
+    recover[IfPayeEntry](http.GET[IfPaye](payeUrl)(implicitly, header(), ec) map { response =>
+      Logger.debug(s"$endpoint - Response: $response")
+
+      auditHelper
+        .auditIfApiResponse(
+          endpoint,
+          extractCorrelationId(request),
+          None,
+          None,
+          request,
+          payeUrl,
+          Json.toJson(response)
+        )
+
+      response.paye
+    })
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String])(
@@ -71,13 +106,17 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(im
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
-    case _: NotFoundException => Future.successful(Seq.empty)
+    case _: NotFoundException => {
+      // TODO : Audit event here ??
+      Future.successful(Seq.empty)
+    }
     case Upstream4xxResponse(msg, 429, _, _) => {
       Logger.warn(s"IF Rate limited: $msg")
+      // TODO : Audit event here ??
       Future.failed(new TooManyRequestException(msg))
     }
     case e: Exception => {
-      Logger.warn(s"IfConnector:Exception: ${e.getMessage}")
+      // TODO : Audit event here ??
       Future.failed(e)
     }
   }

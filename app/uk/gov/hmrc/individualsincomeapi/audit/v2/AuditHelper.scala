@@ -22,7 +22,7 @@ import javax.inject.Inject
 import play.api.libs.json.JsValue
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.audit.v2.events.ApiResponseEvent
+import uk.gov.hmrc.individualsincomeapi.audit.v2.events.{ApiResponseEvent, IfApiResponseEvent}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext
@@ -30,15 +30,15 @@ import scala.concurrent.ExecutionContext
 case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAuditEvent: HttpExtendedAuditEvent)(
   implicit ec: ExecutionContext) {
 
-  def auditResponse(
+  def auditApiResponse(
     endpoint: String,
     correlationId: String,
-    scopes: String,
-    matchId: UUID,
+    scopes: Option[String],
+    matchId: Option[UUID],
     request: RequestHeader,
     response: JsValue)(implicit hc: HeaderCarrier) =
     auditConnector.sendExtendedEvent(
-      ApiResponseEvent(
+      new ApiResponseEvent(
         httpExtendedAuditEvent
       ).apply(
         s"GET$endpoint",
@@ -46,6 +46,29 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
         scopes,
         matchId,
         request,
+        None,
+        response.toString
+      )
+    )
+
+  def auditIfApiResponse(
+    endpoint: String,
+    correlationId: String,
+    scopes: Option[String],
+    matchId: Option[UUID],
+    request: RequestHeader,
+    requestUrl: String,
+    response: JsValue)(implicit hc: HeaderCarrier) =
+    auditConnector.sendExtendedEvent(
+      new IfApiResponseEvent(
+        httpExtendedAuditEvent
+      ).apply(
+        s"GET$endpoint",
+        correlationId,
+        scopes,
+        matchId,
+        request,
+        Some(requestUrl),
         response.toString
       )
     )

@@ -36,11 +36,7 @@ import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class IncomeController(
-  incomeService: IncomeService,
-  scopeService: ScopesService,
-  auditHelper: AuditHelper,
-  cc: ControllerComponents)
+abstract class IncomeController(incomeService: IncomeService, scopeService: ScopesService, cc: ControllerComponents)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
@@ -54,13 +50,8 @@ abstract class IncomeController(
 
           val incomeJsObject = Json.obj("income" -> toJson(paye))
           val payeJsObject = obj("paye"          -> incomeJsObject)
-          val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
-          val correlationId = "TODOPRInProgress"
-          val scopes = authScopes.mkString(",")
-
-          auditHelper.auditResponse(endpoint, correlationId, scopes, matchId, request, response)
-          Ok(response)
+          Ok(Json.toJson(state(payeJsObject) ++ selfLink))
 
         }
       }.recover(recovery)
@@ -73,9 +64,8 @@ class LiveIncomeController @Inject()(
   val incomeService: LiveIncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
-  auditHelper: AuditHelper,
   cc: ControllerComponents)
-    extends IncomeController(incomeService, scopeService, auditHelper, cc) {
+    extends IncomeController(incomeService, scopeService, cc) {
   override val environment = PRODUCTION
 }
 
@@ -84,9 +74,7 @@ class SandboxIncomeController @Inject()(
   val incomeService: SandboxIncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
-  auditHelper: AuditHelper,
-  httpAuditEvent: HttpAuditEvent,
   cc: ControllerComponents)
-    extends IncomeController(incomeService, scopeService, auditHelper, cc) {
+    extends IncomeController(incomeService, scopeService, cc) {
   override val environment = SANDBOX
 }

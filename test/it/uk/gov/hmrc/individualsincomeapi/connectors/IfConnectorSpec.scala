@@ -23,16 +23,17 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 class IfConnectorSpec
     extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
@@ -56,9 +57,15 @@ class IfConnectorSpec
     .build()
 
   trait Setup {
+
+    val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+
     implicit val hc = HeaderCarrier()
 
     val underTest = fakeApplication.injector.instanceOf[IfConnector]
+
+    implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
   }
 
   def externalServices: Seq[String] = Seq.empty
@@ -101,7 +108,11 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeNoData).toString())))
 
-        val result = await(underTest.fetchPayeIncome(nino, interval, Some(fields)))
+        val result = await(underTest
+          .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+
+        verify(testConnector.auditConnector, times(2)).sendExtendedEvent(any())(any(), any())
+
         result shouldBe incomePayeNoData.paye
 
       }
@@ -126,7 +137,9 @@ class IfConnectorSpec
             )
         )
 
-        val result = await(underTest.fetchPayeIncome(nino, interval, Some(fields)))
+        val result = await(underTest
+          .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+
         result shouldBe incomePayeSingle.paye
 
       }
@@ -146,7 +159,9 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeMulti).toString())))
 
-        val result = await(underTest.fetchPayeIncome(nino, interval, Some(fields)))
+        val result = await(underTest
+          .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+
         result shouldBe incomePayeMulti.paye
 
       }
@@ -157,7 +172,10 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] { await(underTest.fetchPayeIncome(nino, interval, None)) }
+      intercept[Upstream5xxResponse] {
+        await(
+          underTest.fetchPayeIncome(nino, interval, None)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+      }
     }
 
     "fail when IF returns a bad request" in new Setup {
@@ -165,7 +183,10 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
-      intercept[BadRequestException] { await(underTest.fetchPayeIncome(nino, interval, None)) }
+      intercept[BadRequestException] {
+        await(
+          underTest.fetchPayeIncome(nino, interval, None)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+      }
     }
   }
 
