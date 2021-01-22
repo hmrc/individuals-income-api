@@ -28,7 +28,7 @@ import org.mockito.Mockito.{times, verify}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.{ArgumentCaptor, Mockito}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiIfAuditRequest, ApiIfFailureAuditRequest}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiAuditRequest, ApiIfAuditRequest, ApiIfFailureAuditRequest}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -59,7 +59,9 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar {
 
       val captor = ArgumentCaptor.forClass(classOf[ExtendedDataEvent])
 
-      auditHelper.auditApiResponse(correlationId, scopes, matchId, request, response)
+      val req = ApiAuditRequest(correlationId, scopes, matchId, request, response)
+
+      auditHelper.auditApiResponse(req)
 
       verify(auditConnector, times(1)).sendExtendedEvent(captor.capture())(any(), any())
 
