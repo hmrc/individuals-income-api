@@ -30,6 +30,7 @@ import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatestplus.play.OneAppPerSuite
 import org.scalatestplus.play.components.OneAppPerSuiteWithComponents
 import play.api.test.FakeRequest
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.ApiIfAuditRequest
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -95,7 +96,9 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
       val captor = ArgumentCaptor.forClass(classOf[ExtendedDataEvent])
 
-      auditHelper.auditIfApiResponse(correlationId, scopes, matchId, request, ifUrl, response)
+      val req = ApiIfAuditRequest(correlationId, scopes, matchId, request, ifUrl, response)
+
+      auditHelper.auditIfApiResponse(req)
 
       verify(auditConnector, times(1)).sendExtendedEvent(captor.capture())(any(), any())
 

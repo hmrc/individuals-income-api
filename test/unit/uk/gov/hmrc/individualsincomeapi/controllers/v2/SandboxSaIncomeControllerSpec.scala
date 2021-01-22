@@ -85,7 +85,7 @@ class SandboxSaIncomeControllerSpec
     "return 200 with the registration information and self assessment returns for the period" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -177,7 +177,7 @@ class SandboxSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -267,7 +267,7 @@ class SandboxSaIncomeControllerSpec
     "return 404 for an invalid matchId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -283,7 +283,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
       val result =
@@ -319,7 +319,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
       val result =
@@ -352,7 +352,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.employmentsIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -367,7 +367,8 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -402,7 +403,8 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
       val result =
@@ -435,7 +437,8 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -450,7 +453,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -485,7 +488,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
       val result =
@@ -518,7 +521,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(FakeRequest()))
@@ -533,7 +536,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -568,7 +571,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
       val result =
@@ -601,7 +604,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -616,7 +619,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -651,7 +654,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
       val result =
@@ -684,7 +687,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saForeignIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -699,7 +702,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -734,7 +737,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
       val result =
@@ -767,7 +770,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -783,7 +786,8 @@ class SandboxSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
       given(
-        mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        mockSandboxSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val result =
@@ -820,7 +824,8 @@ class SandboxSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
 
       given(
-        mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        mockSandboxSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val result = await(
@@ -854,7 +859,8 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
       given(
-        mockSandboxSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        mockSandboxSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -870,7 +876,9 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService
+          .fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -907,7 +915,9 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService
+          .fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val result = await(
@@ -942,7 +952,9 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService
+          .fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -958,7 +970,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -993,7 +1005,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
       val result =
@@ -1026,7 +1038,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -1041,7 +1053,9 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService
+          .fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
@@ -1077,7 +1091,9 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService
+          .fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val result =
@@ -1111,7 +1127,9 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockSandboxSaIncomeService
+          .fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(FakeRequest()))
@@ -1126,7 +1144,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -1161,7 +1179,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -1193,7 +1211,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saOtherIncome(matchId, taxYearInterval)(FakeRequest()))
@@ -1208,7 +1226,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
 
-      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
       val result = await(sandboxSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
@@ -1253,7 +1271,7 @@ class SandboxSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParametersWithoutToTaxYear")
 
-      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
       val result =
@@ -1296,7 +1314,7 @@ class SandboxSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockSandboxSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(sandboxSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(FakeRequest()))

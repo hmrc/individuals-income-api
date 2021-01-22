@@ -27,6 +27,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, NotFoundException, TooManyRequestException, Upstream4xxResponse}
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiIfAuditRequest, ApiIfFailureAuditRequest}
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -48,6 +49,38 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
     "microservice.services.integration-framework.environment"
   )
 
+  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String])(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
+
+    val endpoint = "IfConnector::fetchPayeIncome"
+
+    val startDate = interval.getStart.toLocalDate
+    val endDate = interval.getEnd.toLocalDate
+    val payeUrl = s"$serviceUrl/individuals/income/paye/" +
+      s"nino/$nino?startDate=$startDate&endDate=$endDate${filter.map(f => s"&fields=$f").getOrElse("")}"
+
+    callPaye(payeUrl, endpoint)
+
+  }
+
+  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String])(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
+
+    val endpoint = "IfConnector::fetchSelfAssessmentIncome"
+
+    val startYear = taxYearInterval.fromTaxYear.endYr
+    val endYear = taxYearInterval.toTaxYear.endYr
+    val saUrl = s"$serviceUrl/individuals/income/sa/" +
+      s"nino/$nino?startYear=$startYear&endYear=$endYear${filter.map(f => s"&fields=$f").getOrElse("")}"
+
+    callSa(saUrl, endpoint)
+
+  }
+
   private def extractCorrelationId(requestHeader: RequestHeader) =
     requestHeader.headers.get("CorrelationId") match {
       case Some(uuidString) =>
@@ -62,61 +95,88 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
     hc.copy(authorization = Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
       .withExtraHeaders(Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
-  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader,
-    ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
+  private def callPaye(
+    url: String,
+    endpoint: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover[IfPayeEntry](
+      http.GET[IfPaye](url)(implicitly, header(), ec) map { response =>
+        Logger.debug(s"$endpoint - Response: $response")
 
-    val endpoint = "IfConnector::fetchPayeIncome"
-
-    val startDate = interval.getStart.toLocalDate
-    val endDate = interval.getEnd.toLocalDate
-    val payeUrl = s"$serviceUrl/individuals/income/paye/" +
-      s"nino/$nino?startDate=$startDate&endDate=$endDate${filter.map(f => s"&fields=$f").getOrElse("")}"
-
-    recover[IfPayeEntry](http.GET[IfPaye](payeUrl)(implicitly, header(), ec) map { response =>
-      Logger.debug(s"$endpoint - Response: $response")
-
-      auditHelper
-        .auditIfApiResponse(
-          extractCorrelationId(request),
-          None,
-          None,
-          request,
-          payeUrl,
-          Json.toJson(response)
+        auditHelper.auditIfApiResponse(
+          ApiIfAuditRequest(
+            extractCorrelationId(request),
+            None,
+            None,
+            request,
+            url,
+            Json.toJson(response)
+          )
         )
 
-      response.paye
-    })
-  }
+        response.paye
+      },
+      ApiIfFailureAuditRequest(
+        extractCorrelationId(request),
+        None,
+        None,
+        request,
+        url
+      )
+    )
 
-  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String])(
+  private def callSa(
+    url: String,
+    endpoint: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover[IfSaEntry](
+      http.GET[IfSa](url)(implicitly, header(), ec) map { response =>
+        Logger.debug(s"$endpoint - Response: $response")
+
+        auditHelper.auditIfApiResponse(
+          ApiIfAuditRequest(
+            extractCorrelationId(request),
+            None,
+            None,
+            request,
+            url,
+            Json.toJson(response)
+          )
+        )
+
+        response.sa
+      },
+      ApiIfFailureAuditRequest(
+        extractCorrelationId(request),
+        None,
+        None,
+        request,
+        url
+      )
+    )
+
+  private def recover[A](x: Future[Seq[A]], apiIfFailedAuditRequest: ApiIfFailureAuditRequest)(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
+    ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
+    case notFound: NotFoundException => {
 
-    val startYear = taxYearInterval.fromTaxYear.endYr
-    val endYear = taxYearInterval.toTaxYear.endYr
-    val saUrl = s"$serviceUrl/individuals/income/sa/" +
-      s"nino/$nino?startYear=$startYear&endYear=$endYear${filter.map(f => s"&fields=$f").getOrElse("")}"
+      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, notFound.getMessage)
 
-    recover[IfSaEntry](http.GET[IfSa](saUrl)(implicitly, header(), ec).map(_.sa))
-
-  }
-
-  def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
-    case _: NotFoundException => {
-      // TODO : Audit event here ??
       Future.successful(Seq.empty)
+
     }
     case Upstream4xxResponse(msg, 429, _, _) => {
+
       Logger.warn(s"IF Rate limited: $msg")
-      // TODO : Audit event here ??
+
+      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, s"IF Rate limited: $msg")
+
       Future.failed(new TooManyRequestException(msg))
     }
     case e: Exception => {
-      // TODO : Audit event here ??
+
+      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, e.getMessage)
+
       Future.failed(e)
+
     }
   }
 

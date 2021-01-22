@@ -210,7 +210,14 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomeSaNoData).toString())))
 
-        val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields)))
+        val result = await {
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields))(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        }
+
         result shouldBe incomeSaNoData.sa
 
       }
@@ -235,7 +242,14 @@ class IfConnectorSpec
             )
         )
 
-        val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields)))
+        val result = await {
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields))(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        }
+
         result shouldBe incomeSaSingle.sa
 
       }
@@ -255,7 +269,14 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomeSaMulti).toString())))
 
-        val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields)))
+        val result = await {
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields))(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        }
+
         result shouldBe incomeSaMulti.sa
 
       }
@@ -266,7 +287,15 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval, None)) }
+      intercept[Upstream5xxResponse] {
+        await {
+          underTest.fetchSelfAssessmentIncome(nino, interval, None)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        }
+      }
     }
 
     "fail when IF returns a bad request" in new Setup {
@@ -274,7 +303,15 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
-      intercept[BadRequestException] { await(underTest.fetchSelfAssessmentIncome(nino, interval, None)) }
+      intercept[BadRequestException] {
+        await {
+          underTest.fetchSelfAssessmentIncome(nino, interval, None)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
+        }
+      }
     }
   }
 }

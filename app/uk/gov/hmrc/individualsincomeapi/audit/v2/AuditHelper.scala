@@ -22,7 +22,8 @@ import javax.inject.Inject
 import play.api.libs.json.JsValue
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.audit.v2.events.{ApiResponseEvent, IfApiResponseEvent}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.events.{ApiResponseEvent, IfApiFailureEvent, IfApiResponseEvent}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiIfAuditRequest, ApiIfFailureAuditRequest}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext
@@ -49,23 +50,31 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
       )
     )
 
-  def auditIfApiResponse(
-    correlationId: String,
-    scopes: Option[String],
-    matchId: Option[UUID],
-    request: RequestHeader,
-    requestUrl: String,
-    response: JsValue)(implicit hc: HeaderCarrier) =
+  def auditIfApiResponse(apiIfAuditRequest: ApiIfAuditRequest)(implicit hc: HeaderCarrier) =
     auditConnector.sendExtendedEvent(
       new IfApiResponseEvent(
         httpExtendedAuditEvent
       ).apply(
-        correlationId,
-        scopes,
-        matchId,
-        request,
-        Some(requestUrl),
-        response.toString
+        apiIfAuditRequest.correlationId,
+        apiIfAuditRequest.scopes,
+        apiIfAuditRequest.matchId,
+        apiIfAuditRequest.request,
+        Some(apiIfAuditRequest.requestUrl),
+        apiIfAuditRequest.response.toString
+      )
+    )
+
+  def auditIfApiFailure(apiIfFailedAuditRequest: ApiIfFailureAuditRequest, msg: String)(implicit hc: HeaderCarrier) =
+    auditConnector.sendExtendedEvent(
+      new IfApiFailureEvent(
+        httpExtendedAuditEvent
+      ).apply(
+        apiIfFailedAuditRequest.correlationId,
+        apiIfFailedAuditRequest.scopes,
+        apiIfFailedAuditRequest.matchId,
+        apiIfFailedAuditRequest.request,
+        Some(apiIfFailedAuditRequest.requestUrl),
+        msg
       )
     )
 }
