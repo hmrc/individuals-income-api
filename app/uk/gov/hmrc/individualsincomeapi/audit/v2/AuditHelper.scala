@@ -34,7 +34,7 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
   def auditApiResponse(
     correlationId: String,
     scopes: Option[String],
-    matchId: Option[UUID],
+    matchId: Option[String],
     request: RequestHeader,
     response: JsValue)(implicit hc: HeaderCarrier) =
     auditConnector.sendExtendedEvent(

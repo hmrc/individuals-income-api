@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
-import java.util.UUID
 import play.api.libs.json.JsValue
 import play.api.mvc.RequestHeader
 
 case class ApiIfAuditRequest(
   correlationId: String,
   scopes: Option[String],
-  matchId: Option[UUID],
+  matchId: Option[String],
   request: RequestHeader,
   requestUrl: String,
   response: JsValue

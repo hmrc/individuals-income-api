@@ -83,7 +83,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any()))
+
+      given(
+        mockIfConnector.fetchPayeIncome(
+          eqTo(matchedCitizen.nino),
+          eqTo(interval),
+          any(),
+          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
         .willReturn(successful(ifPaye))
 
       val result =
@@ -148,7 +154,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any()))
+
+      given(
+        mockIfConnector.fetchPayeIncome(
+          eqTo(matchedCitizen.nino),
+          eqTo(interval),
+          any(),
+          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
         .willReturn(successful(ifPaye))
 
       val result =
@@ -203,7 +215,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any()))
+
+      given(
+        mockIfConnector.fetchPayeIncome(
+          eqTo(matchedCitizen.nino),
+          eqTo(interval),
+          any(),
+          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result =
@@ -228,7 +246,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any()))
+
+      given(
+        mockIfConnector.fetchPayeIncome(
+          eqTo(matchedCitizen.nino),
+          eqTo(interval),
+          any(),
+          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
         .willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException](
@@ -241,7 +265,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val scopes = Iterable("scope1")
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockIfConnector.fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any()))
+
+      given(
+        mockIfConnector.fetchPayeIncome(
+          eqTo(matchedCitizen.nino),
+          eqTo(interval),
+          any(),
+          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
         .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(ifPaye))
 
@@ -250,7 +280,10 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       result shouldBe (ifPaye map IfPayeEntry.toIncome)
 
       verify(mockIfConnector, times(2))
-        .fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any())
+        .fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any(), eqTo(matchedCitizen.matchId.toString))(
+          any(),
+          any(),
+          any())
     }
 
     "return a cached value if it exists" in {
@@ -280,7 +313,11 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
             FakeRequest()))
       res shouldBe (paye map IfPayeEntry.toIncome)
 
-      verify(mockIf, never).fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any())(any(), any(), any())
+      verify(mockIf, never).fetchPayeIncome(
+        eqTo(matchedCitizen.nino),
+        eqTo(interval),
+        any(),
+        eqTo(matchedCitizen.matchId.toString))(any(), any(), any())
     }
   }
 

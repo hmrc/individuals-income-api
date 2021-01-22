@@ -40,7 +40,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar {
   val nino = "CS700100A"
   val correlationId = "test"
   val scopes = Some("test")
-  val matchId = Some(UUID.fromString("80a6bb14-d888-436e-a541-4000674c60aa"))
+  val matchId = Some("80a6bb14-d888-436e-a541-4000674c60aa")
   val request = FakeRequest()
   val response = Json.toJson("some" -> "json")
   val ifUrl =

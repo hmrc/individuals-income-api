@@ -66,7 +66,8 @@ class LiveIncomeService @Inject()(
                        ifConnector.fetchPayeIncome(
                          ninoMatch.nino,
                          interval,
-                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty)
+                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty),
+                         matchId.toString
                        )
                      )
                    )

@@ -22,7 +22,7 @@ import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{Request, RequestHeader}
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, NotFoundException, TooManyRequestException, Upstream4xxResponse}
 import uk.gov.hmrc.http.logging.Authorization
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, auditHelper: AuditHelper)(
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)(
   implicit ec: ExecutionContext) {
 
   val serviceUrl = servicesConfig.baseUrl("integration-framework")
@@ -49,7 +49,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
     "microservice.services.integration-framework.environment"
   )
 
-  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String])(
+  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String], matchId: String)(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
@@ -61,11 +61,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
     val payeUrl = s"$serviceUrl/individuals/income/paye/" +
       s"nino/$nino?startDate=$startDate&endDate=$endDate${filter.map(f => s"&fields=$f").getOrElse("")}"
 
-    callPaye(payeUrl, endpoint)
+    callPaye(payeUrl, endpoint, matchId)
 
   }
 
-  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String])(
+  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String], matchId: String)(
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
@@ -77,7 +77,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
     val saUrl = s"$serviceUrl/individuals/income/sa/" +
       s"nino/$nino?startYear=$startYear&endYear=$endYear${filter.map(f => s"&fields=$f").getOrElse("")}"
 
-    callSa(saUrl, endpoint)
+    callSa(saUrl, endpoint, matchId)
 
   }
 
@@ -95,9 +95,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
     hc.copy(authorization = Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
       .withExtraHeaders(Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
-  private def callPaye(
-    url: String,
-    endpoint: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+  private def callPaye(url: String, endpoint: String, matchId: String)(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext) =
     recover[IfPayeEntry](
       http.GET[IfPaye](url)(implicitly, header(), ec) map { response =>
         Logger.debug(s"$endpoint - Response: $response")
@@ -106,7 +107,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
           ApiIfAuditRequest(
             extractCorrelationId(request),
             None,
-            None,
+            Some(matchId),
             request,
             url,
             Json.toJson(response)
@@ -124,9 +125,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
       )
     )
 
-  private def callSa(
-    url: String,
-    endpoint: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+  private def callSa(url: String, endpoint: String, matchId: String)(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext) =
     recover[IfSaEntry](
       http.GET[IfSa](url)(implicitly, header(), ec) map { response =>
         Logger.debug(s"$endpoint - Response: $response")
@@ -135,7 +137,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, au
           ApiIfAuditRequest(
             extractCorrelationId(request),
             None,
-            None,
+            Some(matchId),
             request,
             url,
             Json.toJson(response)

@@ -19,19 +19,24 @@ package it.uk.gov.hmrc.individualsincomeapi.connectors
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
+import org.mockito.Mockito.{times, verify}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext
 
@@ -58,12 +63,16 @@ class IfConnectorSpec
 
   trait Setup {
 
+    val matchId = "80a6bb14-d888-436e-a541-4000674c60aa"
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
     val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     implicit val hc = HeaderCarrier()
 
-    val underTest = fakeApplication.injector.instanceOf[IfConnector]
+    val config = fakeApplication.injector.instanceOf[ServicesConfig]
+    val httpClient = fakeApplication.injector.instanceOf[HttpClient]
+    val auditHelper = mock[AuditHelper]
+    val underTest = new IfConnector(config, httpClient, auditHelper)
 
     implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
   }
@@ -98,6 +107,8 @@ class IfConnectorSpec
 
       "return en empty sequence" in new Setup {
 
+        Mockito.reset(underTest.auditHelper)
+
         stubFor(
           get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
             .withQueryParam("startDate", equalTo(startDate))
@@ -108,8 +119,16 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeNoData).toString())))
 
-        val result = await(underTest
-          .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        val result = await(
+          underTest
+            .fetchPayeIncome(nino, interval, Some(fields), matchId)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
+        )
+
+        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
 
         result shouldBe incomePayeNoData.paye
 
@@ -119,6 +138,8 @@ class IfConnectorSpec
     "for single paye data found" should {
 
       "return single paye data" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
 
         stubFor(
           get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
@@ -135,8 +156,14 @@ class IfConnectorSpec
             )
         )
 
-        val result = await(underTest
-          .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        val result = await(
+          underTest
+            .fetchPayeIncome(nino, interval, Some(fields), matchId)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec))
+
+        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
 
         result shouldBe incomePayeSingle.paye
 
@@ -146,6 +173,8 @@ class IfConnectorSpec
     "for multi paye data found" should {
 
       "return multi paye data" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
 
         stubFor(
           get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
@@ -157,8 +186,14 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeMulti).toString())))
 
-        val result = await(underTest
-          .fetchPayeIncome(nino, interval, Some(fields))(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        val result = await(
+          underTest
+            .fetchPayeIncome(nino, interval, Some(fields), matchId)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec))
+
+        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
 
         result shouldBe incomePayeMulti.paye
 
@@ -166,25 +201,37 @@ class IfConnectorSpec
     }
 
     "fail when IF returns an error" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
       intercept[Upstream5xxResponse] {
-        await(
-          underTest.fetchPayeIncome(nino, interval, None)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        await(underTest
+          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
+
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+
     }
 
     "fail when IF returns a bad request" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
       intercept[BadRequestException] {
-        await(
-          underTest.fetchPayeIncome(nino, interval, None)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        await(underTest
+          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
+
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+
     }
   }
 
@@ -200,6 +247,8 @@ class IfConnectorSpec
 
       "return en empty sequence" in new Setup {
 
+        Mockito.reset(underTest.auditHelper)
+
         stubFor(
           get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
             .withQueryParam("startYear", equalTo(startYear))
@@ -211,7 +260,7 @@ class IfConnectorSpec
               .withBody(Json.toJson(incomeSaNoData).toString())))
 
         val result = await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields))(
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -220,12 +269,16 @@ class IfConnectorSpec
 
         result shouldBe incomeSaNoData.sa
 
+        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+
       }
     }
 
     "for single self assessment data found" should {
 
       "return single self assessment data" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
 
         stubFor(
           get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
@@ -243,7 +296,7 @@ class IfConnectorSpec
         )
 
         val result = await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields))(
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -252,12 +305,16 @@ class IfConnectorSpec
 
         result shouldBe incomeSaSingle.sa
 
+        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+
       }
     }
 
     "for multi self assessment data found" should {
 
       "return multi self assessment data" in new Setup {
+
+        Mockito.reset(underTest.auditHelper)
 
         stubFor(
           get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
@@ -270,7 +327,7 @@ class IfConnectorSpec
               .withBody(Json.toJson(incomeSaMulti).toString())))
 
         val result = await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields))(
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -279,39 +336,53 @@ class IfConnectorSpec
 
         result shouldBe incomeSaMulti.sa
 
+        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+
       }
     }
 
     "fail when IF returns an error" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
       stubFor(
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
       intercept[Upstream5xxResponse] {
         await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, None)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
           )
         }
       }
+
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+
     }
 
     "fail when IF returns a bad request" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
       stubFor(
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
       intercept[BadRequestException] {
         await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, None)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
           )
         }
       }
+
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+
     }
   }
 }

@@ -38,7 +38,7 @@ abstract case class ResponseEventBase @Inject()(httpAuditEvent: HttpExtendedAudi
   def apply(
     correlationId: String,
     scopes: Option[String],
-    matchId: Option[UUID],
+    matchId: Option[String],
     request: RequestHeader,
     requestUrl: Option[String],
     response: String)(
