@@ -19,6 +19,7 @@ package uk.gov.hmrc.individualsincomeapi.audit.v2.events
 import java.util.UUID
 
 import javax.inject.Inject
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
@@ -43,11 +44,17 @@ abstract case class FailureEventBase @Inject()(httpAuditEvent: HttpExtendedAudit
     requestUrl: Option[String],
     msg: String)(
     implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-  ): ExtendedDataEvent =
-    extendedDataEvent(
+  ): ExtendedDataEvent = {
+
+    val event = extendedDataEvent(
       auditType,
       transactionName,
       request,
       Json.toJson(ApiFailureEventModel(apiVersion, matchId, correlationId, scopes, requestUrl, msg))
     )
+
+    Logger.debug(s"$auditType - AuditEvent: $event")
+
+    event
+  }
 }
