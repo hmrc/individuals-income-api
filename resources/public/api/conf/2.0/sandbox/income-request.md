@@ -61,5 +61,21 @@
         <td><p>404 (Not Found)</p>
         <p>{ &quot;code&quot; : &quot;NOT_FOUND&quot;,<br/>&quot;message&quot; : &quot;The resource cannot be found&quot; }</p></td>
     </tr>
+    <tr>
+        <td><p>Missing CorrelationId</p></td>
+        <td><p>CorrelationId header is missing</p></td>
+        <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;CorrelationId is required&quot; }</p></td>
+        </td>
+    </tr>
+    <tr>
+        <td><p>Malformed CorrelationId</p></td>
+        <td><p>CorrelationId header is malformed</p></td>
+        <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CorrelationId&quot; }</p></td>
+        </td>
+    </tr>
     </tbody>
 </table>

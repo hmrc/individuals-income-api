@@ -16,37 +16,38 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, refEq}
+import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.mockito.Mockito.verifyNoInteractions
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, LiveRootController, SandboxIncomeController, SandboxRootController}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
-import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
-import utils.{AuthHelper, SpecBase}
-import play.api.http.Status._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import play.api.mvc.ControllerComponents
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
+import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{SandboxIncomeService, ScopesHelper, ScopesService}
+import utils.{AuthHelper, SpecBase}
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar with ScalaFutures {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup extends ScopesConfigHelper {
+
+    val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
     val mockSandboxIncomeService = mock[SandboxIncomeService]
@@ -80,7 +81,7 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
-      val result = await(sandboxRootController.root(matchId)(fakeRequest))
+      val result = await(sandboxRootController.root(matchId)(fakeRequest.withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -106,7 +107,7 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(failed(new MatchNotFoundException))
 
-      val result = await(sandboxRootController.root(matchId)(fakeRequest))
+      val result = await(sandboxRootController.root(matchId)(fakeRequest.withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
 
@@ -119,11 +120,31 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
-      val result = await(sandboxRootController.root(matchId)(fakeRequest))
+      val result = await(sandboxRootController.root(matchId)(fakeRequest.withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
       verifyNoInteractions(mockAuthConnector)
     }
 
+    "throws an exception when CorrelationId is missing" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(successful(matchedCitizen))
+
+      val exception = intercept[BadRequestException](sandboxRootController.root(matchId)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when CorrelationId is Malformed" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(successful(matchedCitizen))
+
+      val exception = intercept[BadRequestException](
+        sandboxRootController.root(matchId)(fakeRequest.withHeaders("CorrelationId" -> "test")))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 }

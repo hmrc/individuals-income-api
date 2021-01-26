@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
-
 import akka.stream.Materializer
 import org.joda.time.{Interval, LocalDate}
 import org.mockito.ArgumentMatchers._
@@ -28,7 +27,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.{EmpRef, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, LiveRootController, SandboxIncomeController, SandboxRootController}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
@@ -48,6 +47,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup extends ScopesConfigHelper {
+
+    val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
     val mockSandboxIncomeService = mock[SandboxIncomeService]
@@ -94,7 +96,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
 
-      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+      val result =
+        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -177,7 +180,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+      val result =
+        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -203,7 +207,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+      val result =
+        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -227,10 +232,34 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+      val result =
+        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
 
+    }
+
+    "throws an exception when missing CorrelationId Header" in new Setup {
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+        .willReturn(successful(Seq.empty))
+
+      val exception =
+        intercept[BadRequestException](liveIncomeController.income(matchId, interval)(FakeRequest()))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when CorrelationId Header is malformed" in new Setup {
+      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+        .willReturn(successful(Seq.empty))
+
+      val exception =
+        intercept[BadRequestException](
+          liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders("CorrelationId" -> "test")))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
     }
 
     "not require bearer token authentication for Sandbox" in new Setup {
@@ -238,7 +267,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockSandboxIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(sandboxIncomeController.income(matchId, interval)(FakeRequest()))
+      val result =
+        await(sandboxIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 

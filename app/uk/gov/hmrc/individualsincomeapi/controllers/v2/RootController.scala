@@ -17,7 +17,6 @@
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
-
 import javax.inject.{Inject, Singleton}
 import play.api.hal.HalLink
 import play.api.libs.json.Json
@@ -26,6 +25,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
+import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.extractCorrelationId
 import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 
@@ -39,6 +39,7 @@ abstract class RootController(
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    extractCorrelationId(request)
     requiresPrivilegedAuthentication(scopeService.getAllScopes) { authScopes =>
       citizenMatchingService.matchCitizen(matchId) map { _: MatchedCitizen =>
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")

@@ -37,6 +37,12 @@ uses:
       (annotations.scope): "assigned"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/root.md
+      headers:
+        CorrelationId:
+          description: A UUID, used for traceability purposes.
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -75,6 +81,12 @@ uses:
       (annotations.scope): "assigned"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/income-sa-request.md
+      headers:
+        CorrelationId:
+          description: A UUID, used for traceability purposes.
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -123,6 +135,12 @@ uses:
       (annotations.scope): "assigned"
       securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
       (annotations.sandboxData): !include sandbox/income-request.md
+      headers:
+        CorrelationId:
+          description: A UUID, used for traceability purposes.
+          type: string
+          required: true
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
       queryParameters:
         matchId:
           description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -171,6 +189,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-additional-information-request.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -219,6 +243,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-employments.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -267,6 +297,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-foreign.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -315,6 +351,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-dividends.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -363,6 +405,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-other.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -411,6 +459,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -459,6 +513,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-pensions-benefits.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -507,6 +567,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-self-employments.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -555,6 +621,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-summary.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -603,6 +675,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-trusts.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -651,6 +729,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-uk-properties.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -699,6 +783,12 @@ uses:
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/income-sa-request-source.md
+        headers:
+          CorrelationId:
+            description: A UUID, used for traceability purposes.
+            type: string
+            required: true
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
             description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
@@ -747,6 +837,12 @@ uses:
           (annotations.scope): "assigned"
           securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
           (annotations.sandboxData): !include sandbox/income-sa-request-further-details.md
+          headers:
+            CorrelationId:
+              description: A UUID, used for traceability purposes.
+              type: string
+              required: true
+              example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
           queryParameters:
             matchId:
               description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
