@@ -59,7 +59,11 @@ class VersioningSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       When("A request to the match citizen endpoint is made with version 2.0 accept header")
-      val response = invokeWithHeaders(s"/sandbox?matchId=$sandboxMatchId", AUTHORIZATION -> authToken, acceptHeaderP2)
+      val response = invokeWithHeaders(
+        s"/sandbox?matchId=$sandboxMatchId",
+        AUTHORIZATION -> authToken,
+        acceptHeaderP2,
+        correlationIdHeader)
 
       Then("The response status should be 200")
       response.code shouldBe OK

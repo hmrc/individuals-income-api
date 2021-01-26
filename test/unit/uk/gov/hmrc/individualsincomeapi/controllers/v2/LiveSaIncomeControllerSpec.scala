@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
-
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
@@ -28,7 +27,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSummaries, SaTrusts, SaUkProperties}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
@@ -46,6 +45,9 @@ class LiveSaIncomeControllerSpec
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup extends ScopesConfigHelper {
+
+    val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
     val mockLiveSaIncomeService = mock[LiveSaIncomeService]
@@ -80,7 +82,7 @@ class LiveSaIncomeControllerSpec
       .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope-1")))))
   }
 
-  "SandboxSaIncomeController.saFootprint" should {
+  "LiveSaIncomeController.saFootprint" should {
 
     "return 200 with the registration information and self assessment returns for the period" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
@@ -88,7 +90,9 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+      val result = await(
+        liveSaIncomeController.saFootprint(matchId, taxYearInterval)(
+          fakeRequest.withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -176,6 +180,7 @@ class LiveSaIncomeControllerSpec
     "return 200 and the links without toTaxYear when it is not passed in the request" in new Setup {
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
+        .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
@@ -266,6 +271,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
+        .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
@@ -275,13 +281,41 @@ class LiveSaIncomeControllerSpec
       status(result) shouldBe NOT_FOUND
     }
 
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFootprint.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFootprint.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
   }
 
-  "SandboxSaIncomeController.employmentsIncome" should {
+  "LiveSaIncomeController.employmentsIncome" should {
 
     "return 200 with the employments income returns for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
@@ -318,6 +352,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
@@ -355,17 +390,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaEmployments.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaEmployments.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.selfEmploymentsIncome" should {
+  "LiveSaIncomeController.selfEmploymentsIncome" should {
 
     "return 200 with the self employments income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
@@ -401,6 +466,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
@@ -438,17 +504,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSelfEmployments.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSelfEmployments.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saReturnsSummary" should {
+  "LiveSaIncomeController.saReturnsSummary" should {
 
     "return 200 with the self tax return summaries for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
@@ -484,6 +580,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
@@ -521,17 +618,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSummaries.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaSummaries.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saTrustsIncome" should {
+  "LiveSaIncomeController.saTrustsIncome" should {
 
     "return 200 with the self tax return trusts for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
@@ -567,6 +694,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
@@ -604,17 +732,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaTrusts.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaTrusts.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saForeignIncome" should {
+  "LiveSaIncomeController.saForeignIncome" should {
 
     "return 200 with the self tax return foreign income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
@@ -650,6 +808,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
@@ -687,17 +846,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaForeignIncomes.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaForeignIncomes.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saPartnershipsIncome" should {
+  "LiveSaIncomeController.saPartnershipsIncome" should {
 
     "return 200 with the self tax return partnerships income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
@@ -733,6 +922,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
@@ -770,17 +960,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPartnerships.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPartnerships.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saPensionsAndStateBenefitsIncome" should {
+  "LiveSaIncomeController.saPensionsAndStateBenefitsIncome" should {
 
     "return 200 with the self tax return pensions and state benefits income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
@@ -817,6 +1037,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
@@ -854,17 +1075,48 @@ class LiveSaIncomeControllerSpec
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
-        await(liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(FakeRequest()))
+        await(
+          liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(
+            FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
   }
 
-  "SandboxSaIncomeController.saInterestsAndDividendsIncome" should {
+  "LiveSaIncomeController.saInterestsAndDividendsIncome" should {
 
     "return 200 with the self tax return interests and dividends income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
@@ -902,6 +1154,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
@@ -942,17 +1195,48 @@ class LiveSaIncomeControllerSpec
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
-        await(liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(FakeRequest()))
+        await(
+          liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(
+            FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
   }
 
-  "SandboxSaIncomeController.saUkPropertiesIncome" should {
+  "LiveSaIncomeController.saUkPropertiesIncome" should {
 
     "return 200 with the UK properties income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
@@ -988,6 +1272,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
@@ -1025,17 +1310,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaUkProperties.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaUkProperties.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saAdditionalInformation" should {
+  "LiveSaIncomeController.saAdditionalInformation" should {
 
     "return 200 with the additional information income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
@@ -1072,6 +1387,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
@@ -1110,17 +1426,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
+
+      val exception = intercept[BadRequestException](
+        liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saOtherIncome" should {
+  "LiveSaIncomeController.saOtherIncome" should {
 
     "return 200 with the other income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
@@ -1156,6 +1502,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
@@ -1192,17 +1539,47 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
     }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
   }
 
-  "SandboxSaIncomeController.saFurtherDetails" should {
+  "LiveSaIncomeController.saFurtherDetails" should {
 
     "return 200 with the other income for the period" in new Setup {
       val fakeRequest =
         FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
@@ -1248,6 +1625,7 @@ class LiveSaIncomeControllerSpec
       val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
       val fakeRequestWithoutToTaxYear =
         FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
 
       given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
@@ -1295,9 +1673,38 @@ class LiveSaIncomeControllerSpec
       given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result = await(liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(FakeRequest()))
+      val result = await(
+        liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+    }
+
+    "throws an exception when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFurtherDetails.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "CorrelationId is required"
+      exception.responseCode shouldBe BAD_REQUEST
+    }
+
+    "throws an exception when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+        .willReturn(successful(SaFurtherDetails.transform(ifSa)))
+
+      val exception =
+        intercept[BadRequestException](liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
+
+      exception.message shouldBe "Malformed CorrelationId"
+      exception.responseCode shouldBe BAD_REQUEST
     }
   }
 }
