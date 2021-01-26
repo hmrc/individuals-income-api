@@ -34,7 +34,6 @@ lazy val microservice =
     .settings(publishingSettings: _*)
     .settings(scalaVersion := "2.12.11")
     .settings(defaultSettings(): _*)
-    .settings(scalafmtOnCompile := true)
     .settings(
       dependencyOverrides ++= AppDependencies.overrides,
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),

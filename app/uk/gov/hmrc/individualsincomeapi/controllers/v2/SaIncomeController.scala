@@ -34,12 +34,11 @@ import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, SaInco
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-sealed abstract class SaIncomeController(
-  saIncomeService: SaIncomeService,
-  scopeService: ScopesService,
-  scopesHelper: ScopesHelper,
-  cc: ControllerComponents)
-    extends CommonController(cc) with PrivilegedAuthentication {
+sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
+                                         scopeService: ScopesService,
+                                         scopesHelper: ScopesHelper,
+                                         cc: ControllerComponents)
+  extends CommonController(cc) with PrivilegedAuthentication {
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
 
@@ -119,8 +118,8 @@ sealed abstract class SaIncomeController(
 
   }
 
-  def saInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] =
-    Action.async { implicit request =>
+  def saInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaInterestsAndDividends")) { authScopes =>
         saIncomeService.fetchInterestAndDividends(matchId, taxYearInterval, authScopes).map { sa =>
           val selfLink =
@@ -133,8 +132,8 @@ sealed abstract class SaIncomeController(
       }.recover(recovery)
     }
 
-  def saPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] =
-    Action.async { implicit request =>
+  def saPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaPensionsAndStateBenefits")) {
         authScopes =>
           saIncomeService.fetchPensionAndStateBenefits(matchId, taxYearInterval, authScopes).map { sa =>

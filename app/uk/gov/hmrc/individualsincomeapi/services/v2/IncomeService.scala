@@ -36,9 +36,8 @@ trait IncomeService {
 
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
-  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[Seq[Income]]
+  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+                          (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]]
 
   def endpoints =
     List("incomePaye")
@@ -55,9 +54,8 @@ class LiveIncomeService @Inject()(
   scopesHelper: ScopesHelper)
     extends IncomeService {
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[Seq[Income]] =
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+                                   (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       payeIncome <- cache.get(
@@ -94,9 +92,8 @@ class SandboxIncomeService extends IncomeService {
 
   }
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[Seq[Income]] =
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+                                   (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payeIncome) =>
         successful(
