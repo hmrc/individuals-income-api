@@ -149,7 +149,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       ApiIfFailureAuditRequest(
         extractCorrelationId(request),
         None,
-        None,
+        Some(matchId),
         request,
         url
       )
