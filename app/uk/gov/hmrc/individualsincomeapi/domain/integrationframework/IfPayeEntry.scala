@@ -379,6 +379,7 @@ object IfPayeEntry {
       paye.paidHoursWorked,
       paye.taxCode,
       paye.taxablePayToDate,
+      paye.taxablePay,
       paye.totalTaxToDate,
       paye.taxDeductedOrRefunded,
       paye.dednsFromNetPay,

@@ -281,6 +281,7 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
                |        "paidHoursWorked":"36",
                |        "taxCode":"K971",
                |        "taxablePayToDate":19157.5,
+               |        "taxablePay":16533.95,
                |        "totalTaxToDate":3095.89,
                |        "taxDeductedOrRefunded":159228.49,
                |        "dednsFromNetPay":198035.8,

@@ -32,6 +32,7 @@ case class Income(
   paidHoursWorked: Option[String],
   taxCode: Option[String],
   taxablePayToDate: Option[Double],
+  taxablePay: Option[Double],
   totalTaxToDate: Option[Double],
   taxDeductedOrRefunded: Option[Double],
   dednsFromNetPay: Option[Double],

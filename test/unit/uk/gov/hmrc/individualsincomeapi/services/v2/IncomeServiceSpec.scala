@@ -171,6 +171,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           None,
           None,
           None,
+          None,
           None),
         Income(
           None,
@@ -181,6 +182,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           None,
           None,
           Some("2006-02-27"),
+          None,
           None,
           None,
           None,
