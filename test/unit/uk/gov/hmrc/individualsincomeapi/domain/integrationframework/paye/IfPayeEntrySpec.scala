@@ -31,6 +31,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |{
           |  "taxCode":"K971",
           |  "paidHoursWorked":"36",
+          |  "taxablePay":16533.95,
           |  "taxablePayToDate":19157.5,
           |  "totalTaxToDate":3095.89,
           |  "taxDeductedOrRefunded":159228.49,
@@ -43,6 +44,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |  "employerPayeRef":"345/34678",
           |  "paymentDate":"2006-02-27",
           |  "taxablePay":16533.95,
+          |  "taxablePayToDate":19157.5,
           |  "taxYear":"18-19",
           |  "monthlyPeriodNumber":"3",
           |  "weeklyPeriodNumber":"2",
@@ -137,6 +139,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
+          |    "taxablePay":16533.95,
           |    "taxablePayToDate":19157.5,
           |    "totalTaxToDate":3095.89,
           |    "taxDeductedOrRefunded":159228.49,
@@ -212,6 +215,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
+          |    "taxablePay":16533.95,
           |    "taxablePayToDate":19157.5,
           |    "totalTaxToDate":3095.89,
           |    "taxDeductedOrRefunded":159228.49,
@@ -274,8 +278,8 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |      "paymentDate": "2006-02-27",
           |      "paidHoursWorked": "36",
           |      "taxablePayToDate": 9.99999999999e9,
-          |      "totalTaxToDate": 9.99999999999e9,
           |      "taxablePay": 9.99999999999e9,
+          |      "totalTaxToDate": 9.99999999999e9,
           |      "taxDeductedOrRefunded": 159228.49
           |    }
           |  ]
@@ -332,6 +336,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
+          |    "taxablePay":16533.95,
           |    "taxablePayToDate":19157.5,
           |    "totalTaxToDate":3095.89,
           |    "taxDeductedOrRefunded":159228.49,
@@ -400,6 +405,7 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |    "paymentDate":"2006-02-27",
           |    "paidHoursWorked":"36",
           |    "taxCode":"K971",
+          |    "taxablePay":16533.95,
           |    "taxablePayToDate":19157.5,
           |    "totalTaxToDate":3095.89,
           |    "taxDeductedOrRefunded":159228.49,
