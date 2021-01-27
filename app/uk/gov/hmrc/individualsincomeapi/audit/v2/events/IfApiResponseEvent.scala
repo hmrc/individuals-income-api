@@ -19,7 +19,7 @@ package uk.gov.hmrc.individualsincomeapi.audit.v2.events
 import javax.inject.Inject
 import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
 
-class IfApiResponseEvent @Inject()(override val httpAuditEvent: HttpExtendedAuditEvent)
+class IfApiResponseEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent)
     extends ResponseEventBase(httpAuditEvent) {
 
   override def auditType = "IfApiResponseEvent"

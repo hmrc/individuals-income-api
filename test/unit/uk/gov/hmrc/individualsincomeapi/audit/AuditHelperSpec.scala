@@ -28,6 +28,7 @@ import org.mockito.Mockito.{times, verify}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.{ArgumentCaptor, Mockito}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.individualsincomeapi.audit.v2.events.{ApiResponseEvent, IfApiFailureEvent, IfApiResponseEvent}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiAuditRequest, ApiIfAuditRequest, ApiIfFailureAuditRequest}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
@@ -49,7 +50,11 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar {
   val auditConnector = mock[AuditConnector]
   val httpExtendedAuditEvent = new DefaultHttpExtendedAuditEvent("individuals-income-api")
 
-  val auditHelper = AuditHelper(auditConnector, httpExtendedAuditEvent)
+  val apiResponseEvent   = new ApiResponseEvent(httpExtendedAuditEvent)
+  val ifApiResponseEvent = new IfApiResponseEvent(httpExtendedAuditEvent)
+  val ifApiFailureEvent  = new IfApiFailureEvent(httpExtendedAuditEvent)
+
+  val auditHelper = new AuditHelper(auditConnector, apiResponseEvent, ifApiResponseEvent, ifApiFailureEvent)
 
   "Auth helper" should {
 

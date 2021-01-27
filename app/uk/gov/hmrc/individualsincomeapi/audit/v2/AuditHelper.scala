@@ -16,11 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2
 
-import java.util.UUID
-
 import javax.inject.Inject
-import play.api.libs.json.JsValue
-import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.events.{ApiResponseEvent, IfApiFailureEvent, IfApiResponseEvent}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiAuditRequest, ApiIfAuditRequest, ApiIfFailureAuditRequest}
@@ -28,14 +24,15 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.ExecutionContext
 
-case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAuditEvent: HttpExtendedAuditEvent)(
-  implicit ec: ExecutionContext) {
+class AuditHelper @Inject()(auditConnector: AuditConnector,
+                                 apiResponseEvent: ApiResponseEvent,
+                                 ifApiResponseEvent: IfApiResponseEvent,
+                                 ifApiFailureEvent: IfApiFailureEvent)
+                                (implicit ec: ExecutionContext) {
 
   def auditApiResponse(apiAuditRequest: ApiAuditRequest)(implicit hc: HeaderCarrier) =
     auditConnector.sendExtendedEvent(
-      new ApiResponseEvent(
-        httpExtendedAuditEvent
-      ).apply(
+      apiResponseEvent(
         apiAuditRequest.correlationId,
         apiAuditRequest.scopes,
         apiAuditRequest.matchId,
@@ -47,9 +44,7 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
 
   def auditIfApiResponse(apiIfAuditRequest: ApiIfAuditRequest)(implicit hc: HeaderCarrier) =
     auditConnector.sendExtendedEvent(
-      new IfApiResponseEvent(
-        httpExtendedAuditEvent
-      ).apply(
+    ifApiResponseEvent(
         apiIfAuditRequest.correlationId,
         apiIfAuditRequest.scopes,
         apiIfAuditRequest.matchId,
@@ -61,9 +56,7 @@ case class AuditHelper @Inject()(auditConnector: AuditConnector, httpExtendedAud
 
   def auditIfApiFailure(apiIfFailedAuditRequest: ApiIfFailureAuditRequest, msg: String)(implicit hc: HeaderCarrier) =
     auditConnector.sendExtendedEvent(
-      new IfApiFailureEvent(
-        httpExtendedAuditEvent
-      ).apply(
+      ifApiFailureEvent(
         apiIfFailedAuditRequest.correlationId,
         apiIfFailedAuditRequest.scopes,
         apiIfFailedAuditRequest.matchId,
