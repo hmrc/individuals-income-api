@@ -109,15 +109,16 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
   def saPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaPartnerships")) { authScopes =>
-        saIncomeService.fetchPartnerships(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaPartnerships")) {
+        authScopes =>
+          saIncomeService.fetchPartnerships(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
 
   }
@@ -125,19 +126,21 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
   def saInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaInterestsAndDividends")) { authScopes =>
-        saIncomeService.fetchInterestAndDividends(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaInterestsAndDividends")) {
+        authScopes =>
+          saIncomeService.fetchInterestAndDividends(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
-    }
+  }
 
-  def saPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saPensionsAndStateBenefitsIncome(matchId: UUID,
+                                       taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaPensionsAndStateBenefits")) {
@@ -154,20 +157,21 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           }
       }.recover(recovery)
 
-    }
+  }
 
   def saUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaUkProperties")) { authScopes =>
-        saIncomeService.fetchUkProperties(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaUkProperties")) {
+        authScopes =>
+          saIncomeService.fetchUkProperties(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
 
   }
@@ -175,15 +179,16 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
   def saAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaAdditionalInformation")) { authScopes =>
-        saIncomeService.fetchAdditionalInformation(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaAdditionalInformation")) {
+        authScopes =>
+          saIncomeService.fetchAdditionalInformation(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
 
   }
@@ -223,15 +228,16 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
   def employmentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaEmployments")) { authScopes =>
-        saIncomeService.fetchEmployments(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaEmployments")) {
+        authScopes =>
+          saIncomeService.fetchEmployments(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
 
   }
@@ -239,15 +245,16 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
   def selfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaSelfEmployments")) { authScopes =>
-        saIncomeService.fetchSelfEmployments(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaSelfEmployments")) {
+        authScopes =>
+          saIncomeService.fetchSelfEmployments(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
 
   }
@@ -255,15 +262,16 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
   def saFurtherDetails(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaFurtherDetails")) { authScopes =>
-        saIncomeService.fetchFurtherDetails(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink =
-            HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/further-details?matchId=$matchId"))
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomeSaFurtherDetails")) {
+        authScopes =>
+          saIncomeService.fetchFurtherDetails(matchId, taxYearInterval, authScopes).map { sa =>
+            val selfLink =
+              HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/further-details?matchId=$matchId"))
 
-          val saJsObject = obj("selfAssessment" -> sa)
+            val saJsObject = obj("selfAssessment" -> sa)
 
-          Ok(Json.toJson(state(saJsObject) ++ selfLink))
-        }
+            Ok(Json.toJson(state(saJsObject) ++ selfLink))
+          }
       }.recover(recovery)
 
   }

@@ -51,7 +51,9 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
   )
 
   def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String], matchId: String)
-                     (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
+                     (implicit hc: HeaderCarrier,
+                      request: RequestHeader,
+                      ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
 
     val endpoint = "IfConnector::fetchPayeIncome"
 
@@ -65,7 +67,9 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String], matchId: String)
-                               (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
+                               (implicit hc: HeaderCarrier,
+                                request: RequestHeader,
+                                ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
 
     val endpoint = "IfConnector::fetchSelfAssessmentIncome"
 

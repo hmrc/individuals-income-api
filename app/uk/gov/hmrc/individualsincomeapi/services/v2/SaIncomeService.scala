@@ -69,13 +69,15 @@ trait SaIncomeService {
                                (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaInterestAndDividends]
 
   def fetchPensionAndStateBenefits(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                  (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaPensionAndStateBenefits]
+                                  (implicit hc: HeaderCarrier,
+                                   request: RequestHeader): Future[SaPensionAndStateBenefits]
 
   def fetchUkProperties(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
                        (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaUkProperties]
 
   def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaAdditionalInformationRecords]
+                                (implicit hc: HeaderCarrier,
+                                 request: RequestHeader): Future[SaAdditionalInformationRecords]
 
   def fetchOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
                       (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaOtherIncomeRecords]
@@ -162,14 +164,16 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
     } yield SaPartnerships.transform(ifSaEntries)
 
   override def fetchInterestAndDividends(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                        (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaInterestAndDividends] =
+                                        (implicit hc: HeaderCarrier,
+                                         request: RequestHeader): Future[SaInterestAndDividends] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaInterestAndDividends.transform(ifSaEntries)
 
   override def fetchPensionAndStateBenefits(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                           (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaPensionAndStateBenefits] =
+                                           (implicit hc: HeaderCarrier,
+                                            request: RequestHeader): Future[SaPensionAndStateBenefits] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
@@ -183,7 +187,8 @@ class LiveSaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiCon
     } yield SaUkProperties.transform(ifSaEntries)
 
   override def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                         (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaAdditionalInformationRecords] =
+                                         (implicit hc: HeaderCarrier,
+                                          request: RequestHeader): Future[SaAdditionalInformationRecords] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
@@ -265,13 +270,15 @@ class SandboxSaIncomeService @Inject()(implicit ec: ExecutionContext) extends Sa
     )
 
   override def fetchInterestAndDividends(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                        (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaInterestAndDividends] =
+                                        (implicit hc: HeaderCarrier,
+                                         request: RequestHeader): Future[SaInterestAndDividends] =
     fetchSaIncome(matchId, taxYearInterval, scopes).map(
       ifEntry => SaInterestAndDividends.transform(ifEntry)
     )
 
   override def fetchPensionAndStateBenefits(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                           (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaPensionAndStateBenefits] =
+                                           (implicit hc: HeaderCarrier,
+                                            request: RequestHeader): Future[SaPensionAndStateBenefits] =
     fetchSaIncome(matchId, taxYearInterval, scopes).map(
       ifEntry => SaPensionAndStateBenefits.transform(ifEntry)
     )
@@ -283,7 +290,8 @@ class SandboxSaIncomeService @Inject()(implicit ec: ExecutionContext) extends Sa
     )
 
   override def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
-                                         (implicit hc: HeaderCarrier, request: RequestHeader): Future[SaAdditionalInformationRecords] =
+                                         (implicit hc: HeaderCarrier,
+                                          request: RequestHeader): Future[SaAdditionalInformationRecords] =
     fetchSaIncome(matchId, taxYearInterval, scopes).map(
       ifEntry => SaAdditionalInformationRecords.transform(ifEntry)
     )
