@@ -16,44 +16,52 @@
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
-        <td>Missing matchId</td>
-        <td>matchId query parameter missing</td>
-        <td><p>400 (Bad Request)</p>
-        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
+        <td><p>Missing matchId</p></td>
+        <td><p>matchId query parameter missing</p></td>
+        <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
         </td>
     </tr>
     <tr>
-        <td>Missing fromDate</td>
-        <td>fromDate query parameter missing</td>
-        <td><p>400 (Bad Request)</p>
-        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate is required&quot; }</p>
+        <td><p>Missing fromDate</p></td>
+        <td><p>fromDate query parameter missing</p></td>
+        <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate is required&quot; }</p>
         </td>
     </tr>
     <tr>
          <td><p>toDate earlier than fromDate</p></td>
          <td><p>Any valid dates where toDate is earlier than fromDate</p>
          <p>e.g. fromDate=2017-01-01 toDate=2016-01-01</p></td>
-         <td><p>400 (Bad Request)</p>
-         <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Invalid time period requested&quot; }</p></td>
-    </tr>
-    <tr>
-         <td>From date requested is earlier than available data</td>
          <td>
-           <p>fromDate earlier than 31st March 2013</p>
-           <p>e.g. fromDate=2013-02-28</p>
-         </td>
-         <td>
-           <p>400 (Bad Request)</p>
-           <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate earlier than 31st March 2013&quot; }</p>
-         </td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Invalid time period requested&quot; }</p>
+        </td>
     </tr>
     <tr>
          <td><p>Invalid date format</p></td>
-         <td><p>Any date that is not ISO 8601 Extended format</p>
-         <p>e.g. 20170101</p></td>
-         <td><p>400 (Bad Request)</p>
-         <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate: invalid date format&quot; }</p>
-         <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toDate: invalid date format&quot; }</p></td>
+         <td>
+            <p>Any date that is not ISO 8601 Extended format</p>
+            <p>e.g. 20170101</p>
+         </td>
+         <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate: invalid date format&quot; }</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toDate: invalid date format&quot; }</p>
+         </td>
+    </tr>
+         <td><p>fromDate earlier than the current tax year minus 6</p></td>
+         <td>
+            <p>For example</p>
+            <p>fromDate=2014-01-01</p>
+         </td>
+         <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate is earlier than maximum allowed&quot; }</p>
+         </td>
+    <tr>
     </tr>
     <tr>
         <td><p>Incorrect matchId</p></td>

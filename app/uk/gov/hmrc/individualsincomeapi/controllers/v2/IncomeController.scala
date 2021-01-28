@@ -40,7 +40,7 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     {
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomePaye")) { authScopes =>
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("paye")) { authScopes =>
         incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
           val selfLink =
             HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
