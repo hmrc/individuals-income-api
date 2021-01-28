@@ -9,12 +9,12 @@
       "properties": {
         "self": {
           "type": "object",
-          "description": "The URI to this resource",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -28,33 +28,33 @@
     },
     "selfAssessment": {
       "type": "object",
-      "description": "The individual’s Self Assessment additional information (SA101) for a requested time period",
+      "description": "Self Assessment tax return history for a requested time period.",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of Self Assessment tax returns in the requested period",
+          "description": "The list of Self Assessment tax returns in the requested time period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The tax year. Tax year in format YYYY-YY",
                 "example": "2018-19"
               },
               "additionalInformation": {
                 "type": "array",
-                "description": "Additional information for the requested period",
+                "description": "Additional Self Assessment information for the requested period.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "gainsOnLifePolicies": {
                       "type": "number",
-                      "description": "Gains on life policies",
+                      "description": "The gains on life policies.",
                       "example": "44.54"
                     },
                     "sharesOptionsIncome": {
                       "type": "number",
-                      "description": "Income from shares options",
+                      "description": "The income from shares options.",
                       "example": "52.34"
                     }
                   },
