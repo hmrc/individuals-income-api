@@ -38,7 +38,7 @@
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "The tax year. Tax year in format YYYY-YY",
+                "description": "The tax year. Tax year in the format YYYY-YY",
                 "example": "2018-19"
               },
               "summary": {
