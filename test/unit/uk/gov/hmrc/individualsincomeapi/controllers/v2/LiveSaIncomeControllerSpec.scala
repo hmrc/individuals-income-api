@@ -87,7 +87,7 @@ class LiveSaIncomeControllerSpec
     "return 200 with the registration information and self assessment returns for the period" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val result = await(
@@ -182,7 +182,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequestWithoutToTaxYear = FakeRequest("GET", s"/individuals/income/sa?$requestParametersWithoutToTaxYear")
         .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -273,7 +273,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
         .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
@@ -284,7 +284,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val exception =
@@ -298,7 +298,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val exception =
@@ -317,7 +317,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
       val result =
@@ -354,7 +354,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/employments?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
       val result =
@@ -387,7 +387,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -400,7 +400,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
       val exception =
@@ -414,7 +414,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
       val exception =
@@ -432,7 +432,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
       val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -468,7 +468,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
       val result =
@@ -501,7 +501,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -514,7 +514,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -528,7 +528,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -546,7 +546,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
@@ -582,7 +582,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/summary?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
       val result =
@@ -615,7 +615,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -628,7 +628,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
       val exception =
@@ -642,7 +642,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
       val exception =
@@ -660,7 +660,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -696,7 +696,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
       val result =
@@ -729,7 +729,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -742,7 +742,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
       val exception =
@@ -756,7 +756,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
       val exception =
@@ -774,7 +774,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
@@ -810,7 +810,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
       val result =
@@ -843,7 +843,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -856,7 +856,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
       val exception =
@@ -870,7 +870,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
       val exception =
@@ -888,7 +888,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -924,7 +924,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
       val result =
@@ -957,7 +957,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -970,7 +970,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -984,7 +984,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1002,7 +1002,9 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val result =
@@ -1039,7 +1041,9 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val result = await(
@@ -1071,7 +1075,9 @@ class LiveSaIncomeControllerSpec
     }
 
     "return 404 for an invalid matchId" in new Setup {
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -1085,7 +1091,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1099,7 +1105,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1118,7 +1124,8 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
@@ -1156,7 +1163,8 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/interests-and-dividends?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val result = await(
@@ -1191,7 +1199,8 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -1205,7 +1214,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1219,7 +1228,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1238,7 +1247,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
@@ -1274,7 +1283,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
       val result =
@@ -1307,7 +1316,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -1320,7 +1329,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1334,7 +1343,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1352,7 +1361,8 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
@@ -1389,7 +1399,8 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val result =
@@ -1423,7 +1434,8 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(
+        mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -1436,7 +1448,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1450,7 +1462,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val exception = intercept[BadRequestException](
@@ -1468,7 +1480,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
@@ -1504,7 +1516,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/other?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
@@ -1536,7 +1548,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -1549,7 +1561,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
       val exception =
@@ -1563,7 +1575,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
       val exception =
@@ -1581,7 +1593,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
       val result = await(liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
@@ -1627,7 +1639,7 @@ class LiveSaIncomeControllerSpec
         FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParametersWithoutToTaxYear")
           .withHeaders(sampleCorrelationIdHeader)
 
-      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
       val result =
@@ -1670,7 +1682,7 @@ class LiveSaIncomeControllerSpec
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result = await(
@@ -1683,7 +1695,7 @@ class LiveSaIncomeControllerSpec
     "throws an exception when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
       val exception =
@@ -1697,7 +1709,7 @@ class LiveSaIncomeControllerSpec
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any()))
+      given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
       val exception =

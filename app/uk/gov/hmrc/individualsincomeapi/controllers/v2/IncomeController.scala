@@ -35,10 +35,10 @@ import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.extractCorrelati
 import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class IncomeController(incomeService: IncomeService, scopeService: ScopesService, cc: ControllerComponents)
-    extends CommonController(cc) with PrivilegedAuthentication {
+  extends CommonController(cc) with PrivilegedAuthentication {
 
-  def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
-    {
+  def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async {
+    implicit request =>
       extractCorrelationId(request)
       requiresPrivilegedAuthentication(scopeService.getEndPointScopes("incomePaye")) { authScopes =>
         incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
@@ -46,12 +46,11 @@ abstract class IncomeController(incomeService: IncomeService, scopeService: Scop
             HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
 
           val incomeJsObject = Json.obj("income" -> toJson(paye))
-          val payeJsObject = obj("paye"          -> incomeJsObject)
+          val payeJsObject = obj("paye" -> incomeJsObject)
 
           Ok(Json.toJson(state(payeJsObject) ++ selfLink))
         }
       }.recover(recovery)
-    }
   }
 }
 
