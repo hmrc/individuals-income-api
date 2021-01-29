@@ -28,6 +28,7 @@
     },
     "paye": {
       "type": "object",
+      "description": "PAYE income details per employment for an individual for the requested time period.",
       "properties": {
         "income": {
           "type": "array",

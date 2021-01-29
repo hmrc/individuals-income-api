@@ -88,11 +88,11 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       jsonBodyOf(result) shouldBe
         Json.parse(s"""{
                       |  "_links": {
-                      |    "incomeSa": {
+                      |    "sa": {
                       |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
                       |      "title": "Get an individual's income sa data"
                       |    },
-                      |    "incomePaye": {
+                      |    "paye": {
                       |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
                       |      "title": "Get an individual's income paye data"
                       |    },

@@ -33,20 +33,20 @@ trait SaIncomeService {
 
   def endpoints =
     List(
-      "incomeSa",
-      "incomeSaSummary",
-      "incomeSaTrusts",
-      "incomeSaForeign",
-      "incomeSaPartnerships",
-      "incomeSaInterestsAndDividends",
-      "incomeSaPensionsAndStateBenefits",
-      "incomeSaUkProperties",
-      "incomeSaAdditionalInformation",
-      "incomeSaOther",
-      "incomeSaSource",
-      "incomeSaEmployments",
-      "incomeSaSelfEmployments",
-      "incomeSaFurtherDetails"
+      "sa",
+      "summary",
+      "trusts",
+      "foreign",
+      "partnerships",
+      "interestsAndDividends",
+      "pensionsAndStateBenefits",
+      "ukProperties",
+      "additionalInformation",
+      "other",
+      "source",
+      "employments",
+      "selfEmployments",
+      "furtherDetails"
     )
 
   def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(

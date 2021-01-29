@@ -18,7 +18,7 @@
             },
             "title": {
               "type": "string",
-              "description": "Get an individual's income data per employment"
+              "description": "Get an individual's PAYE income data per employment"
             }
           },
           "required": ["href", "title"]

@@ -46,58 +46,58 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
           .parse(
             s"""{
                |  "_links": {
-               |    "incomeSaUkProperties": {
+               |    "ukProperties": {
                |      "href": "individuals/income/sa/uk-properties?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA UK properties data"
                |    },
-               |    "incomeSaTrusts": {
+               |    "trusts": {
                |      "href": "individuals/income/sa/trusts?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA trusts data"
                |    },
-               |    "incomeSaSelfEmployments": {
+               |    "selfEmployments": {
                |      "href": "individuals/income/sa/self-employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA self employments data"
                |    },
-               |    "incomeSaPartnerships": {
+               |    "partnerships": {
                |      "href": "individuals/income/sa/partnerships?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA partnerships data"
                |    },
                |    "self": {
                |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"
                |    },
-               |    "incomeSaInterestsAndDividends": {
+               |    "interestsAndDividends": {
                |      "href": "individuals/income/sa/interests-and-dividends?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA interest and dividends data"
                |    },
-               |    "incomeSaFurtherDetails": {
+               |    "furtherDetails": {
                |      "href": "individuals/income/sa/further-details?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA further details data"
                |    },
-               |    "incomeSaAdditionalInformation": {
+               |    "additionalInformation": {
                |      "href": "individuals/income/sa/additional-information?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA additional information data"
                |    },
-               |    "incomeSaOther": {
+               |    "other": {
                |      "href": "individuals/income/sa/other?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA other data"
                |    },
-               |    "incomeSaForeign": {
+               |    "foreign": {
                |      "href": "individuals/income/sa/foreign?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA foreign income data"
                |    },
-               |    "incomeSaSummary": {
+               |    "summary": {
                |      "href": "individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA summary data"
                |    },
-               |    "incomeSaEmployments": {
+               |    "employments": {
                |      "href": "individuals/income/sa/employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA employments data"
                |    },
-               |    "incomeSaPensionsAndStateBenefits": {
+               |    "pensionsAndStateBenefits": {
                |      "href": "individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA pensions and state benefits data"
                |    },
-               |    "incomeSaSource": {
+               |    "source": {
                |      "href": "/individuals/income/sa/source?matchId=$matchId{&fromTaxYear,toTaxYear}",
                |      "title": "Get an individual's SA source data"
                |    }
