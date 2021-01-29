@@ -14,7 +14,7 @@
             "href": {
               "type": "string",
               "description": "The URL of the endpoint",
-              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -28,59 +28,61 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "Self Assessment tax return history for a requested time period.",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of Self Assessment tax returns in the requested period",
+          "description": "The list of Self Assessment tax returns in the requested time period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The tax year. Tax year in the format YYYY-YY",
                 "example": "2018-19"
               },
               "sources": {
                 "type": "array",
-                "description": "Description and address for each income source, if known",
+                "description": "A description and address for each income source, if known.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "businessDescription": {
                       "type": "string",
-                      "description": "The nature of the main business activity relating to the SA Return"
+                      "description": "A description of the main business activity relating to the Self Assessment tax return."
                     },
                     "businessAddress": {
                       "type": "object",
                       "properties": {
                         "line1": {
                           "type": "string",
-                          "description": "Address line one"
+                          "description": "Address line 1."
                         },
                         "line2": {
                           "type": "string",
-                          "description": "Address line two"
+                          "description": "Address line 2."
                         },
                         "line3": {
                           "type": "string",
-                          "description": "Address line three"
+                          "description": "Address line 3."
                         },
                         "line4": {
                           "type": "string",
-                          "description": "Address line four"
+                          "description": "Address line 4."
                         },
                         "line5": {
                           "type": "string",
-                          "description": "Address line five"
+                          "description": "Address line 5."
                         },
                         "postalCode": {
                           "type": "string",
-                          "description": "Postcode"
+                          "description": "The postcode for the address."
                         }
                       }
                     },
                     "telephoneNumber": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The business telephone number. "
                     }
                   }
                 }
