@@ -41,7 +41,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -121,7 +121,6 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
   }
 
