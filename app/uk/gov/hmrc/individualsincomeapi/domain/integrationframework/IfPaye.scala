@@ -22,8 +22,8 @@ case class IfPaye(paye: Seq[IfPayeEntry])
 
 object IfPaye {
 
-  val minValue = -9999999999.99
-  val maxValue = 9999999999.99
+  val minValue = -999999999.99
+  val maxValue = 999999999.99
   val payeWholeUnitsPaymentTypeMinValue = -99999
   val payeWholeUnitsPaymentTypeMaxValue = 99999
   val payeWholeUnitsPositivePaymentTypeMinValue = 0
