@@ -239,7 +239,7 @@ sealed abstract class SaIncomeController(
   def selfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
       extractCorrelationId(request)
-      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("employments")) { authScopes =>
+      requiresPrivilegedAuthentication(scopeService.getEndPointScopes("selfEmployments")) { authScopes =>
         saIncomeService.fetchSelfEmployments(matchId, taxYearInterval, authScopes).map { sa =>
           val selfLink =
             HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))

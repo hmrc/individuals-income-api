@@ -46,8 +46,6 @@ abstract class RootController(
         val allowedList = Some(List("sa", "paye"))
         val excludeList = Some(List())
 
-        println(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList))
-
         Ok(Json.toJson(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList) ++ selfLink))
       }
     }.recover(recovery)

@@ -107,7 +107,7 @@ class LiveSaIncomeControllerSpec
            |      "href": "/individuals/income/sa/trusts?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa trusts data"
            |    },
-           |    "employments": {
+           |    "selfEmployments": {
            |      "href": "/individuals/income/sa/self-employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's self-employments sa data"
            |    },
@@ -153,10 +153,6 @@ class LiveSaIncomeControllerSpec
            |    "source": {
            |      "href": "/individuals/income/sa/source?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's source sa data"
-           |    },
-           |    "selfEmployments": {
-           |      "href": "/individuals/income/sa/self-employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
-           |      "title": "Get an individual's self-employments sa data"
            |    }
            |  },
            |  "selfAssessment": {
