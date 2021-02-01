@@ -20,6 +20,7 @@ import java.util.UUID
 
 import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
@@ -35,8 +36,8 @@ trait IncomeService {
 
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
-  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[Seq[Income]]
+  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+                          (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]]
 
   def endpoints =
     List("paye")
@@ -53,8 +54,8 @@ class LiveIncomeService @Inject()(
   scopesHelper: ScopesHelper)
     extends IncomeService {
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[Seq[Income]] =
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+                                   (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       payeIncome <- cache.get(
@@ -63,7 +64,8 @@ class LiveIncomeService @Inject()(
                        ifConnector.fetchPayeIncome(
                          ninoMatch.nino,
                          interval,
-                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty)
+                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty),
+                         matchId.toString
                        )
                      )
                    )
@@ -90,8 +92,8 @@ class SandboxIncomeService extends IncomeService {
 
   }
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier): Future[Seq[Income]] =
+  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+                                   (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payeIncome) =>
         successful(

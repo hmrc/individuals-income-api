@@ -277,10 +277,10 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
           |      "monthlyPeriodNumber": "3",
           |      "paymentDate": "2006-02-27",
           |      "paidHoursWorked": "36",
-          |      "taxablePayToDate": 9.99999999999e9,
-          |      "taxablePay": 9.99999999999e9,
-          |      "totalTaxToDate": 9.99999999999e9,
-          |      "taxDeductedOrRefunded": 159228.49
+          |      "taxablePayToDate": 9.9999999999E8,
+          |      "taxablePay": 9.9999999999E8,
+          |      "totalTaxToDate": 9.9999999999E8,
+          |      "taxDeductedOrRefunded": 9.9999999999E8
           |    }
           |  ]
           |}""".stripMargin
@@ -292,16 +292,16 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
         """{
           |  "paye": [
           |    {
-          |      "taxYear": "18-19",
-          |      "payFrequency": "W4",
-          |      "weeklyPeriodNumber": "2",
-          |      "monthlyPeriodNumber": "3",
-          |      "paymentDate": "2006-02-27",
           |      "paidHoursWorked": "36",
-          |      "taxablePayToDate": 9999999999.99,
-          |      "totalTaxToDate": 9999999999.99,
-          |      "taxablePay": 9999999999.99,
-          |      "taxDeductedOrRefunded": 159228.49
+          |      "taxablePayToDate": 999999999.99,
+          |      "totalTaxToDate": 999999999.99,
+          |      "taxDeductedOrRefunded": 999999999.99,
+          |      "paymentDate": "2006-02-27",
+          |      "taxablePay": 999999999.99,
+          |      "taxYear": "18-19",
+          |      "monthlyPeriodNumber": "3",
+          |      "weeklyPeriodNumber": "2",
+          |      "payFrequency": "W4"
           |    }
           |  ]
           |}""".stripMargin
