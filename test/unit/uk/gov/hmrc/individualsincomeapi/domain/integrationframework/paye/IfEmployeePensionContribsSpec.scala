@@ -31,10 +31,10 @@ class IfEmployeePensionContribsSpec extends WordSpec with Matchers {
   )
 
   val invalidEmployeePensionContribs = IfEmployeePensionContribs(
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1)
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1)
   )
 
   "IfEmployeePensionContribs" should {

@@ -108,12 +108,12 @@
               },
               "taxDeductedOrRefunded": {
                 "type": "number",
-                "description": "Value of tax deducted or refunded from this payment in the range -9999999999.99 to 9999999999.99",
+                "description": "Value of tax deducted or refunded from this payment in the range -999999999.99 to 999999999.99",
                 "example": "159228.45"
               },
               "dednsFromNetPay": {
                 "type": "number",
-                "description": "Value of deductions from net pay in pay period in the range -9999999999.99 to 9999999999.99",
+                "description": "Value of deductions from net pay in pay period in the range -999999999.99 to 999999999.99",
                 "example": "159228.45"
               },
               "employeePensionContribs": {

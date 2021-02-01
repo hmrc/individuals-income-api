@@ -31,10 +31,10 @@ class IfGrossEarningsForNicsSpec extends WordSpec with Matchers {
   )
 
   val invalidGrossEarningsForNics = IfGrossEarningsForNics(
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1)
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1)
   )
 
   "IfGrossEarningsForNics" should {

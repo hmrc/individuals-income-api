@@ -35,14 +35,14 @@ class IfEmployeeNicsSpec extends WordSpec with Matchers {
   )
 
   val invalidEmployeeNics = IfEmployeeNics(
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1),
-    Some(9999999999.99 + 1)
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1),
+    Some(999999999.99 + 1)
   )
 
   "IfEmployeeNics" should {
