@@ -14,7 +14,7 @@
             "href": {
               "type": "string",
               "description": "The URL of the endpoint",
-              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20"
             }
           },
           "required": [
