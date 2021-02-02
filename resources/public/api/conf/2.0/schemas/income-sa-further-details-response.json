@@ -14,7 +14,7 @@
             "href": {
               "type": "string",
               "description": "The URL of the endpoint",
-              "example": "/individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20"
             }
           },
           "required": [
@@ -28,42 +28,43 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "Self Assessment tax return history for a requested time period.",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of Self Assessment tax returns in the requested period",
+          "description": "The list of Self Assessment tax returns in the requested time period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The tax year. Tax year in the format YYYY-YY",
                 "example": "2018-19"
               },
               "furtherDetails": {
                 "type": "array",
-                "description": "Further details for income from Self Assessment for the requested period",
+                "description": "Further details for income from Self Assessment for an individual for the requested time period.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "busStartDate": {
-                      "description": "Business start date in the format YYYY-MM-DD",
+                      "description": "The start date for the business. Date in the format YYYY-MM-DD",
                       "type": "string",
                       "format": "date",
-                      "example": "2020-08-18"
+                      "example": "2019-08-18"
                     },
                     "busEndDate": {
-                      "description": "Business end date in the format YYYY-MM-DD",
+                      "description": "The end date for the business. Date in the format YYYY-MM-DD",
                       "type": "string",
                       "example": "2020-12-01"
                     },
                     "totalTaxPaid": {
-                      "description": "Total tax paid in the range -99999999999.99 to 99999999999.99",
+                      "description": "The total tax paid. Amount in the range of: -99999999999.99 to 99999999999.99",
                       "type": "number",
                       "example": "456543.99"
                     },
                     "totalNIC": {
-                      "description": "Total national insurance contributions paid in the range -99999999999.99 to 99999999999.99",
+                      "description": "Total National Insurance contributions paid. Amount in the range -99999999999.99 to 99999999999.99",
                       "type": "number",
                       "example": "456543.99"
                     },
@@ -73,25 +74,26 @@
                       "example": "456543.99"
                     },
                     "otherBusIncome": {
-                      "description": "Other business income in the range -99999999999.99 to 99999999999.99",
+                      "description": "Other business income. Amount in the range -99999999999.99 to 99999999999.99",
                       "type": "number",
                       "example": "456543.99"
                     },
                     "tradingIncomeAllowance": {
-                      "description": "Trading income allowance in the range -99999999999.99 to 99999999999.99",
+                      "description": "The trading income allowance. Amount in the range -99999999999.99 to 99999999999.99",
                       "type": "number",
                       "example": "456543.99"
                     },
                     "deducts": {
                       "type": "object",
+                      "description": "Deductions",
                       "properties": {
                         "totalBusExpenses": {
-                          "description": "Total business expenses in the range -99999999999.99 to 99999999999.99",
+                          "description": "The total business expenses. Amount in the range -99999999999.99 to 99999999999.99",
                           "type": "number",
                           "example": "456543.99"
                         },
                         "totalDisallowBusExp": {
-                          "description": "Total disallowed business expenses in the range -99999999999.99 to 99999999999.99",
+                          "description": "The total disallowed business expenses. Amount in the range -99999999999.99 to 99999999999.99",
                           "type": "number",
                           "example": "456543.99"
                         }

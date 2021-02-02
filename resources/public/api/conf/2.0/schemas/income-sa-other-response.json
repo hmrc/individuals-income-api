@@ -14,7 +14,7 @@
             "href": {
               "type": "string",
               "description": "The URL of the endpoint",
-              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20"
             }
           },
           "required": [
@@ -28,27 +28,28 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "Self Assessment tax return history for a requested time period.  ",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of Self Assessment tax returns in the requested period",
+          "description": "The list of Self Assessment tax returns in the requested time period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The Tax year. Tax year in the format YYYY-YY.",
                 "example": "2018-19"
               },
               "other": {
                 "type": "array",
-                "description": "Other income for the requested period",
+                "description": "The individual's other Self Assessment income for the requested time period.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "otherIncome": {
                       "type": "number",
-                      "description": "Other income",
+                      "description": "The amount of other income.",
                       "example": "26.70"
                     }
                   },

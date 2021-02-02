@@ -9,12 +9,12 @@
       "properties": {
         "self": {
           "type": "object",
-          "description": "The URI for this endpoint.",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -23,12 +23,12 @@
         },
         "additionalInformation": {
           "type": "object",
-          "description": "The Uniform Resource Identifier (URI) for the endpoint to get additional information.",
+          "description": "The URI for the endpoint to get an individual's additional Self Assessment information for the requested time period.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -37,12 +37,12 @@
         },
         "employments": {
           "type": "object",
-          "description": "The URI for the endpoint to get the income from employments.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment employments income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -51,12 +51,12 @@
         },
         "foreign": {
           "type": "object",
-          "description": "The URI for the endpoint to get foreign income data.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment foreign income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -65,12 +65,12 @@
         },
         "interestsAndDividends": {
           "type": "object",
-          "description": "The URI for the endpoint to get the income from interests and dividends.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment interests and dividends income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -79,12 +79,12 @@
         },
         "other": {
           "type": "object",
-          "description": "The URI for the endpoint to get other income.",
+          "description": "The URI for the endpoint to get an individual's other Self Assessment income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -93,12 +93,12 @@
         },
         "partnerships": {
           "type": "object",
-          "description": "The URI for the endpoint to get the income from partnerships.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment partnerships income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -107,12 +107,12 @@
         },
         "pensionsAndStateBenefits": {
           "type": "object",
-          "description": "The URI for the endpoint to get income from pensions and state benefits.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment pensions and state benefits income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -121,12 +121,12 @@
         },
         "selfEmployments": {
           "type": "object",
-          "description": "The URI for the endpoint to get the income from self-employments.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment self-employments income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -135,12 +135,12 @@
         },
         "summary": {
           "type": "object",
-          "description": "The URI for the endpoint to get a Self Assessment income summary.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment summary.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -149,12 +149,12 @@
         },
         "trusts": {
           "type": "object",
-          "description": "The URI for the endpoint to get income from trusts.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment trusts income data. ",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -163,12 +163,12 @@
         },
         "ukProperties": {
           "type": "object",
-          "description": "The URI for the endpoint to get income from UK properties.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment UK properties income data.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -177,12 +177,12 @@
         },
         "incomeSources": {
           "type": "object",
-          "description": "The URI for the endpoint to get income sources.",
+          "description": "The URI for the endpoint to get an individual's Self Assessment income sources.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -191,12 +191,12 @@
         },
         "furtherDetails": {
           "type": "object",
-          "description": "The URI for the endpoint to get further details about income. This includes business expenses and National Insurance on Self Assessment income.",
+          "description": "The URI for the endpoint to get an individual's further Self Assessment income details.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
             }
           },
           "required": [
@@ -210,16 +210,17 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "Self Assessment tax return history for a requested time period.",
       "properties": {
         "registrations": {
           "type": "array",
-          "description": "Self Assessment registrations",
+          "description": "Self Assessment registrations.",
           "items": {
             "type": "object",
             "properties": {
               "registrationDate": {
                 "type": "string",
-                "description": "Self Assessment registration date",
+                "description": "Self Assessment registration date. Date in format YYY-MM-DD",
                 "example": "2012-01-06"
               }
             }
@@ -227,18 +228,18 @@
         },
         "taxReturns": {
           "type": "array",
-          "description": "List of self assessment tax returns in the requested period",
+          "description": "A list of Self Assessment tax returns in the requested period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The tax year in the format YYY-YY.",
                 "example": "2015-16"
               },
               "submissions": {
                 "type": "array",
-                "description": "Tax return submissions for the year",
+                "description": "The date the tax return was received. Date in the format: YYYY-MM-DD",
                 "items": {
                   "type": "object",
                   "properties": {

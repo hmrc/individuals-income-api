@@ -76,52 +76,52 @@ class IfQueriesSpec extends BaseSpec {
       "totalTaxToDate,weeklyPeriodNumber)"
 
     scenario("For read:individuals-income-nictsejo-c4") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-nictsejo-c4"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-nictsejo-c4"), List("paye"))
       queryString shouldBe res1
     }
 
     scenario("For read:individuals-income-hmcts-c2") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c2"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c2"), List("paye"))
       queryString shouldBe res2
     }
 
     scenario("For read:individuals-income-hmcts-c3") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c3"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c3"), List("paye"))
       queryString shouldBe res2
     }
 
     scenario("For read:individuals-income-hmcts-c4") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c4"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-hmcts-c4"), List("paye"))
       queryString shouldBe res3
     }
 
     scenario("For read:individuals-income-laa-c1") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c1"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c1"), List("paye"))
       queryString shouldBe res4
     }
 
     scenario("For read:individuals-income-laa-c2") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c2"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c2"), List("paye"))
       queryString shouldBe res5
     }
 
     scenario("For read:individuals-income-laa-c3") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c3"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c3"), List("paye"))
       queryString shouldBe res6
     }
 
     scenario("For read:individuals-income-laa-c4") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c4"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-laa-c4"), List("paye"))
       queryString shouldBe res7
     }
 
     scenario("For read:individuals-income-lsani-c1") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lsani-c1"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lsani-c1"), List("paye"))
       queryString shouldBe res8
     }
 
     scenario("For read:individuals-income-lsani-c3") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lsani-c3"), List("incomePaye"))
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lsani-c3"), List("paye"))
       queryString shouldBe res8
     }
   }
@@ -130,20 +130,20 @@ class IfQueriesSpec extends BaseSpec {
 
     def endpoints =
       List(
-        "incomeSa",
-        "incomeSaSummary",
-        "incomeSaTrusts",
-        "incomeSaForeign",
-        "incomeSaPartnerships",
-        "incomeSaInterestsAndDividends",
-        "incomeSaPensionsAndStateBenefits",
-        "incomeSaUkProperties",
-        "incomeSaAdditionalInformation",
-        "incomeSaOther",
-        "incomeSaSource",
-        "incomeSaEmployments",
-        "incomeSaSelfEmployments",
-        "incomeSaFurtherDetails"
+        "sa",
+        "summary",
+        "trusts",
+        "foreign",
+        "partnerships",
+        "interestsAndDividends",
+        "pensionsAndStateBenefits",
+        "ukProperties",
+        "additionalInformation",
+        "other",
+        "source",
+        "employments",
+        "selfEmployments",
+        "furtherDetails"
       )
 
     val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]

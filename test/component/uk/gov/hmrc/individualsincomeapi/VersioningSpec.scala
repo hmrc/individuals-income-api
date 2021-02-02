@@ -119,13 +119,13 @@ class VersioningSpec extends BaseSpec {
   private def validResponsePayloadP2 =
     Json.parse(s"""{
                   |  "_links": {
-                  |    "incomeSa": {
+                  |    "sa": {
                   |      "href": "individuals/income/sa?matchId=$sandboxMatchId{&fromTaxYear,toTaxYear}",
-                  |      "title": "Get an individual's SA income data"
+                  |      "title": "Get an individual's Self Assessment income data"
                   |    },
-                  |    "incomePaye": {
+                  |    "paye": {
                   |      "href": "individuals/income/paye?matchId=$sandboxMatchId{&fromDate,toDate}",
-                  |      "title": "Get an individual's PAYE income data"
+                  |      "title": "Get an individual's PAYE income data per employment"
                   |    },
                   |    "self": {
                   |      "href": "/individuals/income/?matchId=$sandboxMatchId"

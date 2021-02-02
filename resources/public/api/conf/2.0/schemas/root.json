@@ -18,12 +18,12 @@
             },
             "title": {
               "type": "string",
-              "example": "Get an individual's income data per employment"
+              "description": "Get an individual's PAYE income data per employment"
             }
           },
           "required": ["href", "title"]
         },
-        "selfAssessment": {
+        "sa": {
           "type": "object",
           "description": "The URI for the endpoint to get an individual's Self Assessment income data.",
           "properties": {
@@ -34,24 +34,25 @@
             },
             "title": {
               "type": "string",
-              "example": "Get an individual's Self Assessment income data"
+              "description": "Get an individual's Self Assessment income data"
             }
           },
           "required": ["href", "title"]
         },
         "self": {
           "type": "object",
-          "description": "The URI for this endpoint.",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
+              "description": "The URL of the endpoint.",
               "example": "/individuals/income?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
             }
           },
           "required": ["href"]
         }
       },
-      "required": ["paye", "selfAssessment", "self"]
+      "required": ["paye", "sa", "self"]
     }
   },
   "required": ["_links"]

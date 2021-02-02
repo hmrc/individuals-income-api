@@ -40,7 +40,7 @@ trait IncomeService {
                           (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]]
 
   def endpoints =
-    List("incomePaye")
+    List("paye")
 
 }
 

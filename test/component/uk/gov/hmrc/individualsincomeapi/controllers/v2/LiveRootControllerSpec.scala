@@ -151,13 +151,13 @@ class LiveRootControllerSpec extends BaseSpec {
       Json.parse(response.body) shouldBe
         Json.parse(s"""{
                       |  "_links": {
-                      |    "incomeSa": {
+                      |    "sa": {
                       |      "href": "individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
-                      |      "title": "Get an individual's SA income data"
+                      |      "title": "Get an individual's Self Assessment income data"
                       |    },
-                      |    "incomePaye": {
+                      |    "paye": {
                       |      "href": "individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
-                      |      "title": "Get an individual's PAYE income data"
+                      |      "title": "Get an individual's PAYE income data per employment"
                       |    },
                       |    "self": {
                       |      "href": "/individuals/income/?matchId=$matchId"

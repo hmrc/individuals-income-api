@@ -16,17 +16,19 @@
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
-        <td>Missing matchId</td>
-        <td>matchId query parameter missing</td>
-        <td><p>400 (Bad Request)</p>
-        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
+        <td><p>Missing matchId</p></td>
+        <td><p>matchId query parameter missing</p></td>
+        <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
         </td>
     </tr>
     <tr>
-        <td>Missing fromTaxYear</td>
-        <td>fromTaxYear query parameter missing</td>
-        <td><p>400 (Bad Request)</p>
-        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear is required&quot; }</p>
+        <td><p>Missing fromTaxYear</p></td>
+        <td><p>fromTaxYear query parameter missing</p></td>
+        <td>
+            <p>400 (Bad Request)</p>
+            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear is required&quot; }</p>
         </td>
     </tr>
     <tr>
@@ -42,9 +44,8 @@
          <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear is later than the current tax year&quot; }</p></td>
     </tr>
     <tr>
-         <td>fromTaxYear earlier than the current tax year minus 6</td>
-         <td><p>For example, fromTaxYear=2008-09</p>
-         </td>
+         <td><p>fromTaxYear earlier than the current tax year minus 6</p></td>
+         <td><p>For example, fromTaxYear=2008-09</p></td>
          <td>
            <p>400 (Bad Request)</p>
            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear earlier than maximum allowed&quot; }</p>

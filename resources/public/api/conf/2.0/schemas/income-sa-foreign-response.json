@@ -9,12 +9,12 @@
       "properties": {
         "self": {
           "type": "object",
-          "description": "The URI to this resource",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
               "description": "The URL of the endpoint.",
-              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20"
             }
           },
           "required": [
@@ -28,28 +28,28 @@
     },
     "selfAssessment": {
       "type": "object",
-      "description": "An individual’s Self Assessment foreign income data for a requested time period.",
+      "description": "Self Assessment tax return history for a requested time period.",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of Self Assessment tax returns in the requested period",
+          "description": "The list of Self Assessment tax returns in the requested time period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The tax year. Tax year in format YYYY-YY",
                 "example": "2018-19"
               },
               "foreign": {
                 "type": "array",
-                "description": "Foreign income for the requested period",
+                "description": "The individual's foreign income for the requested time period.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "foreignIncome": {
                       "type": "number",
-                      "description": "Foreign income",
+                      "description": "The individual's foreign income.",
                       "example": "2143.32"
                     }
                   },

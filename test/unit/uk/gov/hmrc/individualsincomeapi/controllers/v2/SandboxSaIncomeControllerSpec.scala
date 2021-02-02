@@ -98,58 +98,58 @@ class SandboxSaIncomeControllerSpec
       jsonBodyOf(result) shouldBe Json.parse(
         s"""{
            |  "_links": {
-           |    "incomeSaUkProperties": {
+           |    "ukProperties": {
            |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's uk-properties sa data"
            |    },
-           |    "incomeSaTrusts": {
+           |    "trusts": {
            |      "href": "/individuals/income/sa/trusts?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa trusts data"
            |    },
-           |    "incomeSaSelfEmployments": {
+           |    "selfEmployments": {
            |      "href": "/individuals/income/sa/self-employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's self-employments sa data"
            |    },
-           |    "incomeSaPartnerships": {
+           |    "partnerships": {
            |      "href": "/individuals/income/sa/partnerships?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa partnerships data"
            |    },
            |    "self": {
            |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
            |    },
-           |    "incomeSaInterestsAndDividends": {
+           |    "interestsAndDividends": {
            |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's interests-and-dividends sa data"
            |    },
-           |    "incomeSaFurtherDetails": {
+           |    "furtherDetails": {
            |      "href": "/individuals/income/sa/further-details?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's further-details sa data"
            |    },
-           |    "incomeSaAdditionalInformation": {
+           |    "additionalInformation": {
            |      "href": "/individuals/income/sa/additional-information?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's additional-information sa data"
            |    },
-           |    "incomeSaOther": {
+           |    "other": {
            |      "href": "/individuals/income/sa/other?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's other sa data"
            |    },
-           |    "incomeSaForeign": {
+           |    "foreign": {
            |      "href": "/individuals/income/sa/foreign?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa foreign data"
            |    },
-           |    "incomeSaSummary": {
+           |    "summary": {
            |      "href": "/individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa summary data"
            |    },
-           |    "incomeSaEmployments": {
+           |    "employments": {
            |      "href": "/individuals/income/sa/employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's employments sa data"
            |    },
-           |    "incomeSaPensionsAndStateBenefits": {
+           |    "pensionsAndStateBenefits": {
            |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's pensions-and-state-benefits sa data"
            |    },
-           |    "incomeSaSource": {
+           |    "source": {
            |      "href": "/individuals/income/sa/source?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's source sa data"
            |    }
@@ -191,58 +191,58 @@ class SandboxSaIncomeControllerSpec
       jsonBodyOf(result) shouldBe Json.parse(
         s"""{
            |  "_links": {
-           |    "incomeSaUkProperties": {
+           |    "ukProperties": {
            |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's uk-properties sa data"
            |    },
-           |    "incomeSaTrusts": {
+           |    "trusts": {
            |      "href": "/individuals/income/sa/trusts?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa trusts data"
            |    },
-           |    "incomeSaSelfEmployments": {
+           |    "selfEmployments": {
            |      "href": "/individuals/income/sa/self-employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's self-employments sa data"
            |    },
-           |    "incomeSaPartnerships": {
+           |    "partnerships": {
            |      "href": "/individuals/income/sa/partnerships?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa partnerships data"
            |    },
            |    "self": {
            |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2018-19"
            |    },
-           |    "incomeSaInterestsAndDividends": {
+           |    "interestsAndDividends": {
            |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's interests-and-dividends sa data"
            |    },
-           |    "incomeSaFurtherDetails": {
+           |    "furtherDetails": {
            |      "href": "/individuals/income/sa/further-details?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's further-details sa data"
            |    },
-           |    "incomeSaAdditionalInformation": {
+           |    "additionalInformation": {
            |      "href": "/individuals/income/sa/additional-information?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's additional-information sa data"
            |    },
-           |    "incomeSaOther": {
+           |    "other": {
            |      "href": "/individuals/income/sa/other?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's other sa data"
            |    },
-           |    "incomeSaForeign": {
+           |    "foreign": {
            |      "href": "/individuals/income/sa/foreign?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa foreign data"
            |    },
-           |    "incomeSaSummary": {
+           |    "summary": {
            |      "href": "/individuals/income/sa/summary?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's income sa summary data"
            |    },
-           |    "incomeSaEmployments": {
+           |    "employments": {
            |      "href": "/individuals/income/sa/employments?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's employments sa data"
            |    },
-           |    "incomeSaPensionsAndStateBenefits": {
+           |    "pensionsAndStateBenefits": {
            |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's pensions-and-state-benefits sa data"
            |    },
-           |    "incomeSaSource": {
+           |    "source": {
            |      "href": "/individuals/income/sa/source?matchId=$matchId{&fromTaxYear,toTaxYear}",
            |      "title": "Get an individual's source sa data"
            |    }

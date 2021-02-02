@@ -14,7 +14,7 @@
             "href": {
               "type": "string",
               "description": "The URL of the endpoint",
-              "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}"
+              "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20}"
             }
           },
           "required": [
@@ -28,27 +28,28 @@
     },
     "selfAssessment": {
       "type": "object",
+      "description": "Self Assessment tax return history for a requested time period.  ",
       "properties": {
         "taxReturns": {
           "type": "array",
-          "description": "List of Self Assessment tax returns in the requested period",
+          "description": "The list of Self Assessment tax returns in the requested time period.",
           "items": {
             "type": "object",
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "Tax year",
+                "description": "The tax year. Tax year in format YYYY-YY.",
                 "example": "2018-19"
               },
               "pensionsAndStateBenefits": {
                 "type": "array",
-                "description": "Pensions and state benefits income for the requested period",
+                "description": "The individual's income from pensions and state benefits for the requested time period.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "totalIncome": {
                       "type": "number",
-                      "description": "Total income from pensions and state benefits",
+                      "description": "The total income from pensions and state benefits.",
                       "example": "52.79"
                     }
                   },
