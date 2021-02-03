@@ -2,7 +2,7 @@
   "_links": {
     "paye": {
       "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20",
-      "title": "Get an individual's income data per employment",
+      "title": "Get an individual's PAYE income data per employment",
       "name": "GET"
     },
     "sa": {

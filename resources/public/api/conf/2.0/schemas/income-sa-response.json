@@ -29,10 +29,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA additional information data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "employments": {
@@ -43,10 +48,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA employments data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "foreign": {
@@ -57,10 +67,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA foreign income data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "interestsAndDividends": {
@@ -71,10 +86,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA interest and dividends data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "other": {
@@ -85,10 +105,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA other data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "partnerships": {
@@ -99,10 +124,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA partnerships data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "pensionsAndStateBenefits": {
@@ -113,10 +143,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA pensions and state benefits data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "selfEmployments": {
@@ -127,10 +162,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA self employments data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "summary": {
@@ -141,10 +181,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA summary data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "trusts": {
@@ -155,10 +200,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA trusts data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "ukProperties": {
@@ -169,13 +219,18 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA UK properties data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
-        "incomeSources": {
+        "source": {
           "type": "object",
           "description": "The URI for the endpoint to get an individual's Self Assessment income sources.",
           "properties": {
@@ -183,10 +238,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA source data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         },
         "furtherDetails": {
@@ -197,10 +257,15 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get an individual's SA further details data"
             }
           },
           "required": [
-            "href"
+            "href",
+            "title"
           ]
         }
       },
