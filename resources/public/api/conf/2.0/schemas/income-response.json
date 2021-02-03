@@ -104,6 +104,11 @@
                 "description": "The taxable pay in this pay period including payrolled benefits to date in the range -999999999.99 to 999999999.99",
                 "example": "163068.82"
               },
+              "taxablePay": {
+                "type": "number",
+                "description": "Taxable pay in this pay period including payrolled benefits in kind in the range -999999999.99 to 999999999.99",
+                "example": "163068.82"
+              },
               "totalTaxToDate": {
                 "type": "number",
                 "description": "The total tax to date in this employment in the range -999999999.99 to 999999999.99",
