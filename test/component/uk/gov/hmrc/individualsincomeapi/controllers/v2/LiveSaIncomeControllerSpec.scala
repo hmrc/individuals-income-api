@@ -33,10 +33,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
 
-  val fields = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate," +
+  val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
     "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
     "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-    "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,postcode," +
+    "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
     "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
   feature("SA root endpoint") {
