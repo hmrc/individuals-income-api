@@ -33,10 +33,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
 
-  val fields = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate," +
+  val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
     "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
     "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-    "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,postcode," +
+    "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
     "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
   feature("SA root endpoint") {
@@ -802,10 +802,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100009C"
 
     val fields =
-      "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+      "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
         "businessDescription,caseStartDate,deducts(totalBusExpenses),income(allEmployments," +
         "foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment,selfEmployment,shares," +
-        "trusts,ukDivsAndInterest,ukInterest,ukProperty),postcode,receivedDate,telephoneNumber," +
+        "trusts,ukDivsAndInterest,ukInterest,ukProperty),receivedDate,telephoneNumber," +
         "totalNIC,totalTaxPaid),taxYear)"
 
     val selfAssessmentScopes = List(
@@ -1779,10 +1779,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100002D"
 
     val fields =
-      "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+      "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
         "businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
         "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-        "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,postcode," +
+        "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
         "receivedDate,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
     val foreignScopes = List(
@@ -2434,10 +2434,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100003D"
 
     val fields =
-      "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+      "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
         "businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
         "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-        "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,postcode," +
+        "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
         "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
     val interestsAndDividendsScopes = List(
@@ -4117,10 +4117,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     val nino = "AA100008D"
 
-    val fields = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate," +
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
       "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,postcode,receivedDate," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,receivedDate," +
       "totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
     val furtherDetailsScopes = List(

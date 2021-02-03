@@ -148,9 +148,9 @@ class IfQueriesSpec extends BaseSpec {
 
     val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
 
-    val res1 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,businessDescription," +
+    val res1 = "sa(returnList(address(line1,line2,line3,line4,postcode),businessDescription," +
       "caseStartDate,income(allEmployments,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),postcode,receivedDate," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),receivedDate," +
       "telephoneNumber),taxYear)"
 
     val res2 =
@@ -160,25 +160,24 @@ class IfQueriesSpec extends BaseSpec {
     val res3 = "sa(returnList(caseStartDate,income(foreign,foreignDivs,selfAssessment,selfEmployment," +
       "ukDivsAndInterest,ukInterest,ukProperty)),taxYear)"
 
-    val res4 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,businessDescription," +
-      "caseStartDate,postcode,telephoneNumber),taxYear)"
+    val res4 = "sa(returnList(address(line1,line2,line3,line4,postcode),businessDescription," +
+      "caseStartDate,telephoneNumber),taxYear)"
 
-    val res5 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+    val res5 = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
       "caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp),income(allEmployments,foreign,foreignDivs," +
       "lifePolicies,other,partnerships,pensions,selfAssessment,shares,trusts,ukDivsAndInterest,ukInterest," +
-      "ukProperty),otherBusIncome,postcode,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
+      "ukProperty),otherBusIncome,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
     val res6 = "sa(returnList(busEndDate,busStartDate,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
       "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment,shares," +
       "trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome,tradingIncomeAllowance,turnover),taxYear)"
 
-    val res7 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,busEndDate,busStartDate," +
+    val res7 = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
       "businessDescription,deducts(totalBusExpenses,totalDisallowBusExp),income(allEmployments,foreign,foreignDivs," +
       "lifePolicies,other,partnerships,pensions,selfAssessment,trusts,ukDivsAndInterest,ukInterest,ukProperty)," +
-      "otherBusIncome,postcode,tradingIncomeAllowance,turnover),taxYear)"
+      "otherBusIncome,tradingIncomeAllowance,turnover),taxYear)"
 
-    val res8 = "sa(returnList(addressLine1,addressLine2,addressLine3,addressLine4,businessDescription," +
-      "postcode,telephoneNumber),taxYear)"
+    val res8 = "sa(returnList(address(line1,line2,line3,line4,postcode),businessDescription,telephoneNumber),taxYear)"
 
     val res9 = "sa(returnList(busEndDate,busStartDate,deducts(totalBusExpenses),income(allEmployments,foreign,foreignDivs," +
       "lifePolicies,other,partnerships,pensions,selfAssessment,selfEmployment,shares,trusts,ukDivsAndInterest," +
