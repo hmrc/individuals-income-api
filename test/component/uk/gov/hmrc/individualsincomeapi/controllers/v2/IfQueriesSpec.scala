@@ -26,7 +26,7 @@ class IfQueriesSpec extends BaseSpec {
     val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
 
     val res1 =
-      "paye(employeeNICs(inPayPeriod,inPayPeriod1,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "paye(employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
         "employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
         "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
         "paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,paternity)," +
@@ -40,7 +40,7 @@ class IfQueriesSpec extends BaseSpec {
       "(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),paymentDate,payroll(id))"
 
     val res4 =
-      "paye(employeeNICs(inPayPeriod,inPayPeriod1,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "paye(employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
         "employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
         "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
         "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
@@ -54,7 +54,7 @@ class IfQueriesSpec extends BaseSpec {
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity),taxYear," +
       "taxablePayToDate,totalTaxToDate,weeklyPeriodNumber)"
 
-    val res6 = "paye(employeeNICs(inPayPeriod,inPayPeriod1,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+    val res6 = "paye(employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
       "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
@@ -66,7 +66,7 @@ class IfQueriesSpec extends BaseSpec {
       "paymentDate,payroll(id))"
 
     val res8 = "paye(dednsFromNetPay,employee(hasPartner)," +
-      "employeeNICs(inPayPeriod,inPayPeriod1,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
       "monthlyPeriodNumber,payFrequency,paymentDate," +
