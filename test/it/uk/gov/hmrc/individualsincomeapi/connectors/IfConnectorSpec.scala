@@ -128,7 +128,8 @@ class IfConnectorSpec
             )
         )
 
-        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
         result shouldBe incomePayeNoData.paye
 
@@ -163,7 +164,8 @@ class IfConnectorSpec
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec))
 
-        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
         result shouldBe incomePayeSingle.paye
 
@@ -193,7 +195,8 @@ class IfConnectorSpec
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec))
 
-        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
         result shouldBe incomePayeMulti.paye
 
@@ -213,7 +216,8 @@ class IfConnectorSpec
           .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -230,7 +234,8 @@ class IfConnectorSpec
           .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
 
     }
   }
@@ -269,7 +274,8 @@ class IfConnectorSpec
 
         result shouldBe incomeSaNoData.sa
 
-        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
       }
     }
@@ -305,7 +311,8 @@ class IfConnectorSpec
 
         result shouldBe incomeSaSingle.sa
 
-        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
       }
     }
@@ -336,7 +343,8 @@ class IfConnectorSpec
 
         result shouldBe incomeSaMulti.sa
 
-        verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+        verify(underTest.auditHelper, times(1))
+          .auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
       }
     }
@@ -359,7 +367,8 @@ class IfConnectorSpec
         }
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -381,7 +390,8 @@ class IfConnectorSpec
         }
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
 
     }
   }

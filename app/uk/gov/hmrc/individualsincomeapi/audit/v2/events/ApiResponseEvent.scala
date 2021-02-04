@@ -20,7 +20,7 @@ import javax.inject.Inject
 import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
 
 class ApiResponseEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent)
-    extends ResponseEventBase(httpAuditEvent) {
+  extends ResponseEventBase(httpAuditEvent) {
 
   override def auditType = "ApiResponseEvent"
   override def transactionName = "AuditCall"

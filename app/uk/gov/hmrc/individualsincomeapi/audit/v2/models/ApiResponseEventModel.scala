@@ -20,13 +20,12 @@ import java.util.UUID
 
 import play.api.libs.json.Json
 
-case class ApiResponseEventModel(
-  apiVersion: String,
-  matchId: Option[String],
-  correlationId: String,
-  scopes: Option[String],
-  requestUrl: Option[String],
-  response: String)
+case class ApiResponseEventModel(apiVersion: String,
+                                 matchId: String,
+                                 correlationId: Option[String],
+                                 scopes: Option[String],
+                                 requestUrl: Option[String],
+                                 response: String)
 
 object ApiResponseEventModel {
   implicit val formatApiResponseEventModel = Json.format[ApiResponseEventModel]

@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyNoInteractions
+import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
@@ -30,6 +30,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
@@ -52,6 +53,7 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
     val mockSandboxIncomeService = mock[SandboxIncomeService]
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
+    val mockAuditHelper = mock[AuditHelper]
 
     implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
@@ -67,6 +69,7 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       scopeService,
       scopesHelper,
       mockAuthConnector,
+      mockAuditHelper,
       controllerComponent)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -101,6 +104,9 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
                       |    }
                       |  }
                       |}""".stripMargin)
+
+      verify(sandboxRootController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 400 for an invalid matchId" in new Setup {
@@ -114,6 +120,9 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
       jsonBodyOf(result) shouldBe Json.parse(
         """{"code" : "NOT_FOUND", "message" : "The resource can not be found"}"""
       )
+
+      verify(sandboxRootController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "not require bearer token authentication" in new Setup {
@@ -124,6 +133,9 @@ class SandboxRootControllerSpec extends SpecBase with AuthHelper with MockitoSug
 
       status(result) shouldBe OK
       verifyNoInteractions(mockAuthConnector)
+
+      verify(sandboxRootController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when CorrelationId is missing" in new Setup {

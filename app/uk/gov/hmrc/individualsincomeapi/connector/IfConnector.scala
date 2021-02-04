@@ -16,23 +16,20 @@
 
 package uk.gov.hmrc.individualsincomeapi.connector
 
-import java.util.UUID
-
-import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, NotFoundException,
-  TooManyRequestException, Upstream4xxResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiIfAuditRequest, ApiIfFailureAuditRequest}
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
@@ -105,12 +102,12 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         Logger.debug(s"$endpoint - Response: $response")
 
         auditHelper.auditIfApiResponse(
-          ApiIfAuditRequest(extractCorrelationId(request), None, Some(matchId), request, url, Json.toJson(response))
-        )
+          extractCorrelationId(request), None,
+          matchId, request, url, Json.toJson(response))
 
         response.paye
       },
-      ApiIfFailureAuditRequest(extractCorrelationId(request), None, None, request, url))
+      extractCorrelationId(request), matchId, request, url)
 
   private def callSa(url: String, endpoint: String, matchId: String)
                     (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
@@ -119,31 +116,34 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         Logger.debug(s"$endpoint - Response: $response")
 
         auditHelper.auditIfApiResponse(
-          ApiIfAuditRequest(extractCorrelationId(request), None, Some(matchId), request, url, Json.toJson(response))
-        )
+          extractCorrelationId(request), None,
+          matchId, request, url, Json.toJson(response))
 
         response.sa
       },
-      ApiIfFailureAuditRequest(extractCorrelationId(request), None, Some(matchId), request, url)
-    )
+      extractCorrelationId(request), matchId, request, url)
 
-  private def recover[A](x: Future[Seq[A]], apiIfFailedAuditRequest: ApiIfFailureAuditRequest)
+  private def recover[A](x: Future[Seq[A]],
+                         correlationId: String,
+                         matchId: String,
+                         request: RequestHeader,
+                         requestUrl: String)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
     case notFound: NotFoundException => {
-      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, notFound.getMessage)
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
       Future.successful(Seq.empty)
     }
     case Upstream4xxResponse(msg, 429, _, _) => {
-      Logger.warn(s"IF Rate limited: $msg")
-      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, s"IF Rate limited: $msg")
+      Logger.warn(s"Integration Framework Rate limited: $msg")
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
     }
     case Upstream4xxResponse(msg, _, _, _) => {
-      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, msg)
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, msg)
       Future.failed(new IllegalArgumentException(s"Integration Framework returned INVALID_REQUEST"))
     }
     case e: Exception => {
-      auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, e.getMessage)
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, e.getMessage)
       Future.failed(e)
     }
   }

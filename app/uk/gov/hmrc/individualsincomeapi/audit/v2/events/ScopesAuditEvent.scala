@@ -16,30 +16,28 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2.events
 
-import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
-import uk.gov.hmrc.individualsincomeapi.audit.v2.models.ApiResponseEventModel
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.ScopesAuditEventModel
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
-abstract class ResponseEventBase @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
+import javax.inject.Inject
+
+class ScopesAuditEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
 
   import httpAuditEvent.extendedDataEvent
 
-  def auditType = "ApiResponseEvent"
+  def auditType = "AuthScopesAuditEvent"
   def transactionName = "AuditCall"
   def apiVersion = "2.0"
 
-  def apply(correlationId: Option[String],
-            scopes: Option[String],
-            matchId: String,
-            request: RequestHeader,
-            requestUrl: Option[String],
-            response: String)
+  def apply(matchId : String,
+            scopes : String,
+            request: RequestHeader)
            (implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
            ): ExtendedDataEvent = {
 
@@ -47,7 +45,7 @@ abstract class ResponseEventBase @Inject()(httpAuditEvent: HttpExtendedAuditEven
       auditType,
       transactionName,
       request,
-      Json.toJson(ApiResponseEventModel(apiVersion, matchId, correlationId, scopes, requestUrl, response)))
+      Json.toJson(ScopesAuditEventModel(apiVersion, matchId, scopes)))
 
     Logger.debug(s"$auditType - AuditEvent: $event")
 
