@@ -34,9 +34,10 @@ import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, Sa
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.verifyNoInteractions
+import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.MatchedCitizen
 
@@ -56,6 +57,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     val mockLiveIncomeService = mock[LiveIncomeService]
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
+    val mockAuditHelper = mock[AuditHelper]
 
     implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
@@ -76,10 +78,10 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     val ifPaye = Seq(createValidPayeEntry())
 
     val sandboxIncomeController =
-      new SandboxIncomeController(mockSandboxIncomeService, scopeService, mockAuthConnector, controllerComponent)
+      new SandboxIncomeController(mockSandboxIncomeService, scopeService, mockAuthConnector, controllerComponent, mockAuditHelper)
 
     val liveIncomeController =
-      new LiveIncomeController(mockLiveIncomeService, scopeService, mockAuthConnector, controllerComponent)
+      new LiveIncomeController(mockLiveIncomeService, scopeService, mockAuthConnector, controllerComponent, mockAuditHelper)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -174,6 +176,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
+      verify(liveIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+
     }
 
     "return 200 when matching succeeds and service returns no income" in new Setup {
@@ -199,6 +204,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |  }
            |}""".stripMargin
       )
+
+      verify(liveIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 with correct self link response when toDate is not provided in the request" in new Setup {
@@ -226,6 +234,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |  }
            |}""".stripMargin
       )
+
+      verify(liveIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -238,29 +249,50 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
       status(result) shouldBe NOT_FOUND
 
+      verify(liveIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
+
     }
 
-    "throws an exception when missing CorrelationId Header" in new Setup {
+    "returns bad request with correct message when missing CorrelationId Header" in new Setup {
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val exception =
-        intercept[BadRequestException](liveIncomeController.income(matchId, interval)(FakeRequest()))
+      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when CorrelationId Header is malformed" in new Setup {
+    "return bad request with correct message when CorrelationId Header is malformed" in new Setup {
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val exception =
-        intercept[BadRequestException](
-          liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders("CorrelationId" -> "test")))
+      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()
+        .withHeaders("CorrelationId" -> "test")))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "not require bearer token authentication for Sandbox" in new Setup {
@@ -288,6 +320,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       )
 
       verifyNoInteractions(mockAuthConnector)
+      verify(sandboxIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
   }

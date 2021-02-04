@@ -16,29 +16,30 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, refEq}
+import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SandboxSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSummaries, SaTrusts, SaUkProperties}
+import uk.gov.hmrc.individualsincomeapi.domain.v2._
+import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{SandboxSaIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomeSaHelpers, SpecBase, TestSupport}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import play.api.mvc.ControllerComponents
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import play.api.http.Status._
-import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 class SandboxSaIncomeControllerSpec
     extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
@@ -57,6 +58,7 @@ class SandboxSaIncomeControllerSpec
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     val matchId = UUID.randomUUID()
     val utr = SaUtr("2432552644")
@@ -74,7 +76,8 @@ class SandboxSaIncomeControllerSpec
         scopeService,
         scopesHelper,
         mockAuthConnector,
-        controllerComponent)
+        controllerComponent,
+        mockAuditHelper)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -174,6 +177,9 @@ class SandboxSaIncomeControllerSpec
            |}""".stripMargin
       )
 
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+
     }
 
     "return 200 and the links without toTaxYear when it is not passed in the request" in new Setup {
@@ -266,6 +272,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -278,19 +287,31 @@ class SandboxSaIncomeControllerSpec
       val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
       given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when malformed CorrelationId" in new Setup {
@@ -300,11 +321,20 @@ class SandboxSaIncomeControllerSpec
       given(mockSandboxSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+      val result = await(sandboxSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }
@@ -345,6 +375,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -382,6 +415,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -394,6 +430,8 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -462,6 +500,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -500,6 +541,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -513,6 +557,8 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -580,6 +626,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -617,6 +666,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -629,6 +681,8 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -696,6 +750,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -733,6 +790,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -745,6 +805,8 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -810,6 +872,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -847,6 +912,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -872,6 +940,7 @@ class SandboxSaIncomeControllerSpec
 
       exception.message shouldBe "CorrelationId is required"
       exception.responseCode shouldBe BAD_REQUEST
+
     }
 
     "throws an exception when malformed CorrelationId" in new Setup {
@@ -925,6 +994,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -962,6 +1034,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -974,6 +1049,9 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -1045,6 +1123,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1085,6 +1166,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1099,6 +1183,9 @@ class SandboxSaIncomeControllerSpec
             FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -1173,6 +1260,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1214,6 +1304,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1229,6 +1322,9 @@ class SandboxSaIncomeControllerSpec
             FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -1296,6 +1392,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1333,6 +1432,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1345,6 +1447,9 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -1416,6 +1521,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1456,6 +1564,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1470,6 +1581,9 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -1538,6 +1652,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1574,6 +1691,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1586,6 +1706,9 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {
@@ -1662,6 +1785,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1709,6 +1835,9 @@ class SandboxSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1721,6 +1850,9 @@ class SandboxSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(sandboxSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when missing CorrelationId" in new Setup {

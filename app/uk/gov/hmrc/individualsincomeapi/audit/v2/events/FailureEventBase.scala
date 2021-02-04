@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.HttpExtendedAuditEvent
-import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiFailureEventModel, ApiResponseEventModel}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models.ApiResponseEventModel
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
@@ -36,25 +36,25 @@ abstract class FailureEventBase @Inject()(httpAuditEvent: HttpExtendedAuditEvent
   def transactionName = "AuditFail"
   def apiVersion = "2.0"
 
-  def apply(
-    correlationId: String,
-    scopes: Option[String],
-    matchId: Option[UUID],
-    request: RequestHeader,
-    requestUrl: Option[String],
-    msg: String)(
-    implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-  ): ExtendedDataEvent = {
+  def apply(correlationId: Option[String],
+            scopes: Option[String],
+            matchId: String,
+            request: RequestHeader,
+            requestUrl: Option[String],
+            msg: String)
+           (implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
+           ): ExtendedDataEvent = {
 
     val event = extendedDataEvent(
       auditType,
       transactionName,
       request,
-      Json.toJson(ApiFailureEventModel(apiVersion, matchId, correlationId, scopes, requestUrl, msg))
+      Json.toJson(ApiResponseEventModel(apiVersion, matchId, correlationId, scopes, requestUrl, msg))
     )
 
     Logger.debug(s"$auditType - AuditEvent: $event")
 
     event
+
   }
 }

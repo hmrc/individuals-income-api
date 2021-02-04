@@ -22,8 +22,8 @@ import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.play.audit.AuditExtensions._
+import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 class DefaultHttpExtendedAuditEvent @Inject()(@Named("appName") val appName: String) extends HttpExtendedAuditEvent
 
@@ -44,15 +44,14 @@ trait HttpExtendedAuditEvent {
   }
 
   def extendedDataEvent(
-    eventType: String,
-    transactionName: String,
-    request: RequestHeader,
-    detail: JsValue = JsString(""))(
-    implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)): ExtendedDataEvent = {
+                         eventType: String,
+                         transactionName: String,
+                         request: RequestHeader,
+                         detail: JsValue = JsString(""))(
+                         implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)): ExtendedDataEvent = {
 
     import auditDetailKeys._
     import headers._
-
     import uk.gov.hmrc.play.audit.http.HeaderFieldsExtractor._
 
     val requiredFields = Map(

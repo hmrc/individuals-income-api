@@ -22,10 +22,11 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
-import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.extractCorrelationId
+import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 
@@ -35,20 +36,28 @@ abstract class RootController(
   citizenMatchingService: CitizenMatchingService,
   scopeService: ScopesService,
   scopesHelper: ScopesHelper,
-  cc: ControllerComponents)(implicit ec: ExecutionContext)
+  cc: ControllerComponents,
+  implicit  val auditHelper: AuditHelper)(implicit ec: ExecutionContext)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
-    extractCorrelationId(request)
-    requiresPrivilegedAuthentication(scopeService.getAllScopes) { authScopes =>
+    authenticate(scopeService.getAllScopes, matchId.toString) { authScopes =>
+
+      val correlationId = validateCorrelationId(request);
+
       citizenMatchingService.matchCitizen(matchId) map { _: MatchedCitizen =>
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
         val allowedList = Some(List("sa", "paye"))
         val excludeList = Some(List())
 
-        Ok(Json.toJson(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList) ++ selfLink))
+        val response = Json.toJson(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList) ++ selfLink)
+
+        auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
+          Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+
+        Ok(response)
       }
-    }.recover(recovery)
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income")
   }
 }
 
@@ -58,8 +67,9 @@ class SandboxRootController @Inject()(
   val scopeService: ScopesService,
   scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
+  auditHelper: AuditHelper,
   cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends RootController(citizenMatchingService, scopeService, scopesHelper, cc) {
+    extends RootController(citizenMatchingService, scopeService, scopesHelper, cc, auditHelper) {
   override val environment = SANDBOX
 }
 
@@ -69,7 +79,8 @@ class LiveRootController @Inject()(
   val scopeService: ScopesService,
   scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
+  auditHelper: AuditHelper,
   cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends RootController(citizenMatchingService, scopeService, scopesHelper, cc) {
+    extends RootController(citizenMatchingService, scopeService, scopesHelper, cc, auditHelper) {
   override val environment = PRODUCTION
 }

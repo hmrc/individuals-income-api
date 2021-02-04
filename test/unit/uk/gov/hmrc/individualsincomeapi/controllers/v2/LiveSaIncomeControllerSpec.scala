@@ -34,8 +34,10 @@ import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomeSaHelpers, SpecBase, TestSupport}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify}
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYear, TaxYearInterval}
 import play.api.http.Status._
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
@@ -57,6 +59,7 @@ class LiveSaIncomeControllerSpec
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockAuditHelper : AuditHelper = mock[AuditHelper]
 
     val matchId = UUID.randomUUID()
     val utr = SaUtr("2432552644")
@@ -74,7 +77,8 @@ class LiveSaIncomeControllerSpec
         scopeService,
         scopesHelper,
         mockAuthConnector,
-        controllerComponent)
+        controllerComponent,
+        mockAuditHelper)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -175,6 +179,9 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+
     }
 
     "return 200 and the links without toTaxYear when it is not passed in the request" in new Setup {
@@ -267,6 +274,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -279,33 +289,55 @@ class LiveSaIncomeControllerSpec
       val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchSaFootprint(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saFootprint(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }
@@ -346,6 +378,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -383,6 +418,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -395,33 +433,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/employments?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaEmployments.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -460,6 +519,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -497,6 +559,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -509,33 +574,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/self-employments?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchSelfEmployments(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSelfEmployments.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.selfEmploymentsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -574,6 +660,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -611,6 +700,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -623,33 +715,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns a bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns a bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/summary?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchSummary(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaSummaries.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saReturnsSummary(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -688,6 +801,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -725,6 +841,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -737,33 +856,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct error message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct error message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/trusts?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchTrusts(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaTrusts.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saTrustsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -802,6 +942,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -839,6 +982,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -851,33 +997,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/foreign?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchForeign(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaForeignIncomes.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saForeignIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -916,6 +1083,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -953,6 +1123,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -965,33 +1138,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "return bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/partnerships?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchPartnerships(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPartnerships.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saPartnershipsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1033,6 +1227,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1072,6 +1269,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1086,33 +1286,54 @@ class LiveSaIncomeControllerSpec
             FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "return a bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }
@@ -1155,6 +1376,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1195,6 +1419,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1209,35 +1436,55 @@ class LiveSaIncomeControllerSpec
             FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
-
   }
 
   "LiveSaIncomeController.saUkPropertiesIncome" should {
@@ -1275,6 +1522,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1312,6 +1562,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1324,33 +1577,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/uk-properties?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchUkProperties(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaUkProperties.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saUkPropertiesIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1391,6 +1665,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1430,6 +1707,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1443,33 +1723,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
-      val exception = intercept[BadRequestException](
-        liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saAdditionalInformation(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1508,6 +1809,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1544,6 +1848,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1556,33 +1863,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with corrrect message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchOtherIncome(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaOtherIncomeRecords.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest))
+      val result = await((liveSaIncomeController.saOtherIncome(matchId, taxYearInterval)(fakeRequest)))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+        status(result) shouldBe BAD_REQUEST
+        jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1631,6 +1959,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1678,6 +2009,9 @@ class LiveSaIncomeControllerSpec
            |  }
            |}""".stripMargin
       )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1690,33 +2024,54 @@ class LiveSaIncomeControllerSpec
           FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
 
       given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "returns bad request with correct messagfe when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/further-details?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
       given(mockLiveSaIncomeService.fetchFurtherDetails(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaFurtherDetails.transform(ifSa)))
 
-      val exception =
-        intercept[BadRequestException](liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
+      val result = await(liveSaIncomeController.saFurtherDetails(matchId, taxYearInterval)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 }

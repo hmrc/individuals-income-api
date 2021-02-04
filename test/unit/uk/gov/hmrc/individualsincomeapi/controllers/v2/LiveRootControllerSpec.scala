@@ -20,7 +20,7 @@ import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.refEq
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test._
@@ -36,6 +36,7 @@ import utils.{AuthHelper, SpecBase}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 
 import scala.concurrent.Future.{failed, successful}
@@ -52,6 +53,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
     val mockLiveIncomeService = mock[LiveIncomeService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
+    val mockAuditHelper = mock[AuditHelper]
 
     implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
@@ -67,6 +69,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       scopeService,
       scopesHelper,
       mockAuthConnector,
+      mockAuditHelper,
       controllerComponent)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -91,6 +94,9 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       jsonBodyOf(result) shouldBe Json.parse(
         """{"code" : "NOT_FOUND", "message" : "The resource can not be found"}"""
       )
+
+      verify(liveRootController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "return a 200 when a match id matches live data" in new Setup {
@@ -118,6 +124,9 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
                       |    }
                       |  }
                       |}""".stripMargin)
+
+      verify(liveRootController.auditHelper, times(1)).
+        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
@@ -132,20 +141,32 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyNoInteractions(mockLiveCitizenMatchingService)
+
+      verify(liveRootController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "throws an exception when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
 
       override val fakeRequest = FakeRequest()
 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .thenReturn(successful(matchedCitizen))
 
-      val exception =
-        intercept[BadRequestException](liveRootController.root(matchId)(fakeRequest))
+      val result = await(liveRootController.root(matchId)(fakeRequest))
 
-      exception.message shouldBe "CorrelationId is required"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveRootController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when malformed CorrelationId" in new Setup {
@@ -154,11 +175,20 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .thenReturn(successful(matchedCitizen))
 
-      val exception =
-        intercept[BadRequestException](liveRootController.root(matchId)(fakeRequest))
+      val result = await(liveRootController.root(matchId)(fakeRequest))
 
-      exception.message shouldBe "Malformed CorrelationId"
-      exception.responseCode shouldBe BAD_REQUEST
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveRootController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }
