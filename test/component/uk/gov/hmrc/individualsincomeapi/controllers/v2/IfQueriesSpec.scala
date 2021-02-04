@@ -31,7 +31,7 @@ class IfQueriesSpec extends BaseSpec {
         "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
         "paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,paternity)," +
         "taxDeductedOrRefunded,taxablePay," +
-        "totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4))"
+        "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4))"
 
     val res2 = "paye(employee(hasPartner)," +
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),payFrequency,paymentDate)"
@@ -46,7 +46,7 @@ class IfQueriesSpec extends BaseSpec {
         "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
         "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
         "taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
-        "totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+        "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
         "totalTaxToDate,weeklyPeriodNumber)"
 
     val res5 = "paye(dednsFromNetPay,grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
@@ -59,7 +59,7 @@ class IfQueriesSpec extends BaseSpec {
       "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
       "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
-      "totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
     val res7 = "paye(grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
@@ -72,7 +72,7 @@ class IfQueriesSpec extends BaseSpec {
       "monthlyPeriodNumber,payFrequency,paymentDate," +
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
       "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
-      "totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
     scenario("For read:individuals-income-nictsejo-c4") {

@@ -40,7 +40,7 @@ class IndividualIncomeSpec extends BaseSpec with IncomePayeHelpers {
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber,paidHoursWorked," +
       "payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
       "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
-      "totalEmployerNICs(InPayPeriod1,InPayPeriod2,InPayPeriod3,InPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
+      "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
   val payeIncomeScopes = List(
