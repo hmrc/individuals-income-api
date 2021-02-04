@@ -150,6 +150,32 @@
                   }
                 }
               },
+              "statutoryPayYTD": {
+                "description": "A set of properties relevant to statutory pay for the year to date",
+                "type": "object",
+                "properties": {
+                  "maternity": {
+                    "type": "number",
+                    "description": "The value for maternity pay in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "paternity": {
+                    "type": "number",
+                    "description": "The value for paternity pay in the range -999999999.99 to 999999999.99",
+                    "example": "163068.8"
+                  },
+                  "adoption": {
+                    "type": "number",
+                    "description": "The value for adoption pay in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  },
+                  "parentalBereavement": {
+                    "type": "number",
+                    "description": "The value for parental bereavement pay in the range -999999999.99 to 999999999.99",
+                    "example": "163068.82"
+                  }
+                }
+              },
               "grossEarningsForNICs": {
                 "description": "Details about gross earnings for National Insurance contributions.",
                 "type": "object",
