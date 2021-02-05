@@ -174,7 +174,7 @@ class IfQueriesSpec extends BaseSpec {
 
     val res7 = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
       "businessDescription,deducts(totalBusExpenses,totalDisallowBusExp),income(allEmployments,foreign,foreignDivs," +
-      "lifePolicies,other,partnerships,pensions,selfAssessment,trusts,ukDivsAndInterest,ukInterest,ukProperty)," +
+      "lifePolicies,other,partnerships,pensions,selfAssessment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty)," +
       "otherBusIncome,tradingIncomeAllowance,turnover),taxYear)"
 
     val res8 = "sa(returnList(address(line1,line2,line3,line4,postcode),businessDescription,telephoneNumber),taxYear)"
