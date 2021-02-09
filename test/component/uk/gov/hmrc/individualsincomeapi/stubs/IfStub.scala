@@ -18,10 +18,11 @@ package component.uk.gov.hmrc.individualsincomeapi.stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
 
 object IfStub extends MockHost(24000) {
+
 
   def searchPayeIncomeForPeriodReturns(nino: String, fromDate: String, toDate: String, fields: String, ifPaye: IfPaye) =
     mock.register(
@@ -62,6 +63,15 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("endDate", equalTo(toDate))
         .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+
+  def saCustomResponse(nino: String, status: Int, fromTaxYear: String, toTaxYear: String, fields: String, response: JsValue) =
+    mock.register(
+      get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
+        .withQueryParam("startYear", equalTo(fromTaxYear))
+        .withQueryParam("endYear", equalTo(toTaxYear))
+        .withQueryParam("fields", equalTo(fields))
+        .willReturn(aResponse().withStatus(status).withBody(Json.toJson(response.toString()).toString())))
+
 
   def searchSaIncomeReturnsRateLimitErrorFor(
     nino: String,
