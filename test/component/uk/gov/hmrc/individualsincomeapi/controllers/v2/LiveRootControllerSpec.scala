@@ -74,6 +74,23 @@ class LiveRootControllerSpec extends BaseSpec {
       )
     }
 
+    scenario(s"user does not have valid scopes") {
+      Given("A valid auth token but invalid scopes")
+      AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/?matchId=$matchId")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("The response status should be 401")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj(
+        "code" -> "UNAUTHORIZED",
+        "message" ->"Insufficient Enrolments"
+      )
+    }
+
     scenario("missing match id") {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
@@ -167,5 +184,7 @@ class LiveRootControllerSpec extends BaseSpec {
     }
 
   }
+
+
 
 }
