@@ -129,23 +129,30 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
                          request: RequestHeader,
                          requestUrl: String)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
+    case validationError: JsValidationException => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl,
+        s"Error parsing IF response: ${validationError.errors}")
+      Future.failed(new InternalServerException("Something went wrong."))
+    }
     case notFound: NotFoundException => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
       Future.successful(Seq.empty)
     }
+    case Upstream5xxResponse(msg, _, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Internal Server error: $msg")
+      Future.failed(new InternalServerException("Something went wrong."))
+    }
     case Upstream4xxResponse(msg, 429, _, _) => {
-      Logger.warn(s"Integration Framework Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
     }
     case Upstream4xxResponse(msg, _, _, _) => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, msg)
-      Future.failed(new IllegalArgumentException(s"Integration Framework returned INVALID_REQUEST"))
+      Future.failed(new InternalServerException("Something went wrong."))
     }
     case e: Exception => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, e.getMessage)
-      Future.failed(e)
+      Future.failed(new InternalServerException("Something went wrong."))
     }
   }
-
 }

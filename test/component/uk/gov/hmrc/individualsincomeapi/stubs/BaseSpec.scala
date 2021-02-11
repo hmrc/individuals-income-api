@@ -37,6 +37,7 @@ trait BaseSpec
   override lazy val port = 9000
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
+      "cacheV2.enabled"                                          -> false,
       "auditing.enabled"                                       -> false,
       "auditing.traceRequests"                                 -> false,
       "microservice.services.auth.port"                        -> AuthStub.port,

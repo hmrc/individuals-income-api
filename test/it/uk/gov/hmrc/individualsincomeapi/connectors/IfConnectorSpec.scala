@@ -26,7 +26,7 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
@@ -211,7 +211,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] {
+      intercept[InternalServerException] {
         await(underTest
           .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
@@ -229,7 +229,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
-      intercept[BadRequestException] {
+      intercept[InternalServerException] {
         await(underTest
           .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
@@ -357,7 +357,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] {
+      intercept[InternalServerException] {
         await {
           underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(
             hc,
@@ -380,7 +380,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
-      intercept[BadRequestException] {
+      intercept[InternalServerException] {
         await {
           underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(
             hc,

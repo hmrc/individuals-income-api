@@ -31,7 +31,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
   val fromTaxYear = "2017"
   val toTaxYear = "2019"
 
+  val nino = "CS700100A"
+
   val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
+
+  val invalidIncomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry().copy(taxYear = Some(""))))
 
   val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
     "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -56,176 +60,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa", rootScopes)
+    testMatchId("sa", rootScopes)
+    testTaxYears("sa", rootScopes)
+    testErrorHandling("sa", nino, fields, rootScopes)
 
     scenario("Fetch Self Assessment returns") {
 
@@ -248,8 +86,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(headers)
         .asString
-
-      println(response.body)
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
@@ -337,7 +173,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       And("a valid record in the matching API")
@@ -428,7 +264,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("I request the self assessments")
@@ -446,7 +282,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       And("a valid record in the matching API")
@@ -487,176 +323,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4",
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/employments?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/employments", employmentScopes)
+    testMatchId("sa/employments", employmentScopes)
+    testTaxYears("sa/employments", employmentScopes)
+    testErrorHandling("sa/employments", nino, fields, employmentScopes)
 
     scenario("Fetch Self Assessment employments returns") {
 
@@ -711,7 +381,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment employments returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
       And("a valid record in the matching API")
@@ -751,7 +421,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
       When("I request the self assessments")
@@ -769,7 +439,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
       And("a valid record in the matching API")
@@ -816,176 +486,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/self-employments", selfAssessmentScopes)
+    testMatchId("sa/self-employments", selfAssessmentScopes)
+    testTaxYears("sa/self-employments", selfAssessmentScopes)
+    testErrorHandling("sa/self-employments", nino, fields, selfAssessmentScopes)
 
     scenario("Fetch Self Assessment self employments returns") {
 
@@ -1040,7 +544,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment self employments returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
       And("a valid record in the matching API")
@@ -1080,7 +584,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
       When("I request the self assessments")
@@ -1098,7 +602,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
       And("a valid record in the matching API")
@@ -1141,176 +645,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/summary?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/summary", summaryScopes)
+    testMatchId("sa/summary", summaryScopes)
+    testTaxYears("sa/summary", summaryScopes)
+    testErrorHandling("sa/summary", nino, fields, summaryScopes)
 
     scenario("Fetch Self Assessment summary returns") {
 
@@ -1365,7 +703,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment summary returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
       And("a valid record in the matching API")
@@ -1405,7 +743,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
       When("I request the self assessments")
@@ -1423,7 +761,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
       And("a valid record in the matching API")
@@ -1464,176 +802,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4",
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/trusts?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/trusts", trustsScopes)
+    testMatchId("sa/trusts", trustsScopes)
+    testTaxYears("sa/trusts", trustsScopes)
+    testErrorHandling("sa/trusts", nino, fields, trustsScopes)
 
     scenario("Fetch Self Assessment trusts returns") {
 
@@ -1688,7 +860,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment trusts returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
       And("a valid record in the matching API")
@@ -1728,7 +900,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
       When("I request the self assessments")
@@ -1746,7 +918,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
       And("a valid record in the matching API")
@@ -1795,176 +967,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c3"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/foreign?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/foreign", foreignScopes)
+    testMatchId("sa/foreign", foreignScopes)
+    testTaxYears("sa/foreign", foreignScopes)
+    testErrorHandling("sa/foreign", nino, fields, foreignScopes)
 
     scenario("Fetch Self Assessment foreign returns") {
 
@@ -2019,7 +1025,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment foreign returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
       And("a valid record in the matching API")
@@ -2059,7 +1065,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
       When("I request the self assessments")
@@ -2077,7 +1083,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
       And("a valid record in the matching API")
@@ -2119,176 +1125,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4",
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the API is invoked")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/partnerships", partnershipsScopes)
+    testMatchId("sa/partnerships", partnershipsScopes)
+    testTaxYears("sa/partnerships", partnershipsScopes)
+    testErrorHandling("sa/partnerships", nino, fields, partnershipsScopes)
 
     scenario("Fetch Self Assessment partnerships returns") {
 
@@ -2343,7 +1183,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment partnerships returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
       And("a valid record in the matching API")
@@ -2383,7 +1223,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
       When("I request the self assessments")
@@ -2401,7 +1241,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
       And("a valid record in the matching API")
@@ -2451,183 +1291,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4",
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the API is invoked")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/interests-and-dividends?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/interests-and-dividends", interestsAndDividendsScopes)
+    testMatchId("sa/interests-and-dividends", interestsAndDividendsScopes)
+    testTaxYears("sa/interests-and-dividends", interestsAndDividendsScopes)
+    testErrorHandling("sa/interests-and-dividends", nino, fields, interestsAndDividendsScopes)
 
     scenario("Fetch Self Assessment interests and dividends returns") {
 
@@ -2685,7 +1352,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment interests and dividends returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
       And("a valid record in the matching API")
@@ -2726,7 +1393,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
       When("I request the self assessments")
@@ -2745,7 +1412,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
       And("a valid record in the matching API")
@@ -2787,183 +1454,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the API is invoked")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/pensions-and-state-benefits", pensionsAndStateBenefitsScopes)
+    testMatchId("sa/pensions-and-state-benefits", pensionsAndStateBenefitsScopes)
+    testTaxYears("sa/pensions-and-state-benefits", pensionsAndStateBenefitsScopes)
+    testErrorHandling("sa/pensions-and-state-benefits", nino, fields, pensionsAndStateBenefitsScopes)
 
     scenario("Fetch Self Assessment pensions and benefits returns") {
 
@@ -3019,7 +1513,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment pensions and benefits returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
       And("a valid record in the matching API")
@@ -3060,7 +1554,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("An invalid token")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
       When("I request the self assessments")
@@ -3079,7 +1573,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with valid scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
       And("a valid record in the matching API")
@@ -3123,183 +1617,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the API is invoked")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/uk-properties?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/uk-properties", ukPropertiesScopes)
+    testMatchId("sa/uk-properties", ukPropertiesScopes)
+    testTaxYears("sa/uk-properties", ukPropertiesScopes)
+    testErrorHandling("sa/uk-properties", nino, fields, ukPropertiesScopes)
 
     scenario("Fetch Self Assessment uk properties returns") {
 
@@ -3355,7 +1676,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment uk properties returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
       And("a valid record in the matching API")
@@ -3396,7 +1717,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
       When("I request the self assessments")
@@ -3415,7 +1736,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
       And("a valid record in the matching API")
@@ -3457,183 +1778,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the API is invoked")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/additional-information?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/additional-information", additionalInformationScopes)
+    testMatchId("sa/additional-information", additionalInformationScopes)
+    testTaxYears("sa/additional-information", additionalInformationScopes)
+    testErrorHandling("sa/additional-information", nino, fields, additionalInformationScopes)
 
     scenario("Fetch Self Assessment additional information returns") {
 
@@ -3690,7 +1838,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment additional information returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
       And("a valid record in the matching API")
@@ -3731,7 +1879,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
       When("I request the self assessments")
@@ -3750,7 +1898,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
       And("a valid record in the matching API")
@@ -3792,183 +1940,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the API is invoked")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/other?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/other?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/other", otherIncomeScopes)
+    testMatchId("sa/other", otherIncomeScopes)
+    testTaxYears("sa/other", otherIncomeScopes)
+    testErrorHandling("sa/other", nino, fields, otherIncomeScopes)
 
     scenario("Fetch Self Assessment other income returns") {
 
@@ -4024,7 +1999,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment other income returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
       And("a valid record in the matching API")
@@ -4065,7 +2040,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
       When("I request the self assessments")
@@ -4084,7 +2059,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
       And("a valid record in the matching API")
@@ -4131,183 +2106,10 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c3"
     )
 
-    scenario("not authorized") {
-
-      Given("an invalid privileged Auth bearer token")
-      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the API is invoked")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 401 (unauthorized)")
-      response.code shouldBe UNAUTHORIZED
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
-        "message" -> "Bearer token is missing or not authorized"
-      )
-
-    }
-
-    scenario("missing match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the API is invoked with a missing match id")
-      val response = Http(s"$serviceUrl/sa/further-details?fromTaxYear=2016-17&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId is required"
-      )
-
-    }
-
-    scenario("malformed match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the API is invoked with a malformed match id")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (bad request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "matchId format is invalid"
-      )
-
-    }
-
-    scenario("invalid match id") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 404 (not found)")
-      response.code shouldBe NOT_FOUND
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
-        "message" -> "The resource can not be found"
-      )
-
-    }
-
-    scenario("missing fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/sa/further-details?matchId=$matchId&toTaxYear=2018-19")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear is required"
-      )
-
-    }
-
-    scenario("fromTaxYear earlier than toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "Invalid time period requested"
-      )
-
-    }
-
-    scenario("From date requested is earlier than 31st March 2013") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear earlier than allowed (CY-6)"
-      )
-
-    }
-
-    scenario("Invalid fromTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "fromTaxYear: invalid tax year format"
-      )
-
-    }
-
-    scenario("Invalid toTaxYear") {
-
-      Given("a valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
-
-      When("the paye endpoint is invoked with an invalid match id")
-      val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
-          .headers(requestHeaders(acceptHeaderP2))
-          .asString
-
-      Then("the response status should be 400 (invalid request)")
-      response.code shouldBe BAD_REQUEST
-      Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
-        "message" -> "toTaxYear: invalid tax year format"
-      )
-
-    }
+    testAuthorisation("sa/further-details", furtherDetailsScopes)
+    testMatchId("sa/further-details", furtherDetailsScopes)
+    testTaxYears("sa/further-details", furtherDetailsScopes)
+    testErrorHandling("sa/further-details", nino, fields, furtherDetailsScopes)
 
     scenario("Fetch Self Assessment further details income returns") {
 
@@ -4373,7 +2175,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("Fetch Self Assessment further details income returns no root data") {
 
       val toTaxYear = "2021"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
       And("a valid record in the matching API")
@@ -4414,7 +2216,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     scenario("Invalid token") {
 
-      Given("A token WITHOUT the scope read:individuals-income-sa")
+      Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
       When("I request the self assessments")
@@ -4433,7 +2235,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
-      Given("A privileged Auth bearer token with scope read:individuals-income-sa")
+      Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
       And("a valid record in the matching API")
@@ -4459,6 +2261,287 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         "code"    -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
+    }
+  }
+
+  def testAuthorisation(endpoint:String, scopes: List[String]): Unit = {
+    scenario("not authorized") {
+
+      Given("an invalid privileged Auth bearer token")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 401 (unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "UNAUTHORIZED",
+        "message" -> "Bearer token is missing or not authorized"
+      )
+    }
+
+    scenario(s"user does not have valid scopes") {
+      Given("A valid auth token but invalid scopes")
+      AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
+
+      When("the API is invoked")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("The response status should be 401")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json.obj(
+        "code" -> "UNAUTHORIZED",
+        "message" ->"Insufficient Enrolments"
+      )
+    }
+  }
+
+  def testErrorHandling( endpoint: String,
+                         nino: String,
+                         fields: String,
+                         rootScope: List[String]): Unit = {
+
+    scenario(s"valid request but invalid IF response") {
+
+      Given("A valid auth token ")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+
+      And("IF will return invalid response")
+      IfStub.searchSaIncomeForPeriodReturns(
+        nino,
+        fromTaxYear,
+        toTaxYear,
+        fields,
+        invalidIncomeSaSingle
+      )
+
+      When(
+        s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+
+      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("The response status should be 500 with a generic error message")
+      response.code shouldBe INTERNAL_SERVER_ERROR
+      Json.parse(response.body) shouldBe Json.obj(
+        "code" -> "INTERNAL_SERVER_ERROR",
+        "message" -> "Something went wrong.")
+    }
+
+    scenario(s"IF returns an Internal Server Error") {
+
+      Given("A valid auth token ")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+
+      And("IF will return Internal Server Error")
+      IfStub.saCustomResponse(nino, INTERNAL_SERVER_ERROR, fromTaxYear, toTaxYear, fields, Json.obj("reason" -> "Server error"))
+
+      When(
+        s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("The response status should be 500 with a generic error message")
+      response.code shouldBe INTERNAL_SERVER_ERROR
+      Json.parse(response.body) shouldBe Json.obj(
+        "code" -> "INTERNAL_SERVER_ERROR",
+        "message" -> "Something went wrong.")
+    }
+
+    scenario(s"IF returns an Bad Request Error") {
+
+      Given("A valid auth token ")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+
+      And("IF will return Internal Server Error")
+      IfStub.saCustomResponse(nino, UNPROCESSABLE_ENTITY, fromTaxYear,  toTaxYear, fields, Json.obj("reason" ->
+        "There are 1 or more unknown data items in the 'fields' query string"))
+
+      When(
+        s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("The response status should be 500 with a generic error message")
+      response.code shouldBe INTERNAL_SERVER_ERROR
+      Json.parse(response.body) shouldBe Json.obj(
+        "code" -> "INTERNAL_SERVER_ERROR",
+        "message" -> "Something went wrong.")
+    }
+  }
+
+  def testMatchId(endpoint: String, rootScopes: List[String]): Unit = {
+
+    scenario("missing match id") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the API is invoked with a missing match id")
+
+      val response = Http(s"$serviceUrl/${endpoint}?fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (bad request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "matchId is required"
+      )
+
+    }
+
+    scenario("malformed match id") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the API is invoked with a malformed match id")
+      val response = Http(s"$serviceUrl/sa?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (bad request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "matchId format is invalid"
+      )
+
+    }
+
+    scenario("invalid match id") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the paye endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 404 (not found)")
+      response.code shouldBe NOT_FOUND
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "NOT_FOUND",
+        "message" -> "The resource can not be found"
+      )
+
+    }
+  }
+
+  def testTaxYears(endpoint: String, rootScopes: List[String]): Unit = {
+    scenario("missing fromTaxYear") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "fromTaxYear is required"
+      )
+
+    }
+
+    scenario("fromTaxYear earlier than toTaxYear") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2016-17")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "Invalid time period requested"
+      )
+
+    }
+
+    scenario("From date requested is earlier than 31st March 2013") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2012-13&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "fromTaxYear earlier than allowed (CY-6)"
+      )
+
+    }
+
+    scenario("Invalid fromTaxYear") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=201632A-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "fromTaxYear: invalid tax year format"
+      )
+
+    }
+
+    scenario("Invalid toTaxYear") {
+
+      Given("a valid privileged Auth bearer token")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+
+      When("the endpoint is invoked with an invalid match id")
+      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
+        .headers(requestHeaders(acceptHeaderP2))
+        .asString
+
+      Then("the response status should be 400 (invalid request)")
+      response.code shouldBe BAD_REQUEST
+      Json.parse(response.body) shouldBe Json.obj(
+        "code"    -> "INVALID_REQUEST",
+        "message" -> "toTaxYear: invalid tax year format"
+      )
+
     }
   }
 

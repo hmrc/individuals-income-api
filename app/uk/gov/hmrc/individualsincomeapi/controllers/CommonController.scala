@@ -21,8 +21,8 @@ import org.joda.time.DateTime
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, TooManyRequestException}
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
 import uk.gov.hmrc.individualsincomeapi.domain._
@@ -57,11 +57,15 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   }
 
   private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
-                                   (implicit request: RequestHeader,
-                                    auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
+                                            (implicit request: RequestHeader,
+                                             auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException   => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
+    }
+    case e: InsufficientEnrolments => {
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
     }
     case e: AuthorisationException   => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
@@ -78,6 +82,14 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
     case e: IllegalArgumentException => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
+    }
+    case e: InternalServerException => {
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorInternalServer("Something went wrong.").toHttpResponse
+    }
+    case e => {
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorInternalServer("Something went wrong.").toHttpResponse
     }
   }
 }
