@@ -85,7 +85,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case Some(uuidString) =>
         Try(UUID.fromString(uuidString)) match {
           case Success(_) => uuidString
-          case _ => throw new BadRequestException("Malformed CorrelationId")
+          case _          => throw new BadRequestException("Malformed CorrelationId")
         }
       case None => throw new BadRequestException("CorrelationId is required")
     }
@@ -110,7 +110,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       extractCorrelationId(request), matchId, request, url)
 
   private def callSa(url: String, endpoint: String, matchId: String)
-                    (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+                    (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
     recover[IfSaEntry](http.GET[IfSa](url)(implicitly, header(), ec) map {
       response =>
         Logger.debug(s"$endpoint - Response: $response")
@@ -120,8 +120,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.sa
-    },
-      extractCorrelationId(request), matchId, request, url)
+    }, extractCorrelationId(request), matchId, request, url)
+  }
 
   private def recover[A](x: Future[Seq[A]],
                          correlationId: String,
