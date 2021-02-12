@@ -96,7 +96,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       .withExtraHeaders(Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
   private def callPaye(url: String, endpoint: String, matchId: String)
-                      (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+                      (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
     recover[IfPayeEntry](http.GET[IfPaye](url)(implicitly, header(), ec) map {
       response =>
         Logger.debug(s"$endpoint - Response: $response")
@@ -106,8 +106,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.paye
-    },
-      extractCorrelationId(request), matchId, request, url)
+    }, extractCorrelationId(request), matchId, request, url)
+  }
 
   private def callSa(url: String, endpoint: String, matchId: String)
                     (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
