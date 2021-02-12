@@ -141,7 +141,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
       notFound.message.contains("NO_DATA_FOUND") match {
         case true => Future.successful(Seq.empty)
-        case _ => Future.failed(notFound)
+        case _    => Future.failed(notFound)
       }
     }
     case Upstream5xxResponse(msg, _, _, _) => {
