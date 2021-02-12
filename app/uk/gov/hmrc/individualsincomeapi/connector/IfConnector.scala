@@ -106,7 +106,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.paye
-    }, extractCorrelationId(request), matchId, request, url)
+    },
+    extractCorrelationId(request), matchId, request, url)
   }
 
   private def callSa(url: String, endpoint: String, matchId: String)
@@ -120,7 +121,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.sa
-    }, extractCorrelationId(request), matchId, request, url)
+    },
+    extractCorrelationId(request), matchId, request, url)
   }
 
   private def recover[A](x: Future[Seq[A]],
