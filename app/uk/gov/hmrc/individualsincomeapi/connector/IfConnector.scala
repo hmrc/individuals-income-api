@@ -85,7 +85,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case Some(uuidString) =>
         Try(UUID.fromString(uuidString)) match {
           case Success(_) => uuidString
-          case _          => throw new BadRequestException("Malformed CorrelationId")
+          case _ => throw new BadRequestException("Malformed CorrelationId")
         }
       case None => throw new BadRequestException("CorrelationId is required")
     }
@@ -106,7 +106,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.paye
-      },
+    },
       extractCorrelationId(request), matchId, request, url)
 
   private def callSa(url: String, endpoint: String, matchId: String)
@@ -120,7 +120,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.sa
-      },
+    },
       extractCorrelationId(request), matchId, request, url)
 
   private def recover[A](x: Future[Seq[A]],
@@ -135,15 +135,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case notFound: NotFoundException => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
+
       notFound.message.contains("NO_DATA_FOUND") match {
-        case true => {
-          auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
-          Future.successful(Seq.empty)
-        }
-        case _ => {
-          auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
-          Future.failed(notFound)
-        }
+        case true => Future.successful(Seq.empty)
+        case _ => Future.failed(notFound)
       }
     }
     case Upstream5xxResponse(msg, _, _, _) => {

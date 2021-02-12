@@ -54,7 +54,7 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
 
   def searchPayeIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String, fields: String): Unit =
     mock.register(
