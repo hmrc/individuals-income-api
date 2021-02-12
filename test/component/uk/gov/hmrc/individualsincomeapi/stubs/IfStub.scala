@@ -46,7 +46,7 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.NOT_FOUND)))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
 
   def searchSaIncomeReturnsNoIncomeFor(nino: String, fromTaxYear: String, toTaxYear: String, fields: String) =
     mock.register(
