@@ -40,11 +40,11 @@ class RootControllerSpec extends BaseSpec {
         Json.parse(s"""{
                       |  "_links": {
                       |    "sa": {
-                      |      "href": "individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
                       |      "title": "Get an individual's Self Assessment income data"
                       |    },
                       |    "paye": {
-                      |      "href": "individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
                       |      "title": "Get an individual's PAYE income data per employment"
                       |    },
                       |    "self": {
