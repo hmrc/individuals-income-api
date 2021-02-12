@@ -120,11 +120,11 @@ class VersioningSpec extends BaseSpec {
     Json.parse(s"""{
                   |  "_links": {
                   |    "sa": {
-                  |      "href": "individuals/income/sa?matchId=$sandboxMatchId{&fromTaxYear,toTaxYear}",
+                  |      "href": "/individuals/income/sa?matchId=$sandboxMatchId{&fromTaxYear,toTaxYear}",
                   |      "title": "Get an individual's Self Assessment income data"
                   |    },
                   |    "paye": {
-                  |      "href": "individuals/income/paye?matchId=$sandboxMatchId{&fromDate,toDate}",
+                  |      "href": "/individuals/income/paye?matchId=$sandboxMatchId{&fromDate,toDate}",
                   |      "title": "Get an individual's PAYE income data per employment"
                   |    },
                   |    "self": {
