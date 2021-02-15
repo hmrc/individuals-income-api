@@ -96,7 +96,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       .withExtraHeaders(Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
   private def callPaye(url: String, endpoint: String, matchId: String)
-                      (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+                      (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
     recover[IfPayeEntry](http.GET[IfPaye](url)(implicitly, header(), ec) map {
       response =>
         Logger.debug(s"$endpoint - Response: $response")
@@ -106,11 +106,12 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.paye
-      },
-      extractCorrelationId(request), matchId, request, url)
+    },
+    extractCorrelationId(request), matchId, request, url)
+  }
 
   private def callSa(url: String, endpoint: String, matchId: String)
-                    (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+                    (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
     recover[IfSaEntry](http.GET[IfSa](url)(implicitly, header(), ec) map {
       response =>
         Logger.debug(s"$endpoint - Response: $response")
@@ -120,8 +121,9 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
           matchId, request, url, Json.toJson(response))
 
         response.sa
-      },
-      extractCorrelationId(request), matchId, request, url)
+    },
+    extractCorrelationId(request), matchId, request, url)
+  }
 
   private def recover[A](x: Future[Seq[A]],
                          correlationId: String,
@@ -136,7 +138,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     }
     case notFound: NotFoundException => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
-      Future.successful(Seq.empty)
+
+      notFound.message.contains("NO_DATA_FOUND") match {
+        case true => Future.successful(Seq.empty)
+        case _    => Future.failed(notFound)
+      }
     }
     case Upstream5xxResponse(msg, _, _, _) => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Internal Server error: $msg")

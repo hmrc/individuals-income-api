@@ -26,7 +26,7 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, NotFoundException, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
@@ -230,6 +230,42 @@ class IfConnectorSpec
           .willReturn(aResponse().withStatus(400)))
 
       intercept[InternalServerException] {
+        await(underTest
+          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+      }
+
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+
+    }
+
+    "return an empty dataset for NO_DATA_FOUND" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+          .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
+
+      val result = await(underTest.fetchPayeIncome(nino, interval, None, matchId)
+      (hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+
+      result shouldBe List()
+
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+
+    }
+
+    "fail when IF returns a NOT_FOUND" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
+
+      intercept[NotFoundException] {
         await(underTest
           .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
       }
