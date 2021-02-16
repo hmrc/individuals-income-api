@@ -99,8 +99,6 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
     recover[IfPayeEntry](http.GET[IfPaye](url)(implicitly, header(), ec) map {
       response =>
-        Logger.debug(s"$endpoint - Response: $response")
-
         auditHelper.auditIfApiResponse(
           extractCorrelationId(request), None,
           matchId, request, url, Json.toJson(response))
@@ -114,8 +112,6 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
                     (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
     recover[IfSaEntry](http.GET[IfSa](url)(implicitly, header(), ec) map {
       response =>
-        Logger.debug(s"$endpoint - Response: $response")
-
         auditHelper.auditIfApiResponse(
           extractCorrelationId(request), None,
           matchId, request, url, Json.toJson(response))
@@ -149,6 +145,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case Upstream4xxResponse(msg, 429, _, _) => {
+      Logger.warn(s"IF Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
     }
