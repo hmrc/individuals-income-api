@@ -18,6 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.controllers
 
 import javax.inject.Inject
 import org.joda.time.DateTime
+import play.api.Logger
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -60,6 +61,7 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
                                             (implicit request: RequestHeader,
                                              auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException   => {
+      Logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
     }
@@ -72,6 +74,7 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
       ErrorUnauthorized(e.getMessage).toHttpResponse
     }
     case tmr: TooManyRequestException  => {
+      Logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
     }
@@ -80,14 +83,17 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     }
     case e: IllegalArgumentException => {
+      Logger.warn("Controllers IllegalArgumentException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
     }
     case e: InternalServerException => {
+      Logger.warn("Controllers InternalServerException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
-    case e => {
+    case e: Exception => {
+      Logger.warn("Controllers Exception encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
