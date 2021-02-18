@@ -41,15 +41,11 @@ class ScopesAuditEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
            (implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
            ): ExtendedDataEvent = {
 
-    val event = extendedDataEvent(
+    extendedDataEvent(
       auditType,
       transactionName,
       request,
-      Json.toJson(ScopesAuditEventModel(apiVersion, matchId, scopes)))
-
-    Logger.debug(s"$auditType - AuditEvent: $event")
-
-    event
-
+      Json.toJson(ScopesAuditEventModel(apiVersion, matchId, scopes))
+    )
   }
 }

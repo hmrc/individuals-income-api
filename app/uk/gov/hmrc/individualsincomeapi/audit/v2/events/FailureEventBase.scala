@@ -45,16 +45,11 @@ abstract class FailureEventBase @Inject()(httpAuditEvent: HttpExtendedAuditEvent
            (implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
            ): ExtendedDataEvent = {
 
-    val event = extendedDataEvent(
+    extendedDataEvent(
       auditType,
       transactionName,
       request,
       Json.toJson(ApiResponseEventModel(apiVersion, matchId, correlationId, scopes, requestUrl, msg))
     )
-
-    Logger.debug(s"$auditType - AuditEvent: $event")
-
-    event
-
   }
 }
