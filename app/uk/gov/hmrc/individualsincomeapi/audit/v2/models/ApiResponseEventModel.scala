@@ -16,17 +16,38 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
-import java.util.UUID
-
-import play.api.libs.json.Json
-
-case class ApiResponseEventModel(apiVersion: String,
-                                 matchId: String,
-                                 correlationId: Option[String],
-                                 scopes: Option[String],
-                                 requestUrl: Option[String],
-                                 response: String)
+case class ApiResponseEventModel[T](ipAddress: String,
+                                    authorisation: String,
+                                    deviceId: String,
+                                    input: String,
+                                    method: String,
+                                    userAgent: String,
+                                    apiVersion: String,
+                                    matchId: String,
+                                    correlationId: Option[String],
+                                    scopes: String,
+                                    returnLinks: String,
+                                    response: Option[Seq[T]])
 
 object ApiResponseEventModel {
-  implicit val formatApiResponseEventModel = Json.format[ApiResponseEventModel]
+
+  import play.api.libs.json._
+  import play.api.libs.json.Reads._
+  import play.api.libs.functional.syntax._
+
+  implicit def formatPayeResponseEventModel[T](implicit formatT: Format[T]): Format[ApiResponseEventModel[T]] =
+    (
+      (JsPath \ "ipAddress").format[String] and
+        (JsPath \ "authorisation").format[String] and
+        (JsPath \ "deviceId").format[String] and
+        (JsPath \ "input").format[String] and
+        (JsPath \ "method").format[String] and
+        (JsPath \ "userAgent").format[String] and
+        (JsPath \ "apiVersion").format[String] and
+        (JsPath \ "matchId").format[String] and
+        (JsPath \ "correlationId").formatNullable[String] and
+        (JsPath \ "scopes").format[String] and
+        (JsPath \ "returnLinks").format[String] and
+        (JsPath \ "response").formatNullable[Seq[T]]
+      )(ApiResponseEventModel.apply, unlift(ApiResponseEventModel.unapply))
 }
