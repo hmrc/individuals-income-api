@@ -55,8 +55,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val excludeList = Some(List("sa", "paye"))
           val response = Json.toJson(state(saJsObject) ++ scopesHelper.getHalLinks(matchId, excludeList, authScopes, None) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -76,8 +76,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
 
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -95,8 +95,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -114,8 +114,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -134,8 +134,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -154,8 +154,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
           }
@@ -174,8 +174,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -194,8 +194,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -214,8 +214,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
           }
@@ -234,8 +234,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -254,8 +254,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -274,8 +274,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -294,8 +294,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
         }
@@ -314,8 +314,8 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
           }

@@ -56,7 +56,7 @@ abstract class IncomeController(incomeService: IncomeService,
           val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
           auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+            authScopes.mkString(","), request, selfLink.toString, Some(paye.map(i => Json.toJson(i))))
 
           Ok(response)
         }

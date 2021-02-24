@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 
 case class IfPayeApiResponseEventModel(ipAddress: String,
                                        authorisation: String,
@@ -29,7 +29,7 @@ case class IfPayeApiResponseEventModel(ipAddress: String,
                                        matchId: String,
                                        correlationId: String,
                                        requestUrl: String,
-                                       ifPaye: Seq[IfPaye])
+                                       ifPaye: Seq[IfPayeEntry])
 
 
 object IfPayeApiResponseEventModel {
