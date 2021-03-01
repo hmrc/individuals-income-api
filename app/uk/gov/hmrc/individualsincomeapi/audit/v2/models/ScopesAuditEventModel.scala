@@ -18,7 +18,13 @@ package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
 import play.api.libs.json.Json
 
-case class ScopesAuditEventModel(apiVersion: String,
+case class ScopesAuditEventModel(ipAddress: String,
+                                 authorisation: String,
+                                 deviceId: String,
+                                 input: String,
+                                 method: String,
+                                 userAgent: String,
+                                 apiVersion: String,
                                  matchId: String,
                                  scopes: String)
 

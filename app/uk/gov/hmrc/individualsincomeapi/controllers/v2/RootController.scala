@@ -53,7 +53,7 @@ abstract class RootController(
         val response = Json.toJson(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList) ++ selfLink)
 
         auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-          Some(authScopes.mkString(",")), request, selfLink.toString, Json.toJson(response))
+          authScopes.mkString(","), request, response.toString, None)
 
         Ok(response)
       }
