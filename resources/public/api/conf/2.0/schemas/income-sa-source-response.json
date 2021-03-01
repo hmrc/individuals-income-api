@@ -38,7 +38,8 @@
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "The tax year. Tax year in the format YYYY-YY",
+                "id": "tax-year",
+                "description": "The tax year.",
                 "example": "2018-19"
               },
               "sources": {
@@ -56,33 +57,40 @@
                       "properties": {
                         "line1": {
                           "type": "string",
-                          "description": "Address line 1."
+                          "description": "Address line 1.",
+                          "example": "Friar's House"
                         },
                         "line2": {
                           "type": "string",
-                          "description": "Address line 2."
+                          "description": "Address line 2.",
+                          "example": "Campus Way"
                         },
                         "line3": {
                           "type": "string",
-                          "description": "Address line 3."
+                          "description": "Address line 3.",
+                          "example": "New Street"
                         },
                         "line4": {
                           "type": "string",
-                          "description": "Address line 4."
+                          "description": "Address line 4.",
+                          "example": "Sometown"
                         },
                         "line5": {
                           "type": "string",
-                          "description": "Address line 5."
+                          "description": "Address line 5.",
+                          "example": "Old County"
                         },
                         "postalCode": {
                           "type": "string",
-                          "description": "The postcode for the address."
+                          "description": "The postcode for the address.",
+                          "example": "TF22 3BC"
                         }
                       }
                     },
                     "telephoneNumber": {
                       "type": "string",
-                      "description": "The business telephone number. "
+                      "description": "The business telephone number.",
+                      "example": "123456789"
                     }
                   }
                 }

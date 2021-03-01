@@ -32,7 +32,7 @@
             },
             "title": {
               "type": "string",
-              "description": "Get an individual's SA additional information data"
+              "description": "Get an individual's SA additional information"
             }
           },
           "required": [
@@ -51,7 +51,7 @@
             },
             "title": {
               "type": "string",
-              "description": "Get an individual's SA employments data"
+              "description": "Get an individual's SA employment data"
             }
           },
           "required": [
@@ -285,7 +285,8 @@
             "properties": {
               "registrationDate": {
                 "type": "string",
-                "description": "Self Assessment registration date. Date in format YYY-MM-DD",
+                "description": "Self Assessment registration date.",
+                "id": "full-date",
                 "example": "2012-01-06"
               }
             }
@@ -299,17 +300,19 @@
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "The tax year in the format YYY-YY.",
+                "id": "tax-year",
+                "description": "The tax year.",
                 "example": "2015-16"
               },
               "submissions": {
                 "type": "array",
-                "description": "The date the tax return was received. Date in the format: YYYY-MM-DD",
+                "description": "The date the tax return was received.",
                 "items": {
                   "type": "object",
                   "properties": {
                     "receivedDate": {
                       "type": "string",
+                      "id": "full-date",
                       "description": "Tax return received date",
                       "example": "2014-06-06"
                     }

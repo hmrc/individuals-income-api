@@ -17,7 +17,7 @@
     </tr>
     <tr>
         <td><p>Missing matchId</p></td>
-        <td>matchId query parameter missing</td>
+        <td><p>matchId query parameter missing</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;matchId is required&quot; }</p>
