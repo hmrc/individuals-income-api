@@ -31,7 +31,7 @@ uses:
 /individuals/income:
   /:
     get:
-      displayName: Get a list of available endpoints
+      displayName: Get a list of all available endpoints
       description: !include docs/root.md
       is: [headers.acceptHeader]
       (annotations.scope): "assigned"
@@ -93,14 +93,12 @@ uses:
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         fromTaxYear:
-          description: The first tax year to be included in the dataset requested.
+          description: !include ./includes/from-tax-year.md
           type: string
-          required: true
           example: 2018-19
         toTaxYear:
-          description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
-          type: string
-          required: false
+          description: !include ./includes/to-tax-year.md
+          type: types.taxYear
           example: 2019-20
       responses:
         200:
@@ -147,12 +145,12 @@ uses:
           type: string
           example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         fromDate:
-          description: The start date for data requested.
+          description: !include ./includes/from-date.md
           type: string
           required: true
           example: 2018-01-01
         toDate:
-          description: The end date for data requested. If missing, it defaults to today's date.
+          description: !include ./includes/to-date.md
           type: string
           required: false
           example: 2019-01-01
@@ -201,12 +199,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -255,12 +253,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -309,12 +307,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -363,12 +361,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -417,12 +415,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -471,12 +469,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -525,12 +523,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -579,12 +577,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -633,12 +631,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -687,12 +685,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -741,12 +739,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -795,12 +793,12 @@ uses:
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
           fromTaxYear:
-            description: The first tax year to be included in the dataset requested.
+            description: !include ./includes/from-tax-year.md
             type: string
             required: true
             example: 2018-19
           toTaxYear:
-            description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+            description: !include ./includes/to-tax-year.md
             type: string
             required: false
             example: 2019-20
@@ -849,12 +847,12 @@ uses:
               type: string
               example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
             fromTaxYear:
-              description: The first tax year to be included in the dataset requested.
+              description: !include ./includes/from-tax-year.md
               type: string
               required: true
               example: 2018-19
             toTaxYear:
-              description: The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.
+              description: !include ./includes/to-tax-year.md
               type: string
               required: false
               example: 2019-20

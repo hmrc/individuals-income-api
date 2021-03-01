@@ -38,7 +38,8 @@
             "properties": {
               "taxYear": {
                 "type": "string",
-                "description": "The tax year. Tax year in the format YYYY-YY",
+                "id": "tax-year",
+                "description": "The tax year.",
                 "example": "2018-19"
               },
               "trusts": {
