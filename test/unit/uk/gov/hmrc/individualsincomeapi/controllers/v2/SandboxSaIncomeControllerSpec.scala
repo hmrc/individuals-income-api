@@ -178,7 +178,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -273,7 +273,7 @@ class SandboxSaIncomeControllerSpec
            |}""".stripMargin
       )
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -377,7 +377,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -417,7 +417,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -502,7 +502,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -543,7 +543,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -628,7 +628,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -668,7 +668,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -752,7 +752,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -792,7 +792,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -874,7 +874,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -914,7 +914,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -996,7 +996,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1036,7 +1036,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1125,7 +1125,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1168,7 +1168,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1262,7 +1262,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1306,7 +1306,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1394,7 +1394,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1434,7 +1434,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1523,7 +1523,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1566,7 +1566,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1654,7 +1654,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1693,7 +1693,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1787,7 +1787,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1837,7 +1837,7 @@ class SandboxSaIncomeControllerSpec
       )
 
       verify(sandboxSaIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
