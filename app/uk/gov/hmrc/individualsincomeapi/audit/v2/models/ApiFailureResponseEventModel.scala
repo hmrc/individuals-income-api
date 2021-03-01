@@ -33,5 +33,3 @@ case class ApiFailureResponseEventModel(ipAddress: String,
 object ApiFailureResponseEventModel {
   implicit val formatApiFailureResponseEventModel = Json.format[ApiFailureResponseEventModel]
 }
-
-

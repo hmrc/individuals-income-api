@@ -55,7 +55,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val excludeList = Some(List("sa", "paye"))
           val response = Json.toJson(state(saJsObject) ++ scopesHelper.getHalLinks(matchId, excludeList, authScopes, None) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -76,7 +76,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
 
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -114,7 +114,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -134,7 +134,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -154,11 +154,11 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
-          }
+        }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/interests-and-dividends")
   }
 
@@ -174,7 +174,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -194,7 +194,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -214,11 +214,11 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
-          }
+        }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/additional-information")
 
   }
@@ -234,7 +234,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -254,7 +254,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -274,7 +274,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -294,7 +294,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
@@ -314,11 +314,11 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
           val saJsObject = obj("selfAssessment" -> sa)
           val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper. auditSaApiResponse(correlationId.toString, matchId.toString,
+          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
             authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
           Ok(response)
-          }
+        }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/further-details")
 
   }
@@ -326,26 +326,26 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
 
 @Singleton
 class SandboxSaIncomeController @Inject()(
-  val saIncomeService: SandboxSaIncomeService,
-  val scopeService: ScopesService,
-  val scopesHelper: ScopesHelper,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents,
-  auditHelper: AuditHelper)
-  (implicit override val ec: ExecutionContext)
-    extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc, auditHelper) {
+                                           val saIncomeService: SandboxSaIncomeService,
+                                           val scopeService: ScopesService,
+                                           val scopesHelper: ScopesHelper,
+                                           val authConnector: AuthConnector,
+                                           cc: ControllerComponents,
+                                           auditHelper: AuditHelper)
+                                         (implicit override val ec: ExecutionContext)
+  extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc, auditHelper) {
   override val environment = SANDBOX
 }
 
 @Singleton
 class LiveSaIncomeController @Inject()(
-  val saIncomeService: LiveSaIncomeService,
-  val scopeService: ScopesService,
-  val scopesHelper: ScopesHelper,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents,
-  auditHelper: AuditHelper)
-  (implicit override val ec: ExecutionContext)
-    extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc, auditHelper) {
+                                        val saIncomeService: LiveSaIncomeService,
+                                        val scopeService: ScopesService,
+                                        val scopesHelper: ScopesHelper,
+                                        val authConnector: AuthConnector,
+                                        cc: ControllerComponents,
+                                        auditHelper: AuditHelper)
+                                      (implicit override val ec: ExecutionContext)
+  extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc, auditHelper) {
   override val environment = PRODUCTION
 }

@@ -44,7 +44,9 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
   val ifSaApiResponse = Seq(createValidSaTaxYearEntry())
   val apiSaResponse = Json.obj("sa" -> "test")
   val ifUrl =
-    s"host/individuals/employments/paye/nino/$nino?startDate=2019-01-01&endDate=2020-01-01&fields=some(vals(val1),val2)"
+    s"host/individuals/income/paye/nino/$nino?startDate=2019-01-01&endDate=2020-01-01&fields=some(vals(val1),val2)"
+  val ifSaUrl =
+    s"host/individuals/income/paye/nino/$nino?startDate=2019-01-01&endDate=2020-01-01&fields=some(vals(val1),val2)"
   val endpoint = "/test"
 
   val auditConnector = mock[AuditConnector]
@@ -156,7 +158,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
 
       val captor = ArgumentCaptor.forClass(classOf[IfSaApiResponseEventModel])
 
-      auditHelper.auditIfSaApiResponse(correlationId, matchId, request, ifUrl, ifSaApiResponse)
+      auditHelper.auditIfSaApiResponse(correlationId, matchId, request, ifSaUrl, ifSaApiResponse)
 
       verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IfApiResponseEvent"),
         captor.capture())(any(), any(), any())
