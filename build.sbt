@@ -13,9 +13,23 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
     "uk.gov.hmrc.domain._",
     "uk.gov.hmrc.individualsincomeapi.domain._",
     "uk.gov.hmrc.individualsincomeapi.Binders._"))
+
+lazy val scoverageSettings = {
+  import scoverage.ScoverageKeys
+  Seq(
+    // Semicolon-separated list of regexs matching classes to exclude
+    ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;" +
+      ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;",
+    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true
+  )
+}
+
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val externalServices =
   List(ExternalService("AUTH"), ExternalService("INDIVIDUALS_MATCHING_API"), ExternalService("DES"))
+
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
 def unitFilter(name: String): Boolean = name startsWith "unit"
@@ -31,6 +45,7 @@ lazy val microservice =
       SbtArtifactory) ++ plugins: _*)
     .settings(playSettings: _*)
     .settings(scalaSettings: _*)
+    .settings(scoverageSettings: _*)
     .settings(publishingSettings: _*)
     .settings(scalaVersion := "2.12.11")
     .settings(defaultSettings(): _*)
