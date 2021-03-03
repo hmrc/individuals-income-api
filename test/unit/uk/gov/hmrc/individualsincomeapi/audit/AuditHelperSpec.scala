@@ -66,10 +66,10 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       verify(auditConnector, times(1)).sendExplicitAudit(eqTo("AuthScopesAuditEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[ScopesAuditEventModel].apiVersion shouldEqual "2.0"
-      capturedEvent.asInstanceOf[ScopesAuditEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[ScopesAuditEventModel].scopes shouldBe scopes
+      val capturedEvent = captor.getValue.asInstanceOf[ScopesAuditEventModel]
+      capturedEvent.apiVersion shouldEqual "2.0"
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.scopes shouldBe scopes
 
     }
 
@@ -84,12 +84,12 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiResponseEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[ApiPayeResponseEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[ApiPayeResponseEventModel].correlationId shouldEqual Some(correlationId)
-      capturedEvent.asInstanceOf[ApiPayeResponseEventModel].scopes shouldBe scopes
-      capturedEvent.asInstanceOf[ApiPayeResponseEventModel].returnLinks shouldBe endpoint
-      capturedEvent.asInstanceOf[ApiPayeResponseEventModel].response shouldBe Some(apiResponse)
+      val capturedEvent = captor.getValue.asInstanceOf[ApiPayeResponseEventModel]
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.correlationId shouldEqual Some(correlationId)
+      capturedEvent.scopes shouldBe scopes
+      capturedEvent.returnLinks shouldBe endpoint
+      capturedEvent.response shouldBe Some(apiResponse)
 
     }
 
@@ -104,12 +104,12 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiResponseEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[ApiSaResponseEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[ApiSaResponseEventModel].correlationId shouldEqual Some(correlationId)
-      capturedEvent.asInstanceOf[ApiSaResponseEventModel].scopes shouldBe scopes
-      capturedEvent.asInstanceOf[ApiSaResponseEventModel].returnLinks shouldBe endpoint
-      capturedEvent.asInstanceOf[ApiSaResponseEventModel].response shouldBe Some(apiSaResponse)
+      val capturedEvent = captor.getValue.asInstanceOf[ApiSaResponseEventModel]
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.correlationId shouldEqual Some(correlationId)
+      capturedEvent.scopes shouldBe scopes
+      capturedEvent.returnLinks shouldBe endpoint
+      capturedEvent.response shouldBe Some(apiSaResponse)
 
     }
 
@@ -126,11 +126,11 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiFailureEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].correlationId shouldEqual Some(correlationId)
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].requestUrl shouldEqual endpoint
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].response shouldEqual msg
+      val capturedEvent = captor.getValue.asInstanceOf[ApiFailureResponseEventModel]
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.correlationId shouldEqual Some(correlationId)
+      capturedEvent.requestUrl shouldEqual endpoint
+      capturedEvent.response shouldEqual msg
     }
 
     "auditIfApiResponse PAYE" in {
@@ -141,14 +141,14 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
 
       auditHelper.auditIfPayeApiResponse(correlationId, matchId, request, ifUrl, ifApiResponse)
 
-      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IfApiResponseEvent"),
+      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IntegrationFrameworkApiResponseEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[IfPayeApiResponseEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[IfPayeApiResponseEventModel].correlationId shouldEqual correlationId
-      capturedEvent.asInstanceOf[IfPayeApiResponseEventModel].requestUrl shouldBe ifUrl
-      capturedEvent.asInstanceOf[IfPayeApiResponseEventModel].ifPaye shouldBe ifApiResponse
+      val capturedEvent = captor.getValue.asInstanceOf[IfPayeApiResponseEventModel]
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.correlationId shouldEqual correlationId
+      capturedEvent.requestUrl shouldBe ifUrl
+      capturedEvent.integrationFrameworkPaye shouldBe ifApiResponse
 
     }
 
@@ -160,14 +160,14 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
 
       auditHelper.auditIfSaApiResponse(correlationId, matchId, request, ifSaUrl, ifSaApiResponse)
 
-      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IfApiResponseEvent"),
+      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IntegrationFrameworkApiResponseEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[IfSaApiResponseEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[IfSaApiResponseEventModel].correlationId shouldEqual correlationId
-      capturedEvent.asInstanceOf[IfSaApiResponseEventModel].requestUrl shouldBe ifUrl
-      capturedEvent.asInstanceOf[IfSaApiResponseEventModel].ifSa shouldBe ifSaApiResponse
+      val capturedEvent = captor.getValue.asInstanceOf[IfSaApiResponseEventModel]
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.correlationId shouldEqual correlationId
+      capturedEvent.requestUrl shouldBe ifUrl
+      capturedEvent.integrationFrameworkSa shouldBe ifSaApiResponse
 
     }
 
@@ -181,14 +181,14 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
 
       auditHelper.auditIfApiFailure(correlationId, matchId, request, ifUrl, msg)
 
-      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IfApiFailureEvent"),
+      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("IntegrationFrameworkApiFailureEvent"),
         captor.capture())(any(), any(), any())
 
-      val capturedEvent = captor.getValue
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].matchId shouldEqual matchId
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].correlationId shouldEqual Some(correlationId)
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].requestUrl shouldEqual ifUrl
-      capturedEvent.asInstanceOf[ApiFailureResponseEventModel].response shouldEqual msg
+      val capturedEvent = captor.getValue.asInstanceOf[ApiFailureResponseEventModel]
+      capturedEvent.matchId shouldEqual matchId
+      capturedEvent.correlationId shouldEqual Some(correlationId)
+      capturedEvent.requestUrl shouldEqual ifUrl
+      capturedEvent.response shouldEqual msg
 
     }
 
