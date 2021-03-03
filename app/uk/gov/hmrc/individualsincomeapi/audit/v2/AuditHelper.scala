@@ -39,8 +39,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ApiPayeResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -64,8 +62,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ApiSaResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -88,8 +84,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiFailureEvent",
       ApiFailureResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -109,10 +103,8 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                          ifPaye: Seq[IfPayeEntry])
                         (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "IfApiResponseEvent",
+      "IntegrationFrameworkApiResponseEvent",
       IfPayeApiResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -121,7 +113,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         matchId = matchId,
         correlationId = correlationId,
         requestUrl = requestUrl,
-        ifPaye = ifPaye
+        integrationFrameworkPaye = ifPaye
       )
     )
 
@@ -132,10 +124,8 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                            ifSa: Seq[IfSaEntry])
                           (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "IfApiResponseEvent",
+      "IntegrationFrameworkApiResponseEvent",
       IfSaApiResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -144,7 +134,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         matchId = matchId,
         correlationId = correlationId,
         requestUrl = requestUrl,
-        ifSa = ifSa
+        integrationFrameworkSa = ifSa
       )
     )
 
@@ -155,10 +145,8 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                         msg: String)
                        (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "IfApiFailureEvent",
+      "IntegrationFrameworkApiFailureEvent",
       ApiFailureResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -178,8 +166,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "AuthScopesAuditEvent",
       ScopesAuditEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,

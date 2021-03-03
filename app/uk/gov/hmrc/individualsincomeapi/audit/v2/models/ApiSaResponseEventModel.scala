@@ -18,9 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
 import play.api.libs.json.{JsValue, Json}
 
-case class ApiSaResponseEventModel(ipAddress: String,
-                                   authorisation: String,
-                                   deviceId: String,
+case class ApiSaResponseEventModel(deviceId: String,
                                    input: String,
                                    method: String,
                                    userAgent: String,
