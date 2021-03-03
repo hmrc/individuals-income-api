@@ -98,8 +98,9 @@ uses:
           example: 2018-19
         toTaxYear:
           description: !include ./includes/to-tax-year.md
-          type: types.taxYear
+          type: string
           example: 2019-20
+          required: false
       responses:
         200:
           description: The individual SA income for the given period
