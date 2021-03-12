@@ -39,7 +39,8 @@
               "employerPayeReference": {
                 "type": "string",
                 "description": "The employer PAYE Reference.",
-                "example": "123/AI45678"
+                "pattern": "^[^ ].{1,9}$",
+                "example": "345/34678"
               },
               "taxYear": {
                 "type": "string",
