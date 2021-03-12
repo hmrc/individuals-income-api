@@ -19,31 +19,31 @@
         "weekPayNumber": 45
       },
       {
-        "employerPayeReference": "123/AI45678",
+        "employerPayeReference": "123/DI45678",
         "taxablePayment": 1000.25,
         "paymentDate": "2016-05-28",
         "monthPayNumber": 2
       },
       {
-        "employerPayeReference": "123/AI45678",
+        "employerPayeReference": "123/DI45678",
         "taxablePayment": 1000.25,
         "paymentDate": "2016-04-28",
         "monthPayNumber": 1
       },
       {
-        "employerPayeReference": "123/AI45678",
+        "employerPayeReference": "123/DI45678",
         "taxablePayment": 1000.5,
         "paymentDate": "2016-03-28",
         "monthPayNumber": 12
       },
       {
-        "employerPayeReference": "123/AI45678",
+        "employerPayeReference": "123/DI45678",
         "taxablePayment": 1000.5,
         "paymentDate": "2016-02-28",
         "monthPayNumber": 11
       },
       {
-        "employerPayeReference": "123/AI45678",
+        "employerPayeReference": "123/DI45678",
         "taxablePayment": 1000.5,
         "paymentDate": "2016-01-28",
         "monthPayNumber": 10

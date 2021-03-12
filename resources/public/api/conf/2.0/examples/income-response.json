@@ -7,7 +7,7 @@
   "paye": {
     "income": [
       {
-        "employerPayeReference": "123/DI45678",
+        "employerPayeReference": "345/34678",
         "taxYear": "18-19",
         "employee": {
           "hasPartner": true
@@ -65,7 +65,7 @@
         }
       },
       {
-        "employerPayeReference": "123/DI45678",
+        "employerPayeReference": "345/34678",
         "taxYear": "19-20",
         "employee": {
           "hasPartner": true
