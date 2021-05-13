@@ -8,6 +8,7 @@
         "taxYear": "2018-19",
         "summary": [
           {
+            "utr": "3287654321",
             "totalIncome": 0
           }
         ]
@@ -16,6 +17,7 @@
         "taxYear": "2019-20",
         "summary": [
           {
+            "utr": "3287654321",
             "totalIncome": 30000
           }
         ]

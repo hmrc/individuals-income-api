@@ -59,6 +59,7 @@
   "selfAssessment": {
     "registrations": [
       {
+        "utr": "3287654321",
         "registrationDate": "2018-01-06"
       }
     ],
@@ -67,6 +68,7 @@
         "taxYear": "2018-19",
         "submissions": [
           {
+            "utr": "3287654321",
             "receivedDate": "2018-10-06"
           }
         ]
@@ -75,6 +77,7 @@
         "taxYear": "2019-20",
         "submissions": [
           {
+            "utr": "3287654321",
             "receivedDate": "2019-06-06"
           }
         ]

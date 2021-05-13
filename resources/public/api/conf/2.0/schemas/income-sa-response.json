@@ -283,6 +283,11 @@
           "items": {
             "type": "object",
             "properties": {
+              "utr": {
+                "type": "string",
+                "description": "A unique taxpayer reference",
+                "example": "3287654321"
+              },
               "registrationDate": {
                 "type": "string",
                 "description": "Self Assessment registration date.",

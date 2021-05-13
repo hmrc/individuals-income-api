@@ -10,6 +10,7 @@
         "taxYear": "2018-19",
         "additionalInformation": [
           {
+            "utr": "3287654321",
             "gainsOnLifePolicies": 0,
             "sharesOptionsIncome": 0
           }
@@ -19,6 +20,7 @@
         "taxYear": "2019-20",
         "additionalInformation": [
           {
+            "utr": "3287654321",
             "gainsOnLifePolicies": 44.54,
             "sharesOptionsIncome": 52.34
           }
