@@ -283,6 +283,12 @@
           "items": {
             "type": "object",
             "properties": {
+              "utr": {
+                "type": "string",
+                "description": "A unique taxpayer reference",
+                "pattern": "^[0-9]{10}$",
+                "example": "3287654321"
+              },
               "registrationDate": {
                 "type": "string",
                 "description": "Self Assessment registration date.",
@@ -310,6 +316,12 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "A unique taxpayer reference",
+                      "pattern": "^[0-9]{10}$",
+                      "example": "3287654321"
+                    },
                     "receivedDate": {
                       "type": "string",
                       "id": "full-date",
