@@ -51,6 +51,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-hmcts-c4",
+      "read:individuals-income-ho-ecp-application",
+      "read:individuals-income-ho-ecp-compliance",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -59,6 +61,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4"
     )
+
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+      "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
     testAuthorisation("sa", rootScopes)
     testMatchId("sa", rootScopes)
@@ -315,6 +323,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100009C"
 
     val employmentScopes = List(
+      "read:individuals-income-ho-ecp-application",
+      "read:individuals-income-ho-ecp-compliance",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -322,6 +332,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4",
     )
+
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+      "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
     testAuthorisation("sa/employments", employmentScopes)
     testMatchId("sa/employments", employmentScopes)
@@ -476,11 +492,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         "businessDescription,caseStartDate,deducts(totalBusExpenses),income(allEmployments," +
         "foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment,selfEmployment,shares," +
         "trusts,ukDivsAndInterest,ukInterest,ukProperty),receivedDate,telephoneNumber," +
-        "totalNIC,totalTaxPaid),taxYear)"
+        "totalNIC,totalTaxPaid,utr),taxYear)"
 
     val selfAssessmentScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
+      "read:individuals-income-ho-ecp-application",
+      "read:individuals-income-ho-ecp-compliance",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4"
@@ -637,6 +655,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val summaryScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
+      "read:individuals-income-ho-ecp-application",
+      "read:individuals-income-ho-ecp-compliance",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -644,6 +664,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4"
     )
+
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+      "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
     testAuthorisation("sa/summary", summaryScopes)
     testMatchId("sa/summary", summaryScopes)
@@ -950,13 +976,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     val nino = "AA100002D"
 
-    val fields =
-      "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
-        "businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
-        "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-        "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
-        "receivedDate,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
-
     val foreignScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
@@ -966,6 +985,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3"
     )
+
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+      "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
+      "receivedDate,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
     testAuthorisation("sa/foreign", foreignScopes)
     testMatchId("sa/foreign", foreignScopes)
@@ -1125,6 +1150,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-nictsejo-c4",
     )
 
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+      "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
+
     testAuthorisation("sa/partnerships", partnershipsScopes)
     testMatchId("sa/partnerships", partnershipsScopes)
     testTaxYears("sa/partnerships", partnershipsScopes)
@@ -1272,13 +1303,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
   feature("SA interests and dividends income") {
 
     val nino = "AA100003D"
-
-    val fields =
-      "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate,busStartDate," +
-        "businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
-        "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
-        "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
-        "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
     val interestsAndDividendsScopes = List(
       "read:individuals-income-hmcts-c2",
@@ -1932,6 +1956,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100007D"
 
     val otherIncomeScopes = List(
+      "read:individuals-income-ho-ecp-application",
+      "read:individuals-income-ho-ecp-compliance",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1939,6 +1965,12 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4"
     )
+
+    val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+      "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
+      "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
+      "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
     testAuthorisation("sa/other", otherIncomeScopes)
     testMatchId("sa/other", otherIncomeScopes)
