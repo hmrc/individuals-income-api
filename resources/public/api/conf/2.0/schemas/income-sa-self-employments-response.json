@@ -49,7 +49,7 @@
                   "properties": {
                     "utr": {
                       "type": "string",
-                      "description": "A unique taxpayer reference",
+                      "description": "A Unique Taxpayer Reference.",
                       "pattern": "^[0-9]{10}$",
                       "example": "3287654321"
                     },
