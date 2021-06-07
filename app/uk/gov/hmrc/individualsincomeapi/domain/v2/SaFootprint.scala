@@ -38,7 +38,7 @@ object SaFootprint {
     ifSaEntry
       .flatMap { entryList =>
         entryList.returnList.map { returns =>
-          returns.map { entry =>
+          returns.flatMap { entry =>
             {
               entry.caseStartDate match {
                 case Some(value) => Some(SaFootprintRegistration(Some(value)))
@@ -48,7 +48,6 @@ object SaFootprint {
           }
         }
       }
-      .flatten
       .flatten
       .sortBy(x => x.registrationDate)
 
