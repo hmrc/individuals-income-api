@@ -18,6 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfSaEntry, IfSaReturn}
 import uk.gov.hmrc.individualsincomeapi.domain.v2.SaFootprint
 import utils.IncomeSaHelpers
 
@@ -59,6 +60,35 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
       val result = Json.toJson(SaFootprint.transform(Seq()))
 
       result shouldBe expectedJson
+    }
+
+    "Transform should return empty list of registrations if all objects in it are empty" in {
+      val result = SaFootprint.transform(
+        Seq(
+          IfSaEntry(
+            None,
+            None,
+            Some(
+              Seq(
+                IfSaReturn(
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None,
+                  None
+                ))))))
+
+      result.registrations.isEmpty shouldBe true
     }
 
   }
