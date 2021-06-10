@@ -26,6 +26,7 @@ case class IfSaApiResponseEventModel(deviceId: String,
                                      apiVersion: String,
                                      matchId: String,
                                      correlationId: String,
+                                     clientId: String,
                                      requestUrl: String,
                                      integrationFrameworkSa: Seq[IfSaEntry])
 

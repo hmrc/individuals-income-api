@@ -25,6 +25,7 @@ case class ApiPayeResponseEventModel( deviceId: String,
                                       apiVersion: String,
                                       matchId: String,
                                       correlationId: Option[String],
+                                      clientId: String,
                                       scopes: String,
                                       returnLinks: String,
                                       response: Option[Seq[JsValue]])
