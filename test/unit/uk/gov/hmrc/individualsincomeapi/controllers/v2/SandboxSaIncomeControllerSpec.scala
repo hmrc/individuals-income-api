@@ -622,7 +622,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "summary": [
            |          {
-           |            "totalIncome": 100
+           |            "totalIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -662,7 +663,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "summary": [
            |          {
-           |            "totalIncome": 100
+           |            "totalIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
