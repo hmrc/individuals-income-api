@@ -39,20 +39,20 @@ object SaFootprint {
       .flatMap { entryList =>
         entryList.returnList.map { returns =>
           returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate)
+            SaFootprintRegistration(entry.caseStartDate, entry.utr)
           }
         }
       }
       .flatten
       .sortBy(_.registrationDate)
 
-  private def default = SaFootprintSubmission(None)
+  private def default = SaFootprintSubmission(None, None)
 
   private def transformSaFootprintSubmissions(entry: IfSaEntry) = {
     entry.returnList match {
       case Some(list) => {
         list.map { entry =>
-          SaFootprintSubmission(entry.receivedDate)
+          SaFootprintSubmission(entry.receivedDate, entry.utr)
         }
       }
       case _ => Seq(default)

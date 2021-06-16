@@ -160,7 +160,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
              |  "selfAssessment": {
              |    "registrations": [
              |      {
-             |        "registrationDate": "2020-01-01"
+             |        "registrationDate": "2020-01-01",
+             |        "utr": "1234567890"
              |      }
              |    ],
              |    "taxReturns": [
@@ -168,7 +169,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
              |        "taxYear": "2019-20",
              |        "submissions": [
              |          {
-             |            "receivedDate": "2020-01-01"
+             |            "receivedDate": "2020-01-01",
+             |            "utr": "1234567890"
              |          }
              |        ]
              |      }

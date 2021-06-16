@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaFootprintRegistration(registrationDate: Option[String])
+case class SaFootprintRegistration(registrationDate: Option[String], utr: Option[String])
 
 object SaFootprintRegistration {
   implicit val saFootprintRegistration = Json.format[SaFootprintRegistration]
