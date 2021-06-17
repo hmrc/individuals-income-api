@@ -553,7 +553,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |        "taxYear": "2019-20",
                |        "other": [
                |          {
-               |            "otherIncome": 100
+               |            "otherIncome": 100,
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }
