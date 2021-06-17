@@ -516,7 +516,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "selfEmployments": [
            |          {
-           |            "selfEmploymentProfit": 100
+           |            "selfEmploymentProfit": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -556,7 +557,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "selfEmployments": [
            |          {
-           |            "selfEmploymentProfit": 100
+           |            "selfEmploymentProfit": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
