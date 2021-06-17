@@ -29,7 +29,7 @@ object SaSummaries {
   def transform(ifSaEntry: Seq[IfSaEntry]): SaSummaries =
     SaSummaries(transformSaSummaryTaxReturn(ifSaEntry))
 
-  private def default = SaSummary(0.0)
+  private def default = SaSummary(0.0, None)
 
   private def transformSaSummary(entry: IfSaEntry) =
     entry.returnList match {
@@ -37,7 +37,7 @@ object SaSummaries {
         list.map { entry =>
           entry.income match {
             case Some(value) =>
-              SaSummary(value.selfAssessment.getOrElse(0.0))
+              SaSummary(value.selfAssessment.getOrElse(0.0), entry.utr)
             case _ => default
           }
         }

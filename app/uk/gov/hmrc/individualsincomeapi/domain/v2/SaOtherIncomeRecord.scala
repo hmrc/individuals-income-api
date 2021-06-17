@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaOtherIncomeRecord(otherIncome: Double)
+case class SaOtherIncomeRecord(otherIncome: Double, utr: Option[String])
 
 object SaOtherIncomeRecord {
 

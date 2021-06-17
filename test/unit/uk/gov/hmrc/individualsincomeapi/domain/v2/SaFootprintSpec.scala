@@ -30,7 +30,8 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
       val expectedJson = Json.parse("""{
                                       |  "registrations": [
                                       |    {
-                                      |      "registrationDate": "2020-01-01"
+                                      |      "registrationDate": "2020-01-01",
+                                      |      "utr": "1234567890"
                                       |    }
                                       |  ],
                                       |  "taxReturns": [
@@ -38,7 +39,8 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
                                       |      "taxYear": "2019-20",
                                       |      "submissions": [
                                       |        {
-                                      |          "receivedDate": "2020-01-01"
+                                      |          "receivedDate": "2020-01-01",
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }

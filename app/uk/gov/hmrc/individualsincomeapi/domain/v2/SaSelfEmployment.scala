@@ -18,10 +18,8 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 
-case class SaSelfEmployment(selfEmploymentProfit: Double)
+case class SaSelfEmployment(selfEmploymentProfit: Double, utr: Option[String])
 
 object SaSelfEmployment {
-
   implicit val saSelfEmploymentJsonFormat = Json.format[SaSelfEmployment]
-
 }

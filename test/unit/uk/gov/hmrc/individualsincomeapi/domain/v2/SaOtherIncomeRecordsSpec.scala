@@ -35,7 +35,8 @@ class SaOtherIncomeRecordsSpec extends WordSpec with Matchers with IncomeSaHelpe
                                       |      "taxYear": "2019-20",
                                       |      "other": [
                                       |        {
-                                      |          "otherIncome": 100
+                                      |          "otherIncome": 100,
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }
@@ -85,7 +86,8 @@ class SaOtherIncomeRecordsSpec extends WordSpec with Matchers with IncomeSaHelpe
                                       |      "taxYear": "2019-20",
                                       |      "other": [
                                       |        {
-                                      |          "otherIncome": 0.0
+                                      |          "otherIncome": 0.0,
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }
