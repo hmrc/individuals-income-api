@@ -25,7 +25,7 @@ case class ApiFailureResponseEventModel(deviceId: String,
                                         apiVersion: String,
                                         matchId: String,
                                         correlationId: Option[String],
-                                        clientId: String,
+                                        applicationId: String,
                                         requestUrl: String,
                                         response: String)
 
