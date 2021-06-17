@@ -35,7 +35,8 @@ class SaEmploymentsSpec extends WordSpec with Matchers with IncomeSaHelpers {
                                       |      "taxYear": "2019-20",
                                       |      "employments": [
                                       |        {
-                                      |          "employmentIncome": 100
+                                      |          "employmentIncome": 100,
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }
@@ -85,7 +86,8 @@ class SaEmploymentsSpec extends WordSpec with Matchers with IncomeSaHelpers {
                                       |      "taxYear": "2019-20",
                                       |      "employments": [
                                       |        {
-                                      |          "employmentIncome": 0.0
+                                      |          "employmentIncome": 0.0,
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }

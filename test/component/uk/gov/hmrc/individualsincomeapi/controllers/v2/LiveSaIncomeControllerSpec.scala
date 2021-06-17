@@ -385,7 +385,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |        "taxYear": "2019-20",
                |        "employments": [
                |          {
-               |            "employmentIncome": 100
+               |            "employmentIncome": 100,
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }
