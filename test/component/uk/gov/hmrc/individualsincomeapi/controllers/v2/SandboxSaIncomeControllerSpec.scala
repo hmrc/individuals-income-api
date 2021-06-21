@@ -16,9 +16,7 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
+import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
@@ -105,7 +103,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |  "selfAssessment": {
                |    "registrations": [
                |      {
-               |        "registrationDate": "2020-01-01"
+               |        "registrationDate": "2020-01-01",
+               |        "utr": "1234567890"
                |      }
                |    ],
                |    "taxReturns": [
@@ -113,7 +112,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |        "taxYear": "2019-20",
                |        "submissions": [
                |          {
-               |            "receivedDate": "2020-01-01"
+               |            "receivedDate": "2020-01-01",
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }
@@ -150,7 +150,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |        "taxYear": "2019-20",
                |        "employments": [
                |          {
-               |            "employmentIncome": 100
+               |            "employmentIncome": 100,
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }
@@ -190,7 +191,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |        "taxYear": "2019-20",
                |        "selfEmployments": [
                |          {
-               |            "selfEmploymentProfit": 100
+               |            "selfEmploymentProfit": 100,
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }
@@ -229,7 +231,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |        "taxYear": "2019-20",
                |        "summary": [
                |          {
-               |            "totalIncome": 100
+               |            "totalIncome": 100,
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }
@@ -550,7 +553,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                |        "taxYear": "2019-20",
                |        "other": [
                |          {
-               |            "otherIncome": 100
+               |            "otherIncome": 100,
+               |            "utr": "1234567890"
                |          }
                |        ]
                |      }

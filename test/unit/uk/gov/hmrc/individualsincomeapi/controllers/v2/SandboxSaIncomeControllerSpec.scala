@@ -160,7 +160,8 @@ class SandboxSaIncomeControllerSpec
            |  "selfAssessment": {
            |    "registrations": [
            |      {
-           |        "registrationDate": "2020-01-01"
+           |        "registrationDate": "2020-01-01",
+           |        "utr": "1234567890"
            |      }
            |    ],
            |    "taxReturns": [
@@ -168,7 +169,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "submissions": [
            |          {
-           |            "receivedDate": "2020-01-01"
+           |            "receivedDate": "2020-01-01",
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -256,7 +258,8 @@ class SandboxSaIncomeControllerSpec
            |  "selfAssessment": {
            |    "registrations": [
            |      {
-           |        "registrationDate": "2020-01-01"
+           |        "registrationDate": "2020-01-01",
+           |        "utr": "1234567890"
            |      }
            |    ],
            |    "taxReturns": [
@@ -264,7 +267,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "submissions": [
            |          {
-           |            "receivedDate": "2020-01-01"
+           |            "receivedDate": "2020-01-01",
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -367,7 +371,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "employments": [
            |          {
-           |            "employmentIncome": 100
+           |            "employmentIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -407,7 +412,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "employments": [
            |          {
-           |            "employmentIncome": 100
+           |            "employmentIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -492,7 +498,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "selfEmployments": [
            |          {
-           |            "selfEmploymentProfit": 100
+           |            "selfEmploymentProfit": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -533,7 +540,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "selfEmployments": [
            |          {
-           |            "selfEmploymentProfit": 100
+           |            "selfEmploymentProfit": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -618,7 +626,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "summary": [
            |          {
-           |            "totalIncome": 100
+           |            "totalIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -658,7 +667,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "summary": [
            |          {
-           |            "totalIncome": 100
+           |            "totalIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -1644,7 +1654,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "other": [
            |          {
-           |            "otherIncome": 100
+           |            "otherIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -1683,7 +1694,8 @@ class SandboxSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "other": [
            |          {
-           |            "otherIncome": 100
+           |            "otherIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }

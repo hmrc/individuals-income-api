@@ -16,31 +16,30 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, refEq}
+import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveSaIncomeController
-import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSummaries, SaTrusts, SaUkProperties}
+import uk.gov.hmrc.individualsincomeapi.domain.v2._
+import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomeSaHelpers, SpecBase, TestSupport}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify}
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYear, TaxYearInterval}
-import play.api.http.Status._
-import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 class LiveSaIncomeControllerSpec
     extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
@@ -162,7 +161,8 @@ class LiveSaIncomeControllerSpec
            |  "selfAssessment": {
            |    "registrations": [
            |      {
-           |        "registrationDate": "2020-01-01"
+           |        "registrationDate": "2020-01-01",
+           |        "utr": "1234567890"
            |      }
            |    ],
            |    "taxReturns": [
@@ -170,7 +170,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "submissions": [
            |          {
-           |            "receivedDate": "2020-01-01"
+           |            "receivedDate": "2020-01-01",
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -258,7 +259,8 @@ class LiveSaIncomeControllerSpec
            |  "selfAssessment": {
            |    "registrations": [
            |      {
-           |        "registrationDate": "2020-01-01"
+           |        "registrationDate": "2020-01-01",
+           |        "utr": "1234567890"
            |      }
            |    ],
            |    "taxReturns": [
@@ -266,7 +268,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "submissions": [
            |          {
-           |            "receivedDate": "2020-01-01"
+           |            "receivedDate": "2020-01-01",
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -370,7 +373,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "employments": [
            |          {
-           |            "employmentIncome": 100
+           |            "employmentIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -410,7 +414,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "employments": [
            |          {
-           |            "employmentIncome": 100
+           |            "employmentIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -511,7 +516,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "selfEmployments": [
            |          {
-           |            "selfEmploymentProfit": 100
+           |            "selfEmploymentProfit": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -551,7 +557,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "selfEmployments": [
            |          {
-           |            "selfEmploymentProfit": 100
+           |            "selfEmploymentProfit": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -652,7 +659,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "summary": [
            |          {
-           |            "totalIncome": 100
+           |            "totalIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -692,7 +700,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "summary": [
            |          {
-           |            "totalIncome": 100
+           |            "totalIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -1801,7 +1810,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "other": [
            |          {
-           |            "otherIncome": 100
+           |            "otherIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
@@ -1840,7 +1850,8 @@ class LiveSaIncomeControllerSpec
            |        "taxYear": "2019-20",
            |        "other": [
            |          {
-           |            "otherIncome": 100
+           |            "otherIncome": 100,
+           |            "utr": "1234567890"
            |          }
            |        ]
            |      }
