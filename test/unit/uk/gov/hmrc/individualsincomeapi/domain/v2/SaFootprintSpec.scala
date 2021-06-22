@@ -66,7 +66,7 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
 
     "Write empty array when submissions are without receivedDate" in {
       val saFootPrint = SaFootprint.transform(ifSa)
-      val submissionsWithoutReceivedDate = saFootPrint.copy( taxReturns =
+      val withoutReceivedDate = saFootPrint.copy( taxReturns =
           Seq(SaFootprintTaxReturn(
             "2019-20",
             Seq( SaFootprintSubmission(
@@ -84,12 +84,14 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
                        |  }]
                        |}""".stripMargin
 
-      Json.toJson(submissionsWithoutReceivedDate) shouldBe Json.parse(expected)
+      Json.toJson(withoutReceivedDate) shouldBe Json.parse(expected)
     }
 
     "Write empty array when registrations are without registrationDate" in {
       val saFootPrint = SaFootprint.transform(ifSa)
-      val withoutRegistrations = saFootPrint.copy(registrations = saFootPrint.registrations.map(r => r.copy(registrationDate = None)))
+      val withoutRegistrationDate = saFootPrint.copy(registrations =
+        saFootPrint.registrations.map(r => r.copy(registrationDate = None)))
+
       val expected = """{
                        |  "registrations" : [ ],
                        |  "taxReturns" : [ {
@@ -103,8 +105,7 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
                        |  } ]
                        |}""".stripMargin
 
-      Json.toJson(withoutRegistrations) shouldBe Json.parse(expected)
+      Json.toJson(withoutRegistrationDate) shouldBe Json.parse(expected)
     }
-
   }
 }
