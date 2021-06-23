@@ -18,7 +18,8 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.v2.SaFootprint
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
+import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaFootprint, SaFootprintSubmission, SaFootprintTaxReturn}
 import utils.IncomeSaHelpers
 
 class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
@@ -63,5 +64,48 @@ class SaFootprintSpec extends WordSpec with Matchers with IncomeSaHelpers {
       result shouldBe expectedJson
     }
 
+    "Write empty array when submissions are without receivedDate" in {
+      val saFootPrint = SaFootprint.transform(ifSa)
+      val withoutReceivedDate = saFootPrint.copy( taxReturns =
+          Seq(SaFootprintTaxReturn(
+            "2019-20",
+            Seq( SaFootprintSubmission(
+              receivedDate = None,
+              utr = Some("1234567890"))))))
+
+      val expected = """{
+                       |  "registrations" : [ {
+                       |    "registrationDate" : "2020-01-01",
+                       |    "utr" : "1234567890"
+                       |  } ],
+                       |  "taxReturns" : [ {
+                       |    "taxYear" : "2019-20",
+                       |    "submissions" : [ ]
+                       |  }]
+                       |}""".stripMargin
+
+      Json.toJson(withoutReceivedDate) shouldBe Json.parse(expected)
+    }
+
+    "Write empty array when registrations are without registrationDate" in {
+      val saFootPrint = SaFootprint.transform(ifSa)
+      val withoutRegistrationDate = saFootPrint.copy(registrations =
+        saFootPrint.registrations.map(r => r.copy(registrationDate = None)))
+
+      val expected = """{
+                       |  "registrations" : [ ],
+                       |  "taxReturns" : [ {
+                       |    "taxYear" : "2019-20",
+                       |    "submissions": [
+                       |        {
+                       |          "receivedDate": "2020-01-01",
+                       |          "utr": "1234567890"
+                       |        }
+                       |      ]
+                       |  } ]
+                       |}""".stripMargin
+
+      Json.toJson(withoutRegistrationDate) shouldBe Json.parse(expected)
+    }
   }
 }
