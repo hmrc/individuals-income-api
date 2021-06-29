@@ -33,7 +33,7 @@
     </tr>
     <tr>
          <td><p>toTaxYear earlier than fromTaxYear</p></td>
-         <td><p>Any valid dates where the toTaxYear is earlier than the fromTaxYear.</p><p>For example, fromTaxYear=2018-19 toTaxYear=2019-20</p>/td>
+         <td><p>Any valid dates where the toTaxYear is earlier than the fromTaxYear.</p><p>For example, fromTaxYear=2018-19 toTaxYear=2019-20</p></td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Invalid time period requested&quot; }</p>
