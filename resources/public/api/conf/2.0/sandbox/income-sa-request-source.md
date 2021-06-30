@@ -13,7 +13,7 @@
     <tr>
         <td><p>A valid, successful request for income source data.</p></td>
         <td>
-            <p>The matchID is obtained from the Individuals Matching API. For example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430</p>
+            <p>The matchId is obtained from the Individuals Matching API. For example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430</p>
             <p>fromTaxYear=2018-9</p>
             <p>toTaxYear=2019-20</p>
         </td>
