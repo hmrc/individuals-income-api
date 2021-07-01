@@ -12,7 +12,7 @@
     <tbody>
     <tr>
         <td><p>A valid, successful request for PAYE employments data</p></td>
-        <td><p>The matchId is obtained from the Individuals Matching API. For example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430&gt;</p><p>fromDate=2018-01-01</p><p>toDate=2019-03-01</p></td>
+        <td><p>The matchId is obtained from the Individuals Matching API. For example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430</p><p>fromDate=2018-01-01</p><p>toDate=2019-03-01</p></td>
         <td><p>200 (OK)</p><p>Payload as response example above</p></td>
     </tr>
     <tr>
