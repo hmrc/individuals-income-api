@@ -28,7 +28,7 @@
     </tr>
     <tr>
       <td><p>No data found for the provided matchId</p></td>
-      <td><p>The matchId has no related data</p></td>
+      <td><p>The matchId has no related data.</p></td>
       <td>
         <p>404 (Not Found)</p>
         <p>{ &quot;code&quot; : &quot;NOT_FOUND&quot;,<br/>&quot;message&quot; : &quot;The resource cannot be found&quot; }</p>
@@ -44,7 +44,7 @@
     </tr>
     <tr>
         <td><p>Malformed CorrelationId</p></td>
-        <td><p>The correlationId is in the incorrect format. Check the request headers section for the correct format</p></td>
+        <td><p>The correlationId is in the incorrect format. Check the request headers section for the correct format.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CorrelationId&quot; }</p></td>

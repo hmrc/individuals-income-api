@@ -71,7 +71,10 @@
     </tr>
     <tr>
          <td><p>Invalid tax year format</p></td>
-         <td><p>Any tax year that is not in the correct format. Check the query parameters section for the correct format.</p></td>
+         <td>
+            <p>Any tax year that is not in the correct format. Check the query parameters section for the correct format.</p>
+            <p>For example, 2017-2018</p>
+        </td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear: invalid tax year format&quot; }</p>

@@ -33,7 +33,7 @@
     </tr>
     <tr>
          <td><p>toDate earlier than fromDate</p></td>
-         <td><p>Any valid dates where toDate is earlier than fromDate</p><p>For example:</p><p>fromDate=2019-01-01 toDate=2018-01-01</p></td>
+         <td><p>Any valid dates where toDate is earlier than fromDate.</p><p>For example:</p><p>fromDate=2019-01-01 toDate=2018-01-01</p></td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Invalid time period requested&quot; }</p>
@@ -51,7 +51,10 @@
          </td>
     </tr>
          <td><p>The fromDate is earlier than the current tax year minus 6</p></td>
-         <td><p>For example:</p><p>fromDate=2014-01-01</p></td>
+         <td>
+            <p>The fromDate is earlier than the current tax year minus 6.</p>
+            <p>For example:</p><p>fromDate=2014-01-01</p>
+         </td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromDate is earlier than maximum allowed&quot; }</p>

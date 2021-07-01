@@ -47,7 +47,9 @@
     </tr>
     <tr>
          <td><p>fromTaxYear earlier than the current tax year minus 6</p></td>
-         <td><p>The fromTaxYear earlier than the current tax year minus 6.</p><p>For example:</p><p>fromTaxYear=2013-14</p></td>
+         <td>
+            <p>The fromTaxYear earlier than the current tax year minus 6.</p>
+            <p>For example:</p><p>fromTaxYear=2013-14</p></td>
          <td>
            <p>400 (Bad Request)</p>
            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear earlier than maximum allowed&quot; }</p>

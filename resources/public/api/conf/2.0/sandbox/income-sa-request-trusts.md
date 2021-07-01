@@ -41,7 +41,10 @@
     </tr>
     <tr>
          <td><p>The toTaxYear is later than the current tax year.</p></td>
-         <td><p>For example:</p><p>fromTaxYear=2016-17 toTaxYear=2098-99</p></td>
+         <td>
+            <p>The toTaxYear is later than the current tax year.</p>
+            <p>For example:</p><p>fromTaxYear=2016-17 toTaxYear=2098-99</p>
+         </td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear is later than the current tax year&quot; }</p>
@@ -49,7 +52,10 @@
     </tr>
     <tr>
          <td><p>The fromTaxYear is earlier than the current tax year minus 6.</p></td>
-         <td><p>For example:</p><p>fromTaxYear=2013-2014</p></td>
+         <td>
+            <p>The fromTaxYear is earlier than the current tax year minus 6.</p>
+            <p>For example:</p><p>fromTaxYear=2013-2014</p>
+         </td>
          <td>
            <p>400 (Bad Request)</p>
            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear earlier than maximum allowed&quot; }</p>
@@ -57,7 +63,10 @@
     </tr>
     <tr>
          <td><p>Invalid tax year format</p></td>
-         <td><p>Any tax year that is not in the correct format. Check the query parameters section for the correct format.</p></td>
+         <td>
+            <p>Any tax year that is not in the correct format. Check the query parameters section for the correct format.</p>
+            <p>For example, 2017-2018</p>
+         </td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear: invalid tax year format&quot; }</p>
