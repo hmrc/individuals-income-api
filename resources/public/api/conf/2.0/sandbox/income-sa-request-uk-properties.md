@@ -47,7 +47,7 @@
          </td>
     </tr>
     <tr>
-         <td><p>The toTaxYear is later than the current tax year.</p></td>
+         <td><p>toTaxYear is later than the current tax year.</p></td>
          <td>
             <p>The toTaxYear is later than the current tax year.</p>
             <p>For example: fromTaxYear=2016-17 toTaxYear=2098-99</p>

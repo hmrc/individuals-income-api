@@ -50,7 +50,7 @@
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toDate: invalid date format&quot; }</p>
          </td>
     </tr>
-         <td><p>The fromDate is earlier than the current tax year minus 6</p></td>
+         <td><p>fromDate is earlier than the current tax year minus 6</p></td>
          <td>
             <p>The fromDate is earlier than the current tax year minus 6.</p>
             <p>For example:</p><p>fromDate=2014-01-01</p>
