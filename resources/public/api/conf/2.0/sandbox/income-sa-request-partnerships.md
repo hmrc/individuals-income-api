@@ -40,8 +40,11 @@
          </td>
     </tr>
     <tr>
-         <td><p>toTaxYear later than the current tax year</p></td>
-         <td><p>For example, fromTaxYear=2016-17 toTaxYear=2098-99</p></td>
+         <td><p>toTaxYear is later than the current tax year</p></td>
+         <td>
+            <p>The toTaxYear is later than the current tax year.</p>
+            <p>For example, fromTaxYear=2016-17 toTaxYear=2098-99</p>
+         </td>
          <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;toTaxYear is later than the current tax year&quot; }</p>
@@ -49,7 +52,10 @@
     </tr>
     <tr>
          <td><p>fromTaxYear earlier than the current tax year minus 6</p></td>
-         <td><p>For example, fromTaxYear=2008-09</p></td>
+         <td>
+            <p>The fromTaxYear is earlier than the current tax year minus 6.</p>
+            <p>For example, fromTaxYear=2008-09</p>
+         </td>
          <td>
            <p>400 (Bad Request)</p>
            <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;fromTaxYear earlier than maximum allowed&quot; }</p>
@@ -77,7 +83,7 @@
     </tr>
     <tr>
         <td><p>Missing CorrelationId</p></td>
-        <td><p>CorrelationId header is missing</p></td>
+        <td><p>The correlationId is missing. Check the request headers section for what should be included.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;CorrelationId is required&quot; }</p></td>
@@ -85,7 +91,7 @@
     </tr>
     <tr>
         <td><p>Malformed CorrelationId</p></td>
-        <td><p>CorrelationId header is malformed</p></td>
+        <td><p>The correlationId is in the incorrect format. Check the request headers section for the correct format.</p></td>
         <td>
             <p>400 (Bad Request)</p>
             <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;Malformed CorrelationId&quot; }</p></td>
