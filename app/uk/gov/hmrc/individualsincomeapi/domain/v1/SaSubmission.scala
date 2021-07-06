@@ -248,18 +248,7 @@ case class SourceAddress(line1: Option[String] = None,
 }
 
 object SourceAddress {
-  implicit val desReads: Reads[SourceAddress] = (
-    (__ \ "line1").readNullable[String] and
-      (__ \ "line2").readNullable[String] and
-      (__ \ "line3").readNullable[String] and
-      (__ \ "line4").readNullable[String] and
-      (__ \ "line5").readNullable[String] and
-      (__ \ "postalCode").readNullable[String] and
-      (__ \ "effectiveDate").readNullable[LocalDate] and
-      (__ \ "addressType").readNullable[String]
-    )(SourceAddress.apply _)
-
-  implicit val apiWrites: Writes[SourceAddress] = Json.writes[SourceAddress]
+  implicit val apiWrites: Format[SourceAddress] = Json.format[SourceAddress]
 }
 
 case class SaIncomeSource(
