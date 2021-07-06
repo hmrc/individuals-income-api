@@ -41,6 +41,11 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
           caseStartDate = Some(LocalDate.parse("2014-01-15")),
           receivedDate = Some(LocalDate.parse("2017-11-05")),
           utr = SaUtr("2432552644"),
+          addressLine1 = Some("address line 1"),
+          addressLine2 = Some("address line 2"),
+          addressLine3 = Some("address line 3"),
+          addressLine4 = Some("address line 4"),
+          postalCode = Some("postal code"),
           income = SAIncome(
             incomeFromAllEmployments = Some(1545.55),
             profitFromSelfEmployment = Some(2535.55),
@@ -815,5 +820,69 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
+  feature("SA source endpoint") {
+    scenario("Fetch Self Assessment source") {
+      Given("A privileged Auth bearer token with scope read:individuals-income-sa-source")
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-source")
+
+      And("a valid record in the matching API")
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, s"""{"matchId" : "$matchId", "nino" : "$nino"}""")
+
+      And("DES will return self-assessment data for the individual")
+      DesStub.searchSelfAssessmentIncomeForPeriodReturns(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+
+      When("I request the sa source")
+      val response = Http(s"$serviceUrl/sa/source?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(headers)
+        .asString
+
+      Then("The response status should be 200 (OK) with the sources")
+      response.code shouldBe OK
+
+      Json.parse(response.body) shouldBe
+        Json.parse(s"""
+           {
+             "_links": {
+               "self": {"href": "/individuals/income/sa/sources?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19"}
+             },
+             "selfAssessment": {
+               "taxReturns": [
+                 {
+                   "taxYear": "2016-17",
+                   "sources" : [ {
+                      "utr" : "2432552644",
+                      "businessAddress" : {
+                        "line1" : "address line 1",
+                        "line2" : "address line 2",
+                        "line3" : "address line 3",
+                        "line4" : "address line 4",
+                        "postcode" : "postal code"
+                      }
+                    } ]
+                 }
+               ]
+             }
+           }
+         """)
+    }
+
+    scenario("Invalid token") {
+      Given("A token WITHOUT the scope read:individuals-income-sa-source")
+      AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-source")
+
+      When("I request the sa trusts income")
+      val response = Http(s"$serviceUrl/sa/source?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+        .headers(requestHeaders(acceptHeaderP1))
+        .asString
+
+      Then("The response status should be 401 (Unauthorized)")
+      response.code shouldBe UNAUTHORIZED
+      Json.parse(response.body) shouldBe Json
+        .obj("code" -> "UNAUTHORIZED", "message" -> "Bearer token is missing or not authorized")
+    }
+  }
+
   private def headers: Map[String, String] = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
 }
+
+
