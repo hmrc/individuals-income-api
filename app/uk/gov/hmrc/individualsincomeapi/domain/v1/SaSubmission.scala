@@ -17,10 +17,12 @@
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import org.joda.time.LocalDate
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, Reads, Writes, __}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import uk.gov.hmrc.individualsincomeapi.domain.TaxYear.formatTaxYear
+import play.api.libs.functional.syntax._
+import play.api.libs.json.JodaReads._
+import play.api.libs.json.JodaWrites._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome}
 
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
@@ -208,7 +210,7 @@ object SaIncomeSources {
             case None      => None
           }
 
-          val address = DesAddress(
+          val address = SourceAddress(
             sa.addressLine1,
             sa.addressLine2,
             sa.addressLine3,
@@ -232,10 +234,27 @@ object SaIncomeSources {
   implicit val format: Format[SaIncomeSources] = Json.format[SaIncomeSources]
 }
 
+
+case class SourceAddress(line1: Option[String] = None,
+                         line2: Option[String] = None,
+                         line3: Option[String] = None,
+                         line4: Option[String] = None,
+                         line5: Option[String] = None,
+                         postcode: Option[String] = None,
+                         effectiveDate: Option[LocalDate] = None,
+                         addressType: Option[String] = None) {
+
+  def isEmpty: Boolean = this == SourceAddress()
+}
+
+object SourceAddress {
+  implicit val apiWrites: Format[SourceAddress] = Json.format[SourceAddress]
+}
+
 case class SaIncomeSource(
   utr: SaUtr,
   businessDescription: Option[String],
-  businessAddress: Option[DesAddress],
+  businessAddress: Option[SourceAddress],
   telephoneNumber: Option[String])
 
 object SaIncomeSource {

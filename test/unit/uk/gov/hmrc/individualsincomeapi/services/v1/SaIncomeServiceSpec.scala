@@ -31,7 +31,7 @@ import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatc
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain.{v1, _}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome, DesSAReturn, SAIncome}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaIncomeSource, SaIncomeSources, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaIncomeSource, SaIncomeSources, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary, SourceAddress}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaCacheId, SaIncomeCacheService, SandboxSaIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
@@ -762,7 +762,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
               anSAReturn.utr,
               Some("business"),
               Some(
-                DesAddress(
+                SourceAddress(
                   Some("line 1"),
                   Some("line 2"),
                   Some("line 3"),
@@ -851,7 +851,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
                 SaIncomeSource(
                   anSAReturn.utr,
                   Some("thing"),
-                  Some(DesAddress(line1 = Some("line 1"), addressType = addressType)),
+                  Some(SourceAddress(line1 = Some("line 1"), addressType = addressType)),
                   None
                 )
               )))
