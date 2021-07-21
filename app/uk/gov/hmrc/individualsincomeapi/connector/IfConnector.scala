@@ -21,7 +21,6 @@ import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain._

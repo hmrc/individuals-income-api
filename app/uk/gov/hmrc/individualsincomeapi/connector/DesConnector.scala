@@ -22,7 +22,6 @@ import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
@@ -58,7 +57,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
     val toTaxYear = taxYearInterval.toTaxYear.endYr
-    val originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
+    val originator = hc.extraHeaders.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
     implicit val saIncomeReads: Reads[DesSAIncome] = DesSAIncome.desReads
 
     val saIncomeUrl =
