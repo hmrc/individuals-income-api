@@ -26,7 +26,7 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
@@ -54,7 +54,7 @@ class IfConnectorSpec
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "microservice.services.integration-framework.host"                -> "localhost",
+      "microservice.services.integration-framework.host"         -> "127.0.0.1",
       "microservice.services.integration-framework.port"                -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
       "microservice.services.integration-framework.environment"         -> integrationFrameworkEnvironment
@@ -113,7 +113,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
             .withQueryParam("startDate", equalTo(startDate))
             .withQueryParam("endDate", equalTo(endDate))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(aResponse()
               .withStatus(200)
@@ -146,7 +146,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
             .withQueryParam("startDate", equalTo(startDate))
             .withQueryParam("endDate", equalTo(endDate))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(
               aResponse()
@@ -182,7 +182,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
             .withQueryParam("startDate", equalTo(startDate))
             .withQueryParam("endDate", equalTo(endDate))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(aResponse()
               .withStatus(200)
@@ -294,7 +294,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
             .withQueryParam("startYear", equalTo(startYear))
             .withQueryParam("endYear", equalTo(endYear))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(aResponse()
               .withStatus(200)
@@ -326,7 +326,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
             .withQueryParam("startYear", equalTo(startYear))
             .withQueryParam("endYear", equalTo(endYear))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(
               aResponse()
@@ -363,7 +363,7 @@ class IfConnectorSpec
           get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
             .withQueryParam("startYear", equalTo(startYear))
             .withQueryParam("endYear", equalTo(endYear))
-            .withHeader("Authorization", equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+            .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .willReturn(aResponse()
               .withStatus(200)

@@ -24,7 +24,7 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment, DesSAIncome, DesSAReturn, SAIncome}
@@ -48,7 +48,7 @@ class DesConnectorSpec
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "microservice.services.des.host"                -> "localhost",
+      "microservice.services.des.host"         -> "127.0.0.1",
       "microservice.services.des.port"                -> "11122",
       "microservice.services.des.authorization-token" -> desAuthorizationToken,
       "microservice.services.des.environment"         -> desEnvironment
@@ -115,7 +115,7 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
           .withQueryParam("from", equalTo(fromDate))
           .withQueryParam("to", equalTo(toDate))
-          .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
+          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $desAuthorizationToken"))
           .withHeader("Environment", equalTo(desEnvironment))
           .willReturn(
             aResponse()
@@ -197,7 +197,7 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
           .withQueryParam("startYear", equalTo(startYear))
           .withQueryParam("endYear", equalTo(endYear))
-          .withHeader("Authorization", equalTo(s"Bearer $desAuthorizationToken"))
+          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $desAuthorizationToken"))
           .withHeader("Environment", equalTo(desEnvironment))
           .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
           .willReturn(
