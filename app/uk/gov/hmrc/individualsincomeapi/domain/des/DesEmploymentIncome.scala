@@ -26,15 +26,14 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 
 case class DesEmployments(employments: Seq[DesEmployment])
 
-case class DesAddress(
-  line1: Option[String] = None,
-  line2: Option[String] = None,
-  line3: Option[String] = None,
-  line4: Option[String] = None,
-  line5: Option[String] = None,
-  postcode: Option[String] = None,
-  effectiveDate: Option[LocalDate] = None,
-  addressType: Option[String] = None) {
+case class DesAddress( line1: Option[String] = None,
+                       line2: Option[String] = None,
+                       line3: Option[String] = None,
+                       line4: Option[String] = None,
+                       line5: Option[String] = None,
+                       postalCode: Option[String] = None,
+                       effectiveDate: Option[LocalDate] = None,
+                       addressType: Option[String] = None) {
 
   def isEmpty: Boolean = this == DesAddress()
 }

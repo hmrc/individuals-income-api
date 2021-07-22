@@ -28,17 +28,16 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class DocumentationController @Inject()(
   cc: ControllerComponents,
   assets: Assets,
-  errorHandler: HttpErrorHandler,
   config: Configuration)
     extends BackendController(cc) {
 
-  val v1WhitelistedApplicationIDs = config
+  private val v1WhitelistedApplicationIDs = config
     .getOptional[Seq[String]](
       "api.access.version-P1.0.whitelistedApplicationIds"
     )
     .getOrElse(Seq.empty)
 
-  val v2WhitelistedApplicationIDs = config
+  private val v2WhitelistedApplicationIDs = config
     .getOptional[Seq[String]](
       "api.access.version-2.0.whitelistedApplicationIds"
     )

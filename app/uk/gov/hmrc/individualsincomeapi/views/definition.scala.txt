@@ -142,6 +142,16 @@
       "key":"read:individuals-income-nictsejo-c4",
       "name":"access all self assessment information of individuals for nictsejo use case 4",
       "description":"Scope for NICTSEJO use case 4 to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-ho-ecp-application",
+      "name":"access all self assessment information of individuals for HO ECP Application use case",
+      "description":"Scope for HO ECP Application use case to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-ho-ecp-compliance",
+      "name":"access all self assessment information of individuals for HO ECP Compliance use case",
+      "description":"Scope for HO ECP Compliance use case to access all self assessment information of individuals"
     }
   ],
   "api": {

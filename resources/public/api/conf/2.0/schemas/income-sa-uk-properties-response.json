@@ -48,6 +48,12 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "utr": {
+                      "type": "string",
+                      "description": "A Unique Taxpayer Reference.",
+                      "pattern": "^[0-9]{10}$",
+                      "example": "3287654321"
+                    },
                     "totalProfit": {
                       "type": "number",
                       "description": "The profit from UK properties",

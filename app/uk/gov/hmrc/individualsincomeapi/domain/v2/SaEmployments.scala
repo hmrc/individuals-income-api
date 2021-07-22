@@ -29,7 +29,7 @@ object SaEmployments {
   def transform(ifSaEntry: Seq[IfSaEntry]) =
     SaEmployments(transformSaEmploymentsTaxReturn(ifSaEntry))
 
-  private def default = SaEmployment(0.0)
+  private def default = SaEmployment(0.0, None)
 
   private def transformSaEmployment(entry: IfSaEntry) =
     entry.returnList match {
@@ -37,7 +37,7 @@ object SaEmployments {
         list.map { entry =>
           entry.income match {
             case Some(value) =>
-              SaEmployment(value.allEmployments.getOrElse(0.0))
+              SaEmployment(value.allEmployments.getOrElse(0.0), entry.utr)
             case _ => default
           }
         }

@@ -25,6 +25,7 @@ case class ApiSaResponseEventModel(deviceId: String,
                                    apiVersion: String,
                                    matchId: String,
                                    correlationId: Option[String],
+                                   applicationId: String,
                                    scopes: String,
                                    returnLinks: String,
                                    response: Option[JsValue])

@@ -35,7 +35,8 @@ class SaSelfEmploymentsSpec extends WordSpec with Matchers with IncomeSaHelpers 
                                       |      "taxYear": "2019-20",
                                       |      "selfEmployments": [
                                       |        {
-                                      |          "selfEmploymentProfit": 100
+                                      |          "selfEmploymentProfit": 100,
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }
@@ -77,7 +78,7 @@ class SaSelfEmploymentsSpec extends WordSpec with Matchers with IncomeSaHelpers 
       result shouldBe expectedJson
     }
 
-    "Write to Json with defaults no vales" in {
+    "Write to Json with defaults no values" in {
 
       val expectedJson = Json.parse("""{
                                       |  "taxReturns": [
@@ -85,7 +86,8 @@ class SaSelfEmploymentsSpec extends WordSpec with Matchers with IncomeSaHelpers 
                                       |      "taxYear": "2019-20",
                                       |      "selfEmployments": [
                                       |        {
-                                      |          "selfEmploymentProfit": 0.0
+                                      |          "selfEmploymentProfit": 0.0,
+                                      |          "utr": "1234567890"
                                       |        }
                                       |      ]
                                       |    }

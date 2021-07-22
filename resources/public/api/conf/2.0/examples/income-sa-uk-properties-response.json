@@ -10,6 +10,7 @@
         "taxYear": "2018-19",
         "ukProperties": [
           {
+            "utr": "3287654321",
             "totalProfit": 0
           }
         ]
@@ -18,6 +19,7 @@
         "taxYear": "2019-20",
         "ukProperties": [
           {
+            "utr": "3287654321",
             "totalProfit": 1276.67
           }
         ]

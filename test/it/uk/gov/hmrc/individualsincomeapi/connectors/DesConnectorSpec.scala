@@ -78,7 +78,7 @@ class DesConnectorSpec
     line3 = Some("Richmond"),
     line4 = Some("Surrey"),
     line5 = Some("UK"),
-    postcode = Some("AI22 9LL")
+    postalCode = Some("AI22 9LL")
   )
 
   val desPayments = Seq(

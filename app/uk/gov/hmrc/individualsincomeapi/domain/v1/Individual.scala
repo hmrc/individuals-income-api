@@ -42,12 +42,7 @@ case class Payment(
   paymentDate: LocalDate,
   employerPayeReference: Option[EmpRef] = None,
   monthPayNumber: Option[Int] = None,
-  weekPayNumber: Option[Int] = None) {
-
-  def isPaidWithin(interval: Interval): Boolean =
-    interval.contains(paymentDate.toDateTimeAtStartOfDay)
-
-}
+  weekPayNumber: Option[Int] = None)
 
 object Payment {
   implicit val paymentJsonFormat = Json.format[Payment]

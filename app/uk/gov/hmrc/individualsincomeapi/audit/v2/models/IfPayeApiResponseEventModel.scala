@@ -26,6 +26,7 @@ case class IfPayeApiResponseEventModel(deviceId: String,
                                        apiVersion: String,
                                        matchId: String,
                                        correlationId: String,
+                                       applicationId: String,
                                        requestUrl: String,
                                        integrationFrameworkPaye: Seq[IfPayeEntry])
 
