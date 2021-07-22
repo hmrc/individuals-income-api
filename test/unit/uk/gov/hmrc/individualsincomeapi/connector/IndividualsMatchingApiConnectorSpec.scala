@@ -41,7 +41,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
 
     val individualsMatchingApiConnector =
       new IndividualsMatchingApiConnector(servicesConfig, fakeApplication.injector.instanceOf[HttpClient]) {
-        override val serviceUrl = "http://localhost:11121"
+        override val serviceUrl = "http://127.0.0.1:11121"
       }
   }
 
