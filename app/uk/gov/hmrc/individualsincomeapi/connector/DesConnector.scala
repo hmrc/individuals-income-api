@@ -38,7 +38,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
   lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
   lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
-  def Headers = Seq(
+  def setHeaders = Seq(
     HeaderNames.authorisation -> s"Bearer $desBearerToken",
     "Environment"             -> desEnvironment,
     "Source"                  -> "MDTP"
@@ -52,7 +52,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
 
-    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = Headers).map(_.employments))
+    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = setHeaders).map(_.employments))
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
@@ -68,7 +68,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
 
-    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = Headers :+ ("OriginatorId" -> originator)))
+    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders :+ ("OriginatorId" -> originator)))
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
