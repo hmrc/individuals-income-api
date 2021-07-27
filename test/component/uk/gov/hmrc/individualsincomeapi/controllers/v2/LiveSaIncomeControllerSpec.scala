@@ -51,8 +51,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-hmcts-c4",
-      "read:individuals-income-ho-ecp-application",
-      "read:individuals-income-ho-ecp-compliance",
+      "read:individuals-income-ho-ecp",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -325,8 +324,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100009C"
 
     val employmentScopes = List(
-      "read:individuals-income-ho-ecp-application",
-      "read:individuals-income-ho-ecp-compliance",
+      "read:individuals-income-ho-ecp",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -500,8 +498,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val selfAssessmentScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
-      "read:individuals-income-ho-ecp-application",
-      "read:individuals-income-ho-ecp-compliance",
+      "read:individuals-income-ho-ecp",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4"
@@ -659,8 +656,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val summaryScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
-      "read:individuals-income-ho-ecp-application",
-      "read:individuals-income-ho-ecp-compliance",
+      "read:individuals-income-ho-ecp",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1961,8 +1957,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100007D"
 
     val otherIncomeScopes = List(
-      "read:individuals-income-ho-ecp-application",
-      "read:individuals-income-ho-ecp-compliance",
+      "read:individuals-income-ho-ecp",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
