@@ -22,7 +22,6 @@ import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
@@ -39,9 +38,11 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
   lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
   lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
-  private def header(extraHeaders: (String, String)*)(implicit hc: HeaderCarrier) =
-    hc.copy(authorization = Some(Authorization(s"Bearer $desBearerToken")))
-      .withExtraHeaders(Seq("Environment" -> desEnvironment, "Source" -> "MDTP") ++ extraHeaders: _*)
+  def setHeaders = Seq(
+    HeaderNames.authorisation -> s"Bearer $desBearerToken",
+    "Environment"             -> desEnvironment,
+    "Source"                  -> "MDTP"
+  )
 
   def fetchEmployments(nino: Nino, interval: Interval)(
     implicit hc: HeaderCarrier,
@@ -50,21 +51,24 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     val toDate = interval.getEnd.toLocalDate
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
-    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl)(implicitly, header(), ec).map(_.employments))
+
+    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = setHeaders).map(_.employments))
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
+
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
-    val toTaxYear = taxYearInterval.toTaxYear.endYr
-    val originator = hc.headers.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
+    val toTaxYear   = taxYearInterval.toTaxYear.endYr
+    val originator  = hc.extraHeaders.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
+
     implicit val saIncomeReads: Reads[DesSAIncome] = DesSAIncome.desReads
 
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
 
-    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl)(implicitly, header("OriginatorId" -> originator), ec))
+    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders :+ ("OriginatorId" -> originator)))
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
