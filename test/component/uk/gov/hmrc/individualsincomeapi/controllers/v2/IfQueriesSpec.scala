@@ -233,13 +233,8 @@ class IfQueriesSpec extends BaseSpec {
       queryString shouldBe res9
     }
 
-    scenario("For read:individuals-income-ho-ecp-application") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-ho-ecp-application"), endpoints)
-      queryString shouldBe "sa(returnList(income(allEmployments,other,selfAssessment,selfEmployment),receivedDate,utr),taxYear)"
-    }
-
-    scenario("For read:individuals-income-ho-ecp-compliance") {
-      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-ho-ecp-compliance"), endpoints)
+    scenario("For read:individuals-income-ho-ecp") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-ho-ecp"), endpoints)
       queryString shouldBe "sa(returnList(income(allEmployments,other,selfAssessment,selfEmployment),receivedDate,utr),taxYear)"
     }
   }
