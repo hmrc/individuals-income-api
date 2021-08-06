@@ -89,7 +89,7 @@ case class IfAdditionalFields(
 case class IfPayeEntry(
                         taxCode: Option[String],
                         paidHoursWorked: Option[String],
-                        payePositivePaymentDate: Option[Double],
+                        payePositivePaymentType: Option[Double],
                         totalTaxToDate: Option[Double],
                         taxDeductedOrRefunded: Option[Double],
                         grossEarningsForNics: Option[IfGrossEarningsForNics],
@@ -378,7 +378,7 @@ object IfPayeEntry {
       paye.paymentDate,
       paye.paidHoursWorked,
       paye.taxCode,
-      paye.payePositivePaymentDate,
+      paye.payePositivePaymentType,
       paye.taxablePay,
       paye.totalTaxToDate,
       paye.taxDeductedOrRefunded,

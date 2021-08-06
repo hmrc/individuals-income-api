@@ -23,7 +23,7 @@ case class SandboxIncomePaye() {
     IfPayeEntry(
       taxCode = Some("K971"),
       paidHoursWorked = Some("36"),
-      payePositivePaymentDate = Some(19157.5),
+      payePositivePaymentType = Some(19157.5),
       totalTaxToDate = Some(3095.89),
       taxDeductedOrRefunded = Some(159228.49),
       grossEarningsForNics = Some(createValodIFGrossEarningsForNics),
