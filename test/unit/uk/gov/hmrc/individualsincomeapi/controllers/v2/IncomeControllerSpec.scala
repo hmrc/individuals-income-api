@@ -128,7 +128,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |        "paidHoursWorked":"36",
            |        "taxCode":"K971",
            |        "taxablePay":16533.95,
-           |        "taxablePayToDate":19157.5,
+           |        "payePositivePaymentType":19157.5,
            |        "totalTaxToDate":3095.89,
            |        "taxDeductedOrRefunded":159228.49,
            |        "dednsFromNetPay":198035.8,

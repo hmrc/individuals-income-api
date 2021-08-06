@@ -89,7 +89,7 @@ case class IfAdditionalFields(
 case class IfPayeEntry(
                         taxCode: Option[String],
                         paidHoursWorked: Option[String],
-                        taxablePayToDate: Option[Double],
+                        payePositivePaymentDate: Option[Double],
                         totalTaxToDate: Option[Double],
                         taxDeductedOrRefunded: Option[Double],
                         grossEarningsForNics: Option[IfGrossEarningsForNics],
@@ -276,7 +276,7 @@ object IfPayeEntry {
           .keepAnd(pattern(taxCodePattern, "Invalid Tax Code")))) and
         (JsPath \ "paidHoursWorked").readNullable[String](maxLength[String](35)
           .keepAnd(pattern(paidHoursWorkPattern, "Invalid Paid Hours Work"))) and
-        (JsPath \ "taxablePayToDate").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "payePositivePaymentType").readNullable[Double](verifying(positivePaymentAmountValidator)) and
         (JsPath \ "totalTaxToDate").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "taxDeductedOrRefunded").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "grossEarningsForNICs").readNullable[IfGrossEarningsForNics] and
@@ -305,7 +305,7 @@ object IfPayeEntry {
     (
       (JsPath \ "taxCode").writeNullable[String] and
         (JsPath \ "paidHoursWorked").writeNullable[String] and
-        (JsPath \ "taxablePayToDate").writeNullable[Double] and
+        (JsPath \ "payePositivePaymentType").writeNullable[Double] and
         (JsPath \ "totalTaxToDate").writeNullable[Double] and
         (JsPath \ "taxDeductedOrRefunded").writeNullable[Double] and
         (JsPath \ "grossEarningsForNICs").writeNullable[IfGrossEarningsForNics] and
@@ -378,7 +378,7 @@ object IfPayeEntry {
       paye.paymentDate,
       paye.paidHoursWorked,
       paye.taxCode,
-      paye.taxablePayToDate,
+      paye.payePositivePaymentDate,
       paye.taxablePay,
       paye.totalTaxToDate,
       paye.taxDeductedOrRefunded,

@@ -40,7 +40,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       "inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber,paidHoursWorked," +
       "payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
-      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
+      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,payePositivePaymentType," +
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
@@ -132,7 +132,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
                |        "paymentDate":"2006-02-27",
                |        "paidHoursWorked":"36",
                |        "taxCode":"K971",
-               |        "taxablePayToDate":19157.5,
+               |        "payePositivePaymentType":19157.5,
                |        "taxablePay":16533.95,
                |        "totalTaxToDate":3095.89,
                |        "taxDeductedOrRefunded":159228.49,
@@ -287,7 +287,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
                |  "paymentDate":"2019-05-27",
                |  "paidHoursWorked":"36",
                |  "taxCode":"K971",
-               |  "taxablePayToDate":19157.5,
+               |  "payePositivePaymentType":19157.5,
                |  "totalTaxToDate":3095.89,
                |  "taxDeductedOrRefunded":159228.49,
                |  "dednsFromNetPay":198035.8,

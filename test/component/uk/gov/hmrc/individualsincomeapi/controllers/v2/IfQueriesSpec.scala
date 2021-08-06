@@ -45,20 +45,20 @@ class IfQueriesSpec extends BaseSpec {
         "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
         "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
         "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
-        "taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
+        "taxDeductedOrRefunded,taxYear,taxablePay,payePositivePaymentType," +
         "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
         "totalTaxToDate,weeklyPeriodNumber)"
 
     val res5 = "paye(dednsFromNetPay,grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
       "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity),taxYear," +
-      "taxablePayToDate,totalTaxToDate,weeklyPeriodNumber)"
+      "payePositivePaymentType,totalTaxToDate,weeklyPeriodNumber)"
 
     val res6 = "paye(employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
       "monthlyPeriodNumber,paidHoursWorked,payFrequency,paymentDate," +
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
-      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
+      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,payePositivePaymentType," +
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
@@ -71,7 +71,7 @@ class IfQueriesSpec extends BaseSpec {
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4)," +
       "monthlyPeriodNumber,payFrequency,paymentDate," +
       "statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
-      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
+      "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,payePositivePaymentType," +
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 

@@ -23,6 +23,7 @@ case class IfPaye(paye: Seq[IfPayeEntry])
 object IfPaye {
 
   val minValue = -999999999.99
+  val minPositiveValue = 0
   val maxValue = 999999999.99
   val payeWholeUnitsPaymentTypeMinValue = -99999
   val payeWholeUnitsPaymentTypeMaxValue = 99999
@@ -33,6 +34,8 @@ object IfPaye {
 
   def isInRange(value: Double): Boolean = value >= minValue && value <= maxValue
 
+  def isInPositiveRange(value: Double): Boolean = value >= minPositiveValue && value <= maxValue
+
   def isInRangeWholeUnits(value: Double): Boolean =
     value >= payeWholeUnitsPaymentTypeMinValue && value <= payeWholeUnitsPaymentTypeMaxValue
 
@@ -41,6 +44,10 @@ object IfPaye {
 
   def paymentAmountValidator(value: Double): Boolean =
     isInRange(value) && isMultipleOfPointZeroOne(value)
+
+  def positivePaymentAmountValidator(value: Double): Boolean =
+    isInPositiveRange(value) && isMultipleOfPointZeroOne(value)
+
 
   def payeWholeUnitsPaymentTypeValidator(value: Int): Boolean = isInRangeWholeUnits(value)
   def payeWholeUnitsPositivePaymentTypeValidator(value: Int): Boolean = isInRangePositiveWholeUnits(value)

@@ -103,9 +103,9 @@
                 "pattern": "^([1-9][0-9]{0,5}[LMNPTY])|(BR)|(0T)|(NT)|(D[0-8])|([K][1-9][0-9]{0,5})$",
                 "example": "K971"
               },
-              "taxablePayToDate": {
+              "payePositivePaymentType": {
                 "type": "number",
-                "description": "The taxable pay in this pay period including payrolled benefits to date in the range -999999999.99 to 999999999.99.",
+                "description": "The taxable pay in this pay period including payrolled benefits to date in the range 0 to 999999999.99.",
                 "example": "163068.82"
               },
               "taxablePay": {

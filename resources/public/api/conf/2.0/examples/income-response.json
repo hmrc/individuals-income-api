@@ -20,7 +20,7 @@
         "paymentDate": "2006-02-27",
         "paidHoursWorked": "35",
         "taxCode": "K971",
-        "taxablePayToDate": 19157.5,
+        "payePositivePaymentType": 19157.5,
         "taxablePay": 16533.95,
         "totalTaxToDate": 3095.89,
         "taxDeductedOrRefunded": 159228.49,
@@ -78,7 +78,7 @@
         "paymentDate": "2007-02-27",
         "paidHoursWorked": "35",
         "taxCode": "K971",
-        "taxablePayToDate": 19157.5,
+        "payePositivePaymentType": 19157.5,
         "totalTaxToDate": 3095.89,
         "taxDeductedOrRefunded": 159228.49,
         "employeePensionContribs": {
