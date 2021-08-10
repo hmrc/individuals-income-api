@@ -118,6 +118,11 @@ class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
       result.isError shouldBe true
     }
 
+    "Validate unsuccessfully when given invalid taxablePayToDate" in {
+      val result = Json.toJson(createInvalidTaxPayableToDate()).validate[IfPayeEntry]
+      result.isError shouldBe true
+    }
+
     "transform to income type correctly" in {
       val converted = Seq(createValidPayeEntry()) map IfPayeEntry.toIncome
       val result = Json.toJson(converted)
