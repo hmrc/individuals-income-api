@@ -36,6 +36,8 @@ import scala.util.{Success, Try}
 class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
                            (implicit ec: ExecutionContext) {
 
+  val logger: Logger = Logger(getClass)
+
   val serviceUrl = servicesConfig.baseUrl("integration-framework")
 
   lazy val integrationFrameworkBearerToken = servicesConfig.getString(
@@ -127,7 +129,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
                          requestUrl: String)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
     case validationError: JsValidationException => {
-      Logger.warn("Integration Framework JsValidationException encountered")
+      logger.warn("Integration Framework JsValidationException encountered")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl,
         s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
@@ -138,28 +140,28 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       notFound.message.contains("NO_DATA_FOUND") match {
         case true => Future.successful(Seq.empty)
         case _    => {
-          Logger.warn("Integration Framework NotFoundException encountered")
+          logger.warn("Integration Framework NotFoundException encountered")
           Future.failed(notFound)
         }
       }
     }
     case Upstream5xxResponse(msg, code, _, _) => {
-      Logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
+      logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case Upstream4xxResponse(msg, 429, _, _) => {
-      Logger.warn(s"IF Rate limited: $msg")
+      logger.warn(s"IF Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
     }
     case Upstream4xxResponse(msg, code, _, _) => {
-      Logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
+      logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case e: Exception => {
-      Logger.warn(s"Integration Framework Exception encountered")
+      logger.warn(s"Integration Framework Exception encountered")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, e.getMessage)
       Future.failed(new InternalServerException("Something went wrong."))
     }
