@@ -43,7 +43,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
     "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
 
-  feature("SA root endpoint") {
+  Feature("SA root endpoint") {
 
     val nino = "AA100009B"
 
@@ -72,7 +72,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa", rootScopes)
     testErrorHandling("sa", nino, fields, rootScopes)
 
-    scenario("Fetch Self Assessment returns") {
+    Scenario("Fetch Self Assessment returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -179,7 +179,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         )
     }
 
-    scenario("Fetch Self Assessment returns no root data") {
+    Scenario("Fetch Self Assessment returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -271,7 +271,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         )
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -288,7 +288,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -319,7 +319,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA employments endpoint") {
+  Feature("SA employments endpoint") {
 
     val nino = "AA100009C"
 
@@ -344,7 +344,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/employments", employmentScopes)
     testErrorHandling("sa/employments", nino, fields, employmentScopes)
 
-    scenario("Fetch Self Assessment employments returns") {
+    Scenario("Fetch Self Assessment employments returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
@@ -395,7 +395,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment employments returns no root data") {
+    Scenario("Fetch Self Assessment employments returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -436,7 +436,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, employmentScopes)
@@ -453,7 +453,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -484,7 +484,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA self employments endpoint") {
+  Feature("SA self employments endpoint") {
 
     val nino = "AA100009C"
 
@@ -509,7 +509,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/self-employments", selfAssessmentScopes)
     testErrorHandling("sa/self-employments", nino, fields, selfAssessmentScopes)
 
-    scenario("Fetch Self Assessment self employments returns") {
+    Scenario("Fetch Self Assessment self employments returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
@@ -560,7 +560,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment self employments returns no root data") {
+    Scenario("Fetch Self Assessment self employments returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -601,7 +601,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
@@ -618,7 +618,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -649,7 +649,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA summary endpoint") {
+  Feature("SA summary endpoint") {
 
     val nino = "AA100009D"
 
@@ -676,7 +676,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/summary", summaryScopes)
     testErrorHandling("sa/summary", nino, fields, summaryScopes)
 
-    scenario("Fetch Self Assessment summary returns") {
+    Scenario("Fetch Self Assessment summary returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
@@ -727,7 +727,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment summary returns no root data") {
+    Scenario("Fetch Self Assessment summary returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -768,7 +768,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, summaryScopes)
@@ -785,7 +785,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -816,7 +816,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA trusts endpoint") {
+  Feature("SA trusts endpoint") {
 
     val nino = "AA100001D"
 
@@ -834,7 +834,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/trusts", trustsScopes)
     testErrorHandling("sa/trusts", nino, fields, trustsScopes)
 
-    scenario("Fetch Self Assessment trusts returns") {
+    Scenario("Fetch Self Assessment trusts returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
@@ -884,7 +884,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment trusts returns no root data") {
+    Scenario("Fetch Self Assessment trusts returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -925,7 +925,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, trustsScopes)
@@ -942,7 +942,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -973,7 +973,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA foreign endpoint") {
+  Feature("SA foreign endpoint") {
 
     val nino = "AA100002D"
 
@@ -998,7 +998,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/foreign", foreignScopes)
     testErrorHandling("sa/foreign", nino, fields, foreignScopes)
 
-    scenario("Fetch Self Assessment foreign returns") {
+    Scenario("Fetch Self Assessment foreign returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
@@ -1048,7 +1048,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment foreign returns no root data") {
+    Scenario("Fetch Self Assessment foreign returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1089,7 +1089,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, foreignScopes)
@@ -1106,7 +1106,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1138,7 +1138,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   }
 
-  feature("SA partnerships endpoint") {
+  Feature("SA partnerships endpoint") {
 
     val nino = "AA100003D"
 
@@ -1162,7 +1162,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/partnerships", partnershipsScopes)
     testErrorHandling("sa/partnerships", nino, fields, partnershipsScopes)
 
-    scenario("Fetch Self Assessment partnerships returns") {
+    Scenario("Fetch Self Assessment partnerships returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
@@ -1212,7 +1212,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment partnerships returns no root data") {
+    Scenario("Fetch Self Assessment partnerships returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1253,7 +1253,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
@@ -1270,7 +1270,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1301,7 +1301,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA interests and dividends income") {
+  Feature("SA interests and dividends income") {
 
     val nino = "AA100003D"
 
@@ -1321,7 +1321,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/interests-and-dividends", interestsAndDividendsScopes)
     testErrorHandling("sa/interests-and-dividends", nino, fields, interestsAndDividendsScopes)
 
-    scenario("Fetch Self Assessment interests and dividends returns") {
+    Scenario("Fetch Self Assessment interests and dividends returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
@@ -1374,7 +1374,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment interests and dividends returns no root data") {
+    Scenario("Fetch Self Assessment interests and dividends returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1416,7 +1416,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
@@ -1434,7 +1434,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1466,7 +1466,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA pensions and state benefits income") {
+  Feature("SA pensions and state benefits income") {
 
     val nino = "AA100004D"
 
@@ -1484,7 +1484,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/pensions-and-state-benefits", pensionsAndStateBenefitsScopes)
     testErrorHandling("sa/pensions-and-state-benefits", nino, fields, pensionsAndStateBenefitsScopes)
 
-    scenario("Fetch Self Assessment pensions and benefits returns") {
+    Scenario("Fetch Self Assessment pensions and benefits returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
@@ -1535,7 +1535,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment pensions and benefits returns no root data") {
+    Scenario("Fetch Self Assessment pensions and benefits returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1577,7 +1577,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("An invalid token")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
@@ -1595,7 +1595,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with valid scopes")
@@ -1627,7 +1627,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA UK properties income") {
+  Feature("SA UK properties income") {
 
     val nino = "AA100005D"
 
@@ -1647,7 +1647,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/uk-properties", ukPropertiesScopes)
     testErrorHandling("sa/uk-properties", nino, fields, ukPropertiesScopes)
 
-    scenario("Fetch Self Assessment uk properties returns") {
+    Scenario("Fetch Self Assessment uk properties returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
@@ -1698,7 +1698,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment uk properties returns no root data") {
+    Scenario("Fetch Self Assessment uk properties returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1740,7 +1740,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
@@ -1758,7 +1758,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1790,7 +1790,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA additional information") {
+  Feature("SA additional information") {
 
     val nino = "AA100006D"
 
@@ -1808,7 +1808,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/additional-information", additionalInformationScopes)
     testErrorHandling("sa/additional-information", nino, fields, additionalInformationScopes)
 
-    scenario("Fetch Self Assessment additional information returns") {
+    Scenario("Fetch Self Assessment additional information returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
@@ -1860,7 +1860,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment additional information returns no root data") {
+    Scenario("Fetch Self Assessment additional information returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1902,7 +1902,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
@@ -1920,7 +1920,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -1952,7 +1952,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA other income") {
+  Feature("SA other income") {
 
     val nino = "AA100007D"
 
@@ -1977,7 +1977,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/other", otherIncomeScopes)
     testErrorHandling("sa/other", nino, fields, otherIncomeScopes)
 
-    scenario("Fetch Self Assessment other income returns") {
+    Scenario("Fetch Self Assessment other income returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
@@ -2029,7 +2029,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment other income returns no root data") {
+    Scenario("Fetch Self Assessment other income returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -2071,7 +2071,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
@@ -2089,7 +2089,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -2121,7 +2121,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     }
   }
 
-  feature("SA further details") {
+  Feature("SA further details") {
 
     val nino = "AA100008D"
 
@@ -2144,7 +2144,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     testTaxYears("sa/further-details", furtherDetailsScopes)
     testErrorHandling("sa/further-details", nino, fields, furtherDetailsScopes)
 
-    scenario("Fetch Self Assessment further details income returns") {
+    Scenario("Fetch Self Assessment further details income returns") {
 
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
@@ -2205,7 +2205,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Fetch Self Assessment further details income returns no root data") {
+    Scenario("Fetch Self Assessment further details income returns no root data") {
 
       val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
@@ -2247,7 +2247,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
           .toString()
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
 
       Given("A token WITHOUT the required scopes")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
@@ -2265,7 +2265,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
 
       val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
@@ -2298,7 +2298,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
   }
 
   def testAuthorisation(endpoint:String, scopes: List[String]): Unit = {
-    scenario("not authorized") {
+    Scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
@@ -2316,7 +2316,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
     }
 
-    scenario(s"user does not have valid scopes") {
+    Scenario(s"user does not have valid scopes") {
       Given("A valid auth token but invalid scopes")
       AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
 
@@ -2339,7 +2339,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                          fields: String,
                          rootScope: List[String]): Unit = {
 
-    scenario(s"valid request but invalid IF response") {
+    Scenario(s"valid request but invalid IF response") {
 
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -2370,7 +2370,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         "message" -> "Something went wrong.")
     }
 
-    scenario(s"IF returns an Internal Server Error") {
+    Scenario(s"IF returns an Internal Server Error") {
 
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -2394,7 +2394,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         "message" -> "Something went wrong.")
     }
 
-    scenario(s"IF returns an Bad Request Error") {
+    Scenario(s"IF returns an Bad Request Error") {
 
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -2422,7 +2422,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   def testMatchId(endpoint: String, rootScopes: List[String]): Unit = {
 
-    scenario("missing match id") {
+    Scenario("missing match id") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2442,7 +2442,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("malformed match id") {
+    Scenario("malformed match id") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2461,7 +2461,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("invalid match id") {
+    Scenario("invalid match id") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2482,7 +2482,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
   }
 
   def testTaxYears(endpoint: String, rootScopes: List[String]): Unit = {
-    scenario("missing fromTaxYear") {
+    Scenario("missing fromTaxYear") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2501,7 +2501,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("fromTaxYear earlier than toTaxYear") {
+    Scenario("fromTaxYear earlier than toTaxYear") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2520,7 +2520,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("From date requested is earlier than 31st March 2013") {
+    Scenario("From date requested is earlier than 31st March 2013") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2539,7 +2539,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("Invalid fromTaxYear") {
+    Scenario("Invalid fromTaxYear") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
@@ -2558,7 +2558,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     }
 
-    scenario("Invalid toTaxYear") {
+    Scenario("Invalid toTaxYear") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)

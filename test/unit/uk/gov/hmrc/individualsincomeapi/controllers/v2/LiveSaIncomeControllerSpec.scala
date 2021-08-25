@@ -489,6 +489,167 @@ class LiveSaIncomeControllerSpec
     }
   }
 
+  ///////////////////////////////
+  "LiveSaIncomeController.saIncomeSource" should {
+
+    "return 200 with the source income returns for the period" in new Setup {
+      val fakeRequest =
+        FakeRequest("GET", s"/individuals/income/sa/source?$requestParameters")
+          .withHeaders(sampleCorrelationIdHeader)
+
+      given(mockLiveSaIncomeService.fetchSources(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+        .willReturn(successful(SaSources.transform(ifSa)))
+
+      val result =
+        await(liveSaIncomeController.saIncomeSource(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe OK
+
+      //TODO Change response
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/source?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "sources": [
+           |          {
+           |              "businessDescription": "This is a business description",
+           |              "businessAddress": {
+           |                  "line1": "line1",
+           |                  "line2": "line2",
+           |                  "line3": "line3",
+           |                  "line4": "line4",
+           |                  "postalCode": "QW123QW"
+           |              },
+           |              "telephoneNumber": "12345678901"
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+    }
+
+    "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
+      val requestParametersWithoutToTaxYear = s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}"
+      val fakeRequestWithoutToTaxYear =
+        FakeRequest("GET", s"/individuals/income/sa/source?$requestParametersWithoutToTaxYear")
+          .withHeaders(sampleCorrelationIdHeader)
+
+      given(mockLiveSaIncomeService.fetchSources(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+        .willReturn(successful(SaSources.transform(ifSa)))
+
+      val result =
+        await(liveSaIncomeController.saIncomeSource(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links": {
+           |    "self": {
+           |      "href": "/individuals/income/sa/source?matchId=$matchId&fromTaxYear=2018-19"
+           |    }
+           |  },
+           |  "selfAssessment": {
+           |    "taxReturns": [
+           |      {
+           |        "taxYear": "2019-20",
+           |        "sources": [
+           |          {
+           |              "businessDescription": "This is a business description",
+           |              "businessAddress": {
+           |                  "line1": "line1",
+           |                  "line2": "line2",
+           |                  "line3": "line3",
+           |                  "line4": "line4",
+           |                  "postalCode": "QW123QW"
+           |              },
+           |              "telephoneNumber": "12345678901"
+           |          }
+           |        ]
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+    }
+
+    "return 404 for an invalid matchId" in new Setup {
+
+      given(mockLiveSaIncomeService.fetchSources(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+        .willReturn(failed(new MatchNotFoundException()))
+
+      val result = await(
+        liveSaIncomeController.saIncomeSource(matchId, taxYearInterval)(
+          FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+
+      status(result) shouldBe NOT_FOUND
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
+    }
+
+    "returns bad request with correct message when missing CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/source?$requestParameters")
+
+      given(mockLiveSaIncomeService.fetchSources(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+        .willReturn(successful(SaSources.transform(ifSa)))
+
+      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "CorrelationId is required"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
+    }
+
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
+      val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/source?$requestParameters")
+        .withHeaders("CorrelationId" -> "test")
+
+      given(mockLiveSaIncomeService.fetchSources(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+        .willReturn(successful(SaSources.transform(ifSa)))
+
+      val result = await(liveSaIncomeController.employmentsIncome(matchId, taxYearInterval)(fakeRequest))
+
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
+        """
+          |{
+          |  "code": "INVALID_REQUEST",
+          |  "message": "Malformed CorrelationId"
+          |}
+          |""".stripMargin
+      )
+
+      verify(liveSaIncomeController.auditHelper, times(1)).
+        auditApiFailure(any(), any(), any(), any(), any())(any())
+    }
+  }
+  ///////////////////////////////
+
   "LiveSaIncomeController.selfEmploymentsIncome" should {
 
     "return 200 with the self employments income for the period" in new Setup {

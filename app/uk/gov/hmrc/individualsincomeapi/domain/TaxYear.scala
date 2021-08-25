@@ -40,7 +40,7 @@ object TaxYear {
 
   private final def firstDayOfTaxYear(year: Int): LocalDate = new MonthDay(4, 6).toLocalDate(year)
 
-  private val matchTaxYear: String => Option[Match] = new Regex(s"$TaxYearRegex", "first", "second") findFirstMatchIn _
+  private val matchTaxYear: String => Option[Match] = new Regex(TaxYearRegex, "first", "second") findFirstMatchIn _
 
   def fromEndYear(endYear: Int): TaxYear = TaxYear(s"%04d-%02d".format(endYear - 1, endYear % 100))
 
