@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-//COVERAGE-OFF$
+// $COVERAGE-OFF$
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
@@ -70,4 +70,4 @@ class DocumentationController @Inject()(
 
 }
 
-//COVERAGE-ON$
+// $COVERAGE-ON$
