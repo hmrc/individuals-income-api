@@ -489,7 +489,6 @@ class LiveSaIncomeControllerSpec
     }
   }
 
-  ///////////////////////////////
   "LiveSaIncomeController.saIncomeSource" should {
 
     "return 200 with the source income returns for the period" in new Setup {
@@ -505,7 +504,6 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe OK
 
-      //TODO Change response
       jsonBodyOf(result) shouldBe Json.parse(
         s"""{
            |  "_links": {
@@ -648,7 +646,6 @@ class LiveSaIncomeControllerSpec
         auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
-  ///////////////////////////////
 
   "LiveSaIncomeController.selfEmploymentsIncome" should {
 
