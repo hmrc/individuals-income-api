@@ -23,6 +23,9 @@ trait IncomePayeHelpers {
   def createInvalidPayeEntry() =
     createValidPayeEntry().copy(payFrequency = Some("MADEUPVAL"))
 
+  def createInvalidTaxPayableToDate() =
+    createValidPayeEntry().copy(taxablePayToDate = Some(-99999))
+
   def createValidPayeEntry() =
     IfPayeEntry(
       Some("K971"),
