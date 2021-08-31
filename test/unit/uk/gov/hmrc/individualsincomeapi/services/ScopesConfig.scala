@@ -16,105 +16,80 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services
 
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 
-import uk.gov.hmrc.individualsincomeapi.config.{ApiConfig, EndpointConfig, ScopeConfig}
+trait ScopesConfig {
 
-trait ScopesConfig extends MockitoSugar {
+  val mockScopeOne: String = "scopeOne"
+  val mockScopeTwo: String = "scopeTwo"
+  val mockScopeThree: String = "scopeThree"
+  val mockScopeFour: String = "scopeFour"
 
-  val mockScope1 = "test1"
-  val mockScope2 = "test2"
-  val mockScope3 = "test3"
-  val mockScope4 = "test4"
-  val mockScope5 = "test5"
-  val mockScope6 = "test6"
-  val mockScope7 = "test7"
-  val mockScope8 = "test8"
+  val endpointKeyOne : String = "A"
+  val endpointKeyTwo : String = "B"
+  val endpointKeyThree : String = "C"
 
-  val mockEndpoint1 = "endpoint1"
-  val mockEndpoint2 = "endpoint2"
-  val mockEndpoint3 = "endpoint3"
+  val endpointOne : String = "sampleEndpointOne"
+  val endpointTwo : String = "sampleEndpointTwo"
+  val endpointThree : String = "sampleEndpointThree"
 
-  val mockConfig = Configuration(
-    (s"api-config.scopes.$mockScope1.fields", List("A", "B", "F")),
-    (s"api-config.scopes.$mockScope2.fields", List("A", "B", "C", "D", "E", "F", "G")),
-    (s"api-config.scopes.$mockScope3.fields", List("A", "P")),
-    (s"api-config.scopes.$mockScope4.fields", List("M", "N")),
-    (s"api-config.scopes.$mockScope5.fields", List("O", "P")),
-    (s"api-config.scopes.$mockScope6.fields", List("Q", "R")),
-    (s"api-config.scopes.$mockScope7.fields", List("Q", "R", "S", "T")),
-    (s"api-config.scopes.$mockScope8.fields", List("A", "B", "F", "M", "N", "Q", "R")),
-    (s"api-config.endpoints.$mockEndpoint1.endpoint", "/a/b/c?matchId=<matchId>{&fromDate,toDate}"),
-    (s"api-config.endpoints.$mockEndpoint1.title", "test"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.A", "payments"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.B", "employer/employerName"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.C", "employer/employerAddress/line1"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.D", "employer/employerAddress/line2"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.E", "employer/employerAddress/line3"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.F", "employer/employerDistrictNumber"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.G", "employer/employerSchemeReference"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.H", "employmentStartDate"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.I", "employmentLeavingDate"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.J", "employmentPayFrequency"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.K", "employeeAddress"),
-    (s"api-config.endpoints.$mockEndpoint1.fields.L", "payrollId"),
-    (s"api-config.endpoints.$mockEndpoint2.endpoint", "/a/b/d?matchId=<matchId>{&fromDate,toDate}"),
-    (s"api-config.endpoints.$mockEndpoint2.title", "test"),
-    (s"api-config.endpoints.$mockEndpoint2.fields.M", "field1"),
-    (s"api-config.endpoints.$mockEndpoint2.fields.N", "field2"),
-    (s"api-config.endpoints.$mockEndpoint2.fields.Q", "field3"),
-    (s"api-config.endpoints.$mockEndpoint2.fields.R", "field4"),
-    (s"api-config.endpoints.$mockEndpoint3.endpoint", "/a/b/e?matchId=<matchId>{&fromDate,toDate}"),
-    (s"api-config.endpoints.$mockEndpoint3.title", "test"),
-    (s"api-config.endpoints.$mockEndpoint3.fields.O", "field3"),
-    (s"api-config.endpoints.$mockEndpoint3.fields.P", "field4")
-  )
+  val mockConfig : Configuration = Configuration(
 
-  val mockApiConfig = ApiConfig(
-    scopes = List(
-      ScopeConfig(mockScope1, List("A", "B", "F")),
-      ScopeConfig(mockScope2, List("A", "B", "C", "D", "E", "F", "G")),
-      ScopeConfig(mockScope3, List("A", "P")),
-      ScopeConfig(mockScope4, List("M", "N")),
-      ScopeConfig(mockScope5, List("O", "P"))
-    ),
-    endpoints = List(
-      EndpointConfig(
-        name = mockEndpoint1,
-        link = "/a/b/c?matchId=<matchId>{&fromDate,toDate}",
-        title = "test",
-        fields = Map(
-          "A" -> "payments",
-          "B" -> "employer/employerName",
-          "C" -> "employer/employerAddress/line1",
-          "D" -> "employer/employerAddress/line2",
-          "E" -> "employer/employerAddress/line3",
-          "F" -> "employer/employerDistrictNumber",
-          "G" -> "employer/employerSchemeReference",
-          "H" -> "employmentStartDate",
-          "I" -> "employmentLeavingDate",
-          "J" -> "employmentPayFrequency",
-          "K" -> "employeeAddress",
-          "L" -> "payrollId"
-        )
-      ),
-      EndpointConfig(
-        name = mockEndpoint2,
-        link = "/a/b/d?matchId=<matchId>{&fromDate,toDate}",
-        title = "test",
-        fields = Map(
-          "M" -> "field1",
-          "N" -> "field2"
-        )),
-      EndpointConfig(
-        name = mockEndpoint3,
-        link = "/a/b/e?matchId=<matchId>{&fromDate,toDate}",
-        title = "test",
-        fields = Map(
-          "O" -> "field3",
-          "P" -> "field4"
-        ))
-    )
+    (s"api-config.scopes.$mockScopeOne.endpoints", Seq(endpointKeyOne, endpointKeyTwo)),
+    (s"api-config.scopes.$mockScopeOne.fields", Seq("A", "B", "C", "D")),
+
+    (s"api-config.scopes.$mockScopeTwo.endpoints", Seq(endpointKeyTwo, endpointKeyThree)),
+    (s"api-config.scopes.$mockScopeTwo.fields", Seq("E", "F", "G", "H", "I")),
+
+    (s"api-config.scopes.$mockScopeThree.endpoints", Seq(endpointKeyThree)),
+    (s"api-config.scopes.$mockScopeThree.fields", Seq("G", "H", "I")),
+    (s"api-config.scopes.$mockScopeThree.filters", Seq("A")),
+
+    (s"api-config.scopes.$mockScopeFour.endpoints", Seq(endpointKeyThree)),
+    (s"api-config.scopes.$mockScopeFour.fields", Seq("G", "H", "I")),
+    (s"api-config.scopes.$mockScopeFour.filters", Seq("B")),
+
+    (s"api-config.endpoints.internal.$endpointOne.key", endpointKeyOne),
+    (s"api-config.endpoints.internal.$endpointOne.endpoint", "/internal/1"),
+    (s"api-config.endpoints.internal.$endpointOne.title", "Get the first endpoint"),
+    (s"api-config.endpoints.internal.$endpointOne.fields", Seq("A", "B", "C")),
+
+    (s"api-config.endpoints.internal.$endpointTwo.key", endpointKeyTwo),
+    (s"api-config.endpoints.internal.$endpointTwo.endpoint", "/internal/2"),
+    (s"api-config.endpoints.internal.$endpointTwo.title", "Get the second endpoint"),
+    (s"api-config.endpoints.internal.$endpointTwo.fields", Seq("D", "E", "F")),
+
+    (s"api-config.endpoints.internal.$endpointThree.key", endpointKeyThree),
+    (s"api-config.endpoints.internal.$endpointThree.endpoint", "/internal/3"),
+    (s"api-config.endpoints.internal.$endpointThree.title", "Get the third endpoint"),
+    (s"api-config.endpoints.internal.$endpointThree.fields", Seq("G", "H", "I")),
+    (s"api-config.endpoints.internal.$endpointThree.filters", Seq("A", "B")),
+
+    (s"api-config.endpoints.external.$endpointOne.key", endpointKeyOne),
+    (s"api-config.endpoints.external.$endpointOne.endpoint", "/external/1"),
+    (s"api-config.endpoints.external.$endpointOne.title", "Get the first endpoint"),
+
+    (s"api-config.endpoints.external.$endpointTwo.key", endpointKeyTwo),
+    (s"api-config.endpoints.external.$endpointTwo.endpoint", "/external/2"),
+    (s"api-config.endpoints.external.$endpointTwo.title", "Get the second endpoint"),
+
+    (s"api-config.endpoints.external.$endpointThree.key", endpointKeyThree),
+    (s"api-config.endpoints.external.$endpointThree.endpoint", "/external/3"),
+    (s"api-config.endpoints.external.$endpointThree.title", "Get the third endpoint"),
+
+    (s"api-config.fields.A", "path/to/a"),
+    (s"api-config.fields.B", "path/to/b"),
+    (s"api-config.fields.C", "path/to/c"),
+
+    (s"api-config.fields.D", "path/to/d"),
+    (s"api-config.fields.E", "path/to/e"),
+    (s"api-config.fields.F", "path/to/f"),
+
+    (s"api-config.fields.G", "path/to/g"),
+    (s"api-config.fields.H", "path/to/h"),
+    (s"api-config.fields.I", "path/to/i"),
+
+    (s"api-config.filters.A", "contains(path/to/g,'FILTERED_VALUE_1')"),
+    (s"api-config.filters.B", "contains(path/to/g,'FILTERED_VALUE_2')"),
   )
 }
