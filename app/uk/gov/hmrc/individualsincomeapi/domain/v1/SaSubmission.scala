@@ -17,13 +17,12 @@
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import org.joda.time.LocalDate
-import play.api.libs.json.{Format, Json, Reads, Writes, __}
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import play.api.libs.functional.syntax._
 import play.api.libs.json.JodaReads._
 import play.api.libs.json.JodaWrites._
-import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome}
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
+import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
 
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 

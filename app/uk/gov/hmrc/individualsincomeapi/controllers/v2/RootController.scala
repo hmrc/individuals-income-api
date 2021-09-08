@@ -23,8 +23,8 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
+import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
-import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}

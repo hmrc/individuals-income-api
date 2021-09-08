@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import java.util.UUID
-import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.libs.json.Format
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -36,7 +34,7 @@ trait CacheService {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
     if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
       case Some(value) =>
         Future.successful(value)

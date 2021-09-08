@@ -48,7 +48,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     val config = mock[CacheConfiguration]
 
     val stubCache = new PayeIncomeCacheService(null, config) {
-      override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier) =
+      override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]) =
         fallbackFunction
     }
 
@@ -294,8 +294,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val config = mock[CacheConfiguration]
 
       val stubCache = new PayeIncomeCacheService(null, config) {
-        override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(
-          implicit hc: HeaderCarrier): Future[T] =
+        override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
           Future.successful(paye.asInstanceOf[T])
       }
 

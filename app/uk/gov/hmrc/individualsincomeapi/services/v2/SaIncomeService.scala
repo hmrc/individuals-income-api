@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import java.util.UUID
-
-import javax.inject.{Inject, Named, Singleton}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYearInterval}
+import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSources, SaSummaries, SaTrusts, SaUkProperties}
+import uk.gov.hmrc.individualsincomeapi.domain.v2._
 
+import java.util.UUID
+import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

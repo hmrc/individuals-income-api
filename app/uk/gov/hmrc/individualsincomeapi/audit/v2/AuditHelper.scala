@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2
 
+import play.api.libs.json.JsValue
 import play.api.mvc.RequestHeader
-import javax.inject.Inject
-import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiFailureResponseEventModel, ApiPayeResponseEventModel, ApiSaResponseEventModel, IfPayeApiResponseEventModel, IfSaApiResponseEventModel, ScopesAuditEventModel}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPayeEntry, IfSaEntry}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class AuditHelper @Inject()(auditConnector: AuditConnector)

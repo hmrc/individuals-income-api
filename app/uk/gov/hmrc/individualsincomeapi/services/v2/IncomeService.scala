@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import org.joda.time.{Interval, LocalDate}
+import org.joda.time.Interval
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
@@ -38,8 +38,6 @@ class IncomeService @Inject()(
   scopesHelper: ScopesHelper) {
 
   def endpoints = List("paye")
-
-  private implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
   def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
                                    (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
