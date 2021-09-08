@@ -18,13 +18,12 @@ package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec}
 import play.api.Application
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.{ACCEPT, AUTHORIZATION}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
-
 import scalaj.http.{Http, HttpResponse}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 
 class VersioningSpec extends BaseSpec {
 
@@ -52,24 +51,6 @@ class VersioningSpec extends BaseSpec {
 
       And("The response body should be for api version P1.0")
       Json.parse(response.body) shouldBe validResponsePayload
-    }
-
-    scenario("Requests with an accept header version 2.0") {
-      Given("A valid privileged Auth bearer token")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
-
-      When("A request to the match citizen endpoint is made with version 2.0 accept header")
-      val response = invokeWithHeaders(
-        s"/sandbox?matchId=$sandboxMatchId",
-        AUTHORIZATION -> authToken,
-        acceptHeaderP2,
-        correlationIdHeader)
-
-      Then("The response status should be 200")
-      response.code shouldBe OK
-
-      And("And the response body should be for api version 2.0")
-      Json.parse(response.body) shouldBe validResponsePayloadP2
     }
 
     scenario("Requests without an accept header default to version 1.0") {
@@ -115,23 +96,6 @@ class VersioningSpec extends BaseSpec {
                  }
              }
          }""")
-
-  private def validResponsePayloadP2 =
-    Json.parse(s"""{
-                  |  "_links": {
-                  |    "sa": {
-                  |      "href": "/individuals/income/sa?matchId=$sandboxMatchId{&fromTaxYear,toTaxYear}",
-                  |      "title": "Get an individual's Self Assessment income data"
-                  |    },
-                  |    "paye": {
-                  |      "href": "/individuals/income/paye?matchId=$sandboxMatchId{&fromDate,toDate}",
-                  |      "title": "Get an individual's PAYE income data per employment"
-                  |    },
-                  |    "self": {
-                  |      "href": "/individuals/income/?matchId=$sandboxMatchId"
-                  |    }
-                  |  }
-                  |}""".stripMargin)
 
   private def invokeWithHeaders(urlPath: String, headers: (String, String)*): HttpResponse[String] =
     Http(s"$serviceUrl$urlPath").headers(headers).asString

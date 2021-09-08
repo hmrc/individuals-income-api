@@ -16,21 +16,17 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import java.util.UUID
-
-import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry}
-import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
+import java.util.UUID
+import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.Future.{failed, successful}
 
 @Singleton
 class IncomeService @Inject()(

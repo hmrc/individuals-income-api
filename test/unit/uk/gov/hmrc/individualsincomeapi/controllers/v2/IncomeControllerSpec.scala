@@ -16,33 +16,32 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
 import akka.stream.Materializer
 import org.joda.time.{Interval, LocalDate}
-import org.mockito.ArgumentMatchers._
+import org.mockito.ArgumentMatchers.{any, eq => eqTo, _}
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status._
+import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
-import uk.gov.hmrc.domain.{EmpRef, Nino}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveIncomeController, LiveRootController, SandboxIncomeController, SandboxRootController}
-import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
-import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
-import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, verifyNoInteractions}
-import play.api.http.Status._
-import play.api.libs.json.Json
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.controllers.v2.IncomeController
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.MatchedCitizen
+import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesHelper, ScopesService}
+import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar with IncomePayeHelpers {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
@@ -53,9 +52,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
-    val mockSandboxIncomeService = mock[SandboxIncomeService]
     val mockLiveIncomeService = mock[IncomeService]
-    val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
     val mockAuditHelper = mock[AuditHelper]
 
@@ -77,11 +74,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     val ifPaye = Seq(createValidPayeEntry())
 
-    val sandboxIncomeController =
-      new SandboxIncomeController(mockSandboxIncomeService, scopeService, mockAuthConnector, controllerComponent, mockAuditHelper)
-
-    val liveIncomeController =
-      new LiveIncomeController(mockLiveIncomeService, scopeService, mockAuthConnector, controllerComponent, mockAuditHelper)
+    val incomeController =
+      new IncomeController(mockLiveIncomeService, scopeService, mockAuthConnector, controllerComponent, mockAuditHelper)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -99,7 +93,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
 
       val result =
-        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -176,7 +170,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(liveIncomeController.auditHelper, times(1)).
+      verify(incomeController.auditHelper, times(1)).
         auditApiResponse(any(), any(), any(), any(), any(), any())(any())
 
     }
@@ -187,7 +181,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -205,7 +199,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(liveIncomeController.auditHelper, times(1)).
+      verify(incomeController.auditHelper, times(1)).
         auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
@@ -217,7 +211,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -235,7 +229,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(liveIncomeController.auditHelper, times(1)).
+      verify(incomeController.auditHelper, times(1)).
         auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
@@ -245,11 +239,11 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
-        await(liveIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
 
-      verify(liveIncomeController.auditHelper, times(1)).
+      verify(incomeController.auditHelper, times(1)).
         auditApiFailure(any(), any(), any(), any(), any())(any())
 
     }
@@ -258,7 +252,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()))
+      val result = await(incomeController.income(matchId, interval)(FakeRequest()))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -270,7 +264,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
           |""".stripMargin
       )
 
-      verify(liveIncomeController.auditHelper, times(1)).
+      verify(incomeController.auditHelper, times(1)).
         auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
@@ -278,7 +272,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(liveIncomeController.income(matchId, interval)(FakeRequest()
+      val result = await(incomeController.income(matchId, interval)(FakeRequest()
         .withHeaders("CorrelationId" -> "test")))
 
       status(result) shouldBe BAD_REQUEST
@@ -291,38 +285,8 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
           |""".stripMargin
       )
 
-      verify(liveIncomeController.auditHelper, times(1)).
+      verify(incomeController.auditHelper, times(1)).
         auditApiFailure(any(), any(), any(), any(), any())(any())
     }
-
-    "not require bearer token authentication for Sandbox" in new Setup {
-
-      given(mockSandboxIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
-        .willReturn(successful(Seq.empty))
-
-      val result =
-        await(sandboxIncomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
-
-      status(result) shouldBe OK
-
-      jsonBodyOf(result) shouldBe Json.parse(
-        s"""{
-           |  "_links":{
-           |    "self":{
-           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
-           |    }
-           |  },
-           |  "paye":{
-           |    "income":[
-           |    ]
-           |  }
-           |}""".stripMargin
-      )
-
-      verifyNoInteractions(mockAuthConnector)
-      verify(sandboxIncomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
-    }
-
   }
 }

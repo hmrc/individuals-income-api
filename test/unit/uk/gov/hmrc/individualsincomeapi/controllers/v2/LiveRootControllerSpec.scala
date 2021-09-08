@@ -16,29 +16,28 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.refEq
+import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
-import play.api.test._
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveRootController, SandboxRootController}
-import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
-import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
-import utils.{AuthHelper, SpecBase}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
+import play.api.test._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.controllers.v2.RootController
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
+import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
+import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesHelper, ScopesService}
+import utils.{AuthHelper, SpecBase}
 
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -64,7 +63,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
 
-    val liveRootController = new LiveRootController(
+    val liveRootController = new RootController(
       mockLiveCitizenMatchingService,
       scopeService,
       scopesHelper,

@@ -25,10 +25,8 @@ import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatch
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaAdditionalInformationRecords, SaEmployments, SaFootprint, SaForeignIncomes, SaFurtherDetails, SaInterestAndDividends, SaOtherIncomeRecords, SaPartnerships, SaPensionAndStateBenefits, SaSelfEmployments, SaSources, SaSummaries, SaTrusts, SaUkProperties}
-import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData.findByMatchId
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.Future.{failed, successful}
 
 @Singleton
 class SaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
