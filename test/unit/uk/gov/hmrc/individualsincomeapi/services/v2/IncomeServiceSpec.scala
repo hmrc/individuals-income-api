@@ -33,7 +33,7 @@ import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
-import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, LiveIncomeService, PayeIncomeCacheService, SandboxIncomeService, ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, IncomeService, PayeIncomeCacheService, SandboxIncomeService, ScopesHelper, ScopesService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.{IncomePayeHelpers, SpecBase}
 import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData._
@@ -60,7 +60,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     val scopesService = mock[ScopesService]
     val scopesHelper = mock[ScopesHelper]
 
-    val liveIncomeService = new LiveIncomeService(
+    val liveIncomeService = new IncomeService(
       mockMatchingConnector,
       mockIfConnector,
       1,
@@ -306,7 +306,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
 
-      val testService = new LiveIncomeService(mockMatching, mockIf, 1, stubCache, scopesService, scopesHelper)
+      val testService = new IncomeService(mockMatching, mockIf, 1, stubCache, scopesService, scopesHelper)
 
       val res = await(
         testService

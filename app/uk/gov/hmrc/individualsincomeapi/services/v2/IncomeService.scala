@@ -32,29 +32,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
-trait IncomeService {
-
-  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
-
-  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
-                          (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]]
-
-  def endpoints =
-    List("paye")
-
-}
-
 @Singleton
-class LiveIncomeService @Inject()(
+class IncomeService @Inject()(
   matchingConnector: IndividualsMatchingApiConnector,
   ifConnector: IfConnector,
   @Named("retryDelay") retryDelay: Int,
   cache: PayeIncomeCacheService,
   scopeService: ScopesService,
-  scopesHelper: ScopesHelper)
-    extends IncomeService {
+  scopesHelper: ScopesHelper) {
 
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
+  def endpoints = List("paye")
+
+  private implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
+
+  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
                                    (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
@@ -74,32 +65,5 @@ class LiveIncomeService @Inject()(
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
-
-}
-
-@Singleton
-class SandboxIncomeService extends IncomeService {
-
-  def paymentFilter(interval: Interval)(payeEntry: IfPayeEntry): Boolean = {
-
-    val paymentDate = LocalDate
-      .parse(
-        payeEntry.paymentDate.getOrElse(LocalDate.now.toString)
-      )
-      .toDateTimeAtStartOfDay
-
-    interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
-
-  }
-
-  override def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
-                                   (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
-    findByMatchId(matchId).map(_.income) match {
-      case Some(payeIncome) =>
-        successful(
-          (payeIncome.filter(paymentFilter(interval)) map IfPayeEntry.toIncome).sortBy(_.paymentDate).reverse
-        )
-      case None => failed(new MatchNotFoundException)
-    }
 
 }

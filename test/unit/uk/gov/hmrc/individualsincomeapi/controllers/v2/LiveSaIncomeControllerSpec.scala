@@ -34,7 +34,7 @@ import uk.gov.hmrc.individualsincomeapi.controllers.v2.LiveSaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.v2._
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{SaIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, IncomeSaHelpers, SpecBase, TestSupport}
 
 import java.util.UUID
@@ -51,7 +51,7 @@ class LiveSaIncomeControllerSpec
     val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
-    val mockLiveSaIncomeService = mock[LiveSaIncomeService]
+    val mockLiveSaIncomeService = mock[SaIncomeService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
 
     implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]

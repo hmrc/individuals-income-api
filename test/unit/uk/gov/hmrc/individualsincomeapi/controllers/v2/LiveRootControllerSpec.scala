@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.{LiveRootController, SandboxRootController}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.services.{LiveCitizenMatchingService, SandboxCitizenMatchingService}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveIncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, SandboxIncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import play.api.http.Status._
@@ -51,7 +51,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
     val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
-    val mockLiveIncomeService = mock[LiveIncomeService]
+    val mockLiveIncomeService = mock[IncomeService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
     val mockAuditHelper = mock[AuditHelper]
 
