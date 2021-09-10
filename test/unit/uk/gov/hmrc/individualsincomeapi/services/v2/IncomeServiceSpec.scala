@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
-import java.util.UUID
-
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito._
@@ -33,12 +31,11 @@ import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
-import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, LiveIncomeService, PayeIncomeCacheService, SandboxIncomeService, ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2._
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.{IncomePayeHelpers, SpecBase}
-import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomeData._
-import uk.gov.hmrc.individualsincomeapi.domain.v2.sandbox.SandboxIncomePaye
 
+import java.util.UUID
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
@@ -51,7 +48,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     val config = mock[CacheConfiguration]
 
     val stubCache = new PayeIncomeCacheService(null, config) {
-      override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier) =
+      override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]) =
         fallbackFunction
     }
 
@@ -60,7 +57,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     val scopesService = mock[ScopesService]
     val scopesHelper = mock[ScopesHelper]
 
-    val liveIncomeService = new LiveIncomeService(
+    val liveIncomeService = new IncomeService(
       mockMatchingConnector,
       mockIfConnector,
       1,
@@ -68,8 +65,6 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       scopesService,
       scopesHelper
     )
-
-    val sandboxIncomeService = new SandboxIncomeService()
   }
 
   "liveIncomeService fetch income by matchId function" should {
@@ -299,14 +294,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val config = mock[CacheConfiguration]
 
       val stubCache = new PayeIncomeCacheService(null, config) {
-        override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(
-          implicit hc: HeaderCarrier): Future[T] =
+        override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
           Future.successful(paye.asInstanceOf[T])
       }
 
       given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
 
-      val testService = new LiveIncomeService(mockMatching, mockIf, 1, stubCache, scopesService, scopesHelper)
+      val testService = new IncomeService(mockMatching, mockIf, 1, stubCache, scopesService, scopesHelper)
 
       val res = await(
         testService
@@ -320,64 +314,6 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         eqTo(interval),
         any(),
         eqTo(matchedCitizen.matchId.toString))(any(), any(), any())
-    }
-  }
-
-  "SandboxIncomeService fetch income by matchId function" should {
-
-    "return income for the entire available history ordered by date descending" in new Setup {
-
-      val ifPaye = Seq(
-        SandboxIncomePaye().createValidPayeEntry("2019-05-27"),
-        SandboxIncomePaye().createValidPayeEntry("2019-02-27")
-      )
-
-      val scopes = Iterable("scope1")
-
-      val result = await(
-        sandboxIncomeService.fetchIncomeByMatchId(
-          sandboxMatchId,
-          toInterval("2019-01-01", "2020-03-01"),
-          scopes
-        )(hc, FakeRequest())
-      )
-      result shouldBe (ifPaye map IfPayeEntry.toIncome)
-    }
-
-    "return income for a limited period" in new Setup {
-
-      val expected = Seq(
-        SandboxIncomePaye().createValidPayeEntry("2019-05-27")
-      )
-
-      val scopes = Iterable("scope1")
-
-      val result =
-        await(
-          sandboxIncomeService
-            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-05-01", "2019-05-30"), scopes)(hc, FakeRequest()))
-      result shouldBe (expected map IfPayeEntry.toIncome)
-    }
-
-    "return no income when the individual has no income for a given period" in new Setup {
-
-      val scopes = Iterable("scope1")
-
-      val result =
-        await(
-          sandboxIncomeService
-            .fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-08-01", "2016-09-01"), scopes)(hc, FakeRequest()))
-
-      result shouldBe Seq.empty
-    }
-
-    "throw not found exception when no individual exists for the given matchId" in new Setup {
-
-      val scopes = Iterable("scope1")
-
-      intercept[MatchNotFoundException](
-        await(sandboxIncomeService
-          .fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"), scopes)(hc, FakeRequest())))
     }
   }
 }

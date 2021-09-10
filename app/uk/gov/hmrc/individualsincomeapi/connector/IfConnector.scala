@@ -18,7 +18,6 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import org.joda.time.Interval
 import play.api.Logger
-import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
@@ -33,8 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
-                           (implicit ec: ExecutionContext) {
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper) {
 
   val logger: Logger = Logger(getClass)
 

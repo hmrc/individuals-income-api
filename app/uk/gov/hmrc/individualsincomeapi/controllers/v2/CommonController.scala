@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi.controllers
+package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import javax.inject.Inject
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment.SANDBOX
-import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.util.Dates._
+import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest, ErrorNotFound, ErrorTooManyRequests, ErrorUnauthorized, MatchNotFoundException}
+import uk.gov.hmrc.individualsincomeapi.util.Dates.toFormattedLocalDate
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 abstract class CommonController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
@@ -51,13 +49,6 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
       case (Some(fromTaxYear), None)            => s"$url&fromTaxYear=$fromTaxYear"
       case _                                    => url
     }
-
-  private[controllers] def recovery: PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException   => ErrorNotFound.toHttpResponse
-    case e: AuthorisationException   => ErrorUnauthorized(e.getMessage).toHttpResponse
-    case _: TooManyRequestException  => ErrorTooManyRequests.toHttpResponse
-    case e: IllegalArgumentException => ErrorInvalidRequest(e.getMessage).toHttpResponse
-  }
 
   private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                                             (implicit request: RequestHeader,
@@ -104,8 +95,6 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
 
 trait PrivilegedAuthentication extends AuthorisedFunctions {
 
-  val environment: String
-
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
@@ -114,31 +103,20 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
                   (f: Iterable[String] => Future[Result])
                   (implicit hc: HeaderCarrier,
                    request: RequestHeader,
-                   auditHelper: AuditHelper): Future[Result] = {
+                   auditHelper: AuditHelper,
+                   ec: ExecutionContext): Future[Result] = {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
-    if (environment == Environment.SANDBOX)
-      f(endpointScopes.toList)
-    else {
-      authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) {
-        case scopes => {
-
-          auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
-
-          f(scopes.enrolments.map(e => e.key))
-        }
+    authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) {
+      scopes => {
+        auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
+        f(scopes.enrolments.map(e => e.key))
       }
     }
+
   }
 
   def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
-    implicit hc: HeaderCarrier): Future[Result] =
-    if (environment == SANDBOX) body
-    else authorised(Enrolment(scope))(body)
-}
-
-object Environment {
-  val SANDBOX = "SANDBOX"
-  val PRODUCTION = "PRODUCTION"
+    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = authorised(Enrolment(scope))(body)
 }

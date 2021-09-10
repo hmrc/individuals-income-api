@@ -19,9 +19,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
 import play.api.libs.json.{Format, JsPath}
-import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa._
-import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaFootprint, SaFootprintRegistration, SaFootprintSubmission, SaFootprintTaxReturn}
 
 case class IfAddress(
   line1: Option[String],

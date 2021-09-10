@@ -47,7 +47,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     // can't mock function with by-value arguments
     val stubCache = new PayeIncomeCache(null, null) {
-      override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier) =
+      override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T]) =
         fallbackFunction
     }
 
@@ -143,8 +143,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val mockDes = mock[DesConnector]
       val stubCache = new PayeIncomeCache(null, null) {
-        override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(
-          implicit hc: HeaderCarrier): Future[T] =
+        override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T]): Future[T] =
           Future.successful(employments.asInstanceOf[T])
       }
 

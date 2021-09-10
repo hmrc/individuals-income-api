@@ -16,9 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
-import java.util.UUID
-
-import it.uk.gov.hmrc.individualsincomeapi.cache.v2.services.TestCacheId
 import org.joda.time.{Interval, LocalDate}
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.given
@@ -26,13 +23,13 @@ import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService, PayeCacheId, SaCacheId}
 import utils.TestSupport
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
