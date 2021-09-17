@@ -44,282 +44,327 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
 
-  def saFootprint(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saFootprint(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("sa"), matchId.toString) { authScopes =>
-        saIncomeService.fetchSaFootprint(matchId, taxYearInterval, authScopes).map { sa =>
+      authenticate(scopeService.getEndPointScopes("sa"), matchId) { authScopes =>
+
+        withValidUuid(matchId) { matchUuid =>
+
+          saIncomeService.fetchSaFootprint(matchUuid, taxYearInterval, authScopes).map { sa =>
+
+            val correlationId = validateCorrelationId(request)
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val excludeList = Some(List("sa", "paye"))
+            val response = Json.toJson(state(saJsObject) ++ scopesHelper.getHalLinks(matchUuid, excludeList, authScopes, None) ++ selfLink)
+
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa")
+
+  }
+
+  def saReturnsSummary(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
+      authenticate(scopeService.getEndPointScopes("summary"), matchId) { authScopes =>
+
+        val correlationId = validateCorrelationId(request)
+
+        withValidUuid(matchId) { matchUuid =>
+
+          saIncomeService.fetchSummary(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
+
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/summary")
+  }
+
+  def saTrustsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
+      authenticate(scopeService.getEndPointScopes("trusts"), matchId) { authScopes =>
+
+        withValidUuid(matchId) { matchUuid =>
 
           val correlationId = validateCorrelationId(request)
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val excludeList = Some(List("sa", "paye"))
-          val response = Json.toJson(state(saJsObject) ++ scopesHelper.getHalLinks(matchId, excludeList, authScopes, None) ++ selfLink)
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchTrusts(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trusts?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa")
-
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/trusts")
   }
 
-  def saReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saForeignIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("summary"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("foreign"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchSummary(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
+        withValidUuid(matchId) { matchUuid =>
 
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        saIncomeService.fetchForeign(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
 
-          Ok(response)
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/summary")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/foreign")
+
   }
 
-  def saTrustsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saPartnershipsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("trusts"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("partnerships"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchTrusts(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/trusts?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchPartnerships(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/trusts")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/partnerships")
+
   }
 
-  def saForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saInterestsAndDividendsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("foreign"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("interestsAndDividends"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchForeign(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchInterestAndDividends(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/foreign")
-
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/interests-and-dividends")
   }
 
-  def saPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
-    implicit request =>
-      authenticate(scopeService.getEndPointScopes("partnerships"), matchId.toString) { authScopes =>
-
-        val correlationId = validateCorrelationId(request)
-
-        saIncomeService.fetchPartnerships(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
-
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
-
-          Ok(response)
-        }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/partnerships")
-
-  }
-
-  def saInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
-    implicit request =>
-      authenticate(scopeService.getEndPointScopes("interestsAndDividends"), matchId.toString) { authScopes =>
-
-        val correlationId = validateCorrelationId(request)
-
-        saIncomeService.fetchInterestAndDividends(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
-
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
-
-          Ok(response)
-        }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/interests-and-dividends")
-  }
-
-  def saPensionsAndStateBenefitsIncome(matchId: UUID,
+  def saPensionsAndStateBenefitsIncome(matchId: String,
                                        taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("pensionsAndStateBenefits"), matchId.toString) { authScopes =>
-
-        val correlationId = validateCorrelationId(request);
-
-        saIncomeService.fetchPensionAndStateBenefits(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
-
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
-
-          Ok(response)
-        }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/pensions-and-state-benefits")
-
-  }
-
-  def saUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
-    implicit request =>
-      authenticate(scopeService.getEndPointScopes("ukProperties"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("pensionsAndStateBenefits"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchUkProperties(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchPensionAndStateBenefits(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/uk-properties")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/pensions-and-state-benefits")
 
   }
 
-  def saAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saUkPropertiesIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("additionalInformation"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("ukProperties"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchAdditionalInformation(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchUkProperties(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/additional-information")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/uk-properties")
 
   }
 
-  def saOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saAdditionalInformation(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("other"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("additionalInformation"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchOtherIncome(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/other?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchAdditionalInformation(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/other")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/additional-information")
 
   }
 
-  def saIncomeSource(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saOtherIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-
-      val correlationId = validateCorrelationId(request)
-
-      authenticate(scopeService.getEndPointScopes("source"), matchId.toString) { authScopes =>
-        saIncomeService.fetchSources(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/source?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
-
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
-
-          Ok(response)
-        }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/source")
-
-  }
-
-  def employmentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
-    implicit request =>
-      authenticate(scopeService.getEndPointScopes("employments"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("other"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchEmployments(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchOtherIncome(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/other?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/employments")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/other")
 
   }
 
-  def selfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def saIncomeSource(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("selfEmployments"), matchId.toString) { authScopes =>
 
-        val correlationId = validateCorrelationId(request)
+        authenticate(scopeService.getEndPointScopes("source"), matchId) { authScopes =>
 
-        saIncomeService.fetchSelfEmployments(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+          val correlationId = validateCorrelationId(request)
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          withValidUuid(matchId) { matchUuid =>
 
-          Ok(response)
+          saIncomeService.fetchSources(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/source?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
+
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
+
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/self-employments")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/source")
 
   }
 
-  def saFurtherDetails(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+  def employmentsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
-      authenticate(scopeService.getEndPointScopes("furtherDetails"), matchId.toString) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("employments"), matchId) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        saIncomeService.fetchFurtherDetails(matchId, taxYearInterval, authScopes).map { sa =>
-          val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/further-details?matchId=$matchId"))
-          val saJsObject = obj("selfAssessment" -> sa)
-          val response = Json.toJson(state(saJsObject) ++ selfLink)
+        withValidUuid(matchId) { matchUuid =>
 
-          auditHelper.auditSaApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+          saIncomeService.fetchEmployments(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
 
-          Ok(response)
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/further-details")
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/employments")
+
+  }
+
+  def selfEmploymentsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
+      authenticate(scopeService.getEndPointScopes("selfEmployments"), matchId) { authScopes =>
+
+        val correlationId = validateCorrelationId(request)
+
+        withValidUuid(matchId) { matchUuid =>
+
+          saIncomeService.fetchSelfEmployments(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
+
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/self-employments")
+
+  }
+
+  def saFurtherDetails(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
+    implicit request =>
+      authenticate(scopeService.getEndPointScopes("furtherDetails"), matchId) { authScopes =>
+
+        val correlationId = validateCorrelationId(request)
+
+        withValidUuid(matchId) { matchUuid =>
+
+          saIncomeService.fetchFurtherDetails(matchUuid, taxYearInterval, authScopes).map { sa =>
+            val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/further-details?matchId=$matchId"))
+            val saJsObject = obj("selfAssessment" -> sa)
+            val response = Json.toJson(state(saJsObject) ++ selfLink)
+
+            auditHelper.auditSaApiResponse(correlationId.toString, matchId,
+              authScopes.mkString(","), request, selfLink.toString, Some(Json.toJson(sa)))
+
+            Ok(response)
+          }
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/further-details")
 
   }
 }

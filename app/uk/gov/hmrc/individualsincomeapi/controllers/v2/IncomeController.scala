@@ -41,24 +41,28 @@ class IncomeController @Inject()(val incomeService: IncomeService,
                                (implicit val ec: ExecutionContext)
   extends CommonController(cc) with PrivilegedAuthentication {
 
-  def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async {
+  def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async {
     implicit request =>
+
       authenticate(scopeService.getEndPointScopes("paye"), matchId.toString) { authScopes =>
 
         val correlationId = validateCorrelationId(request)
 
-        incomeService.fetchIncomeByMatchId(matchId, interval, authScopes).map { paye =>
-          val selfLink =
-            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+        withValidUuid(matchId) { matchUuid =>
 
-          val incomeJsObject = Json.obj("income" -> toJson(paye))
-          val payeJsObject = obj("paye" -> incomeJsObject)
-          val response = Json.toJson(state(payeJsObject) ++ selfLink)
+            incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
+              val selfLink =
+                HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-            authScopes.mkString(","), request, selfLink.toString, Some(paye.map(i => Json.toJson(i))))
+              val incomeJsObject = Json.obj("income" -> toJson(paye))
+              val payeJsObject = obj("paye" -> incomeJsObject)
+              val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
-          Ok(response)
+              auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
+                authScopes.mkString(","), request, selfLink.toString, Some(paye.map(i => Json.toJson(i))))
+
+              Ok(response)
+            }
         }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/paye")
   }

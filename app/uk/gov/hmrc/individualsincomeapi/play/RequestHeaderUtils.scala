@@ -19,8 +19,10 @@ package uk.gov.hmrc.individualsincomeapi.play
 import play.api.http.HeaderNames.ACCEPT
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.BadRequestException
-
 import java.util.UUID
+
+import uk.gov.hmrc.individualsincomeapi.util.UuidValidator
+
 import scala.util.{Success, Try}
 
 object RequestHeaderUtils {
@@ -37,9 +39,10 @@ object RequestHeaderUtils {
   def validateCorrelationId(requestHeader: RequestHeader) =
     requestHeader.headers.get("CorrelationId") match {
       case Some(uuidString) =>
-        Try(UUID.fromString(uuidString)) match {
-          case Success(_) => UUID.fromString(uuidString)
-          case _          => throw new BadRequestException("Malformed CorrelationId")
+        if (UuidValidator.validate(uuidString)) {
+          UUID.fromString(uuidString)
+        } else {
+          throw new BadRequestException("Malformed CorrelationId")
         }
       case None => throw new BadRequestException("CorrelationId is required")
     }

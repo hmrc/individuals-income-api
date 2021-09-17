@@ -40,23 +40,26 @@ class RootController @Inject()(
                                 cc: ControllerComponents)(implicit ec: ExecutionContext)
     extends CommonController(cc) with PrivilegedAuthentication {
 
-  def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+  def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopeService.getAllScopes, matchId.toString) { authScopes =>
 
-      val correlationId = validateCorrelationId(request);
+      withValidUuid(matchId) { matchUuid =>
 
-      citizenMatchingService.matchCitizen(matchId) map { _: MatchedCitizen =>
-        val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
-        val allowedList = Some(List("sa", "paye"))
-        val excludeList = Some(List())
+        val correlationId = validateCorrelationId(request);
 
-        val response = Json.toJson(scopesHelper.getHalLinks(matchId, excludeList, authScopes, allowedList) ++ selfLink)
+        citizenMatchingService.matchCitizen(matchUuid) map { _: MatchedCitizen =>
+          val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
+          val allowedList = Some(List("sa", "paye"))
+          val excludeList = Some(List())
 
-        auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-          authScopes.mkString(","), request, response.toString, None)
+          val response = Json.toJson(scopesHelper.getHalLinks(matchUuid, excludeList, authScopes, allowedList) ++ selfLink)
 
-        Ok(response)
+          auditHelper.auditApiResponse(correlationId.toString, matchId,
+            authScopes.mkString(","), request, response.toString, None)
+
+          Ok(response)
+        }
       }
-    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income")
+    }recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income")
   }
 }
