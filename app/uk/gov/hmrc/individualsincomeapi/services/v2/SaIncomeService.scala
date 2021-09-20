@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnector,
                                 ifConnector: IfConnector,
-                                cache: SaIncomeCacheService,
+                                cache: CacheService,
                                 scopeService: ScopesService,
                                 scopesHelper: ScopesHelper,
                                 @Named("retryDelay") retryDelay: Int)

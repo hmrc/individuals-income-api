@@ -33,7 +33,7 @@ class IncomeService @Inject()(
   matchingConnector: IndividualsMatchingApiConnector,
   ifConnector: IfConnector,
   @Named("retryDelay") retryDelay: Int,
-  cache: PayeIncomeCacheService,
+  cache: CacheService,
   scopeService: ScopesService,
   scopesHelper: ScopesHelper) {
 

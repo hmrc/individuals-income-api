@@ -26,10 +26,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CacheService {
-
-  val shortLivedCache: ShortLivedCache
-  val conf: CacheRepositoryConfiguration
+class CacheService @Inject() (shortLivedCache: ShortLivedCache, conf: CacheRepositoryConfiguration) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
@@ -45,22 +42,6 @@ trait CacheService {
     } else {
       fallbackFunction
     }
-
-}
-
-@Singleton
-class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
-    extends CacheService {
-
-  val key = conf.saKey
-
-}
-
-@Singleton
-class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheRepositoryConfiguration)
-    extends CacheService {
-
-  val key: String = conf.payeKey
 
 }
 
