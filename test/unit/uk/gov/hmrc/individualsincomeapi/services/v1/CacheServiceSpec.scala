@@ -25,7 +25,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheConfiguration, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService}
 import utils.TestSupport
 
@@ -39,12 +39,8 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   trait Setup {
     val mockClient = mock[ShortLivedCache]
-    val mockCacheConfig = mock[CacheConfiguration]
-    val cacheService = new CacheService {
-      override val shortLivedCache: ShortLivedCache = mockClient
-      override val conf: CacheConfiguration = mockCacheConfig
-      override val key: String = "test"
-    }
+    val mockCacheConfig = mock[CacheRepositoryConfiguration]
+    val cacheService = new CacheService(mockClient, mockCacheConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -53,17 +49,17 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   "cacheService.get" should {
     "return the cached value for a given id and key" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
     }
 
     "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id), eqTo(cacheService.key))(any()))
+      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(cacheService.key), eqTo(newValue))(any())
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(any())
     }
 
     "ignore the cache when caching is not enabled" in new Setup {

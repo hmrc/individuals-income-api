@@ -18,18 +18,19 @@ package it.uk.gov.hmrc.individualsincomeapi.cache.v2.services
 
 import it.uk.gov.hmrc.individualsincomeapi.suite.MongoSuite
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{FreeSpec, MustMatchers, OptionValues}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.OptionValues
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{Json, OFormat}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.services.v1.CacheId
-import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService, PayeIncomeCacheService, SaIncomeCacheService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService}
 
 import scala.concurrent.Future
 
 class CacheServiceSpec
-    extends FreeSpec with MustMatchers with ScalaFutures with OptionValues with MongoSuite with IntegrationPatience {
+    extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with MongoSuite with IntegrationPatience {
 
   implicit val hc = HeaderCarrier()
 
@@ -45,7 +46,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[SaIncomeCacheService]
+          val svc = app.injector.instanceOf[CacheService]
 
           svc
             .get(cacheId, Future.successful(TestClass("bar")))
@@ -63,7 +64,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[SaIncomeCacheService]
+          val svc = app.injector.instanceOf[CacheService]
 
           svc
             .get(cacheId1, Future.successful(TestClass("bar")))
@@ -89,7 +90,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[PayeIncomeCacheService]
+          val svc = app.injector.instanceOf[CacheService]
 
           svc
             .get(cacheId, Future.successful(TestClass("bar")))
@@ -107,7 +108,7 @@ class CacheServiceSpec
 
         running(app) {
 
-          val svc = app.injector.instanceOf[PayeIncomeCacheService]
+          val svc = app.injector.instanceOf[CacheService]
 
           svc
             .get(cacheId1, Future.successful(TestClass("foo")))

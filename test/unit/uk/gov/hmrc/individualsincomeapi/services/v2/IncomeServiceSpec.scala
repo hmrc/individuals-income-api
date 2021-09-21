@@ -25,7 +25,7 @@ import play.api.libs.json.Format
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.individualsincomeapi.cache.v2.CacheConfiguration
+import uk.gov.hmrc.individualsincomeapi.cache.v2.CacheRepositoryConfiguration
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
@@ -45,9 +45,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val config = mock[CacheConfiguration]
+    val config = mock[CacheRepositoryConfiguration]
 
-    val stubCache = new PayeIncomeCacheService(null, config) {
+    val stubCache = new CacheService(null, config) {
       override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]) =
         fallbackFunction
     }
@@ -291,9 +291,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val mockIf = mock[IfConnector]
       val scopesHelper = mock[ScopesHelper]
       val scopesService = mock[ScopesService]
-      val config = mock[CacheConfiguration]
+      val config = mock[CacheRepositoryConfiguration]
 
-      val stubCache = new PayeIncomeCacheService(null, config) {
+      val stubCache = new CacheService(null, config) {
         override def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
           Future.successful(paye.asInstanceOf[T])
       }

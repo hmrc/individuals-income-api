@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.cache
 
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
+import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
@@ -88,7 +88,7 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
       .find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
-        case Some(entry) => decryptor.reads(entry.data.individualsDetails).asOpt map (_.decryptedValue)
+        case Some(entry) => decryptor.reads(entry.data.individualsIncome).asOpt map (_.decryptedValue)
         case None => None
       }
   }
