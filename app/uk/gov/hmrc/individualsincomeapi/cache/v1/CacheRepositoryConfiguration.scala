@@ -17,13 +17,12 @@
 package uk.gov.hmrc.individualsincomeapi.cache.v1
 
 import play.api.Configuration
-import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.individualsincomeapi.cache.{CacheRepositoryConfiguration => BaseConfiguration}
 
-import uk.gov.hmrc.individualsincomeapi.cache.{CacheRepository => BaseCache}
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
-class ShortLivedCache @Inject()(
-                                 override val cacheConfig: CacheRepositoryConfiguration, configuration: Configuration, mongo: MongoComponent)
-                               (implicit ec: ExecutionContext)
-  extends BaseCache(cacheConfig, configuration, mongo)
+class CacheRepositoryConfiguration @Inject() (configuration: Configuration) extends BaseConfiguration {
+  override val cacheEnabled: Boolean = configuration.getOptional[Boolean]("cache.enabled").getOrElse(true)
+  override val cacheTtl: Int = configuration.getOptional[Int]("cache.ttlInSeconds").getOrElse(60 * 15)
+  override val collName: String = "shortLivedCache"
+}
