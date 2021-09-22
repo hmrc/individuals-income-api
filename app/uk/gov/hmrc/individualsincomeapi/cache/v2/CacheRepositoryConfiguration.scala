@@ -38,5 +38,5 @@ class CacheRepositoryConfiguration @Inject() (configuration: Configuration) exte
     .getOptional[String](
       "cacheV2.collName"
     )
-    .getOrElse("individuals-employments-v2-cache")
+    .getOrElse("individuals-income-v2-cache")
 }
