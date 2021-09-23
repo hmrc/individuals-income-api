@@ -55,11 +55,13 @@ trait CommonControllerSpec extends BaseSpec {
 
     scenario("malformed match id") {
 
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
+
       When(
         "the root entry point to the API is invoked with a malformed match id")
       val response =
         invokeEndpoint(
-          s"$serviceUrl/${endpoint}?matchId=malformed-match-id-value")
+          s"$serviceUrl/$endpoint?matchId=malformed-match-id-value&fromDate=$fromDate")
 
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
