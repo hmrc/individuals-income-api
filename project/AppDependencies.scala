@@ -5,6 +5,7 @@ import sbt._
 object AppDependencies {
 
   val hmrc = "uk.gov.hmrc"
+  val hmrcMongo = "uk.gov.hmrc.mongo"
   val akka = "com.typesafe.akka"
 
   val akkaVersion = "2.6.15"
@@ -26,9 +27,9 @@ object AppDependencies {
     hmrc                %% "domain"                     % "6.2.0-play-28",
     hmrc                %% "play-hal"                   % "2.1.0-play-27",
     hmrc                %% "play-hmrc-api"              % "6.4.0-play-28",
-    hmrc                %% "mongo-caching"              % "7.0.0-play-28",
     hmrc                %% "json-encryption"            % "4.10.0-play-28",
-    "com.typesafe.play" %% "play-json-joda"             % "2.9.2"
+    "com.typesafe.play" %% "play-json-joda"             % "2.9.2",
+    hmrcMongo           %% "hmrc-mongo-play-28"         % "0.53.0"
   )
 
   def test(scope: String = "test,it") = Seq(

@@ -108,16 +108,16 @@ class SandboxSaIncomeService extends SaIncomeService {
 
 @Singleton
 class LiveSaIncomeService @Inject()(
-  matchingConnector: IndividualsMatchingApiConnector,
-  desConnector: DesConnector,
-  saIncomeCacheService: SaIncomeCacheService,
-  @Named("retryDelay") retryDelay: Int)
+                                     matchingConnector: IndividualsMatchingApiConnector,
+                                     desConnector: DesConnector,
+                                     cacheService: CacheService,
+                                     @Named("retryDelay") retryDelay: Int)
     extends SaIncomeService {
 
   private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
     implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
     val cacheId = SaCacheId(nino, taxYearInterval)
-    saIncomeCacheService
+    cacheService
       .get[Seq[DesSAIncome]](cacheId, withRetry(desConnector.fetchSelfAssessmentIncome(nino, taxYearInterval)))
   }
 
