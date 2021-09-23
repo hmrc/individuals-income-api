@@ -37,9 +37,9 @@ class VersioningSpec extends BaseSpec {
     .build()
   val incomeScope = "read:individuals-income"
 
-  feature("Versioning") {
+  Feature("Versioning") {
 
-    scenario("Requests with an accept header version P1.0") {
+    Scenario("Requests with an accept header version P1.0") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
@@ -53,7 +53,7 @@ class VersioningSpec extends BaseSpec {
       Json.parse(response.body) shouldBe validResponsePayload
     }
 
-    scenario("Requests without an accept header default to version 1.0") {
+    Scenario("Requests without an accept header default to version 1.0") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
@@ -64,7 +64,7 @@ class VersioningSpec extends BaseSpec {
       response.code shouldBe NOT_FOUND
     }
 
-    scenario("Requests with an accept header with an invalid version") {
+    Scenario("Requests with an accept header with an invalid version") {
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 

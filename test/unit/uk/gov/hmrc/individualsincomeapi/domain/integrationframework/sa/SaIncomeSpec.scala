@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaIncome
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class SaIncomeSpec extends WordSpec with Matchers {
+class SaIncomeSpec extends AnyWordSpec with Matchers {
 
   val validSaIncome = IfSaIncome(
     Some(100.0),

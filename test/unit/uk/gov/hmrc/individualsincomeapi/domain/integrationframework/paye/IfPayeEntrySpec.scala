@@ -16,13 +16,14 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfPaye, IfPayeEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 import utils.IncomePayeHelpers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IfPayeEntrySpec extends WordSpec with Matchers with IncomePayeHelpers {
+class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
 
   "IfPayeEntry" should {
     "Write to json" in {

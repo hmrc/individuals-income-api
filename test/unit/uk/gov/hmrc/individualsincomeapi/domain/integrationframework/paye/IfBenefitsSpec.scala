@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfBenefits
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IfBenefitsSpec extends WordSpec with Matchers {
+class IfBenefitsSpec extends AnyWordSpec with Matchers {
 
   val validBenefits = IfBenefits(Some(506328.1), Some(246594.83))
   val invalidBenefits = IfBenefits(Some(999999999.99 + 1), Some(999999999.99 + 1))

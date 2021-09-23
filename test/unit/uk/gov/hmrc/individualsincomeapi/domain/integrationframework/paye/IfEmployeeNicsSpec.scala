@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfEmployeeNics
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IfEmployeeNicsSpec extends WordSpec with Matchers {
+class IfEmployeeNicsSpec extends AnyWordSpec with Matchers {
 
   val validEmployeeNics = IfEmployeeNics(
     Some(15797.45),

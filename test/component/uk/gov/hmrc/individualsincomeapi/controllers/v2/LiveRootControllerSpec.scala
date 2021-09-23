@@ -40,7 +40,7 @@ class LiveRootControllerSpec extends BaseSpec {
     "read:individuals-income-nictsejo-c4"
   )
 
-  feature("Root (hateoas) entry point is accessible") {
+  Feature("Root (hateoas) entry point is accessible") {
 
     val matchId = UUID.randomUUID().toString
 
@@ -55,7 +55,7 @@ class LiveRootControllerSpec extends BaseSpec {
       parse(httpResponse.body) shouldBe parse(expectedResponseBody)
     }
 
-    scenario("invalid token") {
+    Scenario("invalid token") {
       Given("an invalid token")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
 
@@ -75,7 +75,7 @@ class LiveRootControllerSpec extends BaseSpec {
       )
     }
 
-    scenario(s"user does not have valid scopes") {
+    Scenario(s"user does not have valid scopes") {
       Given("A valid auth token but invalid scopes")
       AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
 
@@ -92,7 +92,7 @@ class LiveRootControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("missing match id") {
+    Scenario("missing match id") {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
 
@@ -108,7 +108,7 @@ class LiveRootControllerSpec extends BaseSpec {
         """)
     }
 
-    scenario("malformed match id") {
+    Scenario("malformed match id") {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
 
@@ -128,7 +128,7 @@ class LiveRootControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("invalid match id") {
+    Scenario("invalid match id") {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
 
@@ -148,7 +148,7 @@ class LiveRootControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("valid request to the live implementation") {
+    Scenario("valid request to the live implementation") {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
 

@@ -23,9 +23,9 @@ import scalaj.http.Http
 
 class RootControllerSpec extends BaseSpec {
 
-  feature("Match citizen entry point (hateoas) is open and accessible") {
+  Feature("Match citizen entry point (hateoas) is open and accessible") {
 
-    scenario("Valid request to the sandbox implementation") {
+    Scenario("Valid request to the sandbox implementation") {
       When("I request the match citizen entry point to the API")
       val response = Http(s"$serviceUrl/sandbox?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430")
         .headers(requestHeaders(acceptHeaderP1))
