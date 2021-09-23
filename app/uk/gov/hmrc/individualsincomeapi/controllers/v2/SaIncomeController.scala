@@ -16,29 +16,29 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json
-import play.api.libs.json.Json.{obj, toJson}
+import play.api.libs.json.Json.obj
 import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
-import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{getClientIdHeader, maybeCorrelationId, validateCorrelationId}
-import uk.gov.hmrc.individualsincomeapi.services.v2.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService, ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.services.v2.{SaIncomeService, ScopesHelper, ScopesService}
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
-                                         scopeService: ScopesService,
-                                         scopesHelper: ScopesHelper,
-                                         cc: ControllerComponents,
-                                         implicit val auditHelper: AuditHelper)
+@Singleton
+class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
+                                          val scopeService: ScopesService,
+                                          val scopesHelper: ScopesHelper,
+                                          val authConnector: AuthConnector,
+                                          cc: ControllerComponents,
+                                          implicit val auditHelper: AuditHelper)
                                         (implicit val ec: ExecutionContext)
   extends CommonController(cc) with PrivilegedAuthentication {
 
@@ -322,30 +322,4 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService,
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/sa/further-details")
 
   }
-}
-
-@Singleton
-class SandboxSaIncomeController @Inject()(
-                                           val saIncomeService: SandboxSaIncomeService,
-                                           val scopeService: ScopesService,
-                                           val scopesHelper: ScopesHelper,
-                                           val authConnector: AuthConnector,
-                                           cc: ControllerComponents,
-                                           auditHelper: AuditHelper)
-                                         (implicit override val ec: ExecutionContext)
-  extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc, auditHelper) {
-  override val environment = SANDBOX
-}
-
-@Singleton
-class LiveSaIncomeController @Inject()(
-                                        val saIncomeService: LiveSaIncomeService,
-                                        val scopeService: ScopesService,
-                                        val scopesHelper: ScopesHelper,
-                                        val authConnector: AuthConnector,
-                                        cc: ControllerComponents,
-                                        auditHelper: AuditHelper)
-                                      (implicit override val ec: ExecutionContext)
-  extends SaIncomeController(saIncomeService, scopeService, scopesHelper, cc, auditHelper) {
-  override val environment = PRODUCTION
 }

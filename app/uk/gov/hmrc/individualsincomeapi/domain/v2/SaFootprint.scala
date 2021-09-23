@@ -16,11 +16,8 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.functional.syntax.unlift
 import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads.pattern
-import play.api.libs.json.Writes.map
-import play.api.libs.json.{Format, JsPath, Json, Reads, Writes}
+import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 

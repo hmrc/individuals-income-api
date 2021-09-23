@@ -18,11 +18,11 @@ package unit.uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.{DateTimeUtils, LocalDate}
 import org.scalatest.BeforeAndAfterEach
+import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import utils.TestSupport
-import org.scalatest.matchers.should.Matchers
 
-class TaxYearSpec extends TestSupport with Matchers with BeforeAndAfterEach {
+class TaxYearSpec extends TestSupport with BeforeAndAfterEach {
 
   val validTaxYears = Seq("2014-15", "2013-14", "2016-17", "2019-20", "2099-00")
 
@@ -80,6 +80,13 @@ class TaxYearSpec extends TestSupport with Matchers with BeforeAndAfterEach {
       DateTimeUtils.setCurrentMillisFixed(LocalDate.parse("2016-04-06").toDate.getTime)
 
       TaxYear.current() shouldBe TaxYear("2016-17")
+    }
+  }
+
+  "Json formats" should {
+    "read correctly from Json" in {
+      val result = Json.fromJson[TaxYear](JsString("2019-20"))
+      result.get shouldBe TaxYear("2019-20")
     }
   }
 

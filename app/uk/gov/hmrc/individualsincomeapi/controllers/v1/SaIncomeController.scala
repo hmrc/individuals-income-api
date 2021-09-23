@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import java.util.UUID
-
-import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json
@@ -27,13 +24,14 @@ import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.controllers.Environment.{PRODUCTION, SANDBOX}
-import uk.gov.hmrc.individualsincomeapi.controllers.{CommonController, PrivilegedAuthentication}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.getClientIdHeader
 import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService}
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: ControllerComponents)

@@ -26,13 +26,13 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheConfiguration, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain.{v1, _}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome, DesSAReturn, SAIncome}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaIncomeSource, SaIncomeSources, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary, SourceAddress}
-import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaCacheId, SaIncomeCacheService, SandboxSaIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaCacheId, CacheService, SandboxSaIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
 
@@ -45,7 +45,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaFootprintByMatchId" should {
     "return the saFootprint with saReturns sorted by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -70,7 +70,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
     "retry the SA lookup once if DES returns a 503" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval))
         .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
@@ -133,7 +133,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchEmploymentsIncomeByMatchId" should {
     "return the employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -196,7 +196,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSelfEmploymentsIncomeByMatchId" should {
     "return the self employments income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -248,7 +248,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaReturnsSummaryByMatchId" should {
     "return sa tax return summaries by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -300,7 +300,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaTrustsByMatchId" should {
     "return sa tax return trusts income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -352,7 +352,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaForeignIncomeByMatchId" should {
     "return sa tax return foreign income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -404,7 +404,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaPartnershipsIncomeByMatchId" should {
     "return sa tax return partnership income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -456,7 +456,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaInterestsAndDividendsIncomeByMatchId" should {
     "return sa tax return interests and dividends income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -515,7 +515,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaUkPropertiesIncomeByMatchId" should {
     "return sa UK properties income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -567,7 +567,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaPensionsAndStateBenefitsIncomeByMatchId" should {
     "return sa tax return pensions and state benefits income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -626,7 +626,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaAdditionalInformationByMatchId" should {
     "return sa tax return additional information by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -680,7 +680,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
   "LiveIncomeService.fetchSaOtherIncomeByMatchId" should {
     "return sa tax return other income by tax year DESCENDING when the matchId is valid" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(desIncomes))
 
@@ -748,7 +748,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       )
 
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(Seq(income)))
 
@@ -796,7 +796,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       )
 
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(Seq(income)))
 
@@ -824,7 +824,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       )
 
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
 
       conversions.foreach {
@@ -860,7 +860,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
     "return an empty list when no tax returns exist for the requested period" in new Setup {
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))
-      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id), eqTo(saIncomeCacheService.key))(any()))
+      given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval)).willReturn(successful(Nil))
 
@@ -882,10 +882,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
     val matchingConnector = mock[IndividualsMatchingApiConnector]
     val desConnector = mock[DesConnector]
     val mockCache = mock[ShortLivedCache]
-    val mockConfig = mock[CacheConfiguration]
-    val saIncomeCacheService = new SaIncomeCacheService(mockCache, mockConfig)
+    val mockConfig = mock[CacheRepositoryConfiguration]
+    val cacheService = new CacheService(mockCache, mockConfig)
     val sandboxSaIncomeService = new SandboxSaIncomeService()
-    val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, saIncomeCacheService, 1)
+    val liveSaIncomeService = new LiveSaIncomeService(matchingConnector, desConnector, cacheService, 1)
   }
 
   trait TestData {

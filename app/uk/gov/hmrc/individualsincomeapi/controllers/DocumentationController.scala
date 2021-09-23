@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+// $COVERAGE-OFF$
+
 package uk.gov.hmrc.individualsincomeapi.controllers
 
 import controllers.Assets
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.individualsincomeapi.views._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class DocumentationController @Inject()(
@@ -66,3 +69,5 @@ class DocumentationController @Inject()(
     assets.at(s"/public/api/conf/$version", file)
 
 }
+
+// $COVERAGE-ON$

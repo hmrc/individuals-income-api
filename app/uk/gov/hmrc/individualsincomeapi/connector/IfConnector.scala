@@ -18,7 +18,6 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import org.joda.time.Interval
 import play.api.Logger
-import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
@@ -33,8 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
-                           (implicit ec: ExecutionContext) {
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper) {
 
   val logger: Logger = Logger(getClass)
 
@@ -91,14 +89,15 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case None => throw new BadRequestException("CorrelationId is required")
     }
 
-  def setHeaders = Seq(
+  def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment"             -> integrationFrameworkEnvironment
+    "Environment"             -> integrationFrameworkEnvironment,
+    "CorrelationId"           -> extractCorrelationId(requestHeader)
   )
 
   private def callPaye(url: String, endpoint: String, matchId: String)
                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
-    recover[IfPayeEntry](http.GET[IfPaye](url, headers = setHeaders) map {
+    recover[IfPayeEntry](http.GET[IfPaye](url, headers = setHeaders(request)) map {
       response =>
         auditHelper.auditIfPayeApiResponse(
           extractCorrelationId(request),
@@ -111,7 +110,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
   private def callSa(url: String, endpoint: String, matchId: String)
                     (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
-    recover[IfSaEntry](http.GET[IfSa](url, headers = setHeaders) map {
+    recover[IfSaEntry](http.GET[IfSa](url, headers = setHeaders(request)) map {
       response =>
         auditHelper.auditIfSaApiResponse(
           extractCorrelationId(request),

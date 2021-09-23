@@ -33,7 +33,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, Payment}
-import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, LiveIncomeService, PayeIncomeCache, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, LiveIncomeService, CacheService, SandboxIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.SpecBase
 
@@ -46,8 +46,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     // can't mock function with by-value arguments
-    val stubCache = new PayeIncomeCache(null, null) {
-      override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier) =
+    val stubCache = new CacheService(null, null) {
+      override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T]) =
         fallbackFunction
     }
 
@@ -142,9 +142,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
 
       val mockDes = mock[DesConnector]
-      val stubCache = new PayeIncomeCache(null, null) {
-        override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(
-          implicit hc: HeaderCarrier): Future[T] =
+      val stubCache = new CacheService(null, null) {
+        override def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T]): Future[T] =
           Future.successful(employments.asInstanceOf[T])
       }
 

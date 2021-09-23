@@ -60,9 +60,9 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
-  Feature("Live individual income") {
+  feature("Live individual income") {
 
-    Scenario("not authorized") {
+    scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -81,7 +81,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
 
     }
 
-    Scenario("Individual has employment income") {
+    scenario("Individual has employment income") {
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -183,7 +183,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
           .toString()
     }
 
-    Scenario("Individual has no paye income") {
+    scenario("Individual has no paye income") {
       val toDate = "2020-02-01"
 
       Given("A valid privileged Auth bearer token")
@@ -226,7 +226,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
           .toString()
     }
 
-    Scenario("The employment income data source is rate limited") {
+    scenario("The employment income data source is rate limited") {
       val toDate = "2020-02-02"
 
       Given("A valid privileged Auth bearer token")
@@ -254,84 +254,6 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
         "code"    -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
-    }
-  }
-
-  Feature("Sandbox individual income") {
-
-    Scenario("Valid request to the sandbox implementation") {
-
-      When("I request individual income for the sandbox matchId")
-      val response = Http(s"$serviceUrl/sandbox/paye?matchId=$sandboxMatchId&fromDate=$fromDate&toDate=$toDate")
-        .headers(requestHeaders(acceptHeaderP2))
-        .asString
-
-      Then("The response status should be 200")
-      response.code shouldBe OK
-
-      response.body shouldBe
-        Json
-          .parse(
-            s"""{"_links":{
-               |"self":{"href":"/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-04-01&toDate=2020-01-01"}},
-               |"paye":{"income":[{
-               |  "employerPayeReference":"345/34678",
-               |  "taxYear":"18-19",
-               |  "employee":{
-               |    "hasPartner": false
-               |  },
-               |  "payroll": {
-               |    "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
-               |  },
-               |  "payFrequency":"W4",
-               |  "paymentDate":"2019-05-27",
-               |  "paidHoursWorked":"36",
-               |  "taxCode":"K971",
-               |  "taxablePayToDate":19157.5,
-               |  "totalTaxToDate":3095.89,
-               |  "taxDeductedOrRefunded":159228.49,
-               |  "dednsFromNetPay":198035.8,
-               |  "employeePensionContribs":{
-               |    "paidYTD":169731.51,
-               |    "notPaidYTD":173987.07,
-               |    "paid":822317.49,
-               |    "notPaid":818841.65
-               |  },
-               |  "statutoryPayYTD":{
-               |    "maternity":15797.45,
-               |    "paternity":13170.69,
-               |    "adoption":16193.76,
-               |    "parentalBereavement":30846.56
-               |  },
-               |  "grossEarningsForNics":{
-               |    "inPayPeriod1":169731.51,
-               |    "inPayPeriod2":173987.07,
-               |    "inPayPeriod3":822317.49,
-               |    "inPayPeriod4":818841.65},
-               |    "totalEmployerNics":{
-               |      "inPayPeriod1":15797.45,
-               |      "inPayPeriod2":13170.69,
-               |      "inPayPeriod3":16193.76,
-               |      "inPayPeriod4":30846.56,
-               |      "ytd1":10633.5,
-               |      "ytd2":15579.18,
-               |      "ytd3":110849.27,
-               |      "ytd4":162081.23
-               |    },"employeeNics":{
-               |      "inPayPeriod1":15797.45,
-               |      "inPayPeriod2":13170.69,
-               |      "inPayPeriod3":16193.76,
-               |      "inPayPeriod4":30846.56,
-               |      "ytd1":10633.5,
-               |      "ytd2":15579.18,
-               |      "ytd3":110849.27,
-               |      "ytd4":162081.23
-               |    }
-               |  }
-               |]
-               |}}""".stripMargin
-          )
-          .toString()
     }
   }
 }

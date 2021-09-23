@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAdditionalFields, IfAddress, IfSaEntry}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfSaEntry}
 
 case class SaSources(taxReturns: Seq[SaSourcesTaxReturn])
 

@@ -43,7 +43,7 @@ class LiveIncomeService @Inject()(
   matchingConnector: IndividualsMatchingApiConnector,
   desConnector: DesConnector,
   @Named("retryDelay") retryDelay: Int,
-  cache: PayeIncomeCache)
+  cache: CacheService)
     extends IncomeService {
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(
@@ -68,7 +68,7 @@ class LiveIncomeService @Inject()(
 @Singleton
 class SandboxIncomeService extends IncomeService {
 
-  def paymentFilter(interval: Interval)(payment: Payment): Boolean = {
+  private def paymentFilter(interval: Interval)(payment: Payment): Boolean = {
     val paymentDate = payment.paymentDate.toDateTimeAtStartOfDay
     interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
   }

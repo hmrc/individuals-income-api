@@ -33,10 +33,7 @@ case class DesAddress( line1: Option[String] = None,
                        line5: Option[String] = None,
                        postalCode: Option[String] = None,
                        effectiveDate: Option[LocalDate] = None,
-                       addressType: Option[String] = None) {
-
-  def isEmpty: Boolean = this == DesAddress()
-}
+                       addressType: Option[String] = None)
 
 object DesAddress {
   implicit val desReads: Reads[DesAddress] = (

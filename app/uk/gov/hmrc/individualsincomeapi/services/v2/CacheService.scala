@@ -16,54 +16,32 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import java.util.UUID
-import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.libs.json.Format
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheConfiguration, ShortLivedCache}
+import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CacheService {
-
-  val shortLivedCache: ShortLivedCache
-  val conf: CacheConfiguration
-  val key: String
+class CacheService @Inject() (shortLivedCache: ShortLivedCache, conf: CacheRepositoryConfiguration) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
-  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(implicit hc: HeaderCarrier): Future[T] =
-    if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T]): Future[T] =
+    if (cacheEnabled) shortLivedCache.fetchAndGetEntry[T](cacheId.id) flatMap {
       case Some(value) =>
         Future.successful(value)
       case None =>
         fallbackFunction map { result =>
-          shortLivedCache.cache(cacheId.id, key, result)
+          shortLivedCache.cache(cacheId.id, result)
           result
         }
     } else {
       fallbackFunction
     }
-
-}
-
-@Singleton
-class SaIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
-    extends CacheService {
-
-  val key = conf.saKey
-
-}
-
-@Singleton
-class PayeIncomeCacheService @Inject()(val shortLivedCache: ShortLivedCache, val conf: CacheConfiguration)
-    extends CacheService {
-
-  val key: String = conf.payeKey
 
 }
 
