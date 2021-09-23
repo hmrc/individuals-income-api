@@ -48,7 +48,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
     implicit request =>
       authenticate(scopeService.getEndPointScopes("sa"), matchId) { authScopes =>
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchSaFootprint(matchUuid, taxYearInterval, authScopes).map { sa =>
 
@@ -74,7 +74,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchSummary(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/summary?matchId=$matchId"))
@@ -95,7 +95,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
     implicit request =>
       authenticate(scopeService.getEndPointScopes("trusts"), matchId) { authScopes =>
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           val correlationId = validateCorrelationId(request)
 
@@ -119,7 +119,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
         saIncomeService.fetchForeign(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
@@ -142,7 +142,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchPartnerships(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/partnerships?matchId=$matchId"))
@@ -165,7 +165,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchInterestAndDividends(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
@@ -188,7 +188,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchPensionAndStateBenefits(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId"))
@@ -211,7 +211,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchUkProperties(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId"))
@@ -234,7 +234,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchAdditionalInformation(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/additional-information?matchId=$matchId"))
@@ -257,7 +257,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchOtherIncome(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/other?matchId=$matchId"))
@@ -281,7 +281,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
           val correlationId = validateCorrelationId(request)
 
-          withValidUuid(matchId) { matchUuid =>
+          withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchSources(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/source?matchId=$matchId"))
@@ -305,7 +305,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchEmployments(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/employments?matchId=$matchId"))
@@ -328,7 +328,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchSelfEmployments(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/self-employments?matchId=$matchId"))
@@ -351,7 +351,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchFurtherDetails(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/further-details?matchId=$matchId"))

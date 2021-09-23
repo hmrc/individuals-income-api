@@ -48,7 +48,7 @@ class IncomeController @Inject()(val incomeService: IncomeService,
 
         val correlationId = validateCorrelationId(request)
 
-        withValidUuid(matchId) { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
             incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
               val selfLink =

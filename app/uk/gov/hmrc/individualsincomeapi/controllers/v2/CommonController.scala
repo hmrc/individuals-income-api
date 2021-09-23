@@ -42,11 +42,11 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   private def getQueryParam[T](name: String)(implicit request: Request[T]) =
     request.queryString.get(name).flatMap(_.headOption)
 
-  protected def withValidUuid(uuidString: String)(f: UUID => Future[Result]): Future[Result] =
+  protected def withValidUuid(uuidString: String, error:String)(f: UUID => Future[Result]): Future[Result] =
     if (UuidValidator.validate(uuidString)) {
       f(UUID.fromString(uuidString))
     } else {
-      successful(ErrorNotFound.toHttpResponse)
+      successful(ErrorInvalidRequest(error).toHttpResponse)
     }
 
   private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {

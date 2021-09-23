@@ -43,7 +43,7 @@ class RootController @Inject()(
   def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopeService.getAllScopes, matchId.toString) { authScopes =>
 
-      withValidUuid(matchId) { matchUuid =>
+      withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
         val correlationId = validateCorrelationId(request);
 

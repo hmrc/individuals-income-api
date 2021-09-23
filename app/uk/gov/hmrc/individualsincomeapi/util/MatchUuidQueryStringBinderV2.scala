@@ -22,17 +22,11 @@ import scala.util.Try
 
 class MatchUuidQueryStringBinderV2 extends QueryStringBindable[String] {
 
-  private val parameterName = "matchId"
-
   override def bind(key: String, params: Map[String, Seq[String]]) =
-    Option(Try(params.get(parameterName) flatMap (_.headOption) match {
-      case Some(parameterValue) =>
-        UuidValidator.validate(parameterValue) match {
-          case true => Right(parameterValue)
-          case false => Left(s"$parameterName format is invalid")
-        }
-      case None                 => Left(s"$parameterName is required")
-    }) getOrElse Left(s"$parameterName format is invalid"))
+    Option(Try(params.get(key) flatMap (_.headOption) match {
+      case Some(parameterValue) => Right(parameterValue)
+      case None                 => Left(s"$key is required")
+    }) getOrElse Left(s"$key format is invalid"))
 
   override def unbind(key: String, uuid: String) = s"$key=${uuid}"
 
