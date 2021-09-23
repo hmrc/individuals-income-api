@@ -31,9 +31,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   val fromTaxYear = TaxYear("2013-14")
   val toTaxYear = TaxYear("2015-16")
 
-  feature("Sandbox individual income") {
+  Feature("Sandbox individual income") {
 
-    scenario("SA root endpoint for the sandbox implementation") {
+    Scenario("SA root endpoint for the sandbox implementation") {
 
       When("I request the self-assessments for Sandbox")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -93,7 +93,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("Employments Income endpoint for the sandbox implementation") {
+    Scenario("Employments Income endpoint for the sandbox implementation") {
 
       When("I request the SA employments for Sandbox")
       val response =
@@ -135,7 +135,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("Self Employments Income endpoint for the sandbox implementation") {
+    Scenario("Self Employments Income endpoint for the sandbox implementation") {
 
       When("I request the SA self employments for Sandbox")
       val response =
@@ -177,7 +177,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("SA returns summary endpoint for the sandbox implementation") {
+    Scenario("SA returns summary endpoint for the sandbox implementation") {
 
       When("I request the SA returns summary for Sandbox")
       val response =
@@ -219,7 +219,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("SA trusts endpoint for the sandbox implementation") {
+    Scenario("SA trusts endpoint for the sandbox implementation") {
       When("I request the SA trusts income for Sandbox")
       val response =
         Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -260,7 +260,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("SA foreign endpoint for the sandbox implementation") {
+    Scenario("SA foreign endpoint for the sandbox implementation") {
       When("I request the SA foreign income for Sandbox")
       val response =
         Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -302,7 +302,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  scenario("SA partnerships endpoint for the sandbox implementation") {
+  Scenario("SA partnerships endpoint for the sandbox implementation") {
     When("I request the SA partnerships income for Sandbox")
     val response =
       Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -343,7 +343,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 
-  scenario("SA pensions and state benefits endpoint for the sandbox implementation") {
+  Scenario("SA pensions and state benefits endpoint for the sandbox implementation") {
     When("I request the SA pensions and state benefits income for Sandbox")
     val response = Http(
       s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -384,7 +384,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 
-  scenario("SA interests and dividends endpoint for the sandbox implementation") {
+  Scenario("SA interests and dividends endpoint for the sandbox implementation") {
     When("I request the SA interests and dividends income for Sandbox")
     val response = Http(
       s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -429,7 +429,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 
-  scenario("SA uk-properties endpoint for the sandbox implementation") {
+  Scenario("SA uk-properties endpoint for the sandbox implementation") {
     When("I request the SA uk-properties income for Sandbox")
     val response =
       Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -470,7 +470,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 
-  scenario("SA additional-information endpoint for the sandbox implementation") {
+  Scenario("SA additional-information endpoint for the sandbox implementation") {
     When("I request the SA additional-information income for Sandbox")
     val response = Http(
       s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -513,7 +513,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
            """)
   }
 
-  scenario("SA other endpoint for the sandbox implementation") {
+  Scenario("SA other endpoint for the sandbox implementation") {
     When("I request the SA other income for Sandbox")
     val response = Http(s"$serviceUrl/sandbox/sa/other?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2018-19")
       .headers(requestHeaders(acceptHeaderP1))

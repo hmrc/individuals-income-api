@@ -18,7 +18,7 @@ package it.uk.gov.hmrc.individualsincomeapi.cache.v1
 
 import java.util.UUID
 
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.BeforeAndAfterEach
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsincomeapi.cache.v1.ShortLivedCache
@@ -27,9 +27,11 @@ import uk.gov.hmrc.mongo.MongoSpecSupport
 import utils.TestSupport
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class ShortLivedCacheSpec
-    extends WordSpec with Matchers with MongoSpecSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
+    extends AnyWordSpec with Matchers with MongoSpecSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
   val id = UUID.randomUUID().toString

@@ -37,9 +37,9 @@ class IntervalValidationSpec extends BaseSpec {
   lazy val yesterday = DateTimeUtils.now.minusDays(1).toString(Dates.localDatePattern)
   val payeIncomeScope = "read:individuals-income-paye"
 
-  feature("Date interval query parameter validation") {
+  Feature("Date interval query parameter validation") {
 
-    scenario("missing fromDate parameter") {
+    Scenario("missing fromDate parameter") {
 
       When("I request individual income with a missing fromDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&toDate=2017-03-01")
@@ -53,7 +53,7 @@ class IntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromDate is required")
     }
 
-    scenario("invalid format for fromDate parameter submitted") {
+    Scenario("invalid format for fromDate parameter submitted") {
 
       When("I request individual income with an incorrectly formatted fromDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=20160101&toDate=2017-03-01")
@@ -67,7 +67,7 @@ class IntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromDate: invalid date format")
     }
 
-    scenario("invalid format for toDate parameter submitted") {
+    Scenario("invalid format for toDate parameter submitted") {
 
       When("I request individual income with an incorrectly formatted toDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=2016-01-01&toDate=20170301")
@@ -81,7 +81,7 @@ class IntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("toDate: invalid date format")
     }
 
-    scenario("invalid interval submitted. ToDate value before fromDate") {
+    Scenario("invalid interval submitted. ToDate value before fromDate") {
 
       When("I request individual income with ToDate value before fromDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=2017-01-01&toDate=2016-03-01")
@@ -95,7 +95,7 @@ class IntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("Invalid time period requested")
     }
 
-    scenario("toDate defaults to today's date when it is not provided") {
+    Scenario("toDate defaults to today's date when it is not provided") {
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)

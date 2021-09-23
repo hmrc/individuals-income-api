@@ -18,12 +18,14 @@ package unit.uk.gov.hmrc.individualsincomeapi.util
 
 import org.joda.time.LocalDateTime
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{EitherValues, FlatSpec, Matchers}
+import org.scalatest.EitherValues
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import uk.gov.hmrc.individualsincomeapi.util.IntervalQueryStringBinder
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 class IntervalQueryStringBinderSpec
-    extends FlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {
+    extends AnyFlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {
 
   lazy val intervalQueryStringBinder = new IntervalQueryStringBinder
 

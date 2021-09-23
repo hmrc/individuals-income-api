@@ -17,9 +17,10 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain
 
 import org.joda.time.{DateTimeUtils, LocalDate}
-import org.scalatest.{BeforeAndAfterEach, Matchers}
+import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import utils.TestSupport
+import org.scalatest.matchers.should.Matchers
 
 class TaxYearSpec extends TestSupport with Matchers with BeforeAndAfterEach {
 

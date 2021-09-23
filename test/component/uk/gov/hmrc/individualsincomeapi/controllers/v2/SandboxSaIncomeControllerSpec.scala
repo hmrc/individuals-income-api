@@ -28,9 +28,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   val fromTaxYear = "2017"
   val toTaxYear = "2019"
 
-  feature("SA root endpoint") {
+  Feature("SA root endpoint") {
 
-    scenario("Fetch Self Assessment returns") {
+    Scenario("Fetch Self Assessment returns") {
 
       When("I request the resources")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -124,9 +124,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA employments endpoint") {
+  Feature("SA employments endpoint") {
 
-    scenario("Fetch Self Assessment employments returns") {
+    Scenario("Fetch Self Assessment employments returns") {
 
       When("I request the resources")
       val response = Http(s"$serviceUrl/sandbox/sa/employments?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -164,9 +164,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA self employments endpoint") {
+  Feature("SA self employments endpoint") {
 
-    scenario("Fetch Self Assessment self employments returns") {
+    Scenario("Fetch Self Assessment self employments returns") {
 
       When("I request the resources")
       val response =
@@ -205,9 +205,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA summary endpoint") {
+  Feature("SA summary endpoint") {
 
-    scenario("Fetch Self Assessment summary returns") {
+    Scenario("Fetch Self Assessment summary returns") {
 
       When("I request the resources")
       val response = Http(s"$serviceUrl/sandbox/sa/summary?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -245,9 +245,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA trusts endpoint") {
+  Feature("SA trusts endpoint") {
 
-    scenario("Fetch Self Assessment trusts returns") {
+    Scenario("Fetch Self Assessment trusts returns") {
 
       When("I request the resources")
       val response = Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -284,9 +284,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA foreign endpoint") {
+  Feature("SA foreign endpoint") {
 
-    scenario("Fetch Self Assessment foreign returns") {
+    Scenario("Fetch Self Assessment foreign returns") {
 
       When("I request the resources")
       val response = Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -323,9 +323,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA partnerships endpoint") {
+  Feature("SA partnerships endpoint") {
 
-    scenario("Fetch Self Assessment partnerships returns") {
+    Scenario("Fetch Self Assessment partnerships returns") {
 
       When("I request the resources")
       val response = Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
@@ -362,9 +362,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA interests and dividends income") {
+  Feature("SA interests and dividends income") {
 
-    scenario("Fetch Self Assessment interests and dividends returns") {
+    Scenario("Fetch Self Assessment interests and dividends returns") {
 
       When("I request the resources")
       val response =
@@ -404,9 +404,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA pensions and state benefits income") {
+  Feature("SA pensions and state benefits income") {
 
-    scenario("Fetch Self Assessment pensions and benefits returns") {
+    Scenario("Fetch Self Assessment pensions and benefits returns") {
 
       When("I request the resources")
       val response =
@@ -445,9 +445,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA UK properties income") {
+  Feature("SA UK properties income") {
 
-    scenario("Fetch Self Assessment uk properties returns") {
+    Scenario("Fetch Self Assessment uk properties returns") {
 
       When("I request the resources")
       val response =
@@ -485,9 +485,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA additional information") {
+  Feature("SA additional information") {
 
-    scenario("Fetch Self Assessment additional information returns") {
+    Scenario("Fetch Self Assessment additional information returns") {
 
       When("I request the resources")
       val response =
@@ -526,9 +526,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA other income") {
+  Feature("SA other income") {
 
-    scenario("Fetch Self Assessment other income returns") {
+    Scenario("Fetch Self Assessment other income returns") {
 
       When("I request the resources")
       val response =
@@ -567,9 +567,9 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   }
 
-  feature("SA further details") {
+  Feature("SA further details") {
 
-    scenario("Fetch Self Assessment further details income returns") {
+    Scenario("Fetch Self Assessment further details income returns") {
 
       When("I request the resources")
       val response =

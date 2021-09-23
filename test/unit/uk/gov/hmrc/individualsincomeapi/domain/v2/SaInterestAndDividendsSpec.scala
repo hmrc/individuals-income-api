@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.v2.SaInterestAndDividends
 import utils.IncomeSaHelpers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class SaInterestAndDividendsSpec extends WordSpec with Matchers with IncomeSaHelpers {
+class SaInterestAndDividendsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
   val ifSa = Seq(createValidSaTaxYearEntry())
   val ifSaNoData = Seq(createValidSaTaxYearEntryNoDataContainers())
