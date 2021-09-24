@@ -75,7 +75,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
-    case _: NotFoundException => Future.successful(Seq.empty)
+    case Upstream4xxResponse(_, 404, _, _) => Future.successful(Seq.empty)
     case Upstream4xxResponse(msg, 429, _, _) => {
       logger.warn(s"DES Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
