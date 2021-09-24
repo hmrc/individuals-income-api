@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaFootprint, SaFootprintSubmission, SaFootprintTaxReturn}
 import utils.IncomeSaHelpers
 import org.scalatest.matchers.should.Matchers

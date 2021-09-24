@@ -17,16 +17,14 @@
 package unit.uk.gov.hmrc.individualsincomeapi.connector
 
 import java.util.UUID
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.BeforeAndAfterEach
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
-import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import utils.SpecBase
 import org.scalatest.matchers.should.Matchers
@@ -64,14 +62,14 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
 
     "fail when upstream service fails" in new Fixture {
       stubWithResponseStatus(INTERNAL_SERVER_ERROR)
-      a[Upstream5xxResponse] should be thrownBy {
+      a[UpstreamErrorResponse] should be thrownBy {
         await(individualsMatchingApiConnector.resolve(matchId))
       }
     }
 
     "rethrow a not found exception as a match not found exception" in new Fixture {
       stubWithResponseStatus(NOT_FOUND)
-      a[MatchNotFoundException] should be thrownBy {
+      a[NotFoundException] should be thrownBy {
         await(individualsMatchingApiConnector.resolve(matchId))
       }
     }

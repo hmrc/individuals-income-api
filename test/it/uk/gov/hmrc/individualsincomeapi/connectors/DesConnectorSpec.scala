@@ -24,7 +24,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment, DesSAIncome, DesSAReturn, SAIncome}
@@ -181,7 +181,7 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] { await(underTest.fetchEmployments(nino, interval)) }
+      intercept[UpstreamErrorResponse] { await(underTest.fetchEmployments(nino, interval)) }
     }
 
   }
@@ -255,7 +255,7 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval)) }
+      intercept[UpstreamErrorResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval)) }
     }
   }
 }

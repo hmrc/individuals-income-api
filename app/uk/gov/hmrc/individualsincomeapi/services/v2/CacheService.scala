@@ -22,7 +22,7 @@ import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheRepositoryConfiguration, 
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

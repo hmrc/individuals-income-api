@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import java.util.UUID
-
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
@@ -25,14 +24,14 @@ import org.mockito.Mockito.{times, verify}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
 import uk.gov.hmrc.individualsincomeapi.domain.{v1, _}
-import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesSAIncome, DesSAReturn, SAIncome}
+import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaIncomeSource, SaIncomeSources, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary, SourceAddress}
-import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaCacheId, CacheService, SandboxSaIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheService, LiveSaIncomeService, SaCacheId, SandboxSaIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
 
@@ -73,7 +72,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
       given(mockCache.fetchAndGetEntry[Seq[DesSAIncome]](eqTo(saCacheId.id))(any()))
         .willReturn(Future.successful(None))
       given(desConnector.fetchSelfAssessmentIncome(liveNino, taxYearInterval))
-        .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
+        .willReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(desIncomes))
 
       await(liveSaIncomeService.fetchSaFootprint(liveMatchId, taxYearInterval)) shouldBe SaFootprint(

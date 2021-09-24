@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Results.Status
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound}
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.backend.http.{ErrorResponse, JsonErrorHandler}
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
@@ -42,7 +42,7 @@ class CustomErrorHandler @Inject()(
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 
     implicit val headerCarrier =
-      HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, request = Some(request))
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     statusCode match {
       case NOT_FOUND =>

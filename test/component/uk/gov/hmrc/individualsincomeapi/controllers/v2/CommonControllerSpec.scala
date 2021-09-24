@@ -16,8 +16,6 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec}
 import play.api.libs.json.Json
 import scalaj.http.Http

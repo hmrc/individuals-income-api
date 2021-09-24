@@ -26,7 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._

@@ -24,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.v2.CacheRepositoryConfiguration
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain._
@@ -269,7 +269,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           eqTo(interval),
           any(),
           eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
-        .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
+        .willReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(ifPaye))
 
       val result =

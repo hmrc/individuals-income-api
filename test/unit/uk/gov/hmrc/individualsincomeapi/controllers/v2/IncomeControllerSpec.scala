@@ -24,7 +24,7 @@ import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
@@ -205,13 +205,13 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 200 with correct self link response when toDate is not provided in the request" in new Setup {
 
-      val fakeRequest = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
+      val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId, interval)(fakeRequest.withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 

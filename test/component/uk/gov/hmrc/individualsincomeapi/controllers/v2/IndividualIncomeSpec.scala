@@ -18,12 +18,11 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
+import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import utils.IncomePayeHelpers
 
 class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
