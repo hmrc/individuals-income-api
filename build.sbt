@@ -1,4 +1,5 @@
 import play.core.PlayVersion
+import play.sbt.routes.RoutesKeys
 import sbt.Keys.compile
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
@@ -8,11 +9,11 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-income-api"
 
-lazy val playSettings: Seq[Setting[_]] = Seq(
-  routesImport ++= Seq(
-    "uk.gov.hmrc.domain._",
-    "uk.gov.hmrc.individualsincomeapi.domain._",
-    "uk.gov.hmrc.individualsincomeapi.Binders._"))
+
+TwirlKeys.templateImports := Seq.empty
+RoutesKeys.routesImport := Seq(
+  "uk.gov.hmrc.individualsincomeapi.Binders._"
+)
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
@@ -44,7 +45,6 @@ lazy val microservice =
       SbtGitVersioning,
       SbtDistributablesPlugin,
       SbtArtifactory) ++ plugins: _*)
-    .settings(playSettings: _*)
     .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
     .settings(publishingSettings: _*)
