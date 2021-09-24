@@ -1,4 +1,3 @@
-import play.core.PlayVersion
 import sbt.Keys.compile
 import play.sbt.routes.RoutesKeys
 import sbt.Tests.{Group, SubProcess}
