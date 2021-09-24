@@ -28,7 +28,6 @@ import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesService}
 
-import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 

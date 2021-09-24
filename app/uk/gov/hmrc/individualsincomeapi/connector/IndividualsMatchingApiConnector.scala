@@ -18,12 +18,12 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream4xxResponse}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters.matchedCitizenJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpReads.Implicits
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

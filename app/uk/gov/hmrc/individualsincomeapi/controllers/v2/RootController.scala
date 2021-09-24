@@ -26,7 +26,6 @@ import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelatio
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 
-import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
