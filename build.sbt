@@ -1,6 +1,5 @@
-import play.core.PlayVersion
-import play.sbt.routes.RoutesKeys
 import sbt.Keys.compile
+import play.sbt.routes.RoutesKeys
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.ExternalService
@@ -8,7 +7,6 @@ import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-income-api"
-
 
 TwirlKeys.templateImports := Seq.empty
 RoutesKeys.routesImport := Seq(
