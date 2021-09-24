@@ -2448,7 +2448,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/sa?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
+      val response = Http(s"$serviceUrl/${endpoint}?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 

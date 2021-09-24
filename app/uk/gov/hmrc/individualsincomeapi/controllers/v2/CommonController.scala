@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
+import java.util.UUID
+
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
@@ -27,8 +29,10 @@ import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest, ErrorNotFound, ErrorTooManyRequests, ErrorUnauthorized, MatchNotFoundException}
 import uk.gov.hmrc.individualsincomeapi.util.Dates.toFormattedLocalDate
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-
 import javax.inject.Inject
+import uk.gov.hmrc.individualsincomeapi.util.UuidValidator
+
+import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class CommonController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
@@ -37,6 +41,13 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
 
   private def getQueryParam[T](name: String)(implicit request: Request[T]) =
     request.queryString.get(name).flatMap(_.headOption)
+
+  protected def withValidUuid(uuidString: String, error:String)(f: UUID => Future[Result]): Future[Result] =
+    if (UuidValidator.validate(uuidString)) {
+      f(UUID.fromString(uuidString))
+    } else {
+      successful(ErrorInvalidRequest(error).toHttpResponse)
+    }
 
   private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {
     val urlWithFromDate = s"$url&fromDate=${toFormattedLocalDate(from)}"

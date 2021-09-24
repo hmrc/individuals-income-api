@@ -93,7 +93,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
 
       val result =
-        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -181,7 +181,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -211,7 +211,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -239,7 +239,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
-        await(incomeController.income(matchId, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
 
@@ -252,7 +252,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(incomeController.income(matchId, interval)(FakeRequest()))
+      val result = await(incomeController.income(matchId.toString, interval)(FakeRequest()))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -272,7 +272,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(incomeController.income(matchId, interval)(FakeRequest()
+      val result = await(incomeController.income(matchId.toString, interval)(FakeRequest()
         .withHeaders("CorrelationId" -> "test")))
 
       status(result) shouldBe BAD_REQUEST

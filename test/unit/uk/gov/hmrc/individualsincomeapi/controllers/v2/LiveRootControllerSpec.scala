@@ -60,6 +60,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val fakeRequest = FakeRequest().withHeaders(sampleCorrelationIdHeader)
     val matchId = UUID.randomUUID()
+    val matchIdString = matchId.toString
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
 
@@ -86,7 +87,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         .thenReturn(failed(new MatchNotFoundException))
 
       val result =
-        await(liveRootController.root(randomMatchId).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
 
@@ -103,7 +104,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .thenReturn(successful(matchedCitizen))
 
-      val result = await(liveRootController.root(matchId).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+      val result = await(liveRootController.root(matchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
@@ -134,7 +135,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         .willReturn(Future.failed(InsufficientEnrolments()))
 
       val result =
-        await(liveRootController.root(randomMatchId).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe UNAUTHORIZED
 
@@ -152,7 +153,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .thenReturn(successful(matchedCitizen))
 
-      val result = await(liveRootController.root(matchId)(fakeRequest))
+      val result = await(liveRootController.root(matchId.toString)(fakeRequest))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -174,7 +175,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .thenReturn(successful(matchedCitizen))
 
-      val result = await(liveRootController.root(matchId)(fakeRequest))
+      val result = await(liveRootController.root(matchIdString)(fakeRequest))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(

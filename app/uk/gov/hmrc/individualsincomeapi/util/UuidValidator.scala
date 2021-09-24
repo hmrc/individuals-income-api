@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi
+package uk.gov.hmrc.individualsincomeapi.util
 
-import uk.gov.hmrc.individualsincomeapi.util.{IntervalQueryStringBinder, MatchUuidQueryStringBinder, MatchUuidQueryStringBinderV2, TaxYearIntervalQueryStringBinder}
+object UuidValidator {
 
-package object Binders {
-  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
-  implicit val matchUuidQueryStringBinderV2 = new MatchUuidQueryStringBinderV2
-  implicit val intervalQueryStringBinder = new IntervalQueryStringBinder
-  implicit val taxYearIntervalQueryStringBinder = new TaxYearIntervalQueryStringBinder
+  val uuidPattern = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$"
+
+  def validate(uuid: String): Boolean = uuid.matches(uuidPattern)
+
 }
