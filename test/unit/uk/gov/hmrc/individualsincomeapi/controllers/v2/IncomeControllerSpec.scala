@@ -211,7 +211,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(incomeController.income(matchId.toString, interval)(fakeRequest.withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
