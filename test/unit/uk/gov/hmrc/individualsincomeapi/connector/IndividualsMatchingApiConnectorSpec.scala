@@ -28,6 +28,7 @@ import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnecto
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import utils.SpecBase
 import org.scalatest.matchers.should.Matchers
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 
 class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 
@@ -69,7 +70,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
 
     "rethrow a not found exception as a match not found exception" in new Fixture {
       stubWithResponseStatus(NOT_FOUND)
-      a[NotFoundException] should be thrownBy {
+      a[MatchNotFoundException] should be thrownBy {
         await(individualsMatchingApiConnector.resolve(matchId))
       }
     }
