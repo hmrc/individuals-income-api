@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsincomeapi
+package uk.gov.hmrc.individualsincomeapi.util
 
-import uk.gov.hmrc.individualsincomeapi.util.{IntervalQueryStringBinder, MatchUuidQueryStringBinder, MatchUuidQueryStringBinderV2, TaxYearIntervalQueryStringBinder}
+import play.api.mvc.QueryStringBindable
 
-package object Binders {
-  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
-  implicit val matchUuidQueryStringBinderV2 = new MatchUuidQueryStringBinderV2
-  implicit val intervalQueryStringBinder = new IntervalQueryStringBinder
-  implicit val taxYearIntervalQueryStringBinder = new TaxYearIntervalQueryStringBinder
+import scala.util.Try
+
+class MatchUuidQueryStringBinderV2 extends QueryStringBindable[String] {
+
+  override def bind(key: String, params: Map[String, Seq[String]]) =
+    Option(Try(params.get(key) flatMap (_.headOption) match {
+      case Some(parameterValue) => Right(parameterValue)
+      case None                 => Left(s"$key is required")
+    }) getOrElse Left(s"$key format is invalid"))
+
+  override def unbind(key: String, uuid: String) = s"$key=${uuid}"
+
 }
