@@ -25,6 +25,7 @@ import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -133,14 +134,15 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
     }
-    case notFound: NotFoundException => {
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, notFound.getMessage)
 
-      notFound.message.contains("NO_DATA_FOUND") match {
+    case Upstream4xxResponse(msg, 404, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
+
+      msg.contains("NO_DATA_FOUND") match {
         case true => Future.successful(Seq.empty)
         case _    => {
           logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(notFound)
+          Future.failed(new NotFoundException(msg))
         }
       }
     }

@@ -16,8 +16,6 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec}
 import play.api.libs.json.Json
 import scalaj.http.Http
@@ -38,9 +36,9 @@ trait CommonControllerSpec extends BaseSpec {
       .headers(requestHeaders(acceptHeaderP2))
       .asString
 
-  feature("Common Controller Methods") {
+  Feature("Common Controller Methods") {
 
-    scenario("Missing match id") {
+    Scenario("Missing match id") {
 
       When("the root entry point to the API is invoked with a missing match id")
       val response = invokeEndpoint(s"$serviceUrl/$endpoint")
@@ -53,7 +51,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("malformed match id") {
+    Scenario("malformed match id") {
 
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
@@ -71,7 +69,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("invalid match id") {
+    Scenario("invalid match id") {
 
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
@@ -88,7 +86,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("missing from date") {
+    Scenario("missing from date") {
 
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -108,7 +106,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("toDate earlier than fromDate") {
+    Scenario("toDate earlier than fromDate") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -129,7 +127,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("From date requested is earlier than 31st March 2013") {
+    Scenario("From date requested is earlier than 31st March 2013") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -149,7 +147,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("Invalid fromDate") {
+    Scenario("Invalid fromDate") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -168,7 +166,7 @@ trait CommonControllerSpec extends BaseSpec {
 
     }
 
-    scenario("Invalid toDate") {
+    Scenario("Invalid toDate") {
 
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)

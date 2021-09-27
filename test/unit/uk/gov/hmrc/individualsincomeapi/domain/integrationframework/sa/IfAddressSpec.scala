@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfAddress
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IfAddressSpec extends WordSpec with Matchers {
+class IfAddressSpec extends AnyWordSpec with Matchers {
 
   val validAddress = IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))
   val invalidAddress =

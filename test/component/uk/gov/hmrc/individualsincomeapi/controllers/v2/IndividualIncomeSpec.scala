@@ -18,12 +18,11 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
+import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import utils.IncomePayeHelpers
 
 class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
@@ -60,9 +59,9 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
-  feature("Live individual income") {
+  Feature("Live individual income") {
 
-    scenario("not authorized") {
+    Scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -81,7 +80,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
 
     }
 
-    scenario("Individual has employment income") {
+    Scenario("Individual has employment income") {
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -183,7 +182,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
           .toString()
     }
 
-    scenario("Individual has no paye income") {
+    Scenario("Individual has no paye income") {
       val toDate = "2020-02-01"
 
       Given("A valid privileged Auth bearer token")
@@ -226,7 +225,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
           .toString()
     }
 
-    scenario("The employment income data source is rate limited") {
+    Scenario("The employment income data source is rate limited") {
       val toDate = "2020-02-02"
 
       Given("A valid privileged Auth bearer token")

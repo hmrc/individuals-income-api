@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.individualsincomeapi.cache.v2
 
+import javax.inject.Inject
 import play.api.Configuration
 import uk.gov.hmrc.individualsincomeapi.cache.{CacheRepositoryConfiguration => BaseConfiguration}
-
-import javax.inject.Inject
 
 class CacheRepositoryConfiguration @Inject() (configuration: Configuration) extends BaseConfiguration {
   override val cacheEnabled: Boolean = configuration

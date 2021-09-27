@@ -66,9 +66,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     )
   )
 
-  feature("SA root endpoint") {
+  Feature("SA root endpoint") {
 
-    scenario("Fetch Self Assessment annual returns") {
+    Scenario("Fetch Self Assessment annual returns") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa")
 
@@ -127,7 +127,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa")
 
@@ -143,7 +143,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
     }
 
-    scenario("The self assessment data source is rate limited") {
+    Scenario("The self assessment data source is rate limited") {
       val toTaxYear = TaxYear("2017-18")
 
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
@@ -170,8 +170,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA employments endpoint") {
-    scenario("Fetch Self Assessment employments") {
+  Feature("SA employments endpoint") {
+    Scenario("Fetch Self Assessment employments") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-employments")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-employments")
 
@@ -211,7 +211,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
            """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-employments")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-employments")
 
@@ -227,8 +227,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA self employments endpoint") {
-    scenario("Fetch Self Assessment self employments") {
+  Feature("SA self employments endpoint") {
+    Scenario("Fetch Self Assessment self employments") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-self-employments")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-self-employments")
 
@@ -268,7 +268,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-self-employments")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-self-employments")
 
@@ -284,8 +284,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA summary endpoint") {
-    scenario("Fetch Self Assessment summary") {
+  Feature("SA summary endpoint") {
+    Scenario("Fetch Self Assessment summary") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-summary")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-summary")
 
@@ -325,7 +325,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-summary")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-summary")
 
@@ -341,8 +341,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA trusts endpoint") {
-    scenario("Fetch Self Assessment trusts income") {
+  Feature("SA trusts endpoint") {
+    Scenario("Fetch Self Assessment trusts income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-trusts")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-trusts")
 
@@ -382,7 +382,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-trusts")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-trusts")
 
@@ -398,8 +398,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA foreign endpoint") {
-    scenario("Fetch Self Assessment foreign income") {
+  Feature("SA foreign endpoint") {
+    Scenario("Fetch Self Assessment foreign income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-foreign")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-foreign")
 
@@ -441,7 +441,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-foreign")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-foreign")
 
@@ -457,8 +457,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA partnerships endpoint") {
-    scenario("Fetch Self Assessment partnerships income") {
+  Feature("SA partnerships endpoint") {
+    Scenario("Fetch Self Assessment partnerships income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-partnerships")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-partnerships")
 
@@ -500,7 +500,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-partnerships")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-partnerships")
 
@@ -516,8 +516,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA interests and dividends income") {
-    scenario("Fetch Self Assessment interests and dividends income") {
+  Feature("SA interests and dividends income") {
+    Scenario("Fetch Self Assessment interests and dividends income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-interests-and-dividends")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-interests-and-dividends")
 
@@ -562,7 +562,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-interests-and-dividends")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-interests-and-dividends")
 
@@ -579,8 +579,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA pensions and state benefits income") {
-    scenario("Fetch Self Assessment pensions and state benefits income") {
+  Feature("SA pensions and state benefits income") {
+    Scenario("Fetch Self Assessment pensions and state benefits income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-pensions-and-state-benefits")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-pensions-and-state-benefits")
 
@@ -623,7 +623,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-pensions-and-state-benefits")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-pensions-and-state-benefits")
 
@@ -640,8 +640,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA UK properties income") {
-    scenario("Fetch Self Assessment UK properties income") {
+  Feature("SA UK properties income") {
+    Scenario("Fetch Self Assessment UK properties income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-uk-properties")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-uk-properties")
 
@@ -683,7 +683,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-uk-properties")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-uk-properties")
 
@@ -699,8 +699,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA additional information") {
-    scenario("Fetch Self Assessment additional information") {
+  Feature("SA additional information") {
+    Scenario("Fetch Self Assessment additional information") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-additional-information")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-additional-information")
 
@@ -744,7 +744,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-additional-information")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-additional-information")
 
@@ -761,8 +761,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA other income") {
-    scenario("Fetch Self Assessment other income") {
+  Feature("SA other income") {
+    Scenario("Fetch Self Assessment other income") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-other")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-other")
 
@@ -804,7 +804,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-other")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-other")
 
@@ -820,8 +820,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
   }
 
-  feature("SA source endpoint") {
-    scenario("Fetch Self Assessment source") {
+  Feature("SA source endpoint") {
+    Scenario("Fetch Self Assessment source") {
       Given("A privileged Auth bearer token with scope read:individuals-income-sa-source")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-source")
 
@@ -866,7 +866,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
          """)
     }
 
-    scenario("Invalid token") {
+    Scenario("Invalid token") {
       Given("A token WITHOUT the scope read:individuals-income-sa-source")
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa-source")
 

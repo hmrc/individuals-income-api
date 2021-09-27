@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPostGradLoan
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IfPostGradLoanSpec extends WordSpec with Matchers {
+class IfPostGradLoanSpec extends AnyWordSpec with Matchers {
 
   val validPostGradLoan = IfPostGradLoan(Some(99999), Some(22177))
   val invalidPostGradLoan = IfPostGradLoan(Some(99999 + 1), Some(-5))

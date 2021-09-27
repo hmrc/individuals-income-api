@@ -34,9 +34,9 @@ class IndividualIncomeSpec extends BaseSpec {
   val toDate = "2020-01-01"
   val payeIncomeScope = "read:individuals-income-paye"
 
-  feature("Live individual income") {
+  Feature("Live individual income") {
 
-    scenario("Individual has employment income") {
+    Scenario("Individual has employment income") {
 
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, payeIncomeScope)
@@ -109,7 +109,7 @@ class IndividualIncomeSpec extends BaseSpec {
            """)
     }
 
-    scenario("Individual has no employment income") {
+    Scenario("Individual has no employment income") {
       val toDate = "2020-02-01"
 
       Given("A valid privileged Auth bearer token")
@@ -143,7 +143,7 @@ class IndividualIncomeSpec extends BaseSpec {
            """)
     }
 
-    scenario("The employment income data source is rate limited") {
+    Scenario("The employment income data source is rate limited") {
       val toDate = "2020-02-02"
 
       Given("A valid privileged Auth bearer token")
@@ -169,9 +169,9 @@ class IndividualIncomeSpec extends BaseSpec {
     }
   }
 
-  feature("Sandbox individual income") {
+  Feature("Sandbox individual income") {
 
-    scenario("Valid request to the sandbox implementation") {
+    Scenario("Valid request to the sandbox implementation") {
 
       When("I request individual income for the sandbox matchId")
       val response = Http(s"$serviceUrl/sandbox/paye?matchId=$sandboxMatchId&fromDate=$fromDate&toDate=$toDate")

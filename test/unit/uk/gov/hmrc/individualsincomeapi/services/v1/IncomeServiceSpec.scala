@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import java.util.UUID
-
 import org.joda.time.LocalDate
 import org.joda.time.LocalDate.parse
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -27,13 +26,13 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
 import uk.gov.hmrc.domain.{EmpRef, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.{MatchedCitizen, Payment}
-import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, LiveIncomeService, CacheService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService, LiveIncomeService, SandboxIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.SpecBase
 
@@ -126,7 +125,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
-        .willReturn(Future.failed(Upstream5xxResponse("""¯\_(ツ)_/¯""", 503, 503)))
+        .willReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(desEmployments))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))

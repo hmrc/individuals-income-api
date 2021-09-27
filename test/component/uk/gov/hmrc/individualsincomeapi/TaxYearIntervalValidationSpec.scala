@@ -31,9 +31,9 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
   val fromYear = "2015-16"
   val today = new LocalDate(DateTime.now(), DateTimeZone.forID("Europe/London"))
 
-  feature("Tax Year Interval query parameter validation") {
+  Feature("Tax Year Interval query parameter validation") {
 
-    scenario("missing fromTaxYear parameter") {
+    Scenario("missing fromTaxYear parameter") {
 
       When("I request individual SA income with a missing fromTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&toTaxYear=2016-17")
@@ -47,7 +47,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromTaxYear is required")
     }
 
-    scenario("invalid format for fromTaxYear parameter submitted") {
+    Scenario("invalid format for fromTaxYear parameter submitted") {
 
       When("I request individual SA income with an incorrectly formatted fromTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=20162017&toTaxYear=2016-17")
@@ -61,7 +61,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromTaxYear: invalid tax year format")
     }
 
-    scenario("invalid format for toTaxYear parameter submitted") {
+    Scenario("invalid format for toTaxYear parameter submitted") {
 
       When("I request individual SA income with an incorrectly formatted toTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=20170301")
@@ -75,7 +75,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("toTaxYear: invalid tax year format")
     }
 
-    scenario("invalid interval submitted. toTaxYear before fromTaxYear") {
+    Scenario("invalid interval submitted. toTaxYear before fromTaxYear") {
 
       When("I request individual income with toTaxYear value before fromTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17&toTaxYear=2015-16")
@@ -89,7 +89,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("Invalid time period requested")
     }
 
-    scenario("fromTaxYear earlier than maximum allowed") {
+    Scenario("fromTaxYear earlier than maximum allowed") {
 
       When("I request individual income with fromTaxYear 7 years before the current tax year")
       val fromTaxYear = TaxYear.fromEndYear(today.getYear - 8)
@@ -105,7 +105,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("fromTaxYear earlier than allowed (CY-6)")
     }
 
-    scenario("toTaxYear later than the current tax year") {
+    Scenario("toTaxYear later than the current tax year") {
 
       When("I request individual income with a toTaxYear later than the current tax year")
       val currentEndYear = TaxYear.current().endYr
@@ -123,7 +123,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       response.body shouldBe errorResponse("toTaxYear is later than the current tax year")
     }
 
-    scenario("toTaxYear defaults to the current tax year when it is not provided") {
+    Scenario("toTaxYear defaults to the current tax year when it is not provided") {
 
       When("I request individual income for the existing matchId without a toTaxYear")
       val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2016-17")

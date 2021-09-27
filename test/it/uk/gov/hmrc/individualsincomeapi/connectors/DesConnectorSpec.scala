@@ -20,11 +20,11 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.joda.time.LocalDate
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment, DesSAIncome, DesSAReturn, SAIncome}
@@ -33,9 +33,11 @@ import utils.TestSupport
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class DesConnectorSpec
-    extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+    extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
     with TestSupport {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
@@ -179,7 +181,7 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] { await(underTest.fetchEmployments(nino, interval)) }
+      intercept[UpstreamErrorResponse] { await(underTest.fetchEmployments(nino, interval)) }
     }
 
   }
@@ -253,7 +255,7 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval)) }
+      intercept[UpstreamErrorResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval)) }
     }
   }
 }

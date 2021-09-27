@@ -22,11 +22,11 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util._
@@ -39,9 +39,11 @@ import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class IfConnectorSpec
-    extends WordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+    extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
     with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt

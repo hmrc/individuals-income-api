@@ -27,6 +27,7 @@ import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -74,7 +75,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
-    case _: NotFoundException => Future.successful(Seq.empty)
+    case Upstream4xxResponse(_, 404, _, _) => Future.successful(Seq.empty)
     case Upstream4xxResponse(msg, 429, _, _) => {
       logger.warn(s"DES Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
