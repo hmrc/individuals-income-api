@@ -124,7 +124,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |        "taxablePay":16533.95,
            |        "taxablePayToDate":19157.5,
            |        "totalTaxToDate":3095.89,
-           |        "taxDeductedOrRefunded":159228.49,
+           |        "taxDeductedOrRefunded":9999999999.99,
            |        "dednsFromNetPay":198035.8,
            |        "employeePensionContribs":{
            |          "paidYTD":169731.51,

@@ -26,13 +26,39 @@ trait IncomePayeHelpers {
   def createInvalidTaxPayableToDate() =
     createValidPayeEntry().copy(taxablePayToDate = Some(-99999))
 
-  def createValidPayeEntry() =
+  def createValidPayeEntry(): IfPayeEntry =
     IfPayeEntry(
       Some("K971"),
       Some("36"),
       Some(19157.5),
       Some(3095.89),
-      Some(159228.49),
+      Some(9999999999.99),
+      Some(createValodIFGrossEarningsForNics),
+      Some("345/34678"),
+      Some("2006-02-27"),
+      Some(16533.95),
+      Some("18-19"),
+      Some("3"),
+      Some("2"),
+      Some("W4"),
+      Some(198035.8),
+      Some(createValidTotalEmployerNics()),
+      Some(createValidEmployeeNics()),
+      Some(createValidEmployeePensionContribs()),
+      Some(createValidBenefits()),
+      Some(createValidStatutoryPayToDate()),
+      Some(createValidStudentLoan()),
+      Some(createValidPostGradLoan()),
+      Some(createValidAdditionalFields())
+    )
+
+  def createValidPayeEntryNegative(): IfPayeEntry =
+    IfPayeEntry(
+      Some("K971"),
+      Some("36"),
+      Some(19157.5),
+      Some(3095.89),
+      Some(-9999999999.99),
       Some(createValodIFGrossEarningsForNics),
       Some("345/34678"),
       Some("2006-02-27"),
