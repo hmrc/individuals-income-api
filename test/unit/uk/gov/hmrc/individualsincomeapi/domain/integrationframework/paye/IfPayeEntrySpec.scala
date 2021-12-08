@@ -109,6 +109,172 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
       result shouldBe expectedJson
     }
 
+    "Write to json upper taxDeductedOrRefunded" in {
+      val expectedJson = Json.parse(
+        """
+          |{
+          |  "taxCode":"K971",
+          |  "paidHoursWorked":"36",
+          |  "taxablePay":16533.95,
+          |  "taxablePayToDate":19157.5,
+          |  "totalTaxToDate":3095.89,
+          |  "taxDeductedOrRefunded":9999999999.99,
+          |  "grossEarningsForNICs":{
+          |    "inPayPeriod1":169731.51,
+          |    "inPayPeriod2":173987.07,
+          |    "inPayPeriod3":822317.49,
+          |    "inPayPeriod4":818841.65
+          |  },
+          |  "employerPayeRef":"345/34678",
+          |  "paymentDate":"2006-02-27",
+          |  "taxablePay":16533.95,
+          |  "taxablePayToDate":19157.5,
+          |  "taxYear":"18-19",
+          |  "monthlyPeriodNumber":"3",
+          |  "weeklyPeriodNumber":"2",
+          |  "payFrequency":"W4",
+          |  "dednsFromNetPay":198035.8,
+          |  "totalEmployerNICs":{
+          |    "inPayPeriod1":15797.45,
+          |    "inPayPeriod2":13170.69,
+          |    "inPayPeriod3":16193.76,
+          |    "inPayPeriod4":30846.56,
+          |    "ytd1":10633.5,
+          |    "ytd2":15579.18,
+          |    "ytd3":110849.27,
+          |    "ytd4":162081.23},
+          |    "employeeNICs":{
+          |      "inPayPeriod1":15797.45,
+          |      "inPayPeriod2":13170.69,
+          |      "inPayPeriod3":16193.76,
+          |      "inPayPeriod4":30846.56,
+          |      "ytd1":10633.5,
+          |      "ytd2":15579.18,
+          |      "ytd3":110849.27,
+          |      "ytd4":162081.23
+          |    },
+          |    "employeePensionContribs":{
+          |      "paidYTD":169731.51,
+          |      "notPaidYTD":173987.07,
+          |      "paid":822317.49,
+          |      "notPaid":818841.65
+          |    },
+          |    "benefits":{
+          |      "taxedViaPayroll":506328.1,
+          |      "taxedViaPayrollYTD":246594.83
+          |    },
+          |    "statutoryPayYTD":{
+          |      "maternity":15797.45,
+          |      "paternity":13170.69,
+          |      "adoption":16193.76,
+          |      "parentalBereavement":30846.56
+          |    },
+          |    "studentLoan":{
+          |      "planType":"02",
+          |      "repaymentsInPayPeriod":88478,
+          |      "repaymentsYTD":545
+          |    },
+          |    "postGradLoan":{
+          |      "repaymentsInPayPeriod":15636,
+          |      "repaymentsYTD":46849
+          |    },
+          |    "payroll":{
+          |      "id":"yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+          |    },
+          |    "employee":{
+          |      "hasPartner":false}
+          |    }
+          |""".stripMargin
+      )
+
+      val result = Json.toJson(createValidPayeEntryUpper())
+
+      result shouldBe expectedJson
+    }
+
+    "Write to json lower taxDeductedOrRefunded" in {
+      val expectedJson = Json.parse(
+        """
+          |{
+          |  "taxCode":"K971",
+          |  "paidHoursWorked":"36",
+          |  "taxablePay":16533.95,
+          |  "taxablePayToDate":19157.5,
+          |  "totalTaxToDate":3095.89,
+          |  "taxDeductedOrRefunded":-9999999999.99,
+          |  "grossEarningsForNICs":{
+          |    "inPayPeriod1":169731.51,
+          |    "inPayPeriod2":173987.07,
+          |    "inPayPeriod3":822317.49,
+          |    "inPayPeriod4":818841.65
+          |  },
+          |  "employerPayeRef":"345/34678",
+          |  "paymentDate":"2006-02-27",
+          |  "taxablePay":16533.95,
+          |  "taxablePayToDate":19157.5,
+          |  "taxYear":"18-19",
+          |  "monthlyPeriodNumber":"3",
+          |  "weeklyPeriodNumber":"2",
+          |  "payFrequency":"W4",
+          |  "dednsFromNetPay":198035.8,
+          |  "totalEmployerNICs":{
+          |    "inPayPeriod1":15797.45,
+          |    "inPayPeriod2":13170.69,
+          |    "inPayPeriod3":16193.76,
+          |    "inPayPeriod4":30846.56,
+          |    "ytd1":10633.5,
+          |    "ytd2":15579.18,
+          |    "ytd3":110849.27,
+          |    "ytd4":162081.23},
+          |    "employeeNICs":{
+          |      "inPayPeriod1":15797.45,
+          |      "inPayPeriod2":13170.69,
+          |      "inPayPeriod3":16193.76,
+          |      "inPayPeriod4":30846.56,
+          |      "ytd1":10633.5,
+          |      "ytd2":15579.18,
+          |      "ytd3":110849.27,
+          |      "ytd4":162081.23
+          |    },
+          |    "employeePensionContribs":{
+          |      "paidYTD":169731.51,
+          |      "notPaidYTD":173987.07,
+          |      "paid":822317.49,
+          |      "notPaid":818841.65
+          |    },
+          |    "benefits":{
+          |      "taxedViaPayroll":506328.1,
+          |      "taxedViaPayrollYTD":246594.83
+          |    },
+          |    "statutoryPayYTD":{
+          |      "maternity":15797.45,
+          |      "paternity":13170.69,
+          |      "adoption":16193.76,
+          |      "parentalBereavement":30846.56
+          |    },
+          |    "studentLoan":{
+          |      "planType":"02",
+          |      "repaymentsInPayPeriod":88478,
+          |      "repaymentsYTD":545
+          |    },
+          |    "postGradLoan":{
+          |      "repaymentsInPayPeriod":15636,
+          |      "repaymentsYTD":46849
+          |    },
+          |    "payroll":{
+          |      "id":"yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+          |    },
+          |    "employee":{
+          |      "hasPartner":false}
+          |    }
+          |""".stripMargin
+      )
+
+      val result = Json.toJson(createValidPayeEntryLower())
+
+      result shouldBe expectedJson
+    }
+
     "Validate successfully when given valid IfPayeEntry" in {
       val result = Json.toJson(createValidPayeEntry()).validate[IfPayeEntry]
       result.isSuccess shouldBe true

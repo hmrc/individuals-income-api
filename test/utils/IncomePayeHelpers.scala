@@ -26,6 +26,12 @@ trait IncomePayeHelpers {
   def createInvalidTaxPayableToDate() =
     createValidPayeEntry().copy(taxablePayToDate = Some(-99999))
 
+  def createValidPayeEntryUpper() =
+    createValidPayeEntry().copy(taxDeductedOrRefunded = Some(9999999999.99))
+
+  def createValidPayeEntryLower() =
+    createValidPayeEntry().copy(taxDeductedOrRefunded = Some(-9999999999.99))
+
   def createValidPayeEntry() =
     IfPayeEntry(
       Some("K971"),
