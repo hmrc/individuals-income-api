@@ -95,7 +95,7 @@ object IfSaEntry {
         (JsPath \ "line3").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "line4").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "line5").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
-        (JsPath \ "postcode").readNullable[String](minLength[String](1).andKeep(maxLength[String](10)))
+        (JsPath \ "postcode").readNullable[String](minLength[String](0).andKeep(maxLength[String](10)))
     )(IfAddress.apply _),
     (
       (JsPath \ "line1").writeNullable[String] and

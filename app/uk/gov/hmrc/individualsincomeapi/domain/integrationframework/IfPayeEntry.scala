@@ -278,7 +278,7 @@ object IfPayeEntry {
           .keepAnd(pattern(paidHoursWorkPattern, "Invalid Paid Hours Work"))) and
         (JsPath \ "taxablePayToDate").readNullable[Double](verifying(positivePaymentAmountValidator)) and
         (JsPath \ "totalTaxToDate").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "taxDeductedOrRefunded").readNullable[Double](verifying(paymentAmountValidator)) and
+        (JsPath \ "taxDeductedOrRefunded").readNullable[Double](verifying(paymentAmountValidatorTaxDeductedOrRefunded)) and
         (JsPath \ "grossEarningsForNICs").readNullable[IfGrossEarningsForNics] and
         (JsPath \ "employerPayeRef").readNullable[String](maxLength[String](10)
           .keepAnd(pattern(employerPayeRefPattern, "Invalid employer PAYE reference"))) and
