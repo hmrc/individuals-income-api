@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,11 @@ class IfQueriesSpec extends BaseSpec {
         "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4))"
 
     val res2 = "paye(employee(hasPartner)," +
-      "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),payFrequency,paymentDate)"
+      "employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
+      "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),payFrequency,paymentDate,taxablePay)"
 
-    val res3 = "paye(employedPayeRef,grossEarningsForNICs" +
-      "(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),paymentDate,payroll(id))"
+    val res3 = "paye(employedPayeRef,employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD),grossEarningsForNICs" +
+      "(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),paymentDate,payroll(id),taxablePay)"
 
     val res4 =
       "paye(employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
