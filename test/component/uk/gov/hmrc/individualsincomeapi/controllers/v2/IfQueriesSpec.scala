@@ -37,7 +37,7 @@ class IfQueriesSpec extends BaseSpec {
       "employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
       "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),payFrequency,paymentDate,taxablePay)"
 
-    val res3 = "paye(employedPayeRef,employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD),grossEarningsForNICs" +
+    val res3 = "paye(employerPayeRef,employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD),grossEarningsForNICs" +
       "(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),paymentDate,payroll(id),taxablePay)"
 
     val res4 =
