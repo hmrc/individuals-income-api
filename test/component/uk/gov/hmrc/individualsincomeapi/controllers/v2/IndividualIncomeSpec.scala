@@ -35,10 +35,10 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
   val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
 
   val fields =
-    "paye(dednsFromNetPay,employedPayeRef,employee(hasPartner),employeeNICs(inPayPeriod1,inPayPeriod2," +
-      "inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
-      "grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber,paidHoursWorked," +
-      "payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
+    "paye(dednsFromNetPay,employee(hasPartner),employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3," +
+      "inPayPeriod4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
+      "employerPayeRef,grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber," +
+      "paidHoursWorked,payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
       "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
