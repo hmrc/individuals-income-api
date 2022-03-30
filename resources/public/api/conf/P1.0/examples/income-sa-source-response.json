@@ -18,7 +18,7 @@
               "line3": "New Street",
               "line4": "Sometown",
               "line5": "Old County",
-              "postalCode": "TF22 3BC"
+              "postcode": "TF22 3BC"
             }
           }
         ]
@@ -35,9 +35,9 @@
               "line3": "New Street",
               "line4": "Sometown",
               "line5": "Old County",
-              "postalCode": "TF22 3BC",
-			  "addressTypeIndicator": "B",
-			  "addressEffectiveDate": "2017-01-31"
+              "postcode": "TF22 3BC",
+			  "addressType": "B",
+			  "effectiveDate": "2017-01-31"
             },
 			"telephoneNumber": "123456789"
           }
