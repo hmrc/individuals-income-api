@@ -10,7 +10,6 @@
         "taxYear": "2018-19",
         "partnerships": [
           {
-            "utr": "3287654321",
             "partnershipProfit": 0
           }
         ]
@@ -19,7 +18,6 @@
         "taxYear": "2019-20",
         "partnerships": [
           {
-            "utr": "3287654321",
             "partnershipProfit": 324.54
           }
         ]
