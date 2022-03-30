@@ -47,18 +47,11 @@
                 "description": "The individual's income from partnerships for the requested time period.",
                 "items": {
                   "type": "object",
-                  "properties": {
-                    "utr": {
-                      "type": "string",
-                      "description": "A Unique Taxpayer Reference.",
-                      "pattern": "^[0-9]{10}$",
-                      "example": "3287654321"
-                    },
-                    "partnershipProfit": {
-                      "type": "number",
-                      "description": "The amount of profit from partnerships income.",
-                      "example": "324.54"
-                    }
+                  "partnershipProfit": {
+                    "type": "number",
+                    "description": "The amount of profit from partnerships income.",
+                    "example": "324.54"
+
                   },
                   "required": [
                     "partnershipProfit"
