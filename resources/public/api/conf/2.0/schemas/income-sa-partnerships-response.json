@@ -47,11 +47,12 @@
                 "description": "The individual's income from partnerships for the requested time period.",
                 "items": {
                   "type": "object",
-                  "partnershipProfit": {
-                    "type": "number",
-                    "description": "The amount of profit from partnerships income.",
-                    "example": "324.54"
-
+                  "properties": {
+                    "partnershipProfit": {
+                      "type": "number",
+                      "description": "The amount of profit from partnerships income.",
+                      "example": "324.54"
+                    }
                   },
                   "required": [
                     "partnershipProfit"
