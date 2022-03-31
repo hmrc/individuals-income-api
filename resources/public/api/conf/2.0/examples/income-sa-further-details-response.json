@@ -10,7 +10,6 @@
         "taxYear": "2018-19",
         "furtherDetails": [
           {
-            "utr": "3287654321",
             "busStartDate": "2018-02-28",
             "busEndDate": "2019-02-28",
             "totalTaxPaid": -99.99,
@@ -29,7 +28,6 @@
         "taxYear": "2019-20",
         "furtherDetails": [
           {
-            "utr": "3287654321",
             "busStartDate": "2019-02-28",
             "busEndDate": "2019-02-28",
             "totalTaxPaid": -99.99,
