@@ -53,7 +53,7 @@ class IfConnectorSpec
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  override def fakeApplication() = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "microservice.services.integration-framework.host"         -> "127.0.0.1",
@@ -71,12 +71,12 @@ class IfConnectorSpec
 
     implicit val hc = HeaderCarrier()
 
-    val config = fakeApplication.injector.instanceOf[ServicesConfig]
-    val httpClient = fakeApplication.injector.instanceOf[HttpClient]
+    val config = app.injector.instanceOf[ServicesConfig]
+    val httpClient = app.injector.instanceOf[HttpClient]
     val auditHelper = mock[AuditHelper]
     val underTest = new IfConnector(config, httpClient, auditHelper)
 
-    implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   }
 
   def externalServices: Seq[String] = Seq.empty
