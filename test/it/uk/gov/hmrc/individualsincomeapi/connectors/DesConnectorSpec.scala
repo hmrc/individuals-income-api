@@ -47,7 +47,7 @@ class DesConnectorSpec
   val desEnvironment = "DES_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  override def fakeApplication() = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "microservice.services.des.host"         -> "127.0.0.1",
@@ -60,7 +60,7 @@ class DesConnectorSpec
   trait Setup {
     implicit val hc = HeaderCarrier()
 
-    val underTest = fakeApplication.injector.instanceOf[DesConnector]
+    val underTest = app.injector.instanceOf[DesConnector]
   }
 
   def externalServices: Seq[String] = Seq.empty
