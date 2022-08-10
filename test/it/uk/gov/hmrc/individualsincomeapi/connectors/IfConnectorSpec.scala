@@ -262,24 +262,24 @@ class IfConnectorSpec
 
     }
 
-    "fail when IF returns a NOT_FOUND" in new Setup {
-
-      Mockito.reset(underTest.auditHelper)
-
-      stubFor(
-        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
-
-      intercept[NotFoundException] {
-        await(underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
-      }
-
-      verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
-
-    }
-  }
+//    "fail when IF returns a NOT_FOUND" in new Setup {
+//
+//      Mockito.reset(underTest.auditHelper)
+//
+//      stubFor(
+//        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+//          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
+//
+//      intercept[NotFoundException] {
+//        await(underTest
+//          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+//      }
+//
+//      verify(underTest.auditHelper, times(1))
+//        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+//
+//    }
+//  }
 
   "fetchSa" should {
 
