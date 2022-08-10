@@ -279,7 +279,7 @@ class IfConnectorSpec
 //        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
 //
 //    }
-//  }
+  }
 
   "fetchSa" should {
 
