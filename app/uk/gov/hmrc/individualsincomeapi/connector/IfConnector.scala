@@ -141,8 +141,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       msg.contains("NO_DATA_FOUND") match {
         case true => Future.successful(Seq.empty)
         case _    => {
-          logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(new NotFoundException(msg))
+          logger.warn("No NO_DATA_FOUND found, but treating as no data found")
+          Future.successful(Seq.empty)
         }
       }
     }
