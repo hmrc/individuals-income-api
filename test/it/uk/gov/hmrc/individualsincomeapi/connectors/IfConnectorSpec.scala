@@ -262,25 +262,6 @@ class IfConnectorSpec
 
     }
 
-    "fail when IF returns a NOT_FOUND" in new Setup {
-
-      Mockito.reset(underTest.auditHelper)
-
-      stubFor(
-        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
-
-      intercept[NotFoundException] {
-        await(underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
-      }
-
-      verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
-
-    }
-  }
-
   "fetchSa" should {
 
     val nino = Nino("NA000799C")
@@ -438,5 +419,23 @@ class IfConnectorSpec
         .auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
+
+    "fail when IF returns a NOT_FOUND" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
+          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
+
+      intercept[NotFoundException] {
+        await(underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+      }
+
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+
+    }
+  }
   }
 }
