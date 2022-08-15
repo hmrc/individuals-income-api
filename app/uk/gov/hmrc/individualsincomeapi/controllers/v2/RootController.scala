@@ -40,7 +40,7 @@ class RootController @Inject()(
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
-    authenticate(scopeService.getAllScopes, matchId.toString) { authScopes =>
+    authenticate(scopeService.getAllScopes, matchId) { authScopes =>
 
       withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 

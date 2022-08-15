@@ -47,6 +47,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
     "read:individuals-income-hmcts-c2",
     "read:individuals-income-hmcts-c3",
     "read:individuals-income-hmcts-c4",
+    "read:individuals-income-ho-v2",
     "read:individuals-income-laa-c1",
     "read:individuals-income-laa-c2",
     "read:individuals-income-laa-c3",

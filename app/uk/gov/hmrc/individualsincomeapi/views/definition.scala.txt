@@ -147,6 +147,11 @@
       "key":"read:individuals-income-ho-ecp",
       "name":"access all self assessment information of individuals for HO ECP use case",
       "description":"Scope for HO ECP use case to access all self assessment information of individuals"
+    },
+    {
+      "key":"read:individuals-income-ho-v2",
+      "name":"access all self assessment information of individuals for HO V2 use case",
+      "description":"Scope for HO V2 that replicates the V1 of the same"
     }
   ],
   "api": {

@@ -41,7 +41,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
     "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
     "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
-    "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
+    "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
   Feature("SA root endpoint") {
 
@@ -52,6 +52,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-hmcts-c4",
       "read:individuals-income-ho-ecp",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -325,6 +326,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     val employmentScopes = List(
       "read:individuals-income-ho-ecp",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -499,6 +501,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-ho-ecp",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4"
@@ -657,6 +660,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
       "read:individuals-income-ho-ecp",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -821,6 +825,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100001D"
 
     val trustsScopes = List(
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -980,6 +985,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val foreignScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -991,7 +997,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
       "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
       "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
-      "receivedDate,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
     testAuthorisation("sa/foreign", foreignScopes)
     testMatchId("sa/foreign", foreignScopes)
@@ -1143,6 +1149,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100003D"
 
     val partnershipsScopes = List(
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1155,7 +1162,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
       "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
       "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
-      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover),taxYear)"
+      "receivedDate,telephoneNumber,totalNIC,totalTaxPaid,tradingIncomeAllowance,turnover,utr),taxYear)"
 
     testAuthorisation("sa/partnerships", partnershipsScopes)
     testMatchId("sa/partnerships", partnershipsScopes)
@@ -1308,6 +1315,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val interestsAndDividendsScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1471,6 +1479,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100004D"
 
     val pensionsAndStateBenefitsScopes = List(
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1634,6 +1643,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val ukPropertiesScopes = List(
       "read:individuals-income-hmcts-c2",
       "read:individuals-income-hmcts-c3",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1795,6 +1805,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
     val nino = "AA100006D"
 
     val additionalInformationScopes = List(
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -1958,6 +1969,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     val otherIncomeScopes = List(
       "read:individuals-income-ho-ecp",
+      "read:individuals-income-ho-v2",
       "read:individuals-income-laa-c1",
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
@@ -2345,7 +2357,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return invalid response")
       IfStub.searchSaIncomeForPeriodReturns(
@@ -2359,7 +2371,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       When(
         s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
 
-      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2376,14 +2388,14 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return Internal Server Error")
       IfStub.saCustomResponse(nino, INTERNAL_SERVER_ERROR, fromTaxYear, toTaxYear, fields, Json.obj("reason" -> "Server error"))
 
       When(
         s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2400,7 +2412,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return Internal Server Error")
       IfStub.saCustomResponse(nino, UNPROCESSABLE_ENTITY, fromTaxYear,  toTaxYear, fields, Json.obj("reason" ->
@@ -2408,7 +2420,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When(
         s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2429,7 +2441,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("the API is invoked with a missing match id")
 
-      val response = Http(s"$serviceUrl/${endpoint}?fromTaxYear=2016-17&toTaxYear=2018-19")
+      val response = Http(s"$serviceUrl/$endpoint?fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2448,7 +2460,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/${endpoint}?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=malformed-id&fromTaxYear=2016-17&toTaxYear=2018-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2564,7 +2576,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("the endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/${endpoint}?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2016-17&toTaxYear=2018GFR-19")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
