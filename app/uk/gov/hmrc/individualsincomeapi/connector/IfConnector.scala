@@ -106,7 +106,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
         response.paye
     },
-    extractCorrelationId(request), matchId, request, url)
+    extractCorrelationId(request), matchId, request, url)((x: String) => {
+      logger.warn("No NO_DATA_FOUND found, but treating as no data found")
+      Future.successful(Seq.empty[IfPayeEntry])
+    }
+    )
   }
 
   private def callSa(url: String, endpoint: String, matchId: String)
@@ -119,14 +123,17 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
         response.sa
     },
-    extractCorrelationId(request), matchId, request, url)
+    extractCorrelationId(request), matchId, request, url) { (message: String) =>
+      logger.warn("Integration Framework NotFoundException encountered")
+      Future.failed(new NotFoundException(message))
+    }
   }
 
   private def recover[A](x: Future[Seq[A]],
                          correlationId: String,
                          matchId: String,
                          request: RequestHeader,
-                         requestUrl: String)
+                         requestUrl: String)(default404: (String) => Future[Seq[A]])
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
     case validationError: JsValidationException => {
       logger.warn("Integration Framework JsValidationException encountered")
@@ -140,10 +147,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
       msg.contains("NO_DATA_FOUND") match {
         case true => Future.successful(Seq.empty)
-        case _    => {
-          logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(new NotFoundException(msg))
-        }
+        case _    => default404(msg)
       }
     }
     case Upstream5xxResponse(msg, code, _, _) => {
