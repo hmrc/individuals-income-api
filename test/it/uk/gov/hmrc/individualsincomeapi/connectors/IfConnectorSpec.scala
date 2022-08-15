@@ -250,7 +250,7 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
+          .willReturn(aResponse().withStatus(404)))
 
       val result = await(underTest.fetchPayeIncome(nino, interval, None, matchId)
       (hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
