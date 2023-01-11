@@ -1,0 +1,2980 @@
+openapi: 3.0.3
+info:
+  title: Individuals Income
+  description: "<p>This API provides individual's income information from HM Revenue and Customs (HMRC).</p>\n\n<p>The responses exclude fields when they do not have a value.</p>\n\n<p>This API is a HAL HATEOAS RESTful API, designed to promote discoverability and to be self documenting.</p>\n\n<p>A HATEOAS API makes it clear to client software what can be done when an action is completed, i.e. what you need to know when you need to know it. New functionality can be added without breaking your client software.</p>\n\n<p>This API is still under development; many enhancements are planned and we strongly recommend following the HATEOAS approach from the outset, so as to protect your development effort from forthcoming change.</p>\n\n<p>You are advised to follow links as they are presented to you in the API at runtime. This prevents you from building state into your client and decouples you from changes to the API.</p>\n\n<p>The default Media Type for responses is hal+json.</p>\nWhen an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nWe use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:\n* 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action\n* 400 to 499 if it failed because of a client error by your application\n* 500 to 599 if it failed because of an error on our server\n\nErrors specific to each API are shown in the Endpoints section, under Response. \nSee our [reference guide](/api-documentation/docs/reference-guide#errors) for more on errors.\nYou can use the sandbox environment to [test this API](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing). It does not support [stateful behaviour](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing/stateful-behaviour).\n\nThe Sandbox service for this API supports all the happy path responses and error scenarios described under Resources.\n\nYou can set up PAYE test data for this API using the following resources:\n* [Create an individual](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0#_create-a-test-user-which-is-an-individual_post_accordion) (with service `national-insurance`).\n* [Create an employer](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0#_create-a-test-user-which-is-an-organisation_post_accordion).\n* [Create an employment](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individual-income-des-stub/1.0#_create-an-employment_post_accordion).\n\nYou can set up Self Assessment test data for this API using the following resources:\n* [Create an individual](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0#_create-a-test-user-which-is-an-individual_post_accordion) (with services `national-insurance` and `self-assessment`).\n* [Create a self assessment](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individual-income-des-stub/1.0#_create-a-self-assessment_post_accordion)"
+  contact: {}
+  version: 'P1.0'
+
+servers:
+  - url: https://api.isc.development.tax.service.gov.uk
+    description: Development
+  - url: https://api.qa.tax.service.gov.uk
+    description: QA
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: PRD
+
+paths:
+  /individuals/income/:
+    get:
+      tags:
+      - individuals
+      summary: Entry point
+      description: This is the entry point to the API and returns one or more links.
+      operationId: Entrypoint
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The resources available for a matched individual
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeresponse'
+                - example:
+                    _links:
+                      paye:
+                        href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}
+                        title: View individual's income per employment
+                      selfAssessment:
+                        href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: View individual's self-assessment income
+                      self:
+                        href: /individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+              example:
+                _links:
+                  paye:
+                    href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}
+                    title: View individual's income per employment
+                  selfAssessment:
+                    href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: View individual's self-assessment income
+                  self:
+                    href: /individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income
+  /individuals/income/paye:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve PAYE income history
+      description: "<p>This endpoint returns an individual's PAYE income data for the requested time period.</p>\n<p>Income data is only available for tax years commencing 2013-2014.</p>\n<p>The fromDate and toDate are inclusive i.e. the data returned are for the time period that includes the fromDate and the toDate. \n</p>\n"
+      operationId: RetrievePAYEincomehistory
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromDate
+        in: query
+        description: The date from when data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2016-01-01
+      - name: toDate
+        in: query
+        description: The date to when data is requested; if absent it defaults to today's date
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2017-03-01
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-paye scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual PAYE income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomePayeresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2016-01-01&toDate=2017-03-01
+                    paye:
+                      income:
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 500.25
+                        paymentDate: 2017-02-16
+                        weekPayNumber: 46
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 500.25
+                        paymentDate: 2017-02-09
+                        weekPayNumber: 45
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 1000.25
+                        paymentDate: 2016-05-28
+                        monthPayNumber: 2
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 1000.25
+                        paymentDate: 2016-04-28
+                        monthPayNumber: 1
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 1000.5
+                        paymentDate: 2016-03-28
+                        monthPayNumber: 12
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 1000.5
+                        paymentDate: 2016-02-28
+                        monthPayNumber: 11
+                      - employerPayeReference: 123/DI45678
+                        taxablePayment: 1000.5
+                        paymentDate: 2016-01-28
+                        monthPayNumber: 10
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2016-01-01&toDate=2017-03-01
+                paye:
+                  income:
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 500.25
+                    paymentDate: 2017-02-16
+                    weekPayNumber: 46
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 500.25
+                    paymentDate: 2017-02-09
+                    weekPayNumber: 45
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 1000.25
+                    paymentDate: 2016-05-28
+                    monthPayNumber: 2
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 1000.25
+                    paymentDate: 2016-04-28
+                    monthPayNumber: 1
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 1000.5
+                    paymentDate: 2016-03-28
+                    monthPayNumber: 12
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 1000.5
+                    paymentDate: 2016-02-28
+                    monthPayNumber: 11
+                  - employerPayeReference: 123/DI45678
+                    taxablePayment: 1000.5
+                    paymentDate: 2016-01-28
+                    monthPayNumber: 10
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-paye
+  /individuals/income/sa:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve self-assessment footprint
+      description: >
+        <p>This endpoint returns an individual’s tax returns submission history for the requested time period. Where there are submissions to return, self-assessment registration information comprising the UTR and registration date, is included.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveself-assessmentfootprint
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      additionalInformation:
+                        href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      employments:
+                        href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      foreign:
+                        href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      interestsAndDividends:
+                        href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      other:
+                        href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      partnerships:
+                        href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      pensionsAndStateBenefits:
+                        href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      selfEmployments:
+                        href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      summary:
+                        href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      trusts:
+                        href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                      ukProperties:
+                        href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      registrations:
+                      - utr: '2432552635'
+                        registrationDate: 2012-01-06
+                      taxReturns:
+                      - taxYear: 2014-15
+                        submissions:
+                        - utr: '2432552635'
+                          receivedDate: 2015-10-06
+                      - taxYear: 2013-14
+                        submissions:
+                        - utr: '2432552635'
+                          receivedDate: 2014-06-06
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  additionalInformation:
+                    href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  employments:
+                    href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  foreign:
+                    href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  interestsAndDividends:
+                    href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  other:
+                    href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  partnerships:
+                    href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  pensionsAndStateBenefits:
+                    href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  selfEmployments:
+                    href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  summary:
+                    href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  trusts:
+                    href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                  ukProperties:
+                    href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  registrations:
+                  - utr: '2432552635'
+                    registrationDate: 2012-01-06
+                  taxReturns:
+                  - taxYear: 2014-15
+                    submissions:
+                    - utr: '2432552635'
+                      receivedDate: 2015-10-06
+                  - taxYear: 2013-14
+                    submissions:
+                    - utr: '2432552635'
+                      receivedDate: 2014-06-06
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa
+  /individuals/income/sa/additional-information:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve additional information from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment additional information (SA101) for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveadditionalinformationfromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-additional-information scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA additional information for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaAdditionalInformationresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        additionalInformation:
+                        - utr: '2432552635'
+                          gainsOnLifePolicies: 0
+                          sharesOptionsIncome: 0
+                      - taxYear: 2013-14
+                        additionalInformation:
+                        - utr: '2432552635'
+                          gainsOnLifePolicies: 44.54
+                          sharesOptionsIncome: 52.34
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    additionalInformation:
+                    - utr: '2432552635'
+                      gainsOnLifePolicies: 0
+                      sharesOptionsIncome: 0
+                  - taxYear: 2013-14
+                    additionalInformation:
+                    - utr: '2432552635'
+                      gainsOnLifePolicies: 44.54
+                      sharesOptionsIncome: 52.34
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-additional-information
+  /individuals/income/sa/employments:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve employments income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment employments income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveemploymentsincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-employments scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA employments income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaEmploymentsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        employments:
+                        - utr: '2432552635'
+                          employmentIncome: 0
+                      - taxYear: 2013-14
+                        employments:
+                        - utr: '2432552635'
+                          employmentIncome: 5000
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    employments:
+                    - utr: '2432552635'
+                      employmentIncome: 0
+                  - taxYear: 2013-14
+                    employments:
+                    - utr: '2432552635'
+                      employmentIncome: 5000
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-employments
+  /individuals/income/sa/foreign:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve foreign income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment foreign income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveforeignincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-foreign scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA foreign income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaForeignresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        foreign:
+                        - utr: '2432552635'
+                          foreignIncome: 0
+                      - taxYear: 2013-14
+                        foreign:
+                        - utr: '2432552635'
+                          foreignIncome: 1054.65
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    foreign:
+                    - utr: '2432552635'
+                      foreignIncome: 0
+                  - taxYear: 2013-14
+                    foreign:
+                    - utr: '2432552635'
+                      foreignIncome: 1054.65
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-foreign
+  /individuals/income/sa/interests-and-dividends:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve interests and dividends income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment interests and dividends income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveinterestsanddividendsincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-interests-and-dividends scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA interests and dividends income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaInterestsAndDividendsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        interestsAndDividends:
+                        - utr: '2432552635'
+                          ukInterestsIncome: 0
+                          foreignDividendsIncome: 0
+                          ukDividendsIncome: 0
+                      - taxYear: 2013-14
+                        interestsAndDividends:
+                        - utr: '2432552635'
+                          ukInterestsIncome: 12.46
+                          foreignDividendsIncome: 25.86
+                          ukDividendsIncome: 657.89
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    interestsAndDividends:
+                    - utr: '2432552635'
+                      ukInterestsIncome: 0
+                      foreignDividendsIncome: 0
+                      ukDividendsIncome: 0
+                  - taxYear: 2013-14
+                    interestsAndDividends:
+                    - utr: '2432552635'
+                      ukInterestsIncome: 12.46
+                      foreignDividendsIncome: 25.86
+                      ukDividendsIncome: 657.89
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-interests-and-dividends
+  /individuals/income/sa/other:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve other income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment other income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveotherincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-other scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA other income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaOtherresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        other:
+                        - utr: '2432552635'
+                          otherIncome: 0
+                      - taxYear: 2013-14
+                        other:
+                        - utr: '2432552635'
+                          otherIncome: 26.7
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    other:
+                    - utr: '2432552635'
+                      otherIncome: 0
+                  - taxYear: 2013-14
+                    other:
+                    - utr: '2432552635'
+                      otherIncome: 26.7
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-other
+  /individuals/income/sa/partnerships:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve partnerships income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment partnerships income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrievepartnershipsincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-partnerships scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA partnerships income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaPartnershipsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        partnerships:
+                        - utr: '2432552635'
+                          partnershipProfit: 0
+                      - taxYear: 2013-14
+                        partnerships:
+                        - utr: '2432552635'
+                          partnershipProfit: 324.54
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    partnerships:
+                    - utr: '2432552635'
+                      partnershipProfit: 0
+                  - taxYear: 2013-14
+                    partnerships:
+                    - utr: '2432552635'
+                      partnershipProfit: 324.54
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-partnerships
+  /individuals/income/sa/pensions-and-state-benefits:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve pensions and state benefits income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment pensions and state benefits income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrievepensionsandstatebenefitsincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-pensions-and-state-benefits scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA pensions and state benefits income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaPensionsAndStateBenefitsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        pensionsAndStateBenefits:
+                        - utr: '2432552635'
+                          totalIncome: 0
+                      - taxYear: 2013-14
+                        pensionsAndStateBenefits:
+                        - utr: '2432552635'
+                          totalIncome: 52.79
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    pensionsAndStateBenefits:
+                    - utr: '2432552635'
+                      totalIncome: 0
+                  - taxYear: 2013-14
+                    pensionsAndStateBenefits:
+                    - utr: '2432552635'
+                      totalIncome: 52.79
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-pensions-and-state-benefits
+  /individuals/income/sa/self-employments:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve self-employments income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment self employments income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveself-employmentsincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-self-employments scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA self employments income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaSelfEmploymentsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        selfEmployments:
+                        - utr: '2432552635'
+                          selfEmploymentProfit: 0
+                      - taxYear: 2013-14
+                        selfEmployments:
+                        - utr: '2432552635'
+                          selfEmploymentProfit: 10500
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    selfEmployments:
+                    - utr: '2432552635'
+                      selfEmploymentProfit: 0
+                  - taxYear: 2013-14
+                    selfEmployments:
+                    - utr: '2432552635'
+                      selfEmploymentProfit: 10500
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-self-employments
+  /individuals/income/sa/summary:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve self-assessment tax returns summary
+      description: >
+        <p>This endpoint returns an individual's self-assessment summary for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrieveself-assessmenttaxreturnssummary
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-summary scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA summary for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaSummaryresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        summary:
+                        - utr: '2432552635'
+                          totalIncome: 0
+                      - taxYear: 2013-14
+                        summary:
+                        - utr: '2432552635'
+                          totalIncome: 30000
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    summary:
+                    - utr: '2432552635'
+                      totalIncome: 0
+                  - taxYear: 2013-14
+                    summary:
+                    - utr: '2432552635'
+                      totalIncome: 30000
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-summary
+  /individuals/income/sa/trusts:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve trusts income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment trusts income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: Retrievetrustsincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-trusts scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA trusts income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaTrustsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        trusts:
+                        - utr: '2432552635'
+                          trustIncome: 0
+                      - taxYear: 2013-14
+                        trusts:
+                        - utr: '2432552635'
+                          trustIncome: 2143.32
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    trusts:
+                    - utr: '2432552635'
+                      trustIncome: 0
+                  - taxYear: 2013-14
+                    trusts:
+                    - utr: '2432552635'
+                      trustIncome: 2143.32
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-trusts
+  /individuals/income/sa/uk-properties:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve UK properties income from self-assessment
+      description: >
+        <p>This endpoint returns an individual's self-assessment UK properties income data for the requested time period.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
+      operationId: RetrieveUKpropertiesincomefromself-assessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-uk-properties scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA UK properties income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaUkPropertiesresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        ukProperties:
+                        - utr: '2432552635'
+                          totalProfit: 0
+                      - taxYear: 2013-14
+                        ukProperties:
+                        - utr: '2432552635'
+                          totalProfit: 1276.67
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    ukProperties:
+                    - utr: '2432552635'
+                      totalProfit: 0
+                  - taxYear: 2013-14
+                    ukProperties:
+                    - utr: '2432552635'
+                      totalProfit: 1276.67
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-uk-properties
+  /individuals/income/sa/source:
+    get:
+      tags:
+      - individuals
+      summary: Retrieve address and description for each income source
+      description: "<p>This endpoint returns an individual's SA income sources for the requested time period.</p>\n<p>Income data is only available for tax years commencing 2013-2014.</p>\n<p>The fromDate and toDate are inclusive i.e. the data returned are for the time period that includes the fromDate and the toDate. \n</p>\n"
+      operationId: Retrieveaddressanddescriptionforeachincomesource
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: The tax year from which data is requested
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2013-14
+      - name: toTaxYear
+        in: query
+        description: The tax year until when data is requested; if absent it defaults to the current tax year
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2015-16
+      - name: Authorization
+        in: header
+        description: OAuth 2.0 Bearer Token with the read:individuals-income-sa-source scope.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: Bearer <BEARER_TOKEN>
+      responses:
+        '200':
+          description: The individual SA income sources for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaSourceresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/sources?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2014-15
+                        sources:
+                        - utr: '2432552635'
+                          businessDescription: something
+                          businessAddress:
+                            line1: Friars House
+                            line2: Campus Way
+                            line3: New Street
+                            line4: Sometown
+                            line5: Old County
+                            postalCode: TF22 3BC
+                      - taxYear: 2013-14
+                        sources:
+                        - utr: '2432552635'
+                          businessDescription: something else
+                          businessAddress:
+                            line1: Friars House
+                            line2: Campus Way
+                            line3: New Street
+                            line4: Sometown
+                            line5: Old County
+                            postalCode: TF22 3BC
+                            addressTypeIndicator: B
+                            addressEffectiveDate: 2017-01-31
+                          telephoneNumber: '123456789'
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/sources?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2014-15
+                    sources:
+                    - utr: '2432552635'
+                      businessDescription: something
+                      businessAddress:
+                        line1: Friars House
+                        line2: Campus Way
+                        line3: New Street
+                        line4: Sometown
+                        line5: Old County
+                        postalCode: TF22 3BC
+                  - taxYear: 2013-14
+                    sources:
+                    - utr: '2432552635'
+                      businessDescription: something else
+                      businessAddress:
+                        line1: Friars House
+                        line2: Campus Way
+                        line3: New Street
+                        line4: Sometown
+                        line5: Old County
+                        postalCode: TF22 3BC
+                        addressTypeIndicator: B
+                        addressEffectiveDate: 2017-01-31
+                      telephoneNumber: '123456789'
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:individuals-income-sa-source
+components:
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            read:individuals-income: read access to individuals income
+            read:individuals-income-paye: read access to individuals income paye
+            read:individuals-income-sa: read access to individuals income sa
+            read:individuals-income-sa-additional-information: read access to individuals income sa additional information
+            read:individuals-income-sa-employments: read access to individuals income sa employments
+            read:individuals-income-sa-foreign: read access to individuals income sa foreign
+            read:individuals-income-sa-interests-and-dividends: read access to individuals income sa interests and dividends
+            read:individuals-income-sa-other: read access to individuals income sa other
+            read:individuals-income-sa-partnerships: read access to individuals income sa partnerships
+            read:individuals-income-sa-pensions-and-state-benefits: read access to individuals income sa pension and state benefits
+            read:individuals-income-sa-self-employments: read access to individuals income sa self employments
+            read:individuals-income-sa-summary: read access to individuals income sa summary
+            read:individuals-income-sa-trusts: read access to individuals income sa trusts
+            read:individuals-income-sa-uk-properties: read access to individuals income sa uk properties
+            read:individuals-income-sa-source: read access to individuals income sa source
+
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+      - code
+      type: object
+      properties:
+        code:
+          type: string
+    AdditionalInformation:
+      title: AdditionalInformation
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: Additional information
+    AdditionalInformation1:
+      title: AdditionalInformation1
+      required:
+      - utr
+      - gainsOnLifePolicies
+      - sharesOptionsIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        gainsOnLifePolicies:
+          type: number
+          description: Gains on life policies
+          example: 44.54
+        sharesOptionsIncome:
+          type: number
+          description: Income from shares options
+          example: 52.34
+    AddressType:
+      title: AddressType
+      enum:
+      - homeAddress
+      - correspondenceAddress
+      - other
+      type: string
+    BusinessAddress:
+      title: BusinessAddress
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        line3:
+          type: string
+        line4:
+          type: string
+        line5:
+          type: string
+        postcode:
+          type: string
+        addressType:
+          $ref: '#/components/schemas/AddressType'
+        effectiveDate:
+          type: string
+          description: The effective date of the Business Address
+    Employments:
+      title: Employments
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from employments
+    Employments1:
+      title: Employments1
+      required:
+      - utr
+      - employmentIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        employmentIncome:
+          type: number
+          description: Employments income
+          example: 5000
+    Foreign:
+      title: Foreign
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The foreign income
+    Foreign1:
+      title: Foreign1
+      required:
+      - utr
+      - foreignIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        foreignIncome:
+          type: number
+          description: Foreign income
+          example: 2143.32
+    Income:
+      title: Income
+      required:
+      - taxablePayment
+      - paymentDate
+      type: object
+      properties:
+        employerPayeReference:
+          type: string
+          description: Employer PAYE Reference
+          example: 123/AI45678
+        taxablePayment:
+          type: number
+          description: Includes pay, wages, salaries, fees, overtime, bonuses, commission, pension income from registered schemes, employer-financed retirement benefits, statutory payments and payrolled benefits in kind
+          example: 1000.5
+        paymentDate:
+          type: string
+          description: Payment date
+          format: date
+          example: 2016-02-28
+        weekPayNumber:
+          type: number
+          description: The number corresponding to the week the payment was made. As pay dates may not align with calendar weeks, the range of permitted values is 1 through to 54 (inclusive), and 56
+          example: 45
+        monthPayNumber:
+          type: number
+          description: The number between 1 and 12, corresponding to the month the payment was made. As the tax year starts in April, so does the monthPayNumber, with 1 corresponding to April
+          example: 10
+    IndividualsIncomePayeresponse:
+      title: IndividualsIncomePayeresponse
+      required:
+      - _links
+      - paye
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        paye:
+          $ref: '#/components/schemas/Paye1'
+      description: Income
+    IndividualsIncomeresponse:
+      title: IndividualsIncomeresponse
+      required:
+      - _links
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links'
+      description: Individuals Income
+    IndividualsIncomeSaAdditionalInformationresponse:
+      title: IndividualsIncomeSaAdditionalInformationresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment2'
+      description: SA additional information
+    IndividualsIncomeSaEmploymentsresponse:
+      title: IndividualsIncomeSaEmploymentsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment3'
+      description: SA Employments Income
+    IndividualsIncomeSaForeignresponse:
+      title: IndividualsIncomeSaForeignresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment4'
+      description: SA foreign income
+    IndividualsIncomeSaInterestsAndDividendsresponse:
+      title: IndividualsIncomeSaInterestsAndDividendsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment5'
+      description: SA interests and dividends income
+    IndividualsIncomeSaOtherresponse:
+      title: IndividualsIncomeSaOtherresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment6'
+      description: SA other income
+    IndividualsIncomeSaPartnershipsresponse:
+      title: IndividualsIncomeSaPartnershipsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment7'
+      description: SA partnerships income
+    IndividualsIncomeSaPensionsAndStateBenefitsresponse:
+      title: IndividualsIncomeSaPensionsAndStateBenefitsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment8'
+      description: SA pensions and state benefits income
+    IndividualsIncomeSaresponse:
+      title: IndividualsIncomeSaresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links2'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment1'
+      description: SA History
+    IndividualsIncomeSaSelfEmploymentsresponse:
+      title: IndividualsIncomeSaSelfEmploymentsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment9'
+      description: SA self-employments income
+    IndividualsIncomeSaSourceresponse:
+      title: IndividualsIncomeSaSourceresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment13'
+      description: SA additional information
+    IndividualsIncomeSaSummaryresponse:
+      title: IndividualsIncomeSaSummaryresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment10'
+      description: SA Summary
+    IndividualsIncomeSaTrustsresponse:
+      title: IndividualsIncomeSaTrustsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment11'
+      description: SA trusts income
+    IndividualsIncomeSaUkPropertiesresponse:
+      title: IndividualsIncomeSaUkPropertiesresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/Links1'
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment12'
+      description: SA UK properties income
+    InterestsAndDividends:
+      title: InterestsAndDividends
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from interests and dividends
+    InterestsAndDividends1:
+      title: InterestsAndDividends1
+      required:
+      - utr
+      - ukInterestsIncome
+      - foreignDividendsIncome
+      - ukDividendsIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        ukInterestsIncome:
+          type: number
+          description: UK interests received before tax
+          example: 12.46
+        foreignDividendsIncome:
+          type: number
+          description: Foreign dividends income
+          example: 25.86
+        ukDividendsIncome:
+          type: number
+          description: UK dividends income
+          example: 657.89
+    Links:
+      title: Links
+      required:
+      - paye
+      - selfAssessment
+      - self
+      type: object
+      properties:
+        paye:
+          allOf:
+          - $ref: '#/components/schemas/Paye'
+          - description: The URI for the resource to get the individual's income per employment data.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment'
+          - description: The URI for the resource to get the individual's self-assessment income
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self'
+          - description: HAL compliant. Refers to itself
+    Links1:
+      title: Links1
+      required:
+      - self
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self1'
+          - description: The URI to this resource
+    Links2:
+      title: Links2
+      required:
+      - self
+      - additionalInformation
+      - employments
+      - foreign
+      - interestsAndDividends
+      - other
+      - partnerships
+      - pensionsAndStateBenefits
+      - selfEmployments
+      - summary
+      - trusts
+      - ukProperties
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self1'
+          - description: The URI to this resource
+        additionalInformation:
+          allOf:
+          - $ref: '#/components/schemas/AdditionalInformation'
+          - description: Additional information
+        employments:
+          allOf:
+          - $ref: '#/components/schemas/Employments'
+          - description: The income from employments
+        foreign:
+          allOf:
+          - $ref: '#/components/schemas/Foreign'
+          - description: The foreign income
+        interestsAndDividends:
+          allOf:
+          - $ref: '#/components/schemas/InterestsAndDividends'
+          - description: The income from interests and dividends
+        other:
+          allOf:
+          - $ref: '#/components/schemas/Other'
+          - description: Other income
+        partnerships:
+          allOf:
+          - $ref: '#/components/schemas/Partnerships'
+          - description: The income from partnerships
+        pensionsAndStateBenefits:
+          allOf:
+          - $ref: '#/components/schemas/PensionsAndStateBenefits'
+          - description: The income from pensions and state benefits
+        selfEmployments:
+          allOf:
+          - $ref: '#/components/schemas/SelfEmployments'
+          - description: The income from self-employments
+        summary:
+          allOf:
+          - $ref: '#/components/schemas/Summary'
+          - description: The self-assessment income summary
+        trusts:
+          allOf:
+          - $ref: '#/components/schemas/Trusts'
+          - description: The income from trusts
+        ukProperties:
+          allOf:
+          - $ref: '#/components/schemas/UkProperties'
+          - description: The income from UK properties
+    Other:
+      title: Other
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: Other income
+    Other1:
+      title: Other1
+      required:
+      - utr
+      - otherIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        otherIncome:
+          type: number
+          description: Other income
+          example: 26.7
+    Partnerships:
+      title: Partnerships
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from partnerships
+    Partnerships1:
+      title: Partnerships1
+      required:
+      - utr
+      - partnershipProfit
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        partnershipProfit:
+          type: number
+          description: Partnership profit
+          example: 324.54
+    Paye:
+      title: Paye
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}
+        title:
+          type: string
+          example: View individual's income per employment
+      description: The URI for the resource to get the individual's income per employment data.
+    Paye1:
+      title: Paye1
+      required:
+      - income
+      type: object
+      properties:
+        income:
+          type: array
+          items:
+            $ref: '#/components/schemas/Income'
+          description: List of payments for each employment in the requested period
+    PensionsAndStateBenefits:
+      title: PensionsAndStateBenefits
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/pensions-and-state-benefits  ?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from pensions and state benefits
+    PensionsAndStateBenefits1:
+      title: PensionsAndStateBenefits1
+      required:
+      - utr
+      - totalIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        totalIncome:
+          type: number
+          description: Income from pensions and state benefits
+          example: 52.79
+    Registration:
+      title: Registration
+      required:
+      - utr
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        registrationDate:
+          type: string
+          description: Self-assessment registration date
+          example: 2012-01-06
+    Self:
+      title: Self
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      description: HAL compliant. Refers to itself
+    Self1:
+      title: Self1
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2016-01-01&toDate=2017-03-01
+      description: The URI to this resource
+    SelfAssessment:
+      title: SelfAssessment
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          example: View individual's self-assessment income
+      description: The URI for the resource to get the individual's self-assessment income
+    SelfAssessment1:
+      title: SelfAssessment1
+      required:
+      - registrations
+      - taxReturns
+      type: object
+      properties:
+        registrations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Registration'
+          description: Self-assessment registrations
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment2:
+      title: SelfAssessment2
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn1'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment3:
+      title: SelfAssessment3
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn2'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment4:
+      title: SelfAssessment4
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn3'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment5:
+      title: SelfAssessment5
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn4'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment6:
+      title: SelfAssessment6
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn5'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment7:
+      title: SelfAssessment7
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn6'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment8:
+      title: SelfAssessment8
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn7'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment9:
+      title: SelfAssessment9
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn8'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment10:
+      title: SelfAssessment10
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn9'
+          description: List of summaries of self-assessment tax returns in the requested period
+    SelfAssessment11:
+      title: SelfAssessment11
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn10'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment12:
+      title: SelfAssessment12
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn11'
+          description: List of self-assessments tax returns in the requested period
+    SelfAssessment13:
+      title: SelfAssessment13
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn12'
+          description: List of self-assessments tax returns in the requested period
+    SelfEmployments:
+      title: SelfEmployments
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from self-employments
+    SelfEmployments1:
+      title: SelfEmployments1
+      required:
+      - utr
+      - selfEmploymentProfit
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        selfEmploymentProfit:
+          type: number
+          description: Self-employment profit
+          example: 5000
+    Source:
+      title: Source
+      required:
+      - utr
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        businessDescription:
+          type: string
+          description: The nature of the main business activity relating to the SA Return
+        businessAddress:
+          $ref: '#/components/schemas/BusinessAddress'
+        telephoneNumber:
+          type: string
+    Submission:
+      title: Submission
+      required:
+      - utr
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        receivedDate:
+          type: string
+          description: Tax return received date
+          example: 2014-06-06
+    Summary:
+      title: Summary
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The self-assessment income summary
+    Summary1:
+      title: Summary1
+      required:
+      - utr
+      - totalIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        totalIncome:
+          type: number
+          description: Income from self employment
+          example: 30000
+    TaxReturn:
+      title: TaxReturn
+      required:
+      - taxYear
+      - submissions
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2015-16
+        submissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Submission'
+          description: Tax return submissions for the year
+    TaxReturn1:
+      title: TaxReturn1
+      required:
+      - taxYear
+      - additionalInformation
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        additionalInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalInformation1'
+          description: Additional information for the tax year
+    TaxReturn2:
+      title: TaxReturn2
+      required:
+      - taxYear
+      - employments
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        employments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employments1'
+          description: Employments income for the tax year
+    TaxReturn3:
+      title: TaxReturn3
+      required:
+      - taxYear
+      - foreign
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        foreign:
+          type: array
+          items:
+            $ref: '#/components/schemas/Foreign1'
+          description: Foreign income for the tax year
+    TaxReturn4:
+      title: TaxReturn4
+      required:
+      - taxYear
+      - interestsAndDividends
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        interestsAndDividends:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestsAndDividends1'
+          description: Interests and dividends income for the tax year
+    TaxReturn5:
+      title: TaxReturn5
+      required:
+      - taxYear
+      - other
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        other:
+          type: array
+          items:
+            $ref: '#/components/schemas/Other1'
+          description: Other income for the tax year
+    TaxReturn6:
+      title: TaxReturn6
+      required:
+      - taxYear
+      - partnerships
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        partnerships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Partnerships1'
+          description: Partnerships income for the tax year
+    TaxReturn7:
+      title: TaxReturn7
+      required:
+      - taxYear
+      - pensionsAndStateBenefits
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        pensionsAndStateBenefits:
+          type: array
+          items:
+            $ref: '#/components/schemas/PensionsAndStateBenefits1'
+          description: Pensions and state benefits income for the tax year
+    TaxReturn8:
+      title: TaxReturn8
+      required:
+      - taxYear
+      - selfEmployments
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        selfEmployments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelfEmployments1'
+          description: Self-employments for the tax year
+    TaxReturn9:
+      title: TaxReturn9
+      required:
+      - taxYear
+      - summary
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2015-16
+        summary:
+          type: array
+          items:
+            $ref: '#/components/schemas/Summary1'
+          description: Tax return summary for the year
+    TaxReturn10:
+      title: TaxReturn10
+      required:
+      - taxYear
+      - trusts
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        trusts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trusts1'
+          description: Trusts income for the tax year
+    TaxReturn11:
+      title: TaxReturn11
+      required:
+      - taxYear
+      - ukProperties
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        ukProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/UkProperties1'
+          description: Income from UK properties for the tax year
+    TaxReturn12:
+      title: TaxReturn12
+      required:
+      - taxYear
+      - sources
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: Tax year
+          example: 2013-14
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+          description: description and address for each income source, if known
+    Trusts:
+      title: Trusts
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from trusts
+    Trusts1:
+      title: Trusts1
+      required:
+      - utr
+      - trustIncome
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        trustIncome:
+          type: number
+          description: Trust income
+          example: 2143.32
+    UkProperties:
+      title: UkProperties
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2013-14&toTaxYear=2015-16
+      description: The income from UK properties
+    UkProperties1:
+      title: UkProperties1
+      required:
+      - utr
+      - totalProfit
+      type: object
+      properties:
+        utr:
+          type: string
+          description: The 10 digit self-assessment unique tax reference
+          example: '2432552635'
+        totalProfit:
+          type: number
+          description: Profit from UK properties
+          example: 1276.67
+tags:
+- name: individuals
+  description: ''
