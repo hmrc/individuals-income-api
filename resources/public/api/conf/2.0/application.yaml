@@ -1,0 +1,3941 @@
+openapi: 3.0.3
+info:
+  title: Individuals Income
+  description: "This API allows government departments to get information from HM Revenue and Customs (HMRC) about an individual’s income. This includes income reported:\n\n- through the PAYE process\n- in a Self Assessment tax return\n\nData will be filtered using scopes so that only relevant data is shared. We’ll assign scopes\nbased on your data requirements.\n\nThe responses exclude fields when they do not have a value.\n\nThis API is a HAL HATEOAS RESTful API. It has been designed to promote discoverability and to be self documenting.\n\nA HATEOAS API makes it clear to client software what further actions are available when an action is completed. Responses from an endpoint include URLs to further endpoints you can call. New functionality can be added without breaking your client software.\n\nThis API is still under development and further enhancements are planned. We recommend following the HATEOAS approach from the start, so that your work is not affected by future changes.\n\nFollow URLs as they are presented to you in the API at runtime. This will prevent you from building state into your client, and will decouple you from changes to the API.\n\nThe default Media Type for responses is hal+json.\nData is only available for the current and previous 6 tax years.\n\nSelf Assessment data is only available for taxpayers who are registered for Self Assessment, and who sent a Self Assessment tax return in the relevant time period.\n\nSelf Assessment data may not be available for the most recent tax year because of the deadlines for sending tax returns. For example, the deadline for sending a tax return for the 2019-20 tax year was 31 October 2020 for a paper return, and 31 January 2021 for sending online.\nData includes information we receive from employers and pension providers.\n\nPension providers sometimes do not tell us that income has come from a pension. In these cases, the API reports the income source as an employment.\nWhen an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nWe use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:\n* 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action\n* 400 to 499 if it failed because of a client error by your application\n* 500 to 599 if it failed because of an error on our server\n\nErrors specific to each API are shown in the Endpoints section, under Response. \nSee our [reference guide](/api-documentation/docs/reference-guide#errors) for more on errors.\nYou can use the sandbox environment to [test this API](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing). \n\nIt supports [stateful behaviour](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing/stateful-behaviour).\n\nYou can set up a test user which is an individual using the [Create Test User API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0).\n\nYou can also set up test data for this API using the [Integration Framework Test Support API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-if-api-stub/1.0)."
+  contact: {}
+  version: '2.0'
+
+servers:
+  - url: https://api.isc.development.tax.service.gov.uk
+    description: Development
+  - url: https://api.qa.tax.service.gov.uk
+    description: QA
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: PRD
+
+security:
+  - userRestricted:
+      - assigned
+
+paths:
+  /individuals/income/:
+    get:
+      tags:
+      - individuals
+      summary: Get a list of all available endpoints
+      description: >
+        <p>Use this endpoint to get a list of available endpoints for Individuals Income.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getalistofallavailableendpoints
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The resources available to view an individual's income
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeresponse'
+                - example:
+                    _links:
+                      paye:
+                        href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                        title: Get an individual's PAYE income data per employment
+                        name: GET
+                      sa:
+                        href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                        title: Get an individual's Self Assessment income data
+                        name: GET
+                      self:
+                        href: /individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+              example:
+                _links:
+                  paye:
+                    href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    title: Get an individual's PAYE income data per employment
+                    name: GET
+                  sa:
+                    href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    title: Get an individual's Self Assessment income data
+                    name: GET
+                  self:
+                    href: /individuals/income/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa:
+    get:
+      tags:
+      - individuals
+      summary: Get Self Assessment history
+      description: >
+        <p>Use this endpoint to get an individual’s Self Assessment tax return history for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: GetSelfAssessmenthistory
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual SA income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                      additionalInformation:
+                        href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA additional information data
+                      employments:
+                        href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA employments data
+                      foreign:
+                        href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA foreign income data
+                      interestsAndDividends:
+                        href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA interest and dividends data
+                      other:
+                        href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA other data
+                      partnerships:
+                        href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA partnerships data
+                      pensionsAndStateBenefits:
+                        href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA pensions and state benefits data
+                      selfEmployments:
+                        href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA self employments data
+                      summary:
+                        href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA summary data
+                      trusts:
+                        href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA trusts data
+                      ukProperties:
+                        href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA UK properties data
+                      source:
+                        href: /individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA source data
+                      furtherDetails:
+                        href: /individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                        title: Get an individual's SA further details data
+                    selfAssessment:
+                      registrations:
+                      - utr: '3287654321'
+                        registrationDate: 2018-01-06
+                      taxReturns:
+                      - taxYear: 2018-19
+                        submissions:
+                        - utr: '3287654321'
+                          receivedDate: 2018-10-06
+                      - taxYear: 2019-20
+                        submissions:
+                        - utr: '3287654321'
+                          receivedDate: 2019-06-06
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                  additionalInformation:
+                    href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA additional information data
+                  employments:
+                    href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA employments data
+                  foreign:
+                    href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA foreign income data
+                  interestsAndDividends:
+                    href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA interest and dividends data
+                  other:
+                    href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA other data
+                  partnerships:
+                    href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA partnerships data
+                  pensionsAndStateBenefits:
+                    href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA pensions and state benefits data
+                  selfEmployments:
+                    href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA self employments data
+                  summary:
+                    href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA summary data
+                  trusts:
+                    href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA trusts data
+                  ukProperties:
+                    href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA UK properties data
+                  source:
+                    href: /individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA source data
+                  furtherDetails:
+                    href: /individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+                    title: Get an individual's SA further details data
+                selfAssessment:
+                  registrations:
+                  - utr: '3287654321'
+                    registrationDate: 2018-01-06
+                  taxReturns:
+                  - taxYear: 2018-19
+                    submissions:
+                    - utr: '3287654321'
+                      receivedDate: 2018-10-06
+                  - taxYear: 2019-20
+                    submissions:
+                    - utr: '3287654321'
+                      receivedDate: 2019-06-06
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/paye:
+    get:
+      tags:
+      - individuals
+      summary: Get PAYE income history
+      description: >
+        <p>Use this endpoint to get an individual’s PAYE income details per employment for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromDate and toDate are inclusive, so the data returned includes the fromDate and toDate specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: GetPAYEincomehistory
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromDate
+        in: query
+        description: >-
+          <p>The start date for data requested.</p>
+
+          <p>Date in the format <code class="code--slim">YYYY-MM-DD</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-01-01
+      - name: toDate
+        in: query
+        description: >-
+          <p>The end date for data requested. If missing, it defaults to today's date.</p>
+
+          <p>Date in the format <code class="code--slim">YYYY-MM-DD</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-01-01
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's PAYE income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomePayeresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-01-01&toDate=2020-03-01
+                    paye:
+                      income:
+                      - employerPayeReference: 345/34678
+                        taxYear: 18-19
+                        employee:
+                          hasPartner: true
+                        payroll:
+                          id: yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW
+                        payFrequency: W4
+                        weekPayNumber: 2
+                        paymentDate: 2006-02-27
+                        paidHoursWorked: '35'
+                        taxCode: K971
+                        taxablePayToDate: 19157.5
+                        taxablePay: 16533.95
+                        totalTaxToDate: 3095.89
+                        taxDeductedOrRefunded: 159228.49
+                        dednsFromNetPay: 198035.8
+                        employeePensionContribs:
+                          paidYTD: 169731.51
+                          notPaidYTD: 173987.07
+                          paid: 822317.49
+                          notPaid: 818841.65
+                        statutoryPayYTD:
+                          maternity: 628562.9
+                          paternity: 98600.58
+                          adoption: 48703.26
+                          parentalBereavement: 39708.7
+                        grossEarningsForNICs:
+                          inPayPeriod1: 995979.04
+                          inPayPeriod2: 606456.38
+                          inPayPeriod3: 797877.34
+                          inPayPeriod4: 166334.69
+                        totalEmployerNICs:
+                          inPayPeriod1: 18290.8
+                          inPayPeriod2: 192417.2
+                          inPayPeriod3: 14881.1
+                          inPayPeriod4: 17460.88
+                          ytd1: 530979.47
+                          ytd2: 197448.92
+                          ytd3: 172265.64
+                          ytd4: 122452.65
+                        employeeNICs:
+                          inPayPeriod1: 15797.45
+                          inPayPeriod2: 13170.69
+                          inPayPeriod3: 16193.76
+                          inPayPeriod4: 30846.56
+                          ytd1: 10633.5
+                          ytd2: 15579.18
+                          ytd3: 110849.27
+                          ytd4: 162081.23
+                      - employerPayeReference: 345/34678
+                        taxYear: 19-20
+                        employee:
+                          hasPartner: true
+                        payroll:
+                          id: yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW
+                        payFrequency: M1
+                        monthPayNumber: 3
+                        paymentDate: 2007-02-27
+                        paidHoursWorked: '35'
+                        taxCode: K971
+                        taxablePayToDate: 19157.5
+                        totalTaxToDate: 3095.89
+                        taxDeductedOrRefunded: 159228.49
+                        employeePensionContribs:
+                          paidYTD: 169731.51
+                          notPaidYTD: 173987.07
+                          paid: 822317.49
+                          notPaid: 818841.65
+                        dednsFromNetPay: 198035.8
+                        statutoryPayYTD:
+                          maternity: 628562.9
+                          paternity: 98600.58
+                          adoption: 48703.26
+                          parentalBereavement: 39708.7
+                        grossEarningsForNICs:
+                          inPayPeriod1: 995979.04
+                          inPayPeriod2: 606456.38
+                          inPayPeriod3: 797877.34
+                          inPayPeriod4: 166334.69
+                        totalEmployerNICs:
+                          inPayPeriod1: 18290.8
+                          inPayPeriod2: 192417.2
+                          inPayPeriod3: 14881.1
+                          inPayPeriod4: 17460.88
+                          ytd1: 530979.47
+                          ytd2: 197448.92
+                          ytd3: 172265.64
+                          ytd4: 122452.65
+                        employeeNICs:
+                          inPayPeriod1: 15797.45
+                          inPayPeriod2: 13170.69
+                          inPayPeriod3: 16193.76
+                          inPayPeriod4: 30846.56
+                          ytd1: 10633.5
+                          ytd2: 15579.18
+                          ytd3: 110849.27
+                          ytd4: 162081.23
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-01-01&toDate=2020-03-01
+                paye:
+                  income:
+                  - employerPayeReference: 345/34678
+                    taxYear: 18-19
+                    employee:
+                      hasPartner: true
+                    payroll:
+                      id: yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW
+                    payFrequency: W4
+                    weekPayNumber: 2
+                    paymentDate: 2006-02-27
+                    paidHoursWorked: '35'
+                    taxCode: K971
+                    taxablePayToDate: 19157.5
+                    taxablePay: 16533.95
+                    totalTaxToDate: 3095.89
+                    taxDeductedOrRefunded: 159228.49
+                    dednsFromNetPay: 198035.8
+                    employeePensionContribs:
+                      paidYTD: 169731.51
+                      notPaidYTD: 173987.07
+                      paid: 822317.49
+                      notPaid: 818841.65
+                    statutoryPayYTD:
+                      maternity: 628562.9
+                      paternity: 98600.58
+                      adoption: 48703.26
+                      parentalBereavement: 39708.7
+                    grossEarningsForNICs:
+                      inPayPeriod1: 995979.04
+                      inPayPeriod2: 606456.38
+                      inPayPeriod3: 797877.34
+                      inPayPeriod4: 166334.69
+                    totalEmployerNICs:
+                      inPayPeriod1: 18290.8
+                      inPayPeriod2: 192417.2
+                      inPayPeriod3: 14881.1
+                      inPayPeriod4: 17460.88
+                      ytd1: 530979.47
+                      ytd2: 197448.92
+                      ytd3: 172265.64
+                      ytd4: 122452.65
+                    employeeNICs:
+                      inPayPeriod1: 15797.45
+                      inPayPeriod2: 13170.69
+                      inPayPeriod3: 16193.76
+                      inPayPeriod4: 30846.56
+                      ytd1: 10633.5
+                      ytd2: 15579.18
+                      ytd3: 110849.27
+                      ytd4: 162081.23
+                  - employerPayeReference: 345/34678
+                    taxYear: 19-20
+                    employee:
+                      hasPartner: true
+                    payroll:
+                      id: yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW
+                    payFrequency: M1
+                    monthPayNumber: 3
+                    paymentDate: 2007-02-27
+                    paidHoursWorked: '35'
+                    taxCode: K971
+                    taxablePayToDate: 19157.5
+                    totalTaxToDate: 3095.89
+                    taxDeductedOrRefunded: 159228.49
+                    employeePensionContribs:
+                      paidYTD: 169731.51
+                      notPaidYTD: 173987.07
+                      paid: 822317.49
+                      notPaid: 818841.65
+                    dednsFromNetPay: 198035.8
+                    statutoryPayYTD:
+                      maternity: 628562.9
+                      paternity: 98600.58
+                      adoption: 48703.26
+                      parentalBereavement: 39708.7
+                    grossEarningsForNICs:
+                      inPayPeriod1: 995979.04
+                      inPayPeriod2: 606456.38
+                      inPayPeriod3: 797877.34
+                      inPayPeriod4: 166334.69
+                    totalEmployerNICs:
+                      inPayPeriod1: 18290.8
+                      inPayPeriod2: 192417.2
+                      inPayPeriod3: 14881.1
+                      inPayPeriod4: 17460.88
+                      ytd1: 530979.47
+                      ytd2: 197448.92
+                      ytd3: 172265.64
+                      ytd4: 122452.65
+                    employeeNICs:
+                      inPayPeriod1: 15797.45
+                      inPayPeriod2: 13170.69
+                      inPayPeriod3: 16193.76
+                      inPayPeriod4: 30846.56
+                      ytd1: 10633.5
+                      ytd2: 15579.18
+                      ytd3: 110849.27
+                      ytd4: 162081.23
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/additional-information:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's additional information income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get an individual’s Self Assessment additional information (SA101). Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sadditionalinformationincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual’s Self Assessment additional information (SA101) for a requested time period.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaAdditionalInformationresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        additionalInformation:
+                        - utr: '3287654321'
+                          gainsOnLifePolicies: 0
+                          sharesOptionsIncome: 0
+                      - taxYear: 2019-20
+                        additionalInformation:
+                        - utr: '3287654321'
+                          gainsOnLifePolicies: 44.54
+                          sharesOptionsIncome: 52.34
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    additionalInformation:
+                    - utr: '3287654321'
+                      gainsOnLifePolicies: 0
+                      sharesOptionsIncome: 0
+                  - taxYear: 2019-20
+                    additionalInformation:
+                    - utr: '3287654321'
+                      gainsOnLifePolicies: 44.54
+                      sharesOptionsIncome: 52.34
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/employments:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's employments income data from their Self Assessment tax return
+      description: "<p>Use this endpoint to get details of an individual's income from employments, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>\n<p>Data is only available for the current and previous 6 tax years.</p>\n<p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>\n<p>You will get a subset of the JSON response shown below based on your assigned scopes.</p> \n"
+      operationId: Getanindividual'semploymentsincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual SA employments income for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaEmploymentsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        employments:
+                        - utr: '3287654321'
+                          employmentIncome: 0
+                      - taxYear: 2019-20
+                        employments:
+                        - utr: '3287654321'
+                          employmentIncome: 5000
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    employments:
+                    - utr: '3287654321'
+                      employmentIncome: 0
+                  - taxYear: 2019-20
+                    employments:
+                    - utr: '3287654321'
+                      employmentIncome: 5000
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/foreign:
+    get:
+      tags:
+      - individuals
+      summary: Get foreign income data from Self Assessment
+      description: >
+        <p>Use this endpoint to get details of an individual's foreign income, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: GetforeignincomedatafromSelfAssessment
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: An individual’s Self Assessment foreign income data for a requested time period.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaForeignresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        foreign:
+                        - utr: '3287654321'
+                          foreignIncome: 0
+                      - taxYear: 2019-20
+                        foreign:
+                        - utr: '3287654321'
+                          foreignIncome: 1054.65
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    foreign:
+                    - utr: '3287654321'
+                      foreignIncome: 0
+                  - taxYear: 2019-20
+                    foreign:
+                    - utr: '3287654321'
+                      foreignIncome: 1054.65
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/interests-and-dividends:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's interest and dividends income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's income from interest and dividends, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sinterestanddividendsincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's interest and dividends income data Self Assessment
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaInterestsAndDividendsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        interestsAndDividends:
+                        - utr: '3287654321'
+                          ukInterestsIncome: 0
+                          foreignDividendsIncome: 0
+                          ukDividendsIncome: 0
+                      - taxYear: 2019-20
+                        interestsAndDividends:
+                        - utr: '3287654321'
+                          ukInterestsIncome: 12.46
+                          foreignDividendsIncome: 25.86
+                          ukDividendsIncome: 657.89
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    interestsAndDividends:
+                    - utr: '3287654321'
+                      ukInterestsIncome: 0
+                      foreignDividendsIncome: 0
+                      ukDividendsIncome: 0
+                  - taxYear: 2019-20
+                    interestsAndDividends:
+                    - utr: '3287654321'
+                      ukInterestsIncome: 12.46
+                      foreignDividendsIncome: 25.86
+                      ukDividendsIncome: 657.89
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND\
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND\
+      deprecated: false
+  /individuals/income/sa/other:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's other income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's other income, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sotherincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's other income data from Self Assessment
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaOtherresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2018-19
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        other:
+                        - utr: '3287654321'
+                          otherIncome: 0
+                      - taxYear: 2019-20
+                        other:
+                        - utr: '3287654321'
+                          otherIncome: 26.7
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2018-19
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    other:
+                    - utr: '3287654321'
+                      otherIncome: 0
+                  - taxYear: 2019-20
+                    other:
+                    - utr: '3287654321'
+                      otherIncome: 26.7
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/partnerships:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's partnerships income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get an individual’s Self Assessment partnership income data for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'spartnershipsincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's partnerships income data from Self Assessment.
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaPartnershipsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        partnerships:
+                        - partnershipProfit: 0
+                      - taxYear: 2019-20
+                        partnerships:
+                        - partnershipProfit: 324.54
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    partnerships:
+                    - partnershipProfit: 0
+                  - taxYear: 2019-20
+                    partnerships:
+                    - partnershipProfit: 324.54
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/pensions-and-state-benefits:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's pensions and state benefits income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's income from pensions and state benefits, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'spensionsandstatebenefitsincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's pensions and state benefits income data from Self Assessment
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaPensionsAndStateBenefitsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        pensionsAndStateBenefits:
+                        - utr: '3287654321'
+                          totalIncome: 0
+                      - taxYear: 2019-20
+                        pensionsAndStateBenefits:
+                        - utr: '3287654321'
+                          totalIncome: 52.79
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    pensionsAndStateBenefits:
+                    - utr: '3287654321'
+                      totalIncome: 0
+                  - taxYear: 2019-20
+                    pensionsAndStateBenefits:
+                    - utr: '3287654321'
+                      totalIncome: 52.79
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/self-employments:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's self-employments income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's income from self-employments, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sself-employmentsincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's self-employments income data from Self Assessment
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaSelfEmploymentsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        selfEmployments:
+                        - utr: '3287654321'
+                          selfEmploymentProfit: 0
+                      - taxYear: 2019-20
+                        selfEmployments:
+                        - utr: '3287654321'
+                          selfEmploymentProfit: 10500
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    selfEmployments:
+                    - utr: '3287654321'
+                      selfEmploymentProfit: 0
+                  - taxYear: 2019-20
+                    selfEmployments:
+                    - utr: '3287654321'
+                      selfEmploymentProfit: 10500
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/summary:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's Self Assessment tax returns summary
+      description: >
+        <p>Use this endpoint to an individual's Self Assessment tax returns summary. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sSelfAssessmenttaxreturnssummary
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's Self Assessment tax returns summary for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaSummaryresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        summary:
+                        - utr: '3287654321'
+                          totalIncome: 0
+                      - taxYear: 2019-20
+                        summary:
+                        - utr: '3287654321'
+                          totalIncome: 30000
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    summary:
+                    - utr: '3287654321'
+                      totalIncome: 0
+                  - taxYear: 2019-20
+                    summary:
+                    - utr: '3287654321'
+                      totalIncome: 30000
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/trusts:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's trusts income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's income from trusts, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'strustsincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's trusts income from Self Assessment for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaTrustsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        trusts:
+                        - utr: '3287654321'
+                          trustIncome: 0
+                      - taxYear: 2019-20
+                        trusts:
+                        - utr: '3287654321'
+                          trustIncome: 2143.32
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    trusts:
+                    - utr: '3287654321'
+                      trustIncome: 0
+                  - taxYear: 2019-20
+                    trusts:
+                    - utr: '3287654321'
+                      trustIncome: 2143.32
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/uk-properties:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's UK properties income data from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's income from UK properties, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sUKpropertiesincomedatafromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's UK properties income data from Self Assessment for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaUkPropertiesresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        ukProperties:
+                        - utr: '3287654321'
+                          totalProfit: 0
+                      - taxYear: 2019-20
+                        ukProperties:
+                        - utr: '3287654321'
+                          totalProfit: 1276.67
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    ukProperties:
+                    - utr: '3287654321'
+                      totalProfit: 0
+                  - taxYear: 2019-20
+                    ukProperties:
+                    - utr: '3287654321'
+                      totalProfit: 1276.67
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/source:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's income source details from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to get details of an individual's income sources, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sincomesourcedetailsfromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's details for each income source for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaSourceresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        sources:
+                        - businessDescription: something
+                          businessAddress:
+                            line1: Friars House
+                            line2: Campus Way
+                            line3: New Street
+                            line4: Sometown
+                            line5: Old County
+                            postalCode: TF22 3BC
+                          telephoneNumber: '123456789'
+                      - taxYear: 2019-20
+                        sources:
+                        - businessDescription: something else
+                          businessAddress:
+                            line1: Friars House
+                            line2: Campus Way
+                            line3: New Street
+                            line4: Sometown
+                            line5: Old County
+                            postalCode: TF22 3BC
+                          telephoneNumber: '123456789'
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/source?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    sources:
+                    - businessDescription: something
+                      businessAddress:
+                        line1: Friars House
+                        line2: Campus Way
+                        line3: New Street
+                        line4: Sometown
+                        line5: Old County
+                        postalCode: TF22 3BC
+                      telephoneNumber: '123456789'
+                  - taxYear: 2019-20
+                    sources:
+                    - businessDescription: something else
+                      businessAddress:
+                        line1: Friars House
+                        line2: Campus Way
+                        line3: New Street
+                        line4: Sometown
+                        line5: Old County
+                        postalCode: TF22 3BC
+                      telephoneNumber: '123456789'
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+  /individuals/income/sa/further-details:
+    get:
+      tags:
+      - individuals
+      summary: Get an individual's further income details from their Self Assessment tax return
+      description: >
+        <p>Use this endpoint to an individual's further income details, as sent in their Self Assessment tax return. Data will be returned for the requested time period.</p>
+
+
+        <p>Data is only available for the current and previous 6 tax years.</p>
+
+
+        <p>The fromTaxYear and toTaxYear are inclusive, so the data returned includes the fromTaxYear and toTaxYear specified.</p>
+
+
+        <p>You will get a subset of the JSON response shown below based on your assigned scopes.</p>
+      operationId: Getanindividual'sfurtherincomedetailsfromtheirSelfAssessmenttaxreturn
+      parameters:
+      - name: matchId
+        in: query
+        description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      - name: fromTaxYear
+        in: query
+        description: >-
+          <p>The first tax year to be included in the dataset requested.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2018-19
+      - name: toTaxYear
+        in: query
+        description: >-
+          <p>The last tax year to be included in the dataset requested. If missing, it defaults to the current tax year.</p>
+
+          <p>Year in the format <code class="code--slim">YYYY-YY</code></p>
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 2019-20
+      - name: CorrelationId
+        in: header
+        description: >-
+          <p>A UUID, used for traceability purposes.</p>
+
+          <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+      responses:
+        '200':
+          description: The individual's further details for income from Self Assessment for the given period
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsIncomeSaFurtherDetailsresponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                    selfAssessment:
+                      taxReturns:
+                      - taxYear: 2018-19
+                        furtherDetails:
+                        - busStartDate: 2018-02-28
+                          busEndDate: 2019-02-28
+                          totalTaxPaid: -99.99
+                          totalNIC: 99999999999.99
+                          turnover: 445435.03
+                          otherBusIncome: 44545.88
+                          tradingIncomeAllowance: 900
+                          deducts:
+                            totalBusExpenses: 99999999999.98
+                            totalDisallowBusExp: 99999999999.98
+                      - taxYear: 2019-20
+                        furtherDetails:
+                        - busStartDate: 2019-02-28
+                          busEndDate: 2019-02-28
+                          totalTaxPaid: -99.99
+                          totalNIC: 99999999999.99
+                          turnover: 445435.03
+                          otherBusIncome: 44545.88
+                          tradingIncomeAllowance: 900
+                          deducts:
+                            totalBusExpenses: 99999999999.98
+                            totalDisallowBusExp: 99999999999.98
+              example:
+                _links:
+                  self:
+                    href: /individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+                selfAssessment:
+                  taxReturns:
+                  - taxYear: 2018-19
+                    furtherDetails:
+                    - busStartDate: 2018-02-28
+                      busEndDate: 2019-02-28
+                      totalTaxPaid: -99.99
+                      totalNIC: 99999999999.99
+                      turnover: 445435.03
+                      otherBusIncome: 44545.88
+                      tradingIncomeAllowance: 900
+                      deducts:
+                        totalBusExpenses: 99999999999.98
+                        totalDisallowBusExp: 99999999999.98
+                  - taxYear: 2019-20
+                    furtherDetails:
+                    - busStartDate: 2019-02-28
+                      busEndDate: 2019-02-28
+                      totalTaxPaid: -99.99
+                      totalNIC: 99999999999.99
+                      turnover: 445435.03
+                      otherBusIncome: 44545.88
+                      tradingIncomeAllowance: 900
+                      deducts:
+                        totalBusExpenses: 99999999999.98
+                        totalDisallowBusExp: 99999999999.98
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: INVALID_REQUEST
+              examples:
+                BadRequest:
+                  description: Invalid request
+                  value:
+                    code: INVALID_REQUEST
+        '404':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: NOT_FOUND
+              examples:
+                NotFound:
+                  description: Not found
+                  value:
+                    code: NOT_FOUND
+      deprecated: false
+components:
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            assigned: depending on your assigned scopes you will see the json keys your scopes allow.
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+      - code
+      type: object
+      properties:
+        code:
+          type: string
+    AdditionalInformation:
+      title: AdditionalInformation
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/additional-information?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA additional information
+      description: The URI for the endpoint to get an individual's additional Self Assessment information for the requested time period.
+    AdditionalInformation1:
+      title: AdditionalInformation1
+      required:
+      - gainsOnLifePolicies
+      - sharesOptionsIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        gainsOnLifePolicies:
+          type: number
+          description: The gains on life policies.
+          example: 44.54
+        sharesOptionsIncome:
+          type: number
+          description: The income from shares options.
+          example: 52.34
+    BusinessAddress:
+      title: BusinessAddress
+      type: object
+      properties:
+        line1:
+          type: string
+          description: Address line 1.
+          example: Friar's House
+        line2:
+          type: string
+          description: Address line 2.
+          example: Campus Way
+        line3:
+          type: string
+          description: Address line 3.
+          example: New Street
+        line4:
+          type: string
+          description: Address line 4.
+          example: Sometown
+        line5:
+          type: string
+          description: Address line 5.
+          example: Old County
+        postalCode:
+          type: string
+          description: The postcode for the address.
+          example: TF22 3BC
+    Deducts:
+      title: Deducts
+      type: object
+      properties:
+        totalBusExpenses:
+          type: number
+          description: The total business expenses. Amount in the range -99999999999.99 to 99999999999.99.
+          example: 456543.99
+        totalDisallowBusExp:
+          type: number
+          description: The total disallowed business expenses. Amount in the range -99999999999.99 to 99999999999.99.
+          example: 456543.99
+      description: Deductions
+    Employee:
+      title: Employee
+      type: object
+      properties:
+        hasPartner:
+          type: boolean
+          description: Indicates if the employee has a partner.
+          example: true
+      description: Details about the employee.
+    EmployeeNICs:
+      title: EmployeeNICs
+      type: object
+      properties:
+        inPayPeriod1:
+          type: number
+          description: The value in pay period 1 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod2:
+          type: number
+          description: The value in pay period 2 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod3:
+          type: number
+          description: The value in pay period 3 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod4:
+          type: number
+          description: The value in pay period 4 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd1:
+          type: number
+          description: The value year to date 1 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd2:
+          type: number
+          description: The value year to date 2 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd3:
+          type: number
+          description: The value year to date 3 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd4:
+          type: number
+          description: The value year to date 4 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+      description: Details about the employee's National Insurance contributions due on all earnings.
+    EmployeePensionContribs:
+      title: EmployeePensionContribs
+      type: object
+      properties:
+        paidYTD:
+          type: number
+          description: The value of employee pension contributions to date in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        notPaidYTD:
+          type: number
+          description: The value of employee pension contributions that are not paid under a net pay arrangement in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        paid:
+          type: number
+          description: The value of the employee pension contributions paid under net pay arrangements in the pay period in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        notPaid:
+          type: number
+          description: The value of employee pension contributions that are not paid under a net pay arrangement in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+      description: Details about the employee's pension contributions.
+    Employments:
+      title: Employments
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA employment data
+      description: The URI for the endpoint to get an individual's Self Assessment employments income data.
+    Employments1:
+      title: Employments1
+      required:
+      - employmentIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        employmentIncome:
+          type: number
+          description: The individual's income from employments.
+          example: 5000
+    Foreign:
+      title: Foreign
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/foreign?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA foreign income data
+      description: The URI for the endpoint to get an individual's Self Assessment foreign income data.
+    Foreign1:
+      title: Foreign1
+      required:
+      - foreignIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        foreignIncome:
+          type: number
+          description: The individual's foreign income.
+          example: 2143.32
+    FurtherDetails:
+      title: FurtherDetails
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/further-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA further details data
+      description: The URI for the endpoint to get an individual's further Self Assessment income details.
+    FurtherDetails1:
+      title: FurtherDetails1
+      type: object
+      properties:
+        busStartDate:
+          type: string
+          description: The start date for the business.
+          example: 2019-08-18
+        busEndDate:
+          type: string
+          description: The end date for the business.
+          example: 2020-12-01
+        totalTaxPaid:
+          type: number
+          description: 'The total tax paid. Amount in the range of: -99999999999.99 to 99999999999.99.'
+          example: 456543.99
+        totalNIC:
+          type: number
+          description: Total National Insurance contributions paid. Amount in the range -99999999999.99 to 99999999999.99.
+          example: 456543.99
+        turnover:
+          type: number
+          description: Turnover in the range -99999999999.99 to 99999999999.99.
+          example: 456543.99
+        otherBusIncome:
+          type: number
+          description: Other business income. Amount in the range -99999999999.99 to 99999999999.99.
+          example: 456543.99
+        tradingIncomeAllowance:
+          type: number
+          description: The trading income allowance. Amount in the range -99999999999.99 to 99999999999.99.
+          example: 456543.99
+        deducts:
+          allOf:
+          - $ref: '#/components/schemas/Deducts'
+          - description: Deductions
+    GrossEarningsForNICs:
+      title: GrossEarningsForNICs
+      type: object
+      properties:
+        inPayPeriod1:
+          type: number
+          description: The value in pay period 1 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod2:
+          type: number
+          description: The value in pay period 2 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod3:
+          type: number
+          description: The value in pay period 3 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod4:
+          type: number
+          description: The value in pay period 4 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+      description: Details about gross earnings for National Insurance contributions.
+    Income:
+      title: Income
+      required:
+      - paymentDate
+      type: object
+      properties:
+        employerPayeReference:
+          pattern: ^[^ ].{0,9}$
+          type: string
+          description: The employer PAYE Reference.
+          example: 345/34678
+        taxYear:
+          type: string
+          example: 2018-19
+        employee:
+          allOf:
+          - $ref: '#/components/schemas/Employee'
+          - description: Details about the employee.
+        payroll:
+          allOf:
+          - $ref: '#/components/schemas/Payroll'
+          - description: The employee's payroll details.
+        payFrequency:
+          type: string
+          description: The frequency of payments. W1 Weekly, W2 Fortnightly, W4 Four weekly, M1 Monthly, M3 Quarterly, M6 Bi-annually, MA Annually, IO One off, IR Irregular
+          example: W1
+        weekPayNumber:
+          type: number
+          description: The number corresponding to the week the payment was made. As pay dates may not align with calendar weeks, the range of permitted values is 1 through to 54 (inclusive), and 56.
+          example: 45
+        monthPayNumber:
+          type: number
+          description: The number between 1 and 12, corresponding to the month the payment was made. As the tax year starts in April, so does the monthPayNumber, with 1 corresponding to April.
+          example: 10
+        paymentDate:
+          type: string
+          description: The payment date.
+          example: 2016-02-28
+        paidHoursWorked:
+          pattern: ^[^ ].{0,34}$
+          type: string
+          description: The number of normal hours worked.
+          example: '35'
+        taxCode:
+          pattern: ^([1-9][0-9]{0,5}[LMNPTY])|(BR)|(0T)|(NT)|(D[0-8])|([K][1-9][0-9]{0,5})$
+          type: string
+          description: The tax code associated with the payment.
+          example: K971
+        taxablePayToDate:
+          type: number
+          description: The taxable pay in this pay period including payrolled benefits to date in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        taxablePay:
+          type: number
+          description: Taxable pay in this pay period including payrolled benefits in kind in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        totalTaxToDate:
+          type: number
+          description: The total tax to date in this employment in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        taxDeductedOrRefunded:
+          type: number
+          description: The value of tax deducted or refunded from this payment in the range -999999999.99 to 999999999.99.
+          example: 159228.45
+        dednsFromNetPay:
+          type: number
+          description: The value of deductions from net pay in pay period in the range -999999999.99 to 999999999.99.
+          example: 159228.45
+        employeePensionContribs:
+          allOf:
+          - $ref: '#/components/schemas/EmployeePensionContribs'
+          - description: Details about the employee's pension contributions.
+        statutoryPayYTD:
+          allOf:
+          - $ref: '#/components/schemas/StatutoryPayYTD'
+          - description: A set of properties relevant to statutory pay for the year to date
+        grossEarningsForNICs:
+          allOf:
+          - $ref: '#/components/schemas/GrossEarningsForNICs'
+          - description: Details about gross earnings for National Insurance contributions.
+        totalEmployerNICs:
+          allOf:
+          - $ref: '#/components/schemas/TotalEmployerNICs'
+          - description: Details about total employer National Insurance contributions.
+        employeeNICs:
+          allOf:
+          - $ref: '#/components/schemas/EmployeeNICs'
+          - description: Details about the employee's National Insurance contributions due on all earnings.
+    IndividualsIncomePayeresponse:
+      title: IndividualsIncomePayeresponse
+      required:
+      - _links
+      - paye
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links2'
+          - description: A list of links for possible actions related to this endpoint.
+        paye:
+          allOf:
+          - $ref: '#/components/schemas/Paye1'
+          - description: PAYE income details per employment for an individual for the requested time period.
+      description: Income
+    IndividualsIncomeresponse:
+      title: IndividualsIncomeresponse
+      required:
+      - _links
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links'
+          - description: A list of links for possible actions related to this endpoint.
+      description: Individual's Income
+    IndividualsIncomeSaAdditionalInformationresponse:
+      title: IndividualsIncomeSaAdditionalInformationresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links2'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment1'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual’s Self Assessment additional information (SA101) for a requested time period
+    IndividualsIncomeSaEmploymentsresponse:
+      title: IndividualsIncomeSaEmploymentsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links2'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment2'
+          - description: Self Assessment tax return history for a requested time period.
+      description: Employments income data from Self Assessment
+    IndividualsIncomeSaForeignresponse:
+      title: IndividualsIncomeSaForeignresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links2'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment3'
+          - description: Self Assessment tax return history for a requested time period.
+      description: An individual’s Self Assessment foreign income data for a requested time period.
+    IndividualsIncomeSaFurtherDetailsresponse:
+      title: IndividualsIncomeSaFurtherDetailsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment13'
+          - description: Self Assessment tax return history for a requested time period.
+      description: Further details for income from Self Assessment
+    IndividualsIncomeSaInterestsAndDividendsresponse:
+      title: IndividualsIncomeSaInterestsAndDividendsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links6'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment4'
+          - description: Self Assessment tax return history for a requested time period.
+      description: Interest and dividends income data Self Assessment
+    IndividualsIncomeSaOtherresponse:
+      title: IndividualsIncomeSaOtherresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment5'
+          - description: Self Assessment tax return history for a requested time period.
+      description: Other income data from Self Assessment
+    IndividualsIncomeSaPartnershipsresponse:
+      title: IndividualsIncomeSaPartnershipsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment6'
+          - description: Self Assessment tax return history for a requested time period.
+      description: Partnerships income from Self Assessment
+    IndividualsIncomeSaPensionsAndStateBenefitsresponse:
+      title: IndividualsIncomeSaPensionsAndStateBenefitsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment7'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's pensions and state benefits income data from Self Assessment
+    IndividualsIncomeSaresponse:
+      title: IndividualsIncomeSaresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links1'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's SA income for the given period
+    IndividualsIncomeSaSelfEmploymentsresponse:
+      title: IndividualsIncomeSaSelfEmploymentsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment8'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's self-employments income data from Self Assessment
+    IndividualsIncomeSaSourceresponse:
+      title: IndividualsIncomeSaSourceresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment12'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's details for each income source
+    IndividualsIncomeSaSummaryresponse:
+      title: IndividualsIncomeSaSummaryresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment9'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's Self Assessment tax returns summary for the given period
+    IndividualsIncomeSaTrustsresponse:
+      title: IndividualsIncomeSaTrustsresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment10'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's trusts income from Self Assessment
+    IndividualsIncomeSaUkPropertiesresponse:
+      title: IndividualsIncomeSaUkPropertiesresponse
+      required:
+      - _links
+      - selfAssessment
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links7'
+          - description: A list of links for possible actions related to this endpoint.
+        selfAssessment:
+          allOf:
+          - $ref: '#/components/schemas/SelfAssessment11'
+          - description: Self Assessment tax return history for a requested time period.
+      description: The individual's UK properties income data from Self Assessment
+    InterestsAndDividends:
+      title: InterestsAndDividends
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA interest and dividends data
+      description: The URI for the endpoint to get an individual's Self Assessment interests and dividends income data.
+    InterestsAndDividends1:
+      title: InterestsAndDividends1
+      required:
+      - ukInterestsIncome
+      - foreignDividendsIncome
+      - ukDividendsIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        ukInterestsIncome:
+          type: number
+          description: The UK interest received before tax.
+          example: 12.46
+        foreignDividendsIncome:
+          type: number
+          description: The income from foreign dividends.
+          example: 25.86
+        ukDividendsIncome:
+          type: number
+          description: The income from UK dividends.
+          example: 657.89
+    Links:
+      title: Links
+      required:
+      - paye
+      - sa
+      - self
+      type: object
+      properties:
+        paye:
+          allOf:
+          - $ref: '#/components/schemas/Paye'
+          - description: The Uniform Resource Identifier (URI) for the endpoint to get an individual’s income data per employment.
+        sa:
+          allOf:
+          - $ref: '#/components/schemas/Sa'
+          - description: The URI for the endpoint to get an individual's Self Assessment income data.
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self'
+          - description: The Uniform Resource Identifier (URI) for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    Links1:
+      title: Links1
+      required:
+      - self
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self'
+          - description: The Uniform Resource Identifier (URI) for this endpoint.
+        additionalInformation:
+          allOf:
+          - $ref: '#/components/schemas/AdditionalInformation'
+          - description: The URI for the endpoint to get an individual's additional Self Assessment information for the requested time period.
+        employments:
+          allOf:
+          - $ref: '#/components/schemas/Employments'
+          - description: The URI for the endpoint to get an individual's Self Assessment employments income data.
+        foreign:
+          allOf:
+          - $ref: '#/components/schemas/Foreign'
+          - description: The URI for the endpoint to get an individual's Self Assessment foreign income data.
+        interestsAndDividends:
+          allOf:
+          - $ref: '#/components/schemas/InterestsAndDividends'
+          - description: The URI for the endpoint to get an individual's Self Assessment interests and dividends income data.
+        other:
+          allOf:
+          - $ref: '#/components/schemas/Other'
+          - description: The URI for the endpoint to get an individual's other Self Assessment income data.
+        partnerships:
+          allOf:
+          - $ref: '#/components/schemas/Partnerships'
+          - description: The URI for the endpoint to get an individual's Self Assessment partnerships income data.
+        pensionsAndStateBenefits:
+          allOf:
+          - $ref: '#/components/schemas/PensionsAndStateBenefits'
+          - description: The URI for the endpoint to get an individual's Self Assessment pensions and state benefits income data.
+        selfEmployments:
+          allOf:
+          - $ref: '#/components/schemas/SelfEmployments'
+          - description: The URI for the endpoint to get an individual's Self Assessment self-employments income data.
+        summary:
+          allOf:
+          - $ref: '#/components/schemas/Summary'
+          - description: The URI for the endpoint to get an individual's Self Assessment summary.
+        trusts:
+          allOf:
+          - $ref: '#/components/schemas/Trusts'
+          - description: The URI for the endpoint to get an individual's Self Assessment trusts income data.
+        ukProperties:
+          allOf:
+          - $ref: '#/components/schemas/UkProperties'
+          - description: The URI for the endpoint to get an individual's Self Assessment UK properties income data.
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source'
+          - description: The URI for the endpoint to get an individual's Self Assessment income sources.
+        furtherDetails:
+          allOf:
+          - $ref: '#/components/schemas/FurtherDetails'
+          - description: The URI for the endpoint to get an individual's further Self Assessment income details.
+      description: A list of links for possible actions related to this endpoint.
+    Links2:
+      title: Links2
+      required:
+      - self
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self'
+          - description: The Uniform Resource Identifier (URI) for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    Links6:
+      title: Links6
+      required:
+      - self
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self6'
+          - description: The Unique Resource Identifier (URI) for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    Links7:
+      title: Links7
+      required:
+      - self
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self7'
+          - description: The Unique Resource Identifier (URI) for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    Other:
+      title: Other
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA other data
+      description: The URI for the endpoint to get an individual's other Self Assessment income data.
+    Other1:
+      title: Other1
+      required:
+      - otherIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        otherIncome:
+          type: number
+          description: The amount of other income.
+          example: 26.7
+    Partnerships:
+      title: Partnerships
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/partnerships?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA partnerships data
+      description: The URI for the endpoint to get an individual's Self Assessment partnerships income data.
+    Partnerships1:
+      title: Partnerships1
+      required:
+      - partnershipProfit
+      type: object
+      properties:
+        partnershipProfit:
+          type: number
+          description: The amount of profit from partnerships income.
+          example: 324.54
+    Paye:
+      title: Paye
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}
+        title:
+          type: string
+          description: Get an individual's PAYE income data per employment
+      description: The Uniform Resource Identifier (URI) for the endpoint to get an individual’s income data per employment.
+    Paye1:
+      title: Paye1
+      required:
+      - income
+      type: object
+      properties:
+        income:
+          type: array
+          items:
+            $ref: '#/components/schemas/Income'
+          description: The list of payments for each employment in the requested period.
+      description: PAYE income details per employment for an individual for the requested time period.
+    Payroll:
+      title: Payroll
+      type: object
+      properties:
+        id:
+          pattern: ^[^ ].{0,34}$
+          type: string
+          description: An identifier assigned by the employer to the individual.
+          example: yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW
+      description: The employee's payroll details.
+    PensionsAndStateBenefits:
+      title: PensionsAndStateBenefits
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/pensions-and-state-benefits?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA pensions and state benefits data
+      description: The URI for the endpoint to get an individual's Self Assessment pensions and state benefits income data.
+    PensionsAndStateBenefits1:
+      title: PensionsAndStateBenefits1
+      required:
+      - totalIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        totalIncome:
+          type: number
+          description: The total income from pensions and state benefits.
+          example: 52.79
+    Registration:
+      title: Registration
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        registrationDate:
+          type: string
+          description: Self Assessment registration date.
+          example: 2012-01-06
+    Sa:
+      title: Sa
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's Self Assessment income data
+      description: The URI for the endpoint to get an individual's Self Assessment income data.
+    Self:
+      title: Self
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      description: The Uniform Resource Identifier (URI) for this endpoint.
+    Self6:
+      title: Self6
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/interests-and-dividends?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+      description: The Unique Resource Identifier (URI) for this endpoint.
+    Self7:
+      title: Self7
+      required:
+      - href
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint
+          example: /individuals/income/sa/other?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromTaxYear=2018-19&toTaxYear=2019-20
+      description: The Unique Resource Identifier (URI) for this endpoint.
+    SelfAssessment:
+      title: SelfAssessment
+      required:
+      - registrations
+      - taxReturns
+      type: object
+      properties:
+        registrations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Registration'
+          description: Self Assessment registrations.
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn'
+          description: A list of Self Assessment tax returns in the requested period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment1:
+      title: SelfAssessment1
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn1'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment2:
+      title: SelfAssessment2
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn2'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment3:
+      title: SelfAssessment3
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn3'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment4:
+      title: SelfAssessment4
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn4'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment5:
+      title: SelfAssessment5
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn5'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment6:
+      title: SelfAssessment6
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn6'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment7:
+      title: SelfAssessment7
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn7'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment8:
+      title: SelfAssessment8
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn8'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment9:
+      title: SelfAssessment9
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn9'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment10:
+      title: SelfAssessment10
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn10'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment11:
+      title: SelfAssessment11
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn11'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment12:
+      title: SelfAssessment12
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn12'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfAssessment13:
+      title: SelfAssessment13
+      required:
+      - taxReturns
+      type: object
+      properties:
+        taxReturns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxReturn13'
+          description: The list of Self Assessment tax returns in the requested time period.
+      description: Self Assessment tax return history for a requested time period.
+    SelfEmployments:
+      title: SelfEmployments
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/self-employments?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA self employments data
+      description: The URI for the endpoint to get an individual's Self Assessment self-employments income data.
+    SelfEmployments1:
+      title: SelfEmployments1
+      required:
+      - selfEmploymentProfit
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        selfEmploymentProfit:
+          type: number
+          description: The amount of profit from self-employments.
+          example: 5000
+    Source:
+      title: Source
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA source data
+      description: The URI for the endpoint to get an individual's Self Assessment income sources.
+    Source1:
+      title: Source1
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        businessDescription:
+          type: string
+          description: A description of the main business activity relating to the Self Assessment tax return.
+        businessAddress:
+          $ref: '#/components/schemas/BusinessAddress'
+        telephoneNumber:
+          type: string
+          description: The business telephone number.
+          example: '123456789'
+    StatutoryPayYTD:
+      title: StatutoryPayYTD
+      type: object
+      properties:
+        maternity:
+          type: number
+          description: The value for maternity pay in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        paternity:
+          type: number
+          description: The value for paternity pay in the range -999999999.99 to 999999999.99.
+          example: 163068.8
+        adoption:
+          type: number
+          description: The value for adoption pay in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        parentalBereavement:
+          type: number
+          description: The value for parental bereavement pay in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+      description: A set of properties relevant to statutory pay for the year to date
+    Submission:
+      title: Submission
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        receivedDate:
+          type: string
+          description: Tax return received date
+          example: 2014-06-06
+    Summary:
+      title: Summary
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/summary?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA summary data
+      description: The URI for the endpoint to get an individual's Self Assessment summary.
+    Summary1:
+      title: Summary1
+      required:
+      - totalIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        totalIncome:
+          type: number
+          description: The total income from self employment
+          example: 30000
+    TaxReturn:
+      title: TaxReturn
+      required:
+      - taxYear
+      - submissions
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2015-16
+        submissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Submission'
+          description: The date the tax return was received.
+    TaxReturn1:
+      title: TaxReturn1
+      required:
+      - taxYear
+      - additionalInformation
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        additionalInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalInformation1'
+          description: Additional Self Assessment information for the requested period.
+    TaxReturn2:
+      title: TaxReturn2
+      required:
+      - taxYear
+      - employments
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        employments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employments1'
+          description: The individual's income from employments for the requested time period.
+    TaxReturn3:
+      title: TaxReturn3
+      required:
+      - taxYear
+      - foreign
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        foreign:
+          type: array
+          items:
+            $ref: '#/components/schemas/Foreign1'
+          description: The individual's foreign income for the requested time period.
+    TaxReturn4:
+      title: TaxReturn4
+      required:
+      - taxYear
+      - interestsAndDividends
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        interestsAndDividends:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestsAndDividends1'
+          description: The individual's interests and dividends for the requested time period.
+    TaxReturn5:
+      title: TaxReturn5
+      required:
+      - taxYear
+      - other
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        other:
+          type: array
+          items:
+            $ref: '#/components/schemas/Other1'
+          description: The individual's other Self Assessment income for the requested time period.
+    TaxReturn6:
+      title: TaxReturn6
+      required:
+      - taxYear
+      - partnerships
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        partnerships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Partnerships1'
+          description: The individual's income from partnerships for the requested time period.
+    TaxReturn7:
+      title: TaxReturn7
+      required:
+      - taxYear
+      - pensionsAndStateBenefits
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        pensionsAndStateBenefits:
+          type: array
+          items:
+            $ref: '#/components/schemas/PensionsAndStateBenefits1'
+          description: The individual's income from pensions and state benefits for the requested time period.
+    TaxReturn8:
+      title: TaxReturn8
+      required:
+      - taxYear
+      - selfEmployments
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year. Tax year in format YYYY-YY.
+          example: 2018-19
+        selfEmployments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelfEmployments1'
+          description: The individual's income from self-employments for the requested period.
+    TaxReturn9:
+      title: TaxReturn9
+      required:
+      - taxYear
+      - summary
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        summary:
+          type: array
+          items:
+            $ref: '#/components/schemas/Summary1'
+          description: The tax return summary for the individual in the requested period.
+    TaxReturn10:
+      title: TaxReturn10
+      required:
+      - taxYear
+      - trusts
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        trusts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trusts1'
+          description: The individual's income from trusts for the requested time period.
+    TaxReturn11:
+      title: TaxReturn11
+      required:
+      - taxYear
+      - ukProperties
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        ukProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/UkProperties1'
+          description: The individual's income from UK properties for the requested period.
+    TaxReturn12:
+      title: TaxReturn12
+      required:
+      - taxYear
+      - sources
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source1'
+          description: A description and address for each income source, if known.
+    TaxReturn13:
+      title: TaxReturn13
+      required:
+      - taxYear
+      - furtherDetails
+      type: object
+      properties:
+        taxYear:
+          type: string
+          description: The tax year.
+          example: 2018-19
+        furtherDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FurtherDetails1'
+          description: Further details for income from Self Assessment for an individual for the requested time period.
+    TotalEmployerNICs:
+      title: TotalEmployerNICs
+      type: object
+      properties:
+        inPayPeriod1:
+          type: number
+          description: The value in pay period 1 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod2:
+          type: number
+          description: The value in pay period 2 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod3:
+          type: number
+          description: The value in pay period 3 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        inPayPeriod4:
+          type: number
+          description: The value in pay period 4 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd1:
+          type: number
+          description: The value year to date 1 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd2:
+          type: number
+          description: The value year to date 2 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd3:
+          type: number
+          description: The value year to date 3 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+        ytd4:
+          type: number
+          description: The value year to date 4 in the range -999999999.99 to 999999999.99.
+          example: 163068.82
+      description: Details about total employer National Insurance contributions.
+    Trusts:
+      title: Trusts
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/trusts?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA trusts data
+      description: The URI for the endpoint to get an individual's Self Assessment trusts income data.
+    Trusts1:
+      title: Trusts1
+      required:
+      - trustIncome
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        trustIncome:
+          type: number
+          description: The amount of income from trusts
+          example: 2143.32
+    UkProperties:
+      title: UkProperties
+      required:
+      - href
+      - title
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/income/sa/uk-properties?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromTaxYear,toTaxYear}
+        title:
+          type: string
+          description: Get an individual's SA UK properties data
+      description: The URI for the endpoint to get an individual's Self Assessment UK properties income data.
+    UkProperties1:
+      title: UkProperties1
+      required:
+      - totalProfit
+      type: object
+      properties:
+        utr:
+          pattern: ^[0-9]{10}$
+          type: string
+          description: A Unique Taxpayer Reference.
+          example: '3287654321'
+        totalProfit:
+          type: number
+          description: The profit from UK properties
+          example: 1276.67
+tags:
+- name: individuals
+  description: ''
