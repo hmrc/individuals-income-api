@@ -41,8 +41,7 @@ lazy val microservice =
       play.sbt.PlayScala,
       SbtAutoBuildPlugin,
       SbtGitVersioning,
-      SbtDistributablesPlugin,
-      SbtArtifactory) ++ plugins: _*)
+      SbtDistributablesPlugin) ++ plugins: _*)
     .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
     .settings(publishingSettings: _*)
@@ -85,7 +84,7 @@ lazy val ComponentTest = config("component") extend Test
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
   tests.map { test =>
-    new Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
+    Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
   }
 
 lazy val compileAll = taskKey[Unit]("Compiles sources in all configurations.")
