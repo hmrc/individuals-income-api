@@ -21,16 +21,16 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
-import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployments, DesSAIncome}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 
 object DesStub extends MockHost(23000) {
 
   def searchEmploymentIncomeForPeriodReturns(
-    nino: String,
-    fromDate: String,
-    toDate: String,
-    desEmployments: DesEmployments) =
+                                              nino: String,
+                                              fromDate: String,
+                                              toDate: String,
+                                              desEmployments: DesEmployments) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
         .withQueryParam("from", equalTo(fromDate))
@@ -52,11 +52,11 @@ object DesStub extends MockHost(23000) {
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
   def searchSelfAssessmentIncomeForPeriodReturnsRateLimitErrorFor(
-    nino: Nino,
-    startYear: TaxYear,
-    endYear: TaxYear,
-    clientId: String,
-    desSAIncomes: Seq[DesSAIncome]) =
+                                                                   nino: Nino,
+                                                                   startYear: TaxYear,
+                                                                   endYear: TaxYear,
+                                                                   clientId: String,
+                                                                   desSAIncomes: Seq[DesSAIncome]) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
@@ -65,11 +65,11 @@ object DesStub extends MockHost(23000) {
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
   def searchSelfAssessmentIncomeForPeriodReturns(
-    nino: Nino,
-    startYear: TaxYear,
-    endYear: TaxYear,
-    clientId: String,
-    desSAIncomes: Seq[DesSAIncome]) =
+                                                  nino: Nino,
+                                                  startYear: TaxYear,
+                                                  endYear: TaxYear,
+                                                  clientId: String,
+                                                  desSAIncomes: Seq[DesSAIncome]) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))

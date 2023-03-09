@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 import org.joda.time.LocalDate
 import org.joda.time.LocalDate.parse
-import play.api.libs.json.JodaReads._
-import play.api.libs.json.JodaWrites._
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
@@ -29,20 +29,20 @@ import java.util.UUID
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
 case class Individual(
-  matchId: UUID,
-  nino: String,
-  firstName: String,
-  lastName: String,
-  dateOfBirth: LocalDate,
-  income: Seq[Payment],
-  saIncome: Seq[DesSAIncome])
+                       matchId: UUID,
+                       nino: String,
+                       firstName: String,
+                       lastName: String,
+                       dateOfBirth: LocalDate,
+                       income: Seq[Payment],
+                       saIncome: Seq[DesSAIncome])
 
 case class Payment(
-  taxablePayment: Double,
-  paymentDate: LocalDate,
-  employerPayeReference: Option[EmpRef] = None,
-  monthPayNumber: Option[Int] = None,
-  weekPayNumber: Option[Int] = None)
+                    taxablePayment: Double,
+                    paymentDate: LocalDate,
+                    employerPayeReference: Option[EmpRef] = None,
+                    monthPayNumber: Option[Int] = None,
+                    weekPayNumber: Option[Int] = None)
 
 object Payment {
   implicit val paymentJsonFormat = Json.format[Payment]
@@ -54,7 +54,7 @@ object SandboxIncomeData {
 
   def matchedCitizen(matchId: UUID) = matchId match {
     case `sandboxMatchId` => Some(MatchedCitizen(sandboxMatchId, sandboxNino))
-    case _                => None
+    case _ => None
   }
 
   private lazy val individuals = Seq(amanda())

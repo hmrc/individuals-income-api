@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaIncome
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaIncome
 
 class SaIncomeSpec extends AnyWordSpec with Matchers {
 
@@ -61,24 +61,25 @@ class SaIncomeSpec extends AnyWordSpec with Matchers {
   "Sa Income" should {
     "Write To Json" in {
       val result = Json.toJson(validSaIncome)
-      val expectedJson = Json.parse("""
-                                      |{
-                                      |  "selfAssessment" : 100,
-                                      |  "allEmployments" : 100,
-                                      |  "ukInterest" : 100,
-                                      |  "foreignDivs" : 100,
-                                      |  "ukDivsAndInterest" : 100,
-                                      |  "partnerships" : 100,
-                                      |  "pensions" : 100,
-                                      |  "selfEmployment" : 100,
-                                      |  "trusts" : 100,
-                                      |  "ukProperty" : 100,
-                                      |  "foreign" : 100,
-                                      |  "lifePolicies" : 100,
-                                      |  "shares" : 100,
-                                      |  "other" : 100
-                                      |}
-                                      |""".stripMargin)
+      val expectedJson = Json.parse(
+        """
+          |{
+          |  "selfAssessment" : 100,
+          |  "allEmployments" : 100,
+          |  "ukInterest" : 100,
+          |  "foreignDivs" : 100,
+          |  "ukDivsAndInterest" : 100,
+          |  "partnerships" : 100,
+          |  "pensions" : 100,
+          |  "selfEmployment" : 100,
+          |  "trusts" : 100,
+          |  "ukProperty" : 100,
+          |  "foreign" : 100,
+          |  "lifePolicies" : 100,
+          |  "shares" : 100,
+          |  "other" : 100
+          |}
+          |""".stripMargin)
 
       result shouldBe expectedJson
     }

@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
-import java.util.UUID
-
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verify, verifyNoInteractions}
@@ -29,6 +27,7 @@ import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheRepositoryConfiguration, 
 import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService}
 import utils.TestSupport
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {

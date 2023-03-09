@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import java.util.UUID
-
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPayeEntry, IfSaEntry}
 
+import java.util.UUID
+
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
 case class Individual(
-  matchId: UUID,
-  nino: String,
-  firstName: String,
-  lastName: String,
-  dateOfBirth: LocalDate,
-  income: Seq[IfPayeEntry],
-  saIncome: Seq[IfSaEntry])
+                       matchId: UUID,
+                       nino: String,
+                       firstName: String,
+                       lastName: String,
+                       dateOfBirth: LocalDate,
+                       income: Seq[IfPayeEntry],
+                       saIncome: Seq[IfSaEntry])

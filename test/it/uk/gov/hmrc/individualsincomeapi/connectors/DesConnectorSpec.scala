@@ -21,23 +21,23 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.joda.time.LocalDate
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.des.{DesAddress, DesEmployment, DesEmploymentPayFrequency, DesPayment, DesSAIncome, DesSAReturn, SAIncome}
+import uk.gov.hmrc.individualsincomeapi.domain.des._
 import uk.gov.hmrc.integration.ServiceSpec
-import utils.TestSupport
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
+import utils.TestSupport
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
 class DesConnectorSpec
-    extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+  extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
     with TestSupport {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
@@ -50,10 +50,10 @@ class DesConnectorSpec
   override def fakeApplication() = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "microservice.services.des.host"         -> "127.0.0.1",
-      "microservice.services.des.port"                -> "11122",
+      "microservice.services.des.host" -> "127.0.0.1",
+      "microservice.services.des.port" -> "11122",
       "microservice.services.des.authorization-token" -> desAuthorizationToken,
-      "microservice.services.des.environment"         -> desEnvironment
+      "microservice.services.des.environment" -> desEnvironment
     )
     .build()
 
@@ -181,7 +181,9 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[UpstreamErrorResponse] { await(underTest.fetchEmployments(nino, interval)) }
+      intercept[UpstreamErrorResponse] {
+        await(underTest.fetchEmployments(nino, interval))
+      }
     }
 
   }
@@ -255,7 +257,9 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[UpstreamErrorResponse] { await(underTest.fetchSelfAssessmentIncome(nino, interval)) }
+      intercept[UpstreamErrorResponse] {
+        await(underTest.fetchSelfAssessmentIncome(nino, interval))
+      }
     }
   }
 }

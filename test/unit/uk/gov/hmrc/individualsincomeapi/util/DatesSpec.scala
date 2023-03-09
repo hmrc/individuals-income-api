@@ -17,10 +17,10 @@
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
 import org.joda.time.{DateTime, LocalDate}
-import uk.gov.hmrc.individualsincomeapi.domain.ValidationException
-import uk.gov.hmrc.individualsincomeapi.util.Dates
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import uk.gov.hmrc.individualsincomeapi.domain.ValidationException
+import uk.gov.hmrc.individualsincomeapi.util.Dates
 
 class DatesSpec extends AnyFlatSpec with Matchers {
 

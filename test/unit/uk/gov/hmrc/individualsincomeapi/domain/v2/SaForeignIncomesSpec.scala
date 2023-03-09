@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.v2.SaForeignIncomes
 import utils.IncomeSaHelpers
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
 class SaForeignIncomesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
@@ -30,18 +30,19 @@ class SaForeignIncomesSpec extends AnyWordSpec with Matchers with IncomeSaHelper
 
   "SaForeignIncomes" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "foreign": [
-                                      |        {
-                                      |          "foreignIncome": 100
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "foreign": [
+          |        {
+          |          "foreignIncome": 100
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaForeignIncomes.transform(ifSa))
 
@@ -49,9 +50,10 @@ class SaForeignIncomesSpec extends AnyWordSpec with Matchers with IncomeSaHelper
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": []
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": []
+          |}""".stripMargin)
 
       val result = Json.toJson(SaForeignIncomes.transform(Seq()))
 
@@ -60,18 +62,19 @@ class SaForeignIncomesSpec extends AnyWordSpec with Matchers with IncomeSaHelper
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "foreign": [
-                                      |        {
-                                      |          "foreignIncome": 0.0
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "foreign": [
+          |        {
+          |          "foreignIncome": 0.0
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaForeignIncomes.transform(ifSaNoData))
 
@@ -80,18 +83,19 @@ class SaForeignIncomesSpec extends AnyWordSpec with Matchers with IncomeSaHelper
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "foreign": [
-                                      |        {
-                                      |          "foreignIncome": 0.0
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "foreign": [
+          |        {
+          |          "foreignIncome": 0.0
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaForeignIncomes.transform(ifSaNoValues))
 

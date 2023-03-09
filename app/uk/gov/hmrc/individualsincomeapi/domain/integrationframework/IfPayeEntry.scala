@@ -356,7 +356,7 @@ object IfPayeEntry {
 
   }
 
-  def toIntVal(maybeInt: Option[String]): Option[Int]= {
+  def toIntVal(maybeInt: Option[String]): Option[Int] = {
 
     maybeInt match {
       case Some(value) => Some(value.toInt)

@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.paye
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPostGradLoan
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPostGradLoan
 
 class IfPostGradLoanSpec extends AnyWordSpec with Matchers {
 

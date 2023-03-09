@@ -16,15 +16,16 @@
 
 package component.uk.gov.hmrc.individualsincomeapi
 
-import java.util.UUID
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
 import org.joda.time.{DateTime, LocalDate}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.individualsincomeapi.util.Dates
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
+import uk.gov.hmrc.individualsincomeapi.util.Dates
+
+import java.util.UUID
 
 class IntervalValidationSpec extends BaseSpec {
 
@@ -117,7 +118,8 @@ class IntervalValidationSpec extends BaseSpec {
       response.code shouldBe OK
 
       And("The response contains the payments for the period")
-      Json.parse(response.body) shouldBe Json.parse(s"""
+      Json.parse(response.body) shouldBe Json.parse(
+        s"""
             {
                "_links":
                {

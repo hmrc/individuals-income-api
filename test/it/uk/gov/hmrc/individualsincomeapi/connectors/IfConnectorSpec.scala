@@ -23,27 +23,27 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
-import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
-import uk.gov.hmrc.integration.ServiceSpec
-import unit.uk.gov.hmrc.individualsincomeapi.util._
-import utils._
-import play.api.libs.json.Json
-import play.api.test.FakeRequest
-import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
-import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-
-import scala.concurrent.ExecutionContext
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
+import play.api.test.FakeRequest
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
+import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
+import uk.gov.hmrc.integration.ServiceSpec
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import unit.uk.gov.hmrc.individualsincomeapi.util._
+import utils._
+
+import scala.concurrent.ExecutionContext
 
 class IfConnectorSpec
-    extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+  extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
     with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
@@ -56,10 +56,10 @@ class IfConnectorSpec
   override def fakeApplication() = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "microservice.services.integration-framework.host"         -> "127.0.0.1",
-      "microservice.services.integration-framework.port"                -> "11122",
+      "microservice.services.integration-framework.host" -> "127.0.0.1",
+      "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
-      "microservice.services.integration-framework.environment"         -> integrationFrameworkEnvironment
+      "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment
     )
     .build()
 

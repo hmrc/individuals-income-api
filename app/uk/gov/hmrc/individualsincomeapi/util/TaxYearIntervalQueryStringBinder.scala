@@ -25,8 +25,8 @@ class TaxYearIntervalQueryStringBinder extends QueryStringBindable[TaxYearInterv
   override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TaxYearInterval]] =
     (getParam(params, "fromTaxYear"), getParam(params, "toTaxYear", Some(TaxYear.current()))) match {
       case (Right(from), Right(to)) => Some(taxYearInterval(from, to))
-      case (_, Left(msg))           => Some(Left(msg))
-      case (Left(msg), _)           => Some(Left(msg))
+      case (_, Left(msg)) => Some(Left(msg))
+      case (Left(msg), _) => Some(Left(msg))
     }
 
   private def taxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): Either[String, TaxYearInterval] =
@@ -37,13 +37,13 @@ class TaxYearIntervalQueryStringBinder extends QueryStringBindable[TaxYearInterv
     }
 
   private def getParam(
-    params: Map[String, Seq[String]],
-    paramName: String,
-    default: Option[TaxYear] = None): Either[String, TaxYear] =
+                        params: Map[String, Seq[String]],
+                        paramName: String,
+                        default: Option[TaxYear] = None): Either[String, TaxYear] =
     try {
       params.get(paramName).flatMap(_.headOption) match {
         case Some(taxYear) => Right(TaxYear(taxYear))
-        case None          => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
+        case None => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
       }
     } catch {
       case _: Throwable => Left(s"$paramName: invalid tax year format")

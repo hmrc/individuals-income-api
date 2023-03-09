@@ -16,19 +16,20 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.connector
 
-import java.util.UUID
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
+import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import utils.SpecBase
-import org.scalatest.matchers.should.Matchers
-import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
+
+import java.util.UUID
 
 class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 

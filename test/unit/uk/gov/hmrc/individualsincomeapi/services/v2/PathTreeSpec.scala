@@ -17,10 +17,10 @@
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
 import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.individualsincomeapi.services.v2.PathTree
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
+import uk.gov.hmrc.individualsincomeapi.services.v2.PathTree
 
 class PathTreeSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 

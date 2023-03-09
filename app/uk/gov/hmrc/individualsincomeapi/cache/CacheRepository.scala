@@ -36,9 +36,9 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
                               ) extends PlayMongoRepository[Entry](
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
-  domainFormat   = Entry.format,
+  domainFormat = Entry.format,
   replaceIndexes = true,
-  indexes        = Seq(
+  indexes = Seq(
     IndexModel(
       ascending("id"),
       IndexOptions().name("_id").
@@ -57,7 +57,7 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
 
   def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
-    val jsonEncryptor           = new JsonEncryptor[T]()
+    val jsonEncryptor = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
 
     val entry = new Entry(

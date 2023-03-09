@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.cache.v1
 
-import javax.inject.Inject
 import play.api.Configuration
 import uk.gov.hmrc.individualsincomeapi.cache.{CacheRepositoryConfiguration => BaseConfiguration}
 
-class CacheRepositoryConfiguration @Inject() (configuration: Configuration) extends BaseConfiguration {
+import javax.inject.Inject
+
+class CacheRepositoryConfiguration @Inject()(configuration: Configuration) extends BaseConfiguration {
   override val cacheEnabled: Boolean = configuration.getOptional[Boolean]("cache.enabled").getOrElse(true)
   override val cacheTtl: Int = configuration.getOptional[Int]("cache.ttlInSeconds").getOrElse(60 * 15)
   override val collName: String = "shortLivedCache"

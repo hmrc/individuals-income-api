@@ -34,7 +34,8 @@ class RootControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(s"""{
+        Json.parse(
+          s"""{
              "_links": {
                  "paye": {
                      "href": "/individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430{&fromDate,toDate}",

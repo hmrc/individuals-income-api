@@ -16,14 +16,14 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa
 import utils.IncomeSaHelpers
+
+import java.util.UUID
 
 class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
@@ -314,7 +314,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -480,7 +480,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -646,7 +646,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -814,7 +814,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -972,7 +972,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -1137,7 +1137,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -1302,7 +1302,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -1468,7 +1468,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -1630,7 +1630,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -1794,7 +1794,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -1957,7 +1957,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -2127,7 +2127,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -2303,13 +2303,13 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
   }
 
-  def testAuthorisation(endpoint:String, scopes: List[String]): Unit = {
+  def testAuthorisation(endpoint: String, scopes: List[String]): Unit = {
     Scenario("not authorized") {
 
       Given("an invalid privileged Auth bearer token")
@@ -2323,7 +2323,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 401 (unauthorized)")
       response.code shouldBe UNAUTHORIZED
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
+        "code" -> "UNAUTHORIZED",
         "message" -> "Bearer token is missing or not authorized"
       )
     }
@@ -2341,15 +2341,15 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       response.code shouldBe UNAUTHORIZED
       Json.parse(response.body) shouldBe Json.obj(
         "code" -> "UNAUTHORIZED",
-        "message" ->"Insufficient Enrolments"
+        "message" -> "Insufficient Enrolments"
       )
     }
   }
 
-  def testErrorHandling( endpoint: String,
-                         nino: String,
-                         fields: String,
-                         rootScope: List[String]): Unit = {
+  def testErrorHandling(endpoint: String,
+                        nino: String,
+                        fields: String,
+                        rootScope: List[String]): Unit = {
 
     Scenario(s"valid request but invalid IF response") {
 
@@ -2415,7 +2415,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return Internal Server Error")
-      IfStub.saCustomResponse(nino, UNPROCESSABLE_ENTITY, fromTaxYear,  toTaxYear, fields, Json.obj("reason" ->
+      IfStub.saCustomResponse(nino, UNPROCESSABLE_ENTITY, fromTaxYear, toTaxYear, fields, Json.obj("reason" ->
         "There are 1 or more unknown data items in the 'fields' query string"))
 
       When(
@@ -2448,7 +2448,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "matchId is required"
       )
 
@@ -2467,7 +2467,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "matchId format is invalid"
       )
 
@@ -2486,7 +2486,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 404 (not found)")
       response.code shouldBe NOT_FOUND
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "NOT_FOUND",
+        "code" -> "NOT_FOUND",
         "message" -> "The resource can not be found"
       )
 
@@ -2507,7 +2507,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "fromTaxYear is required"
       )
 
@@ -2526,7 +2526,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "Invalid time period requested"
       )
 
@@ -2545,7 +2545,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "fromTaxYear earlier than allowed (CY-6)"
       )
 
@@ -2564,7 +2564,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "fromTaxYear: invalid tax year format"
       )
 
@@ -2583,7 +2583,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "toTaxYear: invalid tax year format"
       )
 

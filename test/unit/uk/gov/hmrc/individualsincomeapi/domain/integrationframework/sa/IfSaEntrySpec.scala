@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfAddress, IfDeducts, IfSaEntry, IfSaIncome, IfSaReturn}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
 
 class IfSaEntrySpec extends AnyWordSpec with Matchers {
 

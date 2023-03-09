@@ -16,15 +16,15 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
+
+import java.util.UUID
 
 class IndividualIncomeSpec extends BaseSpec {
 
@@ -70,7 +70,8 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(s"""
+        Json.parse(
+          s"""
              {
                "_links": {
                  "self": {
@@ -129,7 +130,8 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(s"""
+        Json.parse(
+          s"""
              {
                "_links": {
                  "self": {
@@ -163,7 +165,7 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -181,7 +183,8 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(s"""
+        Json.parse(
+          s"""
              {
                "_links": {
                  "self": {

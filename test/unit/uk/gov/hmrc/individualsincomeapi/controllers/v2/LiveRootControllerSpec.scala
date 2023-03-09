@@ -109,21 +109,22 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       status(result) shouldBe OK
 
       jsonBodyOf(result) shouldBe
-        Json.parse(s"""{
-                      |  "_links": {
-                      |    "sa": {
-                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
-                      |      "title": "Get an individual's income sa data"
-                      |    },
-                      |    "paye": {
-                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
-                      |      "title": "Get an individual's income paye data"
-                      |    },
-                      |    "self": {
-                      |      "href": "/individuals/income/?matchId=$matchId"
-                      |    }
-                      |  }
-                      |}""".stripMargin)
+        Json.parse(
+          s"""{
+             |  "_links": {
+             |    "sa": {
+             |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+             |      "title": "Get an individual's income sa data"
+             |    },
+             |    "paye": {
+             |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+             |      "title": "Get an individual's income paye data"
+             |    },
+             |    "self": {
+             |      "href": "/individuals/income/?matchId=$matchId"
+             |    }
+             |  }
+             |}""".stripMargin)
 
       verify(liveRootController.auditHelper, times(1)).
         auditApiResponse(any(), any(), any(), any(), any(), any())(any())

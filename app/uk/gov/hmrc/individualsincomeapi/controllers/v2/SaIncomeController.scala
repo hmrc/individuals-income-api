@@ -32,13 +32,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
-                                          val scopeService: ScopesService,
-                                          val scopesHelper: ScopesHelper,
-                                          val authConnector: AuthConnector,
-                                          cc: ControllerComponents,
-                                          implicit val auditHelper: AuditHelper)
-                                        (implicit val ec: ExecutionContext)
+class SaIncomeController @Inject()(val saIncomeService: SaIncomeService,
+                                   val scopeService: ScopesService,
+                                   val scopesHelper: ScopesHelper,
+                                   val authConnector: AuthConnector,
+                                   cc: ControllerComponents,
+                                   implicit val auditHelper: AuditHelper)
+                                  (implicit val ec: ExecutionContext)
   extends CommonController(cc) with PrivilegedAuthentication {
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
@@ -120,7 +120,7 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
 
         withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
-        saIncomeService.fetchForeign(matchUuid, taxYearInterval, authScopes).map { sa =>
+          saIncomeService.fetchForeign(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/foreign?matchId=$matchId"))
             val saJsObject = obj("selfAssessment" -> sa)
             val response = Json.toJson(state(saJsObject) ++ selfLink)
@@ -276,11 +276,11 @@ class SaIncomeController @Inject() ( val saIncomeService: SaIncomeService,
   def saIncomeSource(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {
     implicit request =>
 
-        authenticate(scopeService.getEndPointScopes("source"), matchId) { authScopes =>
+      authenticate(scopeService.getEndPointScopes("source"), matchId) { authScopes =>
 
-          val correlationId = validateCorrelationId(request)
+        val correlationId = validateCorrelationId(request)
 
-          withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
+        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
           saIncomeService.fetchSources(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink("self", urlWithTaxYearInterval(s"/individuals/income/sa/source?matchId=$matchId"))

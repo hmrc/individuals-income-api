@@ -17,14 +17,14 @@
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService}
 import unit.uk.gov.hmrc.individualsincomeapi.services.ScopesConfig
 import utils.UnitSpec
-import org.scalatest.matchers.should.Matchers
 
 class ScopesHelperSpec
-    extends UnitSpec
+  extends UnitSpec
     with ScopesConfig
     with BeforeAndAfterEach
     with Matchers {

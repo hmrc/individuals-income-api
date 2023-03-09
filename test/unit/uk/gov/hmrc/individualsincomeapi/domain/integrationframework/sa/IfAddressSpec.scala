@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.integrationframework.sa
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfAddress
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry._
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
 class IfAddressSpec extends AnyWordSpec with Matchers {
 
@@ -30,15 +30,16 @@ class IfAddressSpec extends AnyWordSpec with Matchers {
 
   "IfAddress" should {
     "Write to Json" in {
-      val expectedJson = Json.parse("""
-                                      |{
-                                      |   "line1":"line1",
-                                      |   "line2":"line2",
-                                      |   "line3":"line3",
-                                      |   "line4":"line4",
-                                      |   "postcode":"QW123QW"
-                                      |}
-                                      |""".stripMargin)
+      val expectedJson = Json.parse(
+        """
+          |{
+          |   "line1":"line1",
+          |   "line2":"line2",
+          |   "line3":"line3",
+          |   "line4":"line4",
+          |   "postcode":"QW123QW"
+          |}
+          |""".stripMargin)
 
       val result = Json.toJson(validAddress)
 
