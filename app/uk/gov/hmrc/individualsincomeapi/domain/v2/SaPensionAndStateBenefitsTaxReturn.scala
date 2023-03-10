@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaPensionAndStateBenefitsTaxReturn(
-  taxYear: String,
-  pensionsAndStateBenefits: Seq[SaPensionAndStateBenefit]
-)
+                                               taxYear: String,
+                                               pensionsAndStateBenefits: Seq[SaPensionAndStateBenefit]
+                                             )
 
 object SaPensionAndStateBenefitsTaxReturn {
 

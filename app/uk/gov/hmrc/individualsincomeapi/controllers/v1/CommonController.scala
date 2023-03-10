@@ -48,21 +48,21 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   private[controllers] def urlWithTaxYearInterval[T](url: String)(implicit request: Request[T]) =
     (getQueryParam("fromTaxYear"), getQueryParam("toTaxYear")) match {
       case (Some(fromTaxYear), Some(toTaxYear)) => s"$url&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear"
-      case (Some(fromTaxYear), None)            => s"$url&fromTaxYear=$fromTaxYear"
-      case _                                    => url
+      case (Some(fromTaxYear), None) => s"$url&fromTaxYear=$fromTaxYear"
+      case _ => url
     }
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException   => ErrorNotFound.toHttpResponse
-    case e: AuthorisationException   => ErrorUnauthorized(e.getMessage).toHttpResponse
-    case _: TooManyRequestException  => ErrorTooManyRequests.toHttpResponse
+    case _: MatchNotFoundException => ErrorNotFound.toHttpResponse
+    case e: AuthorisationException => ErrorUnauthorized(e.getMessage).toHttpResponse
+    case _: TooManyRequestException => ErrorTooManyRequests.toHttpResponse
     case e: IllegalArgumentException => ErrorInvalidRequest(e.getMessage).toHttpResponse
   }
 
   private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                                             (implicit request: RequestHeader,
                                              auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException   => {
+    case _: MatchNotFoundException => {
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
@@ -71,16 +71,16 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
     }
-    case e: AuthorisationException   => {
+    case e: AuthorisationException => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
     }
-    case tmr: TooManyRequestException  => {
+    case tmr: TooManyRequestException => {
       logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
     }
-    case br: BadRequestException  => {
+    case br: BadRequestException => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, br.getMessage)
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     }

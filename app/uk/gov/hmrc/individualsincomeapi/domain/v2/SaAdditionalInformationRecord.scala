@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaAdditionalInformationRecord(
-  gainsOnLifePolicies: Double,
-  sharesOptionsIncome: Double
-)
+                                          gainsOnLifePolicies: Double,
+                                          sharesOptionsIncome: Double
+                                        )
 
 object SaAdditionalInformationRecord {
 

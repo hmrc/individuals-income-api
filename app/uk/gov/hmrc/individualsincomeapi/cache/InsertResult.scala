@@ -20,5 +20,6 @@ sealed trait InsertResult
 
 object InsertResult {
   case object InsertSucceeded extends InsertResult
+
   case object AlreadyExists extends InsertResult
 }

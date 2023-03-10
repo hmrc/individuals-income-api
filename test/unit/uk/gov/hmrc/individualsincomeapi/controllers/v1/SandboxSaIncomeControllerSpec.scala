@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import java.util.UUID
-
 import akka.stream.Materializer
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, refEq}
@@ -29,13 +27,14 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController
+import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
-import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualAdditionalInformation, SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncome, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncome, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncome, SaAnnualOtherIncomes, SaAnnualPartnershipIncome, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncome, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncome, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncome, SaAnnualUkPropertiesIncomes, SaEmploymentsIncome, SaFootprint, SaRegistration, SaSelfEmploymentsIncome, SaSubmission, SaTaxReturn, SaTaxReturnSummaries, SaTaxReturnSummary}
+import uk.gov.hmrc.individualsincomeapi.domain.v1._
 import uk.gov.hmrc.individualsincomeapi.services.v1.SandboxSaIncomeService
 import utils.SpecBase
 
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
 
 class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {

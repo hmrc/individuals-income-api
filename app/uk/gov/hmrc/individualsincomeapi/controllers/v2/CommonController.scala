@@ -16,22 +16,21 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInternalServer, ErrorInvalidRequest, ErrorNotFound, ErrorTooManyRequests, ErrorUnauthorized, MatchNotFoundException}
+import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.util.Dates.toFormattedLocalDate
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import javax.inject.Inject
 import uk.gov.hmrc.individualsincomeapi.util.UuidValidator
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import java.util.UUID
+import javax.inject.Inject
 import scala.concurrent.Future.successful
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +41,7 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   private def getQueryParam[T](name: String)(implicit request: Request[T]) =
     request.queryString.get(name).flatMap(_.headOption)
 
-  protected def withValidUuid(uuidString: String, error:String)(f: UUID => Future[Result]): Future[Result] =
+  protected def withValidUuid(uuidString: String, error: String)(f: UUID => Future[Result]): Future[Result] =
     if (UuidValidator.validate(uuidString)) {
       f(UUID.fromString(uuidString))
     } else {
@@ -57,28 +56,28 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   private[controllers] def urlWithTaxYearInterval[T](url: String)(implicit request: Request[T]) =
     (getQueryParam("fromTaxYear"), getQueryParam("toTaxYear")) match {
       case (Some(fromTaxYear), Some(toTaxYear)) => s"$url&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear"
-      case (Some(fromTaxYear), None)            => s"$url&fromTaxYear=$fromTaxYear"
-      case _                                    => url
+      case (Some(fromTaxYear), None) => s"$url&fromTaxYear=$fromTaxYear"
+      case _ => url
     }
 
   private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                                             (implicit request: RequestHeader,
                                              auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException   =>
+    case _: MatchNotFoundException =>
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
     case e: InsufficientEnrolments =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
-    case e: AuthorisationException   =>
+    case e: AuthorisationException =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
-    case tmr: TooManyRequestException  =>
+    case tmr: TooManyRequestException =>
       logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
-    case br: BadRequestException  =>
+    case br: BadRequestException =>
       auditHelper.auditApiFailure(correlationId, matchId, request, url, br.getMessage)
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     case e: IllegalArgumentException =>

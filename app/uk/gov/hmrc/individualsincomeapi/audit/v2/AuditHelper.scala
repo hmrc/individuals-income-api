@@ -54,12 +54,12 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     )
 
   def auditSaApiResponse[T](correlationId: String,
-                          matchId: String,
-                          scopes: String,
-                          request: RequestHeader,
-                          selfLink: String,
-                          response: Option[JsValue])
-                         (implicit hc: HeaderCarrier) =
+                            matchId: String,
+                            scopes: String,
+                            request: RequestHeader,
+                            selfLink: String,
+                            response: Option[JsValue])
+                           (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ApiSaResponseEventModel(
@@ -100,11 +100,11 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     )
 
   def auditIfPayeApiResponse(correlationId: String,
-                         matchId: String,
-                         request: RequestHeader,
-                         requestUrl: String,
-                         ifPaye: Seq[IfPayeEntry])
-                        (implicit hc: HeaderCarrier) =
+                             matchId: String,
+                             request: RequestHeader,
+                             requestUrl: String,
+                             ifPaye: Seq[IfPayeEntry])
+                            (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "IntegrationFrameworkApiResponseEvent",
       IfPayeApiResponseEventModel(
@@ -166,7 +166,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     )
 
   def auditAuthScopes(matchId: String,
-                      scopes:  String,
+                      scopes: String,
                       request: RequestHeader)
                      (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(

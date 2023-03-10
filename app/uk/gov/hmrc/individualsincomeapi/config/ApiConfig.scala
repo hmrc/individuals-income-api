@@ -45,16 +45,16 @@ trait EndpointConfig {
   val title: String
 }
 
-case class InternalEndpointConfig( override val name: String,
-                                   override val link: String,
-                                   override val title: String,
-                                   fields: Map[String, String],
-                                   filters: Map[String, String]) extends EndpointConfig
+case class InternalEndpointConfig(override val name: String,
+                                  override val link: String,
+                                  override val title: String,
+                                  fields: Map[String, String],
+                                  filters: Map[String, String]) extends EndpointConfig
 
-case class ExternalEndpointConfig( override val name: String,
-                                    override val link: String,
-                                    override val title: String,
-                                    key: String ) extends EndpointConfig
+case class ExternalEndpointConfig(override val name: String,
+                                  override val link: String,
+                                  override val title: String,
+                                  key: String) extends EndpointConfig
 
 object ApiConfig {
 
@@ -63,7 +63,7 @@ object ApiConfig {
     val config = rootConfig.getConfig(path)
 
     def parseConfig(path: String): Option[PathTree] = {
-      if(config.hasPath(path)) {
+      if (config.hasPath(path)) {
         val keys: List[String] = config
           .getConfig(path)
           .entrySet()
@@ -87,7 +87,7 @@ object ApiConfig {
           title = config.getString(s"endpoints.internal.$endpointName.title"),
           fields = getStringList(s"endpoints.internal.$endpointName.fields")
             .map(field => (field, config.getString(s"fields.$field"))).toMap,
-          filters =  getStringList(s"endpoints.internal.$endpointName.filters")
+          filters = getStringList(s"endpoints.internal.$endpointName.filters")
             .map(filter => (filter, config.getString(s"filters.$filter"))).toMap,
         )).toList).getOrElse(List())
 

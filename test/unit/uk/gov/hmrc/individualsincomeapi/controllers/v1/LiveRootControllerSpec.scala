@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import java.util.UUID
-
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
@@ -38,6 +36,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import utils.SpecBase
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
@@ -66,7 +65,8 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) shouldBe NOT_FOUND
-      contentAsJson(eventualResult) shouldBe parse("""
+      contentAsJson(eventualResult) shouldBe parse(
+        """
           {
             "code":"NOT_FOUND",
             "message":"The resource can not be found"
@@ -81,7 +81,8 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) shouldBe OK
-      contentAsJson(eventualResult) shouldBe parse(s"""
+      contentAsJson(eventualResult) shouldBe parse(
+        s"""
           {
             "_links":{
               "paye":{

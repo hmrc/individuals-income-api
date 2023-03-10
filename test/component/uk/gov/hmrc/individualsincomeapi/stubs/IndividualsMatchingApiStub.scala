@@ -34,7 +34,7 @@ object IndividualsMatchingApiStub extends MockHost(21000) {
             Json
               .obj(
                 "matchId" -> matchId,
-                "nino"    -> nino
+                "nino" -> nino
               )
               .toString
           )))

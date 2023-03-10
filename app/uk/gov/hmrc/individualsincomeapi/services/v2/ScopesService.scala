@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import javax.inject.Inject
 import play.api.Configuration
 import uk.gov.hmrc.individualsincomeapi.config.{ApiConfig, ExternalEndpointConfig, InternalEndpointConfig}
+
+import javax.inject.Inject
 
 class ScopesService @Inject()(configuration: Configuration) {
 
@@ -63,7 +64,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     getInternalEndpoints(scopes).flatMap(endpoint =>
       endpoint.filters.filter(filterMap =>
         filterKeys.contains(filterMap._1))
-      .values)
+        .values)
   }
 
   def getIfDataPaths(scopes: Iterable[String], endpoints: List[String]): Set[String] = {
@@ -79,7 +80,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     val keys = uniqueDataFields.filter(endpointDataItems.contains)
     keys.nonEmpty match {
       case true => keys.reduce(_ + _)
-      case _    => ""
+      case _ => ""
     }
   }
 
@@ -91,7 +92,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     apiConfig.internalEndpoints
       .filter(endpoint => endpoint.fields.keySet.exists(scopeKeys.contains))
       .map(endpoint => endpoint.name)
-        .flatMap(endpoint => apiConfig.getInternalEndpoint(endpoint))
+      .flatMap(endpoint => apiConfig.getInternalEndpoint(endpoint))
   }
 
   def getExternalEndpoints(scopes: Iterable[String]): Iterable[ExternalEndpointConfig] = {

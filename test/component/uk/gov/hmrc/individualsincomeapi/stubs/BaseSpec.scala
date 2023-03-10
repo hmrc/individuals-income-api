@@ -16,7 +16,6 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.stubs
 
-import java.util.concurrent.TimeUnit
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -29,23 +28,24 @@ import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 
 trait BaseSpec
-    extends AnyFeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
+  extends AnyFeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
     with GivenWhenThen {
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
-      "cacheV2.enabled"                                          -> false,
-      "auditing.enabled"                                       -> false,
-      "auditing.traceRequests"                                 -> false,
-      "microservice.services.auth.port"                        -> AuthStub.port,
-      "microservice.services.individuals-matching-api.port"    -> IndividualsMatchingApiStub.port,
-      "microservice.services.des.port"                         -> DesStub.port,
-      "microservice.services.integration-framework.port"       -> IfStub.port,
+      "cacheV2.enabled" -> false,
+      "auditing.enabled" -> false,
+      "auditing.traceRequests" -> false,
+      "microservice.services.auth.port" -> AuthStub.port,
+      "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
+      "microservice.services.des.port" -> DesStub.port,
+      "microservice.services.integration-framework.port" -> IfStub.port,
       "microservice.services.cacheable.short-lived-cache.port" -> Save4LaterStub.port,
-      "run.mode"                                               -> "It"
+      "run.mode" -> "It"
     )
     .build()
 
@@ -54,8 +54,8 @@ trait BaseSpec
   val mocks = Seq(AuthStub, IndividualsMatchingApiStub, DesStub, Save4LaterStub, IfStub)
   val authToken = "Bearer AUTH_TOKEN"
   val clientId = "CLIENT_ID"
-  val acceptHeaderP1 = ACCEPT                -> "application/vnd.hmrc.P1.0+json"
-  val acceptHeaderP2 = ACCEPT                -> "application/vnd.hmrc.2.0+json"
+  val acceptHeaderP1 = ACCEPT -> "application/vnd.hmrc.P1.0+json"
+  val acceptHeaderP2 = ACCEPT -> "application/vnd.hmrc.2.0+json"
   val correlationIdHeader = ("CorrelationId" -> "188e9400-b636-4a3b-80ba-230a8c72b92a")
 
   protected def requestHeaders(acceptHeader: (String, String) = acceptHeaderP1) =

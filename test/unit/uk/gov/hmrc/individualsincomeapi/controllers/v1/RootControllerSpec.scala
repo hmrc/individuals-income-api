@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import java.util.UUID
-
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
@@ -36,6 +34,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.services.SandboxCitizenMatchingService
 import utils.SpecBase
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
@@ -64,7 +63,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe
-        Json.parse(s"""
+        Json.parse(
+          s"""
          {
              "_links": {
                  "paye": {

@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.individualsincomeapi.connector
 
-import javax.inject.{Inject, Singleton}
 import org.joda.time.Interval
 import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -43,8 +43,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
 
   def setHeaders = Seq(
     HeaderNames.authorisation -> s"Bearer $desBearerToken",
-    "Environment"             -> desEnvironment,
-    "Source"                  -> "MDTP"
+    "Environment" -> desEnvironment,
+    "Source" -> "MDTP"
   )
 
   def fetchEmployments(nino: Nino, interval: Interval)(
@@ -63,8 +63,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
 
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
-    val toTaxYear   = taxYearInterval.toTaxYear.endYr
-    val originator  = hc.extraHeaders.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
+    val toTaxYear = taxYearInterval.toTaxYear.endYr
+    val originator = hc.extraHeaders.toMap.get(CLIENT_ID_HEADER).map(id => s"MDTP_CLIENTID=$id").getOrElse("-")
 
     implicit val saIncomeReads: Reads[DesSAIncome] = DesSAIncome.desReads
 

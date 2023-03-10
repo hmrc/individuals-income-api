@@ -25,15 +25,15 @@ trait ScopesConfig {
   val mockScopeThree: String = "scopeThree"
   val mockScopeFour: String = "scopeFour"
 
-  val endpointKeyOne : String = "A"
-  val endpointKeyTwo : String = "B"
-  val endpointKeyThree : String = "C"
+  val endpointKeyOne: String = "A"
+  val endpointKeyTwo: String = "B"
+  val endpointKeyThree: String = "C"
 
-  val endpointOne : String = "sampleEndpointOne"
-  val endpointTwo : String = "sampleEndpointTwo"
-  val endpointThree : String = "sampleEndpointThree"
+  val endpointOne: String = "sampleEndpointOne"
+  val endpointTwo: String = "sampleEndpointTwo"
+  val endpointThree: String = "sampleEndpointThree"
 
-  val mockConfig : Configuration = Configuration(
+  val mockConfig: Configuration = Configuration(
 
     (s"api-config.scopes.$mockScopeOne.endpoints", Seq(endpointKeyOne, endpointKeyTwo)),
     (s"api-config.scopes.$mockScopeOne.fields", Seq("A", "B", "C", "D")),

@@ -31,9 +31,10 @@ trait SpecBase extends TestSupport with GuiceOneAppPerSuite {
     new GuiceApplicationBuilder()
       .configure(
         Configuration(
-          ConfigFactory.parseString("""
-                                      | metrics.jvm = false
-                                      | metrics.enabled = true
+          ConfigFactory.parseString(
+            """
+              | metrics.jvm = false
+              | metrics.enabled = true
           """.stripMargin)
         ).withFallback(extraConfig))
       .build()

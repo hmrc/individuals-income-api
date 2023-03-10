@@ -37,7 +37,7 @@ class RootController @Inject()(
                                 val authConnector: AuthConnector,
                                 implicit val auditHelper: AuditHelper,
                                 cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends CommonController(cc) with PrivilegedAuthentication {
+  extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopeService.getAllScopes, matchId) { authScopes =>
@@ -59,6 +59,6 @@ class RootController @Inject()(
           Ok(response)
         }
       }
-    }recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income")
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income")
   }
 }

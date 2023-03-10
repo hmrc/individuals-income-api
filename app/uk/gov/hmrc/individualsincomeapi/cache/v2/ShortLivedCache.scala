@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.individualsincomeapi.cache.v2
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-
 import uk.gov.hmrc.individualsincomeapi.cache.{CacheRepository => BaseCache}
 import uk.gov.hmrc.mongo.MongoComponent
+
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

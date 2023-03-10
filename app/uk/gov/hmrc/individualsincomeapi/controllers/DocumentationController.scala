@@ -18,20 +18,24 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
+import akka.stream.Materializer
 import controllers.Assets
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.filters.cors.CORSActionBuilder
 import uk.gov.hmrc.individualsincomeapi.views._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class DocumentationController @Inject()(
-  cc: ControllerComponents,
-  assets: Assets,
-  config: Configuration)
-    extends BackendController(cc) {
+                                         cc: ControllerComponents,
+                                         assets: Assets,
+                                         config: Configuration)
+                                       (implicit ec: ExecutionContext, materializer: Materializer)
+  extends BackendController(cc) {
 
   private val v1WhitelistedApplicationIDs = config
     .getOptional[Seq[String]](
@@ -59,15 +63,12 @@ class DocumentationController @Inject()(
     Ok(txt.definition(v1WhitelistedApplicationIDs, v2WhitelistedApplicationIDs, v2EndpointsEnabled, v2Status))
       .withHeaders(CONTENT_TYPE -> JSON)
   }
-  def documentation(
-    version: String,
-    endpointName: String
-  ): Action[AnyContent] =
-    assets.at(s"/public/api/documentation/$version", s"${endpointName.replaceAll(" ", "-")}.xml")
 
-  def raml(version: String, file: String) =
-    assets.at(s"/public/api/conf/$version", file)
-
+  def specification(version: String, file: String): Action[AnyContent] = {
+    CORSActionBuilder(config).async { implicit request =>
+      assets.at(s"/public/api/conf/$version", file)(request)
+    }
+  }
 }
 
 // $COVERAGE-ON$

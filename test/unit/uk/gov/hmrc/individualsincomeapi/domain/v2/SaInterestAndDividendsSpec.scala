@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.v2.SaInterestAndDividends
 import utils.IncomeSaHelpers
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
 class SaInterestAndDividendsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
@@ -30,20 +30,21 @@ class SaInterestAndDividendsSpec extends AnyWordSpec with Matchers with IncomeSa
 
   "SaInterestAndDividends" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "interestsAndDividends": [
-                                      |        {
-                                      |          "ukInterestsIncome": 100,
-                                      |          "foreignDividendsIncome": 100,
-                                      |          "ukDividendsIncome": 100
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "interestsAndDividends": [
+          |        {
+          |          "ukInterestsIncome": 100,
+          |          "foreignDividendsIncome": 100,
+          |          "ukDividendsIncome": 100
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaInterestAndDividends.transform(ifSa))
 
@@ -51,9 +52,10 @@ class SaInterestAndDividendsSpec extends AnyWordSpec with Matchers with IncomeSa
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": []
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": []
+          |}""".stripMargin)
 
       val result = Json.toJson(SaInterestAndDividends.transform(Seq()))
 
@@ -62,20 +64,21 @@ class SaInterestAndDividendsSpec extends AnyWordSpec with Matchers with IncomeSa
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "interestsAndDividends": [
-                                      |        {
-                                      |          "ukInterestsIncome": 0.0,
-                                      |          "foreignDividendsIncome": 0.0,
-                                      |          "ukDividendsIncome": 0.0
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "interestsAndDividends": [
+          |        {
+          |          "ukInterestsIncome": 0.0,
+          |          "foreignDividendsIncome": 0.0,
+          |          "ukDividendsIncome": 0.0
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaInterestAndDividends.transform(ifSaNoData))
 
@@ -84,20 +87,21 @@ class SaInterestAndDividendsSpec extends AnyWordSpec with Matchers with IncomeSa
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse("""{
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "interestsAndDividends": [
-                                      |        {
-                                      |          "ukInterestsIncome": 0.0,
-                                      |          "foreignDividendsIncome": 0.0,
-                                      |          "ukDividendsIncome": 0.0
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "interestsAndDividends": [
+          |        {
+          |          "ukInterestsIncome": 0.0,
+          |          "foreignDividendsIncome": 0.0,
+          |          "ukDividendsIncome": 0.0
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaInterestAndDividends.transform(ifSaNoValues))
 

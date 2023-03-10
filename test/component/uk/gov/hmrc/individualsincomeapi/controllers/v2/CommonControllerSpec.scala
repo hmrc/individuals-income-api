@@ -18,8 +18,8 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec}
 import play.api.libs.json.Json
-import scalaj.http.Http
 import play.api.test.Helpers._
+import scalaj.http.Http
 
 trait CommonControllerSpec extends BaseSpec {
 
@@ -160,7 +160,7 @@ trait CommonControllerSpec extends BaseSpec {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "fromDate: invalid date format"
       )
 
@@ -179,7 +179,7 @@ trait CommonControllerSpec extends BaseSpec {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "INVALID_REQUEST",
+        "code" -> "INVALID_REQUEST",
         "message" -> "toDate: invalid date format"
       )
 

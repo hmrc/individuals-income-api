@@ -37,7 +37,7 @@ class IncomeController @Inject()(val incomeService: IncomeService,
                                  val authConnector: AuthConnector,
                                  cc: ControllerComponents,
                                  implicit val auditHelper: AuditHelper)
-                               (implicit val ec: ExecutionContext)
+                                (implicit val ec: ExecutionContext)
   extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async {
@@ -49,19 +49,19 @@ class IncomeController @Inject()(val incomeService: IncomeService,
 
         withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
 
-            incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
-              val selfLink =
-                HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+          incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
+            val selfLink =
+              HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
 
-              val incomeJsObject = Json.obj("income" -> toJson(paye))
-              val payeJsObject = obj("paye" -> incomeJsObject)
-              val response = Json.toJson(state(payeJsObject) ++ selfLink)
+            val incomeJsObject = Json.obj("income" -> toJson(paye))
+            val payeJsObject = obj("paye" -> incomeJsObject)
+            val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
-              auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-                authScopes.mkString(","), request, selfLink.toString, Some(paye.map(i => Json.toJson(i))))
+            auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
+              authScopes.mkString(","), request, selfLink.toString, Some(paye.map(i => Json.toJson(i))))
 
-              Ok(response)
-            }
+            Ok(response)
+          }
         }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/paye")
   }

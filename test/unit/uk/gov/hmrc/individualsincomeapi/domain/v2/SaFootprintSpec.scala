@@ -16,11 +16,11 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain.v2
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{SaFootprint, SaFootprintSubmission, SaFootprintTaxReturn}
 import utils.IncomeSaHelpers
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
 class SaFootprintSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
@@ -28,25 +28,26 @@ class SaFootprintSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
   "SaFootprint" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse("""{
-                                      |  "registrations": [
-                                      |    {
-                                      |      "registrationDate": "2020-01-01",
-                                      |      "utr": "1234567890"
-                                      |    }
-                                      |  ],
-                                      |  "taxReturns": [
-                                      |    {
-                                      |      "taxYear": "2019-20",
-                                      |      "submissions": [
-                                      |        {
-                                      |          "receivedDate": "2020-01-01",
-                                      |          "utr": "1234567890"
-                                      |        }
-                                      |      ]
-                                      |    }
-                                      |  ]
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "registrations": [
+          |    {
+          |      "registrationDate": "2020-01-01",
+          |      "utr": "1234567890"
+          |    }
+          |  ],
+          |  "taxReturns": [
+          |    {
+          |      "taxYear": "2019-20",
+          |      "submissions": [
+          |        {
+          |          "receivedDate": "2020-01-01",
+          |          "utr": "1234567890"
+          |        }
+          |      ]
+          |    }
+          |  ]
+          |}""".stripMargin)
 
       val result = Json.toJson(SaFootprint.transform(ifSa))
 
@@ -54,10 +55,11 @@ class SaFootprintSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse("""{
-                                      |  "registrations": [],
-                                      |  "taxReturns": []
-                                      |}""".stripMargin)
+      val expectedJson = Json.parse(
+        """{
+          |  "registrations": [],
+          |  "taxReturns": []
+          |}""".stripMargin)
 
       val result = Json.toJson(SaFootprint.transform(Seq()))
 
@@ -66,23 +68,24 @@ class SaFootprintSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
     "Write empty array when submissions are without receivedDate" in {
       val saFootPrint = SaFootprint.transform(ifSa)
-      val withoutReceivedDate = saFootPrint.copy( taxReturns =
-          Seq(SaFootprintTaxReturn(
-            "2019-20",
-            Seq( SaFootprintSubmission(
-              receivedDate = None,
-              utr = Some("1234567890"))))))
+      val withoutReceivedDate = saFootPrint.copy(taxReturns =
+        Seq(SaFootprintTaxReturn(
+          "2019-20",
+          Seq(SaFootprintSubmission(
+            receivedDate = None,
+            utr = Some("1234567890"))))))
 
-      val expected = """{
-                       |  "registrations" : [ {
-                       |    "registrationDate" : "2020-01-01",
-                       |    "utr" : "1234567890"
-                       |  } ],
-                       |  "taxReturns" : [ {
-                       |    "taxYear" : "2019-20",
-                       |    "submissions" : [ ]
-                       |  }]
-                       |}""".stripMargin
+      val expected =
+        """{
+          |  "registrations" : [ {
+          |    "registrationDate" : "2020-01-01",
+          |    "utr" : "1234567890"
+          |  } ],
+          |  "taxReturns" : [ {
+          |    "taxYear" : "2019-20",
+          |    "submissions" : [ ]
+          |  }]
+          |}""".stripMargin
 
       Json.toJson(withoutReceivedDate) shouldBe Json.parse(expected)
     }
@@ -92,18 +95,19 @@ class SaFootprintSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
       val withoutRegistrationDate = saFootPrint.copy(registrations =
         saFootPrint.registrations.map(r => r.copy(registrationDate = None)))
 
-      val expected = """{
-                       |  "registrations" : [ ],
-                       |  "taxReturns" : [ {
-                       |    "taxYear" : "2019-20",
-                       |    "submissions": [
-                       |        {
-                       |          "receivedDate": "2020-01-01",
-                       |          "utr": "1234567890"
-                       |        }
-                       |      ]
-                       |  } ]
-                       |}""".stripMargin
+      val expected =
+        """{
+          |  "registrations" : [ ],
+          |  "taxReturns" : [ {
+          |    "taxYear" : "2019-20",
+          |    "submissions": [
+          |        {
+          |          "receivedDate": "2020-01-01",
+          |          "utr": "1234567890"
+          |        }
+          |      ]
+          |  } ]
+          |}""".stripMargin
 
       Json.toJson(withoutRegistrationDate) shouldBe Json.parse(expected)
     }

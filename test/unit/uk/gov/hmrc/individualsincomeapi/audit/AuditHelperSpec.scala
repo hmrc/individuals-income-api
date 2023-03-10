@@ -16,17 +16,17 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.audit
 
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify}
 import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.audit.v2.models._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import utils.{IncomePayeHelpers, IncomeSaHelpers, UnitSpec}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import play.api.libs.json.Json
-import uk.gov.hmrc.individualsincomeapi.audit.v2.models.{ApiFailureResponseEventModel, ApiPayeResponseEventModel, ApiSaResponseEventModel, IfPayeApiResponseEventModel, IfSaApiResponseEventModel, ScopesAuditEventModel}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

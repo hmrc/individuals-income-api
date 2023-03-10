@@ -18,9 +18,9 @@ package uk.gov.hmrc.individualsincomeapi.cache
 
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json.{Format, JsPath}
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
 
 import java.time.LocalDateTime
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
 
 case class ModifiedDetails(createdAt: LocalDateTime, lastUpdated: LocalDateTime)
 

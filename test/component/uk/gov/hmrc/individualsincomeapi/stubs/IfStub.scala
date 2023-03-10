@@ -74,10 +74,10 @@ object IfStub extends MockHost(24000) {
 
 
   def searchSaIncomeReturnsRateLimitErrorFor(
-    nino: String,
-    fromTaxYear: String,
-    toTaxYear: String,
-    fields: String): Unit =
+                                              nino: String,
+                                              fromTaxYear: String,
+                                              toTaxYear: String,
+                                              fields: String): Unit =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))

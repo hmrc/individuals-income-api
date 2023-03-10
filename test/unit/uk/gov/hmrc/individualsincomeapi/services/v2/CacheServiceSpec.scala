@@ -42,7 +42,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
     val mockClient = mock[ShortLivedCache]
     val mockCacheConfig = mock[CacheRepositoryConfiguration]
-    val cacheService = new CacheService (mockClient, mockCacheConfig)
+    val cacheService = new CacheService(mockClient, mockCacheConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 

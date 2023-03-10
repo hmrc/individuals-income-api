@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import java.util.UUID
-
 import akka.stream.Materializer
 import org.joda.time.{Interval, LocalDate}
 import org.mockito.ArgumentMatchers._
@@ -31,13 +29,14 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.domain.EmpRef
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.{LiveIncomeController, SandboxIncomeController}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment.paymentJsonFormat
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
+import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment.paymentJsonFormat
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxIncomeService}
 import utils.SpecBase
 
+import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
 
 class IncomeControllerSpec extends SpecBase with MockitoSugar {

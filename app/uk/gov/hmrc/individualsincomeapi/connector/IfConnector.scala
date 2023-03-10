@@ -20,12 +20,12 @@ import org.joda.time.Interval
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -85,15 +85,15 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case Some(uuidString) =>
         Try(UUID.fromString(uuidString)) match {
           case Success(_) => uuidString
-          case _          => throw new BadRequestException("Malformed CorrelationId")
+          case _ => throw new BadRequestException("Malformed CorrelationId")
         }
       case None => throw new BadRequestException("CorrelationId is required")
     }
 
   def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment"             -> integrationFrameworkEnvironment,
-    "CorrelationId"           -> extractCorrelationId(requestHeader)
+    "Environment" -> integrationFrameworkEnvironment,
+    "CorrelationId" -> extractCorrelationId(requestHeader)
   )
 
   private def callPaye(url: String, endpoint: String, matchId: String)
@@ -106,7 +106,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
         response.paye
     },
-    extractCorrelationId(request), matchId, request, url)((x: String) => {
+      extractCorrelationId(request), matchId, request, url)((x: String) => {
       logger.warn("No NO_DATA_FOUND found, but treating as no data found")
       Future.successful(Seq.empty[IfPayeEntry])
     }
@@ -123,7 +123,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
         response.sa
     },
-    extractCorrelationId(request), matchId, request, url) { (message: String) =>
+      extractCorrelationId(request), matchId, request, url) { (message: String) =>
       logger.warn("Integration Framework NotFoundException encountered")
       Future.failed(new NotFoundException(message))
     }
@@ -147,7 +147,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
       msg.contains("NO_DATA_FOUND") match {
         case true => Future.successful(Seq.empty)
-        case _    => default404(msg)
+        case _ => default404(msg)
       }
     }
     case Upstream5xxResponse(msg, code, _, _) => {

@@ -11,6 +11,8 @@ object AppDependencies {
   val akkaVersion = "2.6.15"
   val akkaHttpVersion = "10.2.6"
 
+  val mongoVersion = "0.70.0"
+
   val overrides = Seq(
     akka %% "akka-stream" % akkaVersion,
     akka %% "akka-protobuf" % akkaVersion,
@@ -29,7 +31,7 @@ object AppDependencies {
     hmrc                %% "play-hmrc-api"              % "6.4.0-play-28",
     hmrc                %% "json-encryption"            % "4.10.0-play-28",
     "com.typesafe.play" %% "play-json-joda"             % "2.9.2",
-    hmrcMongo           %% "hmrc-mongo-play-28"         % "0.70.0"
+    hmrcMongo           %% "hmrc-mongo-play-28"         % mongoVersion
   )
 
   def test(scope: String = "test,it") = Seq(
@@ -40,10 +42,7 @@ object AppDependencies {
     "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
     "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
     "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.2"            % scope,
-    hmrcMongo                %% "hmrc-mongo-test-play-28"  % "0.53.0"            % scope,
+    hmrcMongo                %% "hmrc-mongo-test-play-28"  % mongoVersion        % scope,
     hmrc                     %% "service-integration-test" % "1.1.0-play-28"     % scope
   )
-
-
-
 }

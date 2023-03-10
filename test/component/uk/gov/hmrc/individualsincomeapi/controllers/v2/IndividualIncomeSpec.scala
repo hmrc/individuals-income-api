@@ -16,14 +16,14 @@
 
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye
 import utils.IncomePayeHelpers
+
+import java.util.UUID
 
 class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
 
@@ -75,7 +75,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       Then("the response status should be 401 (unauthorized)")
       response.code shouldBe UNAUTHORIZED
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "UNAUTHORIZED",
+        "code" -> "UNAUTHORIZED",
         "message" -> "Bearer token is missing or not authorized"
       )
 
@@ -251,7 +251,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code"    -> "TOO_MANY_REQUESTS",
+        "code" -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }

@@ -24,15 +24,15 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsincomeapi.cache.v1.ShortLivedCache
 import uk.gov.hmrc.integration.ServiceSpec
-import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
+import uk.gov.hmrc.mongo.test.MongoSupport
 import utils.TestSupport
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ShortLivedCacheSpec
-    extends AnyWordSpec with Matchers with MongoSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
+  extends AnyWordSpec with Matchers with MongoSupport with ServiceSpec with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
   val id = UUID.randomUUID().toString

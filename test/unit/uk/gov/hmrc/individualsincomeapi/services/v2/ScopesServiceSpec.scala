@@ -16,10 +16,10 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
+import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.individualsincomeapi.services.v2.ScopesService
 import unit.uk.gov.hmrc.individualsincomeapi.services.ScopesConfig
 import utils.UnitSpec
-import org.scalatest.matchers.should.Matchers
 
 class ScopesServiceSpec extends UnitSpec with Matchers with ScopesConfig {
 

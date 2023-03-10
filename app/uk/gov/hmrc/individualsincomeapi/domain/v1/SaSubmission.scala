@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import org.joda.time.LocalDate
 import play.api.libs.json.JodaReads._
 import play.api.libs.json.JodaWrites._
+import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
@@ -27,7 +27,9 @@ import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
 case class SaFootprint(registrations: Seq[SaRegistration], taxReturns: Seq[SaTaxReturn])
 
 case class SaTaxReturn(taxYear: TaxYear, submissions: Seq[SaSubmission])
+
 case class SaSubmission(utr: SaUtr, receivedDate: Option[LocalDate])
+
 case class SaRegistration(utr: SaUtr, registrationDate: Option[LocalDate])
 
 object SaTaxReturn {
@@ -50,6 +52,7 @@ object SaFootprint {
 }
 
 case class SaAnnualEmployments(taxYear: TaxYear, employments: Seq[SaEmploymentsIncome])
+
 case class SaEmploymentsIncome(utr: SaUtr, employmentIncome: Double)
 
 object SaAnnualEmployments {
@@ -61,6 +64,7 @@ object SaAnnualEmployments {
 }
 
 case class SaAnnualSelfEmployments(taxYear: TaxYear, selfEmployments: Seq[SaSelfEmploymentsIncome])
+
 case class SaSelfEmploymentsIncome(utr: SaUtr, selfEmploymentProfit: Double)
 
 object SaAnnualSelfEmployments {
@@ -73,6 +77,7 @@ object SaAnnualSelfEmployments {
 }
 
 case class SaTaxReturnSummaries(taxYear: TaxYear, summary: Seq[SaTaxReturnSummary])
+
 case class SaTaxReturnSummary(utr: SaUtr, totalIncome: Double)
 
 object SaTaxReturnSummaries {
@@ -84,6 +89,7 @@ object SaTaxReturnSummaries {
 }
 
 case class SaAnnualTrustIncomes(taxYear: TaxYear, trusts: Seq[SaAnnualTrustIncome])
+
 case class SaAnnualTrustIncome(utr: SaUtr, trustIncome: Double)
 
 object SaAnnualTrustIncomes {
@@ -95,6 +101,7 @@ object SaAnnualTrustIncomes {
 }
 
 case class SaAnnualForeignIncomes(taxYear: TaxYear, foreign: Seq[SaAnnualForeignIncome])
+
 case class SaAnnualForeignIncome(utr: SaUtr, foreignIncome: Double)
 
 object SaAnnualForeignIncomes {
@@ -107,6 +114,7 @@ object SaAnnualForeignIncomes {
 }
 
 case class SaAnnualUkPropertiesIncomes(taxYear: TaxYear, ukProperties: Seq[SaAnnualUkPropertiesIncome])
+
 case class SaAnnualUkPropertiesIncome(utr: SaUtr, totalProfit: Double)
 
 object SaAnnualUkPropertiesIncomes {
@@ -118,6 +126,7 @@ object SaAnnualUkPropertiesIncomes {
 }
 
 case class SaAnnualAdditionalInformations(taxYear: TaxYear, additionalInformation: Seq[SaAnnualAdditionalInformation])
+
 case class SaAnnualAdditionalInformation(utr: SaUtr, gainsOnLifePolicies: Double, sharesOptionsIncome: Double)
 
 object SaAnnualAdditionalInformations {
@@ -134,6 +143,7 @@ object SaAnnualAdditionalInformations {
 }
 
 case class SaAnnualPartnershipIncomes(taxYear: TaxYear, partnerships: Seq[SaAnnualPartnershipIncome])
+
 case class SaAnnualPartnershipIncome(utr: SaUtr, partnershipProfit: Double)
 
 object SaAnnualPartnershipIncomes {
@@ -146,13 +156,14 @@ object SaAnnualPartnershipIncomes {
 }
 
 case class SaAnnualInterestAndDividendIncomes(
-  taxYear: TaxYear,
-  interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome])
+                                               taxYear: TaxYear,
+                                               interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome])
+
 case class SaAnnualInterestAndDividendIncome(
-  utr: SaUtr,
-  ukInterestsIncome: Double,
-  foreignDividendsIncome: Double,
-  ukDividendsIncome: Double)
+                                              utr: SaUtr,
+                                              ukInterestsIncome: Double,
+                                              foreignDividendsIncome: Double,
+                                              ukDividendsIncome: Double)
 
 object SaAnnualInterestAndDividendIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualInterestAndDividendIncomes =
@@ -165,13 +176,14 @@ object SaAnnualInterestAndDividendIncomes {
             sa.income.incomeFromUkInterest.getOrElse(0.0),
             sa.income.incomeFromForeignDividends.getOrElse(0.0),
             sa.income.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)
-        ))
+          ))
     )
 }
 
 case class SaAnnualPensionAndStateBenefitIncomes(
-  taxYear: TaxYear,
-  pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome])
+                                                  taxYear: TaxYear,
+                                                  pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome])
+
 case class SaAnnualPensionAndStateBenefitIncome(utr: SaUtr, totalIncome: Double)
 
 object SaAnnualPensionAndStateBenefitIncomes {
@@ -184,6 +196,7 @@ object SaAnnualPensionAndStateBenefitIncomes {
 }
 
 case class SaAnnualOtherIncomes(taxYear: TaxYear, other: Seq[SaAnnualOtherIncome])
+
 case class SaAnnualOtherIncome(utr: SaUtr, otherIncome: Double)
 
 object SaAnnualOtherIncomes {
@@ -205,8 +218,8 @@ object SaIncomeSources {
           val addressType = sa.addressTypeIndicator match {
             case Some("B") => Some("homeAddress")
             case Some("C") => Some("correspondenceAddress")
-            case Some(_)   => Some("other")
-            case None      => None
+            case Some(_) => Some("other")
+            case None => None
           }
 
           val address = SourceAddress(
@@ -251,10 +264,10 @@ object SourceAddress {
 }
 
 case class SaIncomeSource(
-  utr: SaUtr,
-  businessDescription: Option[String],
-  businessAddress: Option[SourceAddress],
-  telephoneNumber: Option[String])
+                           utr: SaUtr,
+                           businessDescription: Option[String],
+                           businessAddress: Option[SourceAddress],
+                           telephoneNumber: Option[String])
 
 object SaIncomeSource {
   implicit val format: Format[SaIncomeSource] = Json.format[SaIncomeSource]

@@ -19,15 +19,15 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaFurtherDetail(
-  busStartDate: Option[String],
-  busEndDate: Option[String],
-  totalTaxPaid: Option[Double],
-  totalNIC: Option[Double],
-  turnover: Option[Double],
-  otherBusIncome: Option[Double],
-  tradingIncomeAllowance: Option[Double],
-  deducts: Option[SaFurtherDetailDeducts]
-)
+                            busStartDate: Option[String],
+                            busEndDate: Option[String],
+                            totalTaxPaid: Option[Double],
+                            totalNIC: Option[Double],
+                            turnover: Option[Double],
+                            otherBusIncome: Option[Double],
+                            tradingIncomeAllowance: Option[Double],
+                            deducts: Option[SaFurtherDetailDeducts]
+                          )
 
 object SaFurtherDetail {
 

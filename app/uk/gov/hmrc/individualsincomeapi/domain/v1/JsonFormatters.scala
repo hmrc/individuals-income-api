@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import java.util.UUID
-
-import play.api.libs.json._
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import play.api.libs.json._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmploymentPayFrequency, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorResponse}
 
+import java.util.UUID
 import scala.util.{Failure, Try}
 
 object JsonFormatters {
@@ -115,4 +114,4 @@ object EnumJson {
 }
 
 class InvalidEnumException(className: String, input: String)
-    extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")
+  extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")

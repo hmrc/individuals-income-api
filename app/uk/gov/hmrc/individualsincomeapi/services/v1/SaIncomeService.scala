@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
-import java.util.UUID
-
-import javax.inject.{Inject, Named, Singleton}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
-import uk.gov.hmrc.individualsincomeapi.domain.v1.{SaAnnualAdditionalInformations, SaAnnualEmployments, SaAnnualForeignIncomes, SaAnnualInterestAndDividendIncomes, SaAnnualOtherIncomes, SaAnnualPartnershipIncomes, SaAnnualPensionAndStateBenefitIncomes, SaAnnualSelfEmployments, SaAnnualTrustIncomes, SaAnnualUkPropertiesIncomes, SaFootprint, SaIncomeSources, SaTaxReturnSummaries}
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.domain.v1._
 
+import java.util.UUID
+import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
@@ -102,7 +101,7 @@ class SandboxSaIncomeService extends SaIncomeService {
     implicit hc: HeaderCarrier): Future[SaFootprint] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) => successful(SaFootprint(saIncomes.filter(s => s.isIn(taxYearInterval))))
-      case None            => failed(new MatchNotFoundException)
+      case None => failed(new MatchNotFoundException)
     }
 }
 
@@ -112,7 +111,7 @@ class LiveSaIncomeService @Inject()(
                                      desConnector: DesConnector,
                                      cacheService: CacheService,
                                      @Named("retryDelay") retryDelay: Int)
-    extends SaIncomeService {
+  extends SaIncomeService {
 
   private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
     implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
@@ -128,14 +127,14 @@ class LiveSaIncomeService @Inject()(
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(
     implicit hc: HeaderCarrier): Future[Seq[T]] =
     for {
-      ninoMatch    <- matchingConnector.resolve(matchId)
+      ninoMatch <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => transform(r))
 
   override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(
     implicit hc: HeaderCarrier): Future[SaFootprint] =
     for {
-      ninoMatch    <- matchingConnector.resolve(matchId)
+      ninoMatch <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield SaFootprint(desSaIncomes)
 }

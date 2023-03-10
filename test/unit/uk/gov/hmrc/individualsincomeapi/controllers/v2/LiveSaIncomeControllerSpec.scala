@@ -42,7 +42,7 @@ import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
 
 class LiveSaIncomeControllerSpec
-    extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
+  extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
   trait Setup extends ScopesConfigHelper {
@@ -58,7 +58,7 @@ class LiveSaIncomeControllerSpec
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
-    val mockAuditHelper : AuditHelper = mock[AuditHelper]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     val matchId = UUID.randomUUID()
     val matchIdString = matchId.toString
@@ -2069,8 +2069,8 @@ class LiveSaIncomeControllerSpec
 
       val result = await((saIncomeController.saOtherIncome(matchIdString, taxYearInterval)(fakeRequest)))
 
-        status(result) shouldBe BAD_REQUEST
-        jsonBodyOf(result) shouldBe Json.parse(
+      status(result) shouldBe BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.parse(
         """
           |{
           |  "code": "INVALID_REQUEST",

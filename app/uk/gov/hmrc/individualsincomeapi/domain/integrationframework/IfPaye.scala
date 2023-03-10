@@ -55,6 +55,7 @@ object IfPaye {
     isInPositiveRange(value) && isMultipleOfPointZeroOne(value)
 
   def payeWholeUnitsPaymentTypeValidator(value: Int): Boolean = isInRangeWholeUnits(value)
+
   def payeWholeUnitsPositivePaymentTypeValidator(value: Int): Boolean = isInRangePositiveWholeUnits(value)
 
   implicit val incomePayeFormat: Format[IfPaye] = Format(

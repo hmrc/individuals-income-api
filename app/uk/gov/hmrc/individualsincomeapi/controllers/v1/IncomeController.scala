@@ -31,14 +31,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class IncomeController(incomeService: IncomeService, cc: ControllerComponents)
-    extends CommonController(cc) with PrivilegedAuthentication {
+  extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-paye") {
       incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
         val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
         val incomeJsObject = obj("income" -> toJson(income))
-        val payeJsObject = obj("paye"     -> incomeJsObject)
+        val payeJsObject = obj("paye" -> incomeJsObject)
         Ok(state(payeJsObject) ++ halLink)
       }
     }.recover(recovery)
@@ -47,18 +47,18 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
 
 @Singleton
 class LiveIncomeController @Inject()(
-  val incomeService: LiveIncomeService,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents)
-    extends IncomeController(incomeService, cc) {
+                                      val incomeService: LiveIncomeService,
+                                      val authConnector: AuthConnector,
+                                      cc: ControllerComponents)
+  extends IncomeController(incomeService, cc) {
   override val environment = PRODUCTION
 }
 
 @Singleton
 class SandboxIncomeController @Inject()(
-  val incomeService: SandboxIncomeService,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents)
-    extends IncomeController(incomeService, cc) {
+                                         val incomeService: SandboxIncomeService,
+                                         val authConnector: AuthConnector,
+                                         cc: ControllerComponents)
+  extends IncomeController(incomeService, cc) {
   override val environment = SANDBOX
 }

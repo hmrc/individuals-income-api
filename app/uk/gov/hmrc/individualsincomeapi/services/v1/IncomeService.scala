@@ -16,18 +16,17 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
-import java.util.UUID
-
-import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
-import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
+import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
+import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
 
+import java.util.UUID
+import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
@@ -40,20 +39,20 @@ trait IncomeService {
 
 @Singleton
 class LiveIncomeService @Inject()(
-  matchingConnector: IndividualsMatchingApiConnector,
-  desConnector: DesConnector,
-  @Named("retryDelay") retryDelay: Int,
-  cache: CacheService)
-    extends IncomeService {
+                                   matchingConnector: IndividualsMatchingApiConnector,
+                                   desConnector: DesConnector,
+                                   @Named("retryDelay") retryDelay: Int,
+                                   cache: CacheService)
+  extends IncomeService {
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(
     implicit hc: HeaderCarrier): Future[Seq[Payment]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       desEmployments <- cache.get(
-                         cacheId(matchId, interval),
-                         withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
-                       )
+        cacheId(matchId, interval),
+        withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
+      )
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
 
   private def cacheId(matchId: UUID, interval: Interval) = new CacheId {
