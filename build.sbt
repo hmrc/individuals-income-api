@@ -2,9 +2,6 @@ import sbt.Keys.compile
 import play.sbt.routes.RoutesKeys
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
-import uk.gov.hmrc.ExternalService
-import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-income-api"
 
@@ -27,9 +24,6 @@ lazy val scoverageSettings = {
 }
 
 lazy val plugins: Seq[Plugins] = Seq.empty
-lazy val externalServices =
-  List(ExternalService("AUTH"), ExternalService("INDIVIDUALS_MATCHING_API"), ExternalService("DES"))
-
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
 def unitFilter(name: String): Boolean = name startsWith "unit"
@@ -44,19 +38,16 @@ lazy val microservice =
       SbtDistributablesPlugin) ++ plugins: _*)
     .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
-    .settings(publishingSettings: _*)
     .settings(scalaVersion := "2.12.11")
     .settings(defaultSettings(): _*)
     .settings(
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),
       Test / testOptions := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
-      update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
     )
     .settings(Compile / unmanagedResourceDirectories += baseDirectory.value / "resources")
     .configs(IntegrationTest)
     .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
-    .settings(itDependenciesList := externalServices)
     .settings(
       IntegrationTest / Keys.fork := false,
       IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "test")).value,
