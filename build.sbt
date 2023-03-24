@@ -48,7 +48,6 @@ lazy val microservice =
     .settings(scalaVersion := "2.12.11")
     .settings(defaultSettings(): _*)
     .settings(
-      dependencyOverrides ++= AppDependencies.overrides,
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),
       testOptions in Test := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
