@@ -244,21 +244,41 @@ class IfConnectorSpec
 
     }
 
-    "return an empty dataset for not found (temporary workaround)" in new Setup {
+    "return an empty dataset for NO_DATA_FOUND" in new Setup {
 
       Mockito.reset(underTest.auditHelper)
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(404)))
+          .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
 
       val result = await(underTest.fetchPayeIncome(nino, interval, None, matchId)
       (hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
 
-      result shouldBe incomePayeNoData.paye
+      result shouldBe List()
+
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
 
+    "fail when IF returns a NOT_FOUND" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      stubFor(
+        get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
+          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
+
+      intercept[NotFoundException] {
+        await(underTest
+          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+      }
+
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+
+    }
   }
 
   "fetchSa" should {
@@ -418,37 +438,5 @@ class IfConnectorSpec
         .auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
-
-    "return empty when IF returns a not found with NO_DATA_FOUND" in new Setup {
-
-      Mockito.reset(underTest.auditHelper)
-
-      stubFor(
-        get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
-
-      val result = await(underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
-
-      result shouldBe incomeSaNoData.sa
-
-    }
-
-    "fail when IF returns a without NO_DATA_FOUND" in new Setup {
-
-      Mockito.reset(underTest.auditHelper)
-
-      stubFor(
-        get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
-          .willReturn(aResponse().withStatus(404)))
-
-      intercept[NotFoundException] {
-        await(underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
-      }
-
-      verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
-
-    }
-
   }
 }
