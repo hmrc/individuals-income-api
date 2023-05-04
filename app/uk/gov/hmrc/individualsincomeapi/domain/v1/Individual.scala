@@ -50,7 +50,7 @@ object Payment {
 
 object SandboxIncomeData {
 
-  def findByMatchId(matchId: UUID) = individuals.find(_.matchId == matchId)
+  def findByMatchId(matchId: UUID): Option[Individual] = individuals.find(_.matchId == matchId)
 
   def matchedCitizen(matchId: UUID) = matchId match {
     case `sandboxMatchId` => Some(MatchedCitizen(sandboxMatchId, sandboxNino))
@@ -86,7 +86,7 @@ object SandboxIncomeData {
     ),
     Seq(
       DesSAIncome(
-        "2017",
+        "2018",
         Seq(
           DesSAReturn(
             caseStartDate = Some(parse("2015-01-06")),
@@ -116,7 +116,7 @@ object SandboxIncomeData {
             postalCode = None
           ))
       ),
-      DesSAIncome("2018", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
+      DesSAIncome("2019", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
     )
   )
 }
