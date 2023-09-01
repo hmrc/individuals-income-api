@@ -24,6 +24,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorRespon
 
 import java.util.UUID
 import scala.util.{Failure, Try}
+import scala.language.postfixOps
 
 object JsonFormatters {
 

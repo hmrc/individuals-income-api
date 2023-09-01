@@ -52,7 +52,7 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
         expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
 ) {
 
-  implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
+  implicit lazy val crypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
 
   def cache[T](id: String, value: T)(implicit formats: Format[T]) = {

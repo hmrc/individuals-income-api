@@ -17,7 +17,7 @@ lazy val scoverageSettings = {
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;" +
       ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;" +
       ".*definition*;",
-    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
@@ -38,7 +38,7 @@ lazy val microservice =
       SbtDistributablesPlugin) ++ plugins: _*)
     .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
-    .settings(scalaVersion := "2.12.11")
+    .settings(scalaVersion := "2.13.8")
     .settings(defaultSettings(): _*)
     .settings(
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),
