@@ -37,6 +37,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxI
 import utils.SpecBase
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
 class IncomeControllerSpec extends SpecBase with MockitoSugar {
@@ -50,6 +51,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     new LocalDate(toDateString).toDateTimeAtStartOfDay)
   val payments = Seq(
     Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
+  implicit val ec : ExecutionContext = ExecutionContext.global
 
   trait Setup {
     val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]

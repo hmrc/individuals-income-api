@@ -36,10 +36,12 @@ import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.{IncomePayeHelpers, SpecBase}
 
 import java.util.UUID
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
 
 class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with TestDates with IncomePayeHelpers {
+
+  implicit val ec : ExecutionContext = ExecutionContext.global
 
   trait Setup {
 
@@ -56,6 +58,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     val mockIfConnector = mock[IfConnector]
     val scopesService = mock[ScopesService]
     val scopesHelper = mock[ScopesHelper]
+    implicit val ec : ExecutionContext = ExecutionContext.global
 
     val liveIncomeService = new IncomeService(
       mockMatchingConnector,

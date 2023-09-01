@@ -28,13 +28,14 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService}
 import utils.TestSupport
 
 import java.util.UUID
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   val cacheId = TestCacheId(UUID.randomUUID().toString)
   val cachedValue = TestClass("cached value")
   val newValue = TestClass("new value")
+  implicit val ec : ExecutionContext = ExecutionContext.global
 
   trait Setup {
     val mockClient = mock[ShortLivedCache]

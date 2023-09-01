@@ -32,9 +32,9 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaInco
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
-sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: ControllerComponents)
+sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends CommonController(cc) with PrivilegedAuthentication {
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
@@ -229,7 +229,7 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: C
 class SandboxSaIncomeController @Inject()(
                                            val saIncomeService: SandboxSaIncomeService,
                                            val authConnector: AuthConnector,
-                                           cc: ControllerComponents)
+                                           cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends SaIncomeController(saIncomeService, cc) {
   override val environment = SANDBOX
 }
@@ -238,7 +238,7 @@ class SandboxSaIncomeController @Inject()(
 class LiveSaIncomeController @Inject()(
                                         val saIncomeService: LiveSaIncomeService,
                                         val authConnector: AuthConnector,
-                                        cc: ControllerComponents)
+                                        cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends SaIncomeController(saIncomeService, cc) {
   override val environment = PRODUCTION
 }

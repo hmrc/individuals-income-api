@@ -26,8 +26,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1._
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
 
 trait SaIncomeService {
@@ -110,7 +109,7 @@ class LiveSaIncomeService @Inject()(
                                      matchingConnector: IndividualsMatchingApiConnector,
                                      desConnector: DesConnector,
                                      cacheService: CacheService,
-                                     @Named("retryDelay") retryDelay: Int)
+                                     @Named("retryDelay") retryDelay: Int)(implicit ec: ExecutionContext)
   extends SaIncomeService {
 
   private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(

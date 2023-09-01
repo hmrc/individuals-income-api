@@ -37,6 +37,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.LiveSaIncomeService
 import utils.SpecBase
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
 class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
@@ -49,6 +50,7 @@ class LiveSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
   val requestParameters =
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]

@@ -35,6 +35,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.SandboxSaIncomeService
 import utils.SpecBase
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
 class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
@@ -47,6 +48,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   val taxYearInterval = TaxYearInterval(fromTaxYear, toTaxYear)
   val requestParameters =
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
+
+  implicit val ec : ExecutionContext = ExecutionContext.global
 
   trait Setup {
     val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]

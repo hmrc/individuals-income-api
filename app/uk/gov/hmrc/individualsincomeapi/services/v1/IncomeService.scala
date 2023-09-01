@@ -27,8 +27,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchI
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
 
 trait IncomeService {
@@ -42,7 +41,7 @@ class LiveIncomeService @Inject()(
                                    matchingConnector: IndividualsMatchingApiConnector,
                                    desConnector: DesConnector,
                                    @Named("retryDelay") retryDelay: Int,
-                                   cache: CacheService)
+                                   cache: CacheService)(implicit ec: ExecutionContext)
   extends IncomeService {
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(

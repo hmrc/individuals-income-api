@@ -30,12 +30,14 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import utils.SpecBase
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 
 class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11121").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
+  implicit val ec : ExecutionContext = ExecutionContext.global
 
   trait Fixture {
     implicit val hc = HeaderCarrier()
