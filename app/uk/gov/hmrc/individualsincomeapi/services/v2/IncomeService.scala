@@ -25,8 +25,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IncomeService @Inject()(
@@ -35,7 +34,7 @@ class IncomeService @Inject()(
                                @Named("retryDelay") retryDelay: Int,
                                cache: CacheService,
                                scopeService: ScopesService,
-                               scopesHelper: ScopesHelper) {
+                               scopesHelper: ScopesHelper)(implicit ec: ExecutionContext) {
 
   def endpoints = List("paye")
 

@@ -43,7 +43,7 @@ class IfSaReturnSpec extends AnyWordSpec with Matchers {
     Some(100.01),
     Some(100.01),
     Some(IfAddress(Some("line1"), Some("line2"), Some("line3"), Some("line4"), None, Some("QW123QW"))),
-    Some(createValidSaIncome),
+    Some(createValidSaIncome()),
     Some(validDeducts)
   )
 
@@ -61,7 +61,7 @@ class IfSaReturnSpec extends AnyWordSpec with Matchers {
     Some(100.001),
     Some(100.001),
     Some(IfAddress(Some(""), Some(""), Some(""), Some(""), None, Some(""))),
-    Some(createValidSaIncome),
+    Some(createValidSaIncome()),
     None
   )
 

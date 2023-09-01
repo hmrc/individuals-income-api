@@ -39,7 +39,7 @@ trait IncomePayeHelpers {
       Some(19157.5),
       Some(3095.89),
       Some(159228.49),
-      Some(createValodIFGrossEarningsForNics),
+      Some(createValodIFGrossEarningsForNics()),
       Some("345/34678"),
       Some("2006-02-27"),
       Some(16533.95),

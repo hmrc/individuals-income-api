@@ -24,6 +24,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorRespon
 
 import java.util.UUID
 import scala.util.{Failure, Try}
+import scala.language.postfixOps
 
 object JsonFormatters {
 
@@ -95,11 +96,11 @@ object JsonFormatters {
 
 object EnumJson {
 
-  def enumReads[E <: Enumeration](enum: E): Reads[E#Value] = new Reads[E#Value] {
+  def enumReads[E <: Enumeration](anEnum: E): Reads[E#Value] = new Reads[E#Value] {
     def reads(json: JsValue): JsResult[E#Value] = json match {
       case JsString(s) =>
-        Try(JsSuccess(enum.withName(s))) recoverWith {
-          case _: NoSuchElementException => Failure(new InvalidEnumException(enum.getClass.getSimpleName, s))
+        Try(JsSuccess(anEnum.withName(s))) recoverWith {
+          case _: NoSuchElementException => Failure(new InvalidEnumException(anEnum.getClass.getSimpleName, s))
         } get
       case _ => JsError("String value expected")
     }
@@ -109,8 +110,8 @@ object EnumJson {
     def writes(v: E#Value): JsValue = JsString(v.toString)
   }
 
-  implicit def enumFormat[E <: Enumeration](enum: E): Format[E#Value] =
-    Format(enumReads(enum), enumWrites)
+  implicit def enumFormat[E <: Enumeration](anEnum: E): Format[E#Value] =
+    Format(enumReads(anEnum), enumWrites)
 }
 
 class InvalidEnumException(className: String, input: String)

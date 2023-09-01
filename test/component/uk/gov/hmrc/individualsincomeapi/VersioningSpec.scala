@@ -30,7 +30,6 @@ class VersioningSpec extends BaseSpec {
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
       "auditing.enabled" -> false,
-      "auditing.traceRequests" -> false,
       "microservice.services.auth.port" -> AuthStub.port,
       "run.mode" -> "It"
     )

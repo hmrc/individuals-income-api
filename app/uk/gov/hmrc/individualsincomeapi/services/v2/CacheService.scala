@@ -23,10 +23,9 @@ import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 
 import java.util.UUID
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CacheService @Inject()(shortLivedCache: ShortLivedCache, conf: CacheRepositoryConfiguration) {
+class CacheService @Inject()(shortLivedCache: ShortLivedCache, conf: CacheRepositoryConfiguration)(implicit ec: ExecutionContext) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 

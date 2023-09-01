@@ -25,11 +25,10 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
+class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec : ExecutionContext) {
 
   private[connector] val serviceUrl = servicesConfig.baseUrl("individuals-matching-api")
 

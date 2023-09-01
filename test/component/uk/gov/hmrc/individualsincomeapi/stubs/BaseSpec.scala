@@ -39,7 +39,6 @@ trait BaseSpec
     .configure(
       "cacheV2.enabled" -> false,
       "auditing.enabled" -> false,
-      "auditing.traceRequests" -> false,
       "microservice.services.auth.port" -> AuthStub.port,
       "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
       "microservice.services.des.port" -> DesStub.port,

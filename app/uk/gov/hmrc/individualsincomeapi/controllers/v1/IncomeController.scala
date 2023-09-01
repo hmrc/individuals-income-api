@@ -28,9 +28,9 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeSe
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
-abstract class IncomeController(incomeService: IncomeService, cc: ControllerComponents)
+abstract class IncomeController(incomeService: IncomeService, cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
@@ -49,7 +49,7 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
 class LiveIncomeController @Inject()(
                                       val incomeService: LiveIncomeService,
                                       val authConnector: AuthConnector,
-                                      cc: ControllerComponents)
+                                      cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends IncomeController(incomeService, cc) {
   override val environment = PRODUCTION
 }
@@ -58,7 +58,7 @@ class LiveIncomeController @Inject()(
 class SandboxIncomeController @Inject()(
                                          val incomeService: SandboxIncomeService,
                                          val authConnector: AuthConnector,
-                                         cc: ControllerComponents)
+                                         cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends IncomeController(incomeService, cc) {
   override val environment = SANDBOX
 }

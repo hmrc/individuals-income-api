@@ -43,18 +43,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class LiveSaIncomeControllerSpec
   extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
-  implicit lazy val materializer: Materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication().materializer
 
   trait Setup extends ScopesConfigHelper {
 
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
     val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
 
-    val controllerComponent = fakeApplication.injector.instanceOf[ControllerComponents]
+    val controllerComponent = fakeApplication().injector.instanceOf[ControllerComponents]
     val mockLiveSaIncomeService = mock[SaIncomeService]
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
 
-    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
