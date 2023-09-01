@@ -40,7 +40,7 @@ import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
 
 class IncomeControllerSpec extends SpecBase with MockitoSugar {
-  implicit lazy val materializer: Materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication().materializer
 
   val matchId = UUID.randomUUID()
   val fromDateString = "2017-03-02"

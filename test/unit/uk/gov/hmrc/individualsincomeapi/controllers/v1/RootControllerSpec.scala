@@ -39,14 +39,14 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}
 
 class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
-  implicit lazy val materializer: Materializer = fakeApplication.materializer
+  implicit lazy val materializer: Materializer = fakeApplication().materializer
 
   trait Setup {
     val fakeRequest = FakeRequest()
     val matchId = UUID.randomUUID()
     val nino = Nino("NA000799C")
     val matchedCitizen = MatchedCitizen(matchId, nino)
-    implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
     val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
     val mockAuthConnector = mock[AuthConnector]
 

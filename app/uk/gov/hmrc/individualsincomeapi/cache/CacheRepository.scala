@@ -21,7 +21,7 @@ import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOption
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto, Protected}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -71,7 +71,7 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
 
     collection.replaceOne(
       Filters.equal("id", toBson(id)), entry, ReplaceOptions().upsert(true)
-    ).toFuture
+    ).toFuture()
   }
 
   def fetchAndGetEntry[T](id: String)(
@@ -80,7 +80,7 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
 
     collection
       .find(Filters.equal("id", toBson(id)))
-      .headOption
+      .headOption()
       .map {
         case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
         case None => None

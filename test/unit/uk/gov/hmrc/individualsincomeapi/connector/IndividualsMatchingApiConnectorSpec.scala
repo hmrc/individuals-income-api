@@ -41,14 +41,14 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
     implicit val hc = HeaderCarrier()
 
     val individualsMatchingApiConnector =
-      new IndividualsMatchingApiConnector(servicesConfig, fakeApplication.injector.instanceOf[HttpClient]) {
+      new IndividualsMatchingApiConnector(servicesConfig, fakeApplication().injector.instanceOf[HttpClient]) {
         override val serviceUrl = "http://127.0.0.1:11121"
       }
   }
 
   def externalServices: Seq[String] = Seq("Stub")
 
-  override def beforeEach() {
+  override def beforeEach() : Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
@@ -90,7 +90,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
 
   }
 
-  override def afterEach() {
+  override def afterEach() : Unit = {
     wireMockServer.stop()
   }
 

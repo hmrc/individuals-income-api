@@ -48,12 +48,12 @@ class ShortLivedCacheSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() {
+  override def beforeEach() : Unit = {
     super.beforeEach()
     await(shortLivedCache.collection.drop().toFuture())
   }
 
-  override def afterEach() {
+  override def afterEach() : Unit = {
     super.afterEach()
     await(shortLivedCache.collection.drop().toFuture())
   }
@@ -88,7 +88,7 @@ class ShortLivedCacheSpec
 
   private def retrieveRawCachedValue(id: String, key: String) = {
     await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
-      .headOption
+      .headOption()
       .map {
         case Some(entry) => entry.data.value
         case None => None

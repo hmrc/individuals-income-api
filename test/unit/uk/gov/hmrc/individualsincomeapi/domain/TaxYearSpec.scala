@@ -28,7 +28,7 @@ class TaxYearSpec extends TestSupport with BeforeAndAfterEach {
 
   val invalidTaxYears = Seq("2014", "201314", "2016-1X", "A2014-15", "2015-17", "2013-18", "2015-14", "2015-15")
 
-  override def afterEach: Unit =
+  override def afterEach(): Unit =
     DateTimeUtils.setCurrentMillisSystem()
 
   "isValid" should {
