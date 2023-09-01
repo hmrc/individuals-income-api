@@ -67,6 +67,7 @@ lazy val microservice =
     .settings(resolvers ++= Seq(
       Resolver.jcenterRepo
     ))
+    .settings(scalacOptions += "-Wconf:src=routes/.*:s")
     .settings(PlayKeys.playDefaultPort := 9652)
     .settings(majorVersion := 0)
 
