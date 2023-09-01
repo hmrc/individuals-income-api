@@ -8,10 +8,11 @@ object AppDependencies {
   val hmrcMongo = "uk.gov.hmrc.mongo"
 
   val mongoVersion = "0.73.0"
+  val bootstrapVersion = "7.11.0"
 
   val compile = Seq(
     ws,
-    hmrc                %% "bootstrap-backend-play-28"  % "7.8.0",
+    hmrc                %% "bootstrap-backend-play-28"  % bootstrapVersion,
     hmrc                %% "domain"                     % "8.3.0-play-28",
     hmrc                %% "play-hal"                   % "3.4.0-play-28",
     hmrc                %% "play-hmrc-api"              % "7.1.0-play-28",
@@ -21,6 +22,7 @@ object AppDependencies {
   )
 
   def test(scope: String = "test,it") = Seq(
+    hmrc                     %% "bootstrap-test-play-28"             % bootstrapVersion    % scope,
     "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0"             % scope,
     "org.scalatestplus"      %% "mockito-3-4"              % "3.2.1.0"           % scope,
     "org.scalatestplus"      %% "scalacheck-1-15"          % "3.2.10.0"          % scope,
