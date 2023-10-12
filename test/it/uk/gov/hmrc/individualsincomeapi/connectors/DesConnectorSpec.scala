@@ -30,14 +30,13 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des._
-import uk.gov.hmrc.integration.ServiceSpec
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorSpec
-  extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+  extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates
     with TestSupport {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
@@ -47,7 +46,7 @@ class DesConnectorSpec
   val desEnvironment = "DES_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  override def fakeApplication() = new GuiceApplicationBuilder()
+  def fakeApplication() = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "microservice.services.des.host" -> "127.0.0.1",
@@ -60,7 +59,7 @@ class DesConnectorSpec
   trait Setup {
     implicit val hc = HeaderCarrier()
 
-    val underTest = app.injector.instanceOf[DesConnector]
+    val underTest = fakeApplication().injector.instanceOf[DesConnector]
   }
 
   def externalServices: Seq[String] = Seq.empty

@@ -26,6 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -33,9 +34,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
+import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
-import uk.gov.hmrc.integration.ServiceSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import unit.uk.gov.hmrc.individualsincomeapi.util._
 import utils._
@@ -43,17 +43,17 @@ import utils._
 import scala.concurrent.ExecutionContext
 
 class IfConnectorSpec
-  extends AnyWordSpec with Matchers with BeforeAndAfterEach with ServiceSpec with MockitoSugar with TestDates
+  extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates
     with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
 
-  val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
+  val stubPort: Int = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val integrationFrameworkAuthorizationToken = "IF_TOKEN"
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  override def fakeApplication() = new GuiceApplicationBuilder()
+  def fakeApplication(): Application = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
       "microservice.services.integration-framework.host" -> "127.0.0.1",
@@ -67,16 +67,16 @@ class IfConnectorSpec
 
     val matchId = "80a6bb14-d888-436e-a541-4000674c60aa"
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+    val sampleCorrelationIdHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
-    implicit val hc = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val config = app.injector.instanceOf[ServicesConfig]
-    val httpClient = app.injector.instanceOf[HttpClient]
-    val auditHelper = mock[AuditHelper]
+    val config: ServicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
+    val httpClient: HttpClient = fakeApplication().injector.instanceOf[HttpClient]
+    val auditHelper: AuditHelper = mock[AuditHelper]
     val underTest = new IfConnector(config, httpClient, auditHelper)
 
-    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+    implicit val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
   }
 
   def externalServices: Seq[String] = Seq.empty
@@ -90,12 +90,12 @@ class IfConnectorSpec
     wireMockServer.stop()
   }
 
-  val incomePayeNoData = IfPaye(Seq())
-  val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
-  val incomePayeMulti = IfPaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
-  val incomeSaNoData = IfSa(Seq())
-  val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
-  val incomeSaMulti = IfSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
+  val incomePayeNoData: IfPaye = IfPaye(Seq())
+  val incomePayeSingle: IfPaye = IfPaye(Seq(createValidPayeEntry()))
+  val incomePayeMulti: IfPaye = IfPaye(Seq(createValidPayeEntry(), createValidPayeEntry()))
+  val incomeSaNoData: IfSa = IfSa(Seq())
+  val incomeSaSingle: IfSa = IfSa(Seq(createValidSaTaxYearEntry()))
+  val incomeSaMulti: IfSa = IfSa(Seq(createValidSaTaxYearEntry(), createValidSaTaxYearEntry()))
 
   "fetchPaye" should {
 
@@ -122,7 +122,7 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeNoData).toString())))
 
-        val result = await(
+        val result: Seq[IfPayeEntry] = await(
           underTest
             .fetchPayeIncome(nino, interval, Some(fields), matchId)(
               hc,
@@ -161,7 +161,7 @@ class IfConnectorSpec
             )
         )
 
-        val result = await(
+        val result: Seq[IfPayeEntry] = await(
           underTest
             .fetchPayeIncome(nino, interval, Some(fields), matchId)(
               hc,
@@ -193,7 +193,7 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomePayeMulti).toString())))
 
-        val result = await(
+        val result: Seq[IfPayeEntry] = await(
           underTest
             .fetchPayeIncome(nino, interval, Some(fields), matchId)(
               hc,
@@ -252,7 +252,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
 
-      val result = await(underTest.fetchPayeIncome(nino, interval, None, matchId)
+      val result: Seq[IfPayeEntry] = await(underTest.fetchPayeIncome(nino, interval, None, matchId)
       (hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
 
       result shouldBe List()
@@ -306,7 +306,7 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomeSaNoData).toString())))
 
-        val result = await {
+        val result: Seq[IfSaEntry] = await {
           underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
@@ -344,7 +344,7 @@ class IfConnectorSpec
             )
         )
 
-        val result = await {
+        val result: Seq[IfSaEntry] = await {
           underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
@@ -377,7 +377,7 @@ class IfConnectorSpec
               .withStatus(200)
               .withBody(Json.toJson(incomeSaMulti).toString())))
 
-        val result = await {
+        val result: Seq[IfSaEntry] = await {
           underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
