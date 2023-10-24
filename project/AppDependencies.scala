@@ -21,13 +21,10 @@ object AppDependencies {
 
   def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
     hmrc                     %% "bootstrap-test-play-28"             % bootstrapVersion    % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0"             % scope,
     "org.scalatestplus"      %% "mockito-3-4"              % "3.2.1.0"           % scope,
     "org.scalatestplus"      %% "scalacheck-1-15"          % "3.2.10.0"          % scope,
-    "com.vladsch.flexmark"   % "flexmark-all"              % "0.35.10"           % scope,
+    "com.vladsch.flexmark"   % "flexmark-all"              % "0.64.6"           % scope,
     "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
-    "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
-    "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.2"            % scope,
     hmrcMongo                %% "hmrc-mongo-test-play-28"  % mongoVersion        % scope,
   )
 }
