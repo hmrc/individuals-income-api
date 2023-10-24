@@ -4,7 +4,7 @@ import sbt.*
 object AppDependencies {
 
   val hmrc = "uk.gov.hmrc"
-  val hmrcMongo = "uk.gov.hmrc.mongo"
+  val hmrcMongo = s"$hmrc.mongo"
 
   val mongoVersion = "0.73.0"
   val bootstrapVersion = "7.15.0"
