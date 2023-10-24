@@ -10,19 +10,6 @@ RoutesKeys.routesImport := Seq(
   "uk.gov.hmrc.individualsincomeapi.Binders._"
 )
 
-lazy val scoverageSettings = {
-  import scoverage.ScoverageKeys
-  Seq(
-    // Semicolon-separated list of regexs matching classes to exclude
-    ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;" +
-      ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;" +
-      ".*definition*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
-    ScoverageKeys.coverageFailOnMinimum := true,
-    ScoverageKeys.coverageHighlighting := true
-  )
-}
-
 lazy val plugins: Seq[Plugins] = Seq.empty
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
@@ -37,7 +24,7 @@ lazy val microservice =
       SbtGitVersioning,
       SbtDistributablesPlugin) ++ plugins: _*)
     .settings(scalaSettings: _*)
-    .settings(scoverageSettings: _*)
+    .settings(CodeCoverageSettings.settings *)
     .settings(scalaVersion := "2.13.8")
     .settings(defaultSettings(): _*)
     .settings(
