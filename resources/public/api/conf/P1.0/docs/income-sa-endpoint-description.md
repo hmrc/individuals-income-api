@@ -1,2 +1,0 @@
-<p>This endpoint returns an individual’s tax returns submission history for the requested time period. Where there are submissions to return, self-assessment registration information comprising the UTR and registration date, is included.</p>
-<p>The fromTaxYear and toTaxYear are inclusive i.e. the data returned are for the time period that includes the fromTaxYear and the toTaxYear.</p>
