@@ -14,13 +14,12 @@ object AppDependencies {
     hmrc                %% "bootstrap-backend-play-28"  % bootstrapVersion,
     hmrc                %% "domain"                     % "8.3.0-play-28",
     hmrc                %% "play-hal"                   % "3.4.0-play-28",
-    hmrc                %% "play-hmrc-api"              % "7.1.0-play-28",
     hmrc                %% "json-encryption"            % "5.1.0-play-28",
     "com.typesafe.play" %% "play-json-joda"             % "2.9.2",
     hmrcMongo           %% "hmrc-mongo-play-28"         % mongoVersion
   )
 
-  def test(scope: String = "test,it"): Seq[ModuleID] = Seq(
+  def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
     hmrc                     %% "bootstrap-test-play-28"             % bootstrapVersion    % scope,
     "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0"             % scope,
     "org.scalatestplus"      %% "mockito-3-4"              % "3.2.1.0"           % scope,
