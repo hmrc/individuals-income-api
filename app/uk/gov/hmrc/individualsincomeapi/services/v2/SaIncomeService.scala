@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
@@ -36,7 +36,7 @@ class SaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnect
                                 @Named("retryDelay") retryDelay: Int)
                                (implicit ec: ExecutionContext) {
 
-  def endpoints =
+  private def endpoints =
     List(
       "sa",
       "summary",
@@ -75,7 +75,7 @@ class SaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnect
     } yield saIncome
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+    case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 
   def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])
@@ -178,5 +178,4 @@ class SaIncomeService @Inject()(matchingConnector: IndividualsMatchingApiConnect
       ninoMatch <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaFurtherDetails.transform(ifSaEntries)
-
 }

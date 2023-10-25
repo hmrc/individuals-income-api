@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.services.v2
 
 import org.joda.time.Interval
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
@@ -36,7 +36,7 @@ class IncomeService @Inject()(
                                scopeService: ScopesService,
                                scopesHelper: ScopesHelper)(implicit ec: ExecutionContext) {
 
-  def endpoints = List("paye")
+  private def endpoints = List("paye")
 
   def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])
                           (implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[Income]] =
@@ -56,7 +56,6 @@ class IncomeService @Inject()(
     } yield (payeIncome map IfPayeEntry.toIncome).sortBy(_.paymentDate).reverse
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+    case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
-
 }
