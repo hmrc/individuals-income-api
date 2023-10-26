@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext
 
 abstract class RootController(citizenMatchingService: CitizenMatchingService, cc: ControllerComponents)(
   implicit ec: ExecutionContext)
-  extends CommonController(cc) with PrivilegedAuthentication {
+    extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income") {
@@ -52,18 +52,18 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService, cc
 
 @Singleton
 class SandboxRootController @Inject()(
-                                       val citizenMatchingService: SandboxCitizenMatchingService,
-                                       val authConnector: AuthConnector,
-                                       cc: ControllerComponents)(implicit ec: ExecutionContext)
-  extends RootController(citizenMatchingService, cc) {
+  val citizenMatchingService: SandboxCitizenMatchingService,
+  val authConnector: AuthConnector,
+  cc: ControllerComponents)(implicit ec: ExecutionContext)
+    extends RootController(citizenMatchingService, cc) {
   override val environment = SANDBOX
 }
 
 @Singleton
 class LiveRootController @Inject()(
-                                    val citizenMatchingService: LiveCitizenMatchingService,
-                                    val authConnector: AuthConnector,
-                                    cc: ControllerComponents)(implicit ec: ExecutionContext)
-  extends RootController(citizenMatchingService, cc) {
+  val citizenMatchingService: LiveCitizenMatchingService,
+  val authConnector: AuthConnector,
+  cc: ControllerComponents)(implicit ec: ExecutionContext)
+    extends RootController(citizenMatchingService, cc) {
   override val environment = PRODUCTION
 }

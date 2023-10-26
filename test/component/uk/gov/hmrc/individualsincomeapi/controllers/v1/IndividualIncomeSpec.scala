@@ -70,8 +70,7 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {
@@ -130,8 +129,7 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {
@@ -165,7 +163,7 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "TOO_MANY_REQUESTS",
+        "code"    -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -183,8 +181,7 @@ class IndividualIncomeSpec extends BaseSpec {
       Then("The response status should be 200 (OK)")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {

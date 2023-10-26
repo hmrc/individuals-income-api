@@ -46,7 +46,7 @@ trait CommonControllerSpec extends BaseSpec {
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "matchId is required"
       )
     }
@@ -55,16 +55,14 @@ trait CommonControllerSpec extends BaseSpec {
 
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When(
-        "the root entry point to the API is invoked with a malformed match id")
+      When("the root entry point to the API is invoked with a malformed match id")
       val response =
-        invokeEndpoint(
-          s"$serviceUrl/$endpoint?matchId=malformed-match-id-value&fromDate=$fromDate")
+        invokeEndpoint(s"$serviceUrl/$endpoint?matchId=malformed-match-id-value&fromDate=$fromDate")
 
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "matchId format is invalid"
       )
     }
@@ -73,15 +71,14 @@ trait CommonControllerSpec extends BaseSpec {
 
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When(
-        "the root entry point to the API is invoked with an invalid match id")
-      val response = invokeEndpoint(
-        s"$serviceUrl/${endpoint}?matchId=0a184ef3-fd75-4d4d-b6a3-f886cc39a366&fromDate=$fromDate")
+      When("the root entry point to the API is invoked with an invalid match id")
+      val response =
+        invokeEndpoint(s"$serviceUrl/$endpoint?matchId=0a184ef3-fd75-4d4d-b6a3-f886cc39a366&fromDate=$fromDate")
 
       Then("the response status should be 404 (not found)")
       response.code shouldBe NOT_FOUND
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "NOT_FOUND",
+        "code"    -> "NOT_FOUND",
         "message" -> "The resource can not be found"
       )
     }
@@ -91,9 +88,9 @@ trait CommonControllerSpec extends BaseSpec {
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When(s"I make a call to ${endpoint} endpoint")
+      When(s"I make a call to $endpoint endpoint")
       val response =
-        Http(s"$serviceUrl/${endpoint}?matchId=$matchId&toDate=$toDate")
+        Http(s"$serviceUrl/$endpoint?matchId=$matchId&toDate=$toDate")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -101,7 +98,7 @@ trait CommonControllerSpec extends BaseSpec {
 
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "fromDate is required"
       )
     }
@@ -111,18 +108,16 @@ trait CommonControllerSpec extends BaseSpec {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When(
-        s"the ${endpoint} endpoint is invoked with an toDate earlier than fromDate")
+      When(s"the $endpoint endpoint is invoked with an toDate earlier than fromDate")
       val response =
-        Http(
-          s"$serviceUrl/${endpoint}?matchId=$matchId&fromDate=$toDate&toDate=$fromDate")
+        Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromDate=$toDate&toDate=$fromDate")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "Invalid time period requested"
       )
     }
@@ -132,17 +127,15 @@ trait CommonControllerSpec extends BaseSpec {
       Given("a valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When(
-        s"the ${endpoint} endpoint is invoked with toDate before 31st March 2013")
-      val response = Http(
-        s"$serviceUrl/${endpoint}?matchId=$matchId&fromDate=2012-01-01&toDate=$toDate")
+      When(s"the $endpoint endpoint is invoked with toDate before 31st March 2013")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromDate=2012-01-01&toDate=$toDate")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "fromDate earlier than 31st March 2013"
       )
     }
@@ -160,7 +153,7 @@ trait CommonControllerSpec extends BaseSpec {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "fromDate: invalid date format"
       )
 
@@ -179,7 +172,7 @@ trait CommonControllerSpec extends BaseSpec {
       Then("the response status should be 400 (invalid request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "toDate: invalid date format"
       )
 

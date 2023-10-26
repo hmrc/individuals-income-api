@@ -37,7 +37,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
   val cacheId = TestCacheId("foo")
   val cachedValue = TestClass("cached value")
   val newValue = TestClass("new value")
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
 

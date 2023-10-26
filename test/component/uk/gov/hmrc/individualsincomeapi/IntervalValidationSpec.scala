@@ -118,8 +118,7 @@ class IntervalValidationSpec extends BaseSpec {
       response.code shouldBe OK
 
       And("The response contains the payments for the period")
-      Json.parse(response.body) shouldBe Json.parse(
-        s"""
+      Json.parse(response.body) shouldBe Json.parse(s"""
             {
                "_links":
                {

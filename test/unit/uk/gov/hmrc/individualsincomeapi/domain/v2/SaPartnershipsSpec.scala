@@ -30,19 +30,18 @@ class SaPartnershipsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
 
   "SaPartnerships" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "partnerships": [
-          |        {
-          |          "partnershipProfit": 100
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "partnerships": [
+                                      |        {
+                                      |          "partnershipProfit": 100
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPartnerships.transform(ifSa))
 
@@ -50,10 +49,9 @@ class SaPartnershipsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPartnerships.transform(Seq()))
 
@@ -62,19 +60,18 @@ class SaPartnershipsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "partnerships": [
-          |        {
-          |          "partnershipProfit": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "partnerships": [
+                                      |        {
+                                      |          "partnershipProfit": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPartnerships.transform(ifSaNoData))
 
@@ -83,19 +80,18 @@ class SaPartnershipsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "partnerships": [
-          |        {
-          |          "partnershipProfit": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "partnerships": [
+                                      |        {
+                                      |          "partnershipProfit": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPartnerships.transform(ifSaNoValues))
 

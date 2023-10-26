@@ -36,8 +36,7 @@ import utils.TestSupport
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorSpec
-  extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates
-    with TestSupport {
+    extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates with TestSupport {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
@@ -46,15 +45,16 @@ class DesConnectorSpec
   val desEnvironment = "DES_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  def fakeApplication() = new GuiceApplicationBuilder()
-    .bindings(bindModules: _*)
-    .configure(
-      "microservice.services.des.host" -> "127.0.0.1",
-      "microservice.services.des.port" -> "11122",
-      "microservice.services.des.authorization-token" -> desAuthorizationToken,
-      "microservice.services.des.environment" -> desEnvironment
-    )
-    .build()
+  def fakeApplication() =
+    new GuiceApplicationBuilder()
+      .bindings(bindModules: _*)
+      .configure(
+        "microservice.services.des.host"                -> "127.0.0.1",
+        "microservice.services.des.port"                -> "11122",
+        "microservice.services.des.authorization-token" -> desAuthorizationToken,
+        "microservice.services.des.environment"         -> desEnvironment
+      )
+      .build()
 
   trait Setup {
     implicit val hc = HeaderCarrier()
@@ -64,14 +64,13 @@ class DesConnectorSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit =
     wireMockServer.stop()
-  }
 
   val desAddress = DesAddress(
     line1 = Some("Acme House"),

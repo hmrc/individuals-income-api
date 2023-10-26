@@ -25,10 +25,10 @@ import java.util.UUID
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
 case class Individual(
-                       matchId: UUID,
-                       nino: String,
-                       firstName: String,
-                       lastName: String,
-                       dateOfBirth: LocalDate,
-                       income: Seq[IfPayeEntry],
-                       saIncome: Seq[IfSaEntry])
+  matchId: UUID,
+  nino: String,
+  firstName: String,
+  lastName: String,
+  dateOfBirth: LocalDate,
+  income: Seq[IfPayeEntry],
+  saIncome: Seq[IfSaEntry])

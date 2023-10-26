@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaFurtherDetailDeducts(
-                                   totalBusExpenses: Option[Double],
-                                   totalDisallowBusExp: Option[Double]
-                                 )
+  totalBusExpenses: Option[Double],
+  totalDisallowBusExp: Option[Double]
+)
 
 object SaFurtherDetailDeducts {
 

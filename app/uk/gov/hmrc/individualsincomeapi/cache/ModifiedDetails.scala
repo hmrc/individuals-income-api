@@ -29,10 +29,10 @@ object ModifiedDetails {
     (
       (JsPath \ "createdAt").read[LocalDateTime] and
         (JsPath \ "lastUpdated").read[LocalDateTime]
-      )(ModifiedDetails.apply _),
+    )(ModifiedDetails.apply _),
     (
       (JsPath \ "createdAt").write[LocalDateTime] and
         (JsPath \ "lastUpdated").write[LocalDateTime]
-      )(unlift(ModifiedDetails.unapply))
+    )(unlift(ModifiedDetails.unapply))
   )
 }

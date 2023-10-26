@@ -12,6 +12,7 @@ lazy val microservice =
     .settings(onLoadMessage := "")
     .settings(CodeCoverageSettings.settings *)
     .settings(scalaVersion := "2.13.8")
+    .settings(scalafmtOnCompile := true)
     .settings(
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),
       routesImport := Seq("uk.gov.hmrc.individualsincomeapi.Binders._"),
@@ -25,7 +26,7 @@ lazy val microservice =
       IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "test")).value,
       IntegrationTest / testOptions := Seq(Tests.Filter((name: String) => name startsWith "it")),
       addTestReportOption(IntegrationTest, "int-test-reports"),
-      IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests ).value),
+      IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
       IntegrationTest / parallelExecution := false,
       // Disable default sbt Test options (might change with new versions of bootstrap)
       IntegrationTest / testOptions -= Tests
@@ -78,4 +79,4 @@ lazy val microservice =
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
   tests.map { test =>
     Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
-}
+  }

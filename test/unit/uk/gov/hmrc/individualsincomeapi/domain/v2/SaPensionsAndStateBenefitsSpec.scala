@@ -30,19 +30,18 @@ class SaPensionsAndStateBenefitsSpec extends AnyWordSpec with Matchers with Inco
 
   "SaPensionsAndStateBenefits" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "pensionsAndStateBenefits": [
-          |        {
-          |          "totalIncome": 100
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "pensionsAndStateBenefits": [
+                                      |        {
+                                      |          "totalIncome": 100
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPensionAndStateBenefits.transform(ifSa))
 
@@ -50,10 +49,9 @@ class SaPensionsAndStateBenefitsSpec extends AnyWordSpec with Matchers with Inco
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPensionAndStateBenefits.transform(Seq()))
 
@@ -62,19 +60,18 @@ class SaPensionsAndStateBenefitsSpec extends AnyWordSpec with Matchers with Inco
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "pensionsAndStateBenefits": [
-          |        {
-          |          "totalIncome": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "pensionsAndStateBenefits": [
+                                      |        {
+                                      |          "totalIncome": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPensionAndStateBenefits.transform(ifSaNoData))
 
@@ -83,19 +80,18 @@ class SaPensionsAndStateBenefitsSpec extends AnyWordSpec with Matchers with Inco
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "pensionsAndStateBenefits": [
-          |        {
-          |          "totalIncome": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "pensionsAndStateBenefits": [
+                                      |        {
+                                      |          "totalIncome": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaPensionAndStateBenefits.transform(ifSaNoValues))
 

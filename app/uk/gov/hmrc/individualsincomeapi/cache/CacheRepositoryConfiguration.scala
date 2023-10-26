@@ -21,4 +21,3 @@ trait CacheRepositoryConfiguration {
   val cacheTtl: Int
   val collName: String
 }
-

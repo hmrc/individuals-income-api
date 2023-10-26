@@ -87,7 +87,8 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         .thenReturn(failed(new MatchNotFoundException))
 
       val result =
-        await(liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(
+          liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND
 
@@ -95,8 +96,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         """{"code" : "NOT_FOUND", "message" : "The resource can not be found"}"""
       )
 
-      verify(liveRootController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "return a 200 when a match id matches live data" in new Setup {
@@ -104,30 +104,29 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .thenReturn(successful(matchedCitizen))
 
-      val result = await(liveRootController.root(matchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+      val result =
+        await(liveRootController.root(matchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
 
       jsonBodyOf(result) shouldBe
-        Json.parse(
-          s"""{
-             |  "_links": {
-             |    "sa": {
-             |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
-             |      "title": "Get an individual's income sa data"
-             |    },
-             |    "paye": {
-             |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
-             |      "title": "Get an individual's income paye data"
-             |    },
-             |    "self": {
-             |      "href": "/individuals/income/?matchId=$matchId"
-             |    }
-             |  }
-             |}""".stripMargin)
+        Json.parse(s"""{
+                      |  "_links": {
+                      |    "sa": {
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "title": "Get an individual's income sa data"
+                      |    },
+                      |    "paye": {
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "title": "Get an individual's income paye data"
+                      |    },
+                      |    "self": {
+                      |      "href": "/individuals/income/?matchId=$matchId"
+                      |    }
+                      |  }
+                      |}""".stripMargin)
 
-      verify(liveRootController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
@@ -136,15 +135,15 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         .willReturn(Future.failed(InsufficientEnrolments()))
 
       val result =
-        await(liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+        await(
+          liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe UNAUTHORIZED
 
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyNoInteractions(mockLiveCitizenMatchingService)
 
-      verify(liveRootController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -166,8 +165,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
           |""".stripMargin
       )
 
-      verify(liveRootController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "throws an exception when malformed CorrelationId" in new Setup {
@@ -188,8 +186,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
           |""".stripMargin
       )
 
-      verify(liveRootController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }

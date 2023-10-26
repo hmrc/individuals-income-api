@@ -32,37 +32,38 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class IncomeController @Inject()(val incomeService: IncomeService,
-                                 val scopeService: ScopesService,
-                                 val authConnector: AuthConnector,
-                                 cc: ControllerComponents,
-                                 implicit val auditHelper: AuditHelper)
-                                (implicit val ec: ExecutionContext)
-  extends CommonController(cc) with PrivilegedAuthentication {
+class IncomeController @Inject()(
+  val incomeService: IncomeService,
+  val scopeService: ScopesService,
+  val authConnector: AuthConnector,
+  cc: ControllerComponents,
+  implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+    extends CommonController(cc) with PrivilegedAuthentication {
 
-  def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async {
-    implicit request =>
+  def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
+    authenticate(scopeService.getEndPointScopes("paye"), matchId.toString) { authScopes =>
+      val correlationId = validateCorrelationId(request)
 
-      authenticate(scopeService.getEndPointScopes("paye"), matchId.toString) { authScopes =>
+      withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
+        incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
+          val selfLink =
+            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
 
-        val correlationId = validateCorrelationId(request)
+          val incomeJsObject = Json.obj("income" -> toJson(paye))
+          val payeJsObject = obj("paye"          -> incomeJsObject)
+          val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
-        withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
+          auditHelper.auditApiResponse(
+            correlationId.toString,
+            matchId.toString,
+            authScopes.mkString(","),
+            request,
+            selfLink.toString,
+            Some(paye.map(i => Json.toJson(i))))
 
-          incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
-            val selfLink =
-              HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
-
-            val incomeJsObject = Json.obj("income" -> toJson(paye))
-            val payeJsObject = obj("paye" -> incomeJsObject)
-            val response = Json.toJson(state(payeJsObject) ++ selfLink)
-
-            auditHelper.auditApiResponse(correlationId.toString, matchId.toString,
-              authScopes.mkString(","), request, selfLink.toString, Some(paye.map(i => Json.toJson(i))))
-
-            Ok(response)
-          }
+          Ok(response)
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/paye")
+      }
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/income/paye")
   }
 }

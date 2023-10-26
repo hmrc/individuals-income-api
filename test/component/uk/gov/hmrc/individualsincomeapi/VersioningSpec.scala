@@ -29,9 +29,9 @@ class VersioningSpec extends BaseSpec {
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
-      "auditing.enabled" -> false,
+      "auditing.enabled"                -> false,
       "microservice.services.auth.port" -> AuthStub.port,
-      "run.mode" -> "It"
+      "run.mode"                        -> "It"
     )
     .build()
   val incomeScope = "read:individuals-income"
@@ -71,7 +71,7 @@ class VersioningSpec extends BaseSpec {
       val response = invokeWithHeaders(
         s"/sandbox?matchId=$sandboxMatchId",
         AUTHORIZATION -> authToken,
-        ACCEPT -> "application/vnd.hmrc.1.0+json")
+        ACCEPT        -> "application/vnd.hmrc.1.0+json")
 
       Then("The response status should be 404 (Not Found)")
       response.code shouldBe NOT_FOUND
@@ -79,8 +79,7 @@ class VersioningSpec extends BaseSpec {
   }
 
   private def validResponsePayload =
-    Json.parse(
-      s"""
+    Json.parse(s"""
          {
              "_links": {
                  "paye": {

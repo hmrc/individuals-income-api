@@ -100,17 +100,17 @@ class SandboxSaIncomeService extends SaIncomeService {
     implicit hc: HeaderCarrier): Future[SaFootprint] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) => successful(SaFootprint(saIncomes.filter(s => s.isIn(taxYearInterval))))
-      case None => failed(new MatchNotFoundException)
+      case None            => failed(new MatchNotFoundException)
     }
 }
 
 @Singleton
 class LiveSaIncomeService @Inject()(
-                                     matchingConnector: IndividualsMatchingApiConnector,
-                                     desConnector: DesConnector,
-                                     cacheService: CacheService,
-                                     @Named("retryDelay") retryDelay: Int)(implicit ec: ExecutionContext)
-  extends SaIncomeService {
+  matchingConnector: IndividualsMatchingApiConnector,
+  desConnector: DesConnector,
+  cacheService: CacheService,
+  @Named("retryDelay") retryDelay: Int)(implicit ec: ExecutionContext)
+    extends SaIncomeService {
 
   private def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
     implicit hc: HeaderCarrier): Future[Seq[DesSAIncome]] = {
@@ -126,14 +126,14 @@ class LiveSaIncomeService @Inject()(
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(
     implicit hc: HeaderCarrier): Future[Seq[T]] =
     for {
-      ninoMatch <- matchingConnector.resolve(matchId)
+      ninoMatch    <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => transform(r))
 
   override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(
     implicit hc: HeaderCarrier): Future[SaFootprint] =
     for {
-      ninoMatch <- matchingConnector.resolve(matchId)
+      ninoMatch    <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield SaFootprint(desSaIncomes)
 }

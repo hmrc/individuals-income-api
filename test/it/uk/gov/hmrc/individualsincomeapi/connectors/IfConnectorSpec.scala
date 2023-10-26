@@ -43,8 +43,8 @@ import utils._
 import scala.concurrent.ExecutionContext
 
 class IfConnectorSpec
-  extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates
-    with TestSupport with IncomePayeHelpers with IncomeSaHelpers {
+    extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates with TestSupport
+    with IncomePayeHelpers with IncomeSaHelpers {
 
   val stubPort: Int = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
@@ -53,15 +53,16 @@ class IfConnectorSpec
   val integrationFrameworkEnvironment = "IF_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .bindings(bindModules: _*)
-    .configure(
-      "microservice.services.integration-framework.host" -> "127.0.0.1",
-      "microservice.services.integration-framework.port" -> "11122",
-      "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
-      "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment
-    )
-    .build()
+  def fakeApplication(): Application =
+    new GuiceApplicationBuilder()
+      .bindings(bindModules: _*)
+      .configure(
+        "microservice.services.integration-framework.host"                -> "127.0.0.1",
+        "microservice.services.integration-framework.port"                -> "11122",
+        "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
+        "microservice.services.integration-framework.environment"         -> integrationFrameworkEnvironment
+      )
+      .build()
 
   trait Setup {
 
@@ -81,14 +82,13 @@ class IfConnectorSpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit =
     wireMockServer.stop()
-  }
 
   val incomePayeNoData: IfPaye = IfPaye(Seq())
   val incomePayeSingle: IfPaye = IfPaye(Seq(createValidPayeEntry()))
@@ -252,8 +252,9 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
           .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
 
-      val result: Seq[IfPayeEntry] = await(underTest.fetchPayeIncome(nino, interval, None, matchId)
-      (hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+      val result: Seq[IfPayeEntry] = await(
+        underTest
+          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
 
       result shouldBe List()
 

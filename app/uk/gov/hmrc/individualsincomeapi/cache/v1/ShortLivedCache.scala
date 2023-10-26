@@ -24,6 +24,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class ShortLivedCache @Inject()(
-                                 override val cacheConfig: CacheRepositoryConfiguration, configuration: Configuration, mongo: MongoComponent)
-                               (implicit ec: ExecutionContext)
-  extends BaseCache(cacheConfig, configuration, mongo)
+  override val cacheConfig: CacheRepositoryConfiguration,
+  configuration: Configuration,
+  mongo: MongoComponent)(implicit ec: ExecutionContext)
+    extends BaseCache(cacheConfig, configuration, mongo)

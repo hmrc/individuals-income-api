@@ -22,11 +22,12 @@ trait ScopesConfigHelper {
 
   val mockScopesConfig = Configuration(
     (s"api-config.scopes.test-scope.fields", Seq("A", "B", "C")),
-    (s"api-config.scopes.test-scope-1.fields", Seq("D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q")),
+    (
+      s"api-config.scopes.test-scope-1.fields",
+      Seq("D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q")),
     (s"api-config.endpoints.internal.paye.endpoint", "/individuals/income/paye?matchId=<matchId>{&fromDate,toDate}"),
     (s"api-config.endpoints.internal.paye.title", "Get an individual's income paye data"),
     (s"api-config.endpoints.internal.paye.fields", Seq("A", "B", "C")),
-
     (s"api-config.endpoints.internal.sa.endpoint", "/individuals/income/sa?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
     (s"api-config.endpoints.internal.sa.title", "Get an individual's income sa data"),
     (s"api-config.endpoints.internal.sa.fields", Seq("D")),
@@ -53,12 +54,16 @@ trait ScopesConfigHelper {
     (
       s"api-config.endpoints.internal.interestsAndDividends.endpoint",
       "/individuals/income/sa/interests-and-dividends?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
-    (s"api-config.endpoints.internal.interestsAndDividends.title", "Get an individual's interests-and-dividends sa data"),
+    (
+      s"api-config.endpoints.internal.interestsAndDividends.title",
+      "Get an individual's interests-and-dividends sa data"),
     (s"api-config.endpoints.internal.interestsAndDividends.fields", Seq("I")),
     (
       s"api-config.endpoints.internal.pensionsAndStateBenefits.endpoint",
       "/individuals/income/sa/pensions-and-state-benefits?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
-    (s"api-config.endpoints.internal.pensionsAndStateBenefits.title", "Get an individual's pensions-and-state-benefits sa data"),
+    (
+      s"api-config.endpoints.internal.pensionsAndStateBenefits.title",
+      "Get an individual's pensions-and-state-benefits sa data"),
     (s"api-config.endpoints.internal.pensionsAndStateBenefits.fields", Seq("J")),
     (
       s"api-config.endpoints.internal.ukProperties.endpoint",
@@ -68,9 +73,13 @@ trait ScopesConfigHelper {
     (
       s"api-config.endpoints.internal.additionalInformation.endpoint",
       "/individuals/income/sa/additional-information?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
-    (s"api-config.endpoints.internal.additionalInformation.title", "Get an individual's additional-information sa data"),
+    (
+      s"api-config.endpoints.internal.additionalInformation.title",
+      "Get an individual's additional-information sa data"),
     (s"api-config.endpoints.internal.additionalInformation.fields", Seq("L")),
-    (s"api-config.endpoints.internal.other.endpoint", "/individuals/income/sa/other?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+    (
+      s"api-config.endpoints.internal.other.endpoint",
+      "/individuals/income/sa/other?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
     (s"api-config.endpoints.internal.other.title", "Get an individual's other sa data"),
     (s"api-config.endpoints.internal.other.fields", Seq("M")),
     (
@@ -93,7 +102,6 @@ trait ScopesConfigHelper {
       "/individuals/income/sa/further-details?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
     (s"api-config.endpoints.internal.furtherDetails.title", "Get an individual's further-details sa data"),
     (s"api-config.endpoints.internal.furtherDetails.fields", Seq("Q")),
-
     (s"api-config.fields.A", "foo/bar/one"),
     (s"api-config.fields.B", "foo/bar/one"),
     (s"api-config.fields.C", "foo/bar/one"),

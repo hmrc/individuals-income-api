@@ -52,7 +52,8 @@ object JsonFormatters {
   implicit val matchedCitizenJsonFormat: OFormat[MatchedCitizen] = Json.format[MatchedCitizen]
 
   implicit val desPaymentJsonFormat: OFormat[DesPayment] = Json.format[DesPayment]
-  implicit val desEmploymentPayFrequencyJsonFormat: Format[DesEmploymentPayFrequency.Value] = EnumJson.enumFormat(DesEmploymentPayFrequency)
+  implicit val desEmploymentPayFrequencyJsonFormat: Format[DesEmploymentPayFrequency.Value] =
+    EnumJson.enumFormat(DesEmploymentPayFrequency)
   implicit val desEmploymentJsonFormat: OFormat[DesEmployment] = Json.format[DesEmployment]
   implicit val desEmploymentsJsonFormat: OFormat[DesEmployments] = Json.format[DesEmployments]
 
@@ -76,20 +77,30 @@ object JsonFormatters {
   implicit val formatSaAnnualForeignIncome: OFormat[SaAnnualForeignIncome] = Json.format[SaAnnualForeignIncome]
   implicit val formatSaAnnualForeignIncomes: OFormat[SaAnnualForeignIncomes] = Json.format[SaAnnualForeignIncomes]
 
-  implicit val formatSaAnnualPartnershipIncome: OFormat[SaAnnualPartnershipIncome] = Json.format[SaAnnualPartnershipIncome]
-  implicit val formatSaAnnualPartnershipIncomes: OFormat[SaAnnualPartnershipIncomes] = Json.format[SaAnnualPartnershipIncomes]
+  implicit val formatSaAnnualPartnershipIncome: OFormat[SaAnnualPartnershipIncome] =
+    Json.format[SaAnnualPartnershipIncome]
+  implicit val formatSaAnnualPartnershipIncomes: OFormat[SaAnnualPartnershipIncomes] =
+    Json.format[SaAnnualPartnershipIncomes]
 
-  implicit val formatSaAnnualInterestAndDividendIncome: OFormat[SaAnnualInterestAndDividendIncome] = Json.format[SaAnnualInterestAndDividendIncome]
-  implicit val formatSaAnnualInterestAndDividendIncomes: OFormat[SaAnnualInterestAndDividendIncomes] = Json.format[SaAnnualInterestAndDividendIncomes]
+  implicit val formatSaAnnualInterestAndDividendIncome: OFormat[SaAnnualInterestAndDividendIncome] =
+    Json.format[SaAnnualInterestAndDividendIncome]
+  implicit val formatSaAnnualInterestAndDividendIncomes: OFormat[SaAnnualInterestAndDividendIncomes] =
+    Json.format[SaAnnualInterestAndDividendIncomes]
 
-  implicit val formatSaAnnualUkPropertiesIncome: OFormat[SaAnnualUkPropertiesIncome] = Json.format[SaAnnualUkPropertiesIncome]
-  implicit val formatSaAnnualUkPropertiesIncomes: OFormat[SaAnnualUkPropertiesIncomes] = Json.format[SaAnnualUkPropertiesIncomes]
+  implicit val formatSaAnnualUkPropertiesIncome: OFormat[SaAnnualUkPropertiesIncome] =
+    Json.format[SaAnnualUkPropertiesIncome]
+  implicit val formatSaAnnualUkPropertiesIncomes: OFormat[SaAnnualUkPropertiesIncomes] =
+    Json.format[SaAnnualUkPropertiesIncomes]
 
-  implicit val formatSaAnnualPensionAndStateBenefitIncome: OFormat[SaAnnualPensionAndStateBenefitIncome] = Json.format[SaAnnualPensionAndStateBenefitIncome]
-  implicit val formatSaAnnualPensionAndStateBenefitIncomes: OFormat[SaAnnualPensionAndStateBenefitIncomes] = Json.format[SaAnnualPensionAndStateBenefitIncomes]
+  implicit val formatSaAnnualPensionAndStateBenefitIncome: OFormat[SaAnnualPensionAndStateBenefitIncome] =
+    Json.format[SaAnnualPensionAndStateBenefitIncome]
+  implicit val formatSaAnnualPensionAndStateBenefitIncomes: OFormat[SaAnnualPensionAndStateBenefitIncomes] =
+    Json.format[SaAnnualPensionAndStateBenefitIncomes]
 
-  implicit val formatSaAnnualAdditionalInformation: OFormat[SaAnnualAdditionalInformation] = Json.format[SaAnnualAdditionalInformation]
-  implicit val formatSaAnnualAdditionalInformations: OFormat[SaAnnualAdditionalInformations] = Json.format[SaAnnualAdditionalInformations]
+  implicit val formatSaAnnualAdditionalInformation: OFormat[SaAnnualAdditionalInformation] =
+    Json.format[SaAnnualAdditionalInformation]
+  implicit val formatSaAnnualAdditionalInformations: OFormat[SaAnnualAdditionalInformations] =
+    Json.format[SaAnnualAdditionalInformations]
 
   implicit val formatSaAnnualOtherIncome: OFormat[SaAnnualOtherIncome] = Json.format[SaAnnualOtherIncome]
   implicit val formatSaAnnualOtherIncomes: OFormat[SaAnnualOtherIncomes] = Json.format[SaAnnualOtherIncomes]
@@ -116,4 +127,4 @@ object EnumJson {
 }
 
 class InvalidEnumException(className: String, input: String)
-  extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")
+    extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")

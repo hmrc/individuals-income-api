@@ -30,16 +30,15 @@ class IfAddressSpec extends AnyWordSpec with Matchers {
 
   "IfAddress" should {
     "Write to Json" in {
-      val expectedJson = Json.parse(
-        """
-          |{
-          |   "line1":"line1",
-          |   "line2":"line2",
-          |   "line3":"line3",
-          |   "line4":"line4",
-          |   "postcode":"QW123QW"
-          |}
-          |""".stripMargin)
+      val expectedJson = Json.parse("""
+                                      |{
+                                      |   "line1":"line1",
+                                      |   "line2":"line2",
+                                      |   "line3":"line3",
+                                      |   "line4":"line4",
+                                      |   "postcode":"QW123QW"
+                                      |}
+                                      |""".stripMargin)
 
       val result = Json.toJson(validAddress)
 

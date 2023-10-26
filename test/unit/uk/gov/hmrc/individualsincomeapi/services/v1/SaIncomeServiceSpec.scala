@@ -816,10 +816,10 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
     "convert addressTypeIndicator to addressType" in new Setup {
       val conversions = Map(
-        Some("B") -> Some("homeAddress"),
-        Some("C") -> Some("correspondenceAddress"),
+        Some("B")          -> Some("homeAddress"),
+        Some("C")          -> Some("correspondenceAddress"),
         Some("thing else") -> Some("other"),
-        None -> None
+        None               -> None
       )
 
       given(matchingConnector.resolve(liveMatchId)).willReturn(successful(MatchedCitizen(liveMatchId, liveNino)))

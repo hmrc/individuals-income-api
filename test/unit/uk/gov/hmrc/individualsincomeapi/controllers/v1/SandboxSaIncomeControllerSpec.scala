@@ -49,7 +49,7 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   val requestParameters =
     s"matchId=$matchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=${toTaxYear.formattedTaxYear}"
 
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
     val mockSandboxSaIncomeService: SandboxSaIncomeService = mock[SandboxSaIncomeService]

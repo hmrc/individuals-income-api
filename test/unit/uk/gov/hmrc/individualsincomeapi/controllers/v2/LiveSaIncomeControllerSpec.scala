@@ -42,7 +42,7 @@ import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
 
 class LiveSaIncomeControllerSpec
-  extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
+    extends TestSupport with SpecBase with AuthHelper with MockitoSugar with IncomeSaHelpers {
   implicit lazy val materializer: Materializer = fakeApplication().materializer
 
   trait Setup extends ScopesConfigHelper {
@@ -181,8 +181,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -279,8 +279,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -294,8 +294,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -305,7 +304,6 @@ class LiveSaIncomeControllerSpec
         .willReturn(successful(SaFootprint.transform(ifSa)))
 
       val result = await(saIncomeController.saFootprint(matchIdString, taxYearInterval)(fakeRequest))
-
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -317,8 +315,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -340,8 +337,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }
@@ -384,8 +380,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -425,8 +421,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -440,8 +436,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -462,8 +457,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -485,8 +479,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -535,8 +528,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -583,8 +576,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -598,8 +591,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -620,8 +612,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -643,8 +634,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -685,8 +675,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -726,8 +716,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -741,8 +731,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -763,8 +752,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -786,8 +774,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -828,8 +815,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -869,8 +856,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -884,8 +871,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns a bad request with correct message when missing CorrelationId" in new Setup {
@@ -906,8 +892,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns a bad request with correct message when malformed CorrelationId" in new Setup {
@@ -929,8 +914,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -970,8 +954,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1010,8 +994,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1025,8 +1009,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct error message when missing CorrelationId" in new Setup {
@@ -1047,8 +1030,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct error message when malformed CorrelationId" in new Setup {
@@ -1070,8 +1052,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1111,8 +1092,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1151,8 +1132,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1166,8 +1147,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -1188,8 +1168,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -1211,8 +1190,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1252,8 +1230,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1292,8 +1270,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1307,8 +1285,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "return bad request with correct message when missing CorrelationId" in new Setup {
@@ -1329,8 +1306,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -1352,8 +1328,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1396,8 +1371,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1412,7 +1387,8 @@ class LiveSaIncomeControllerSpec
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
       val result = await(
-        saIncomeController.saPensionsAndStateBenefitsIncome(matchIdString, taxYearInterval)(fakeRequestWithoutToTaxYear))
+        saIncomeController.saPensionsAndStateBenefitsIncome(matchIdString, taxYearInterval)(
+          fakeRequestWithoutToTaxYear))
 
       status(result) shouldBe OK
 
@@ -1438,8 +1414,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1455,17 +1431,19 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+      given(
+        mockLiveSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
-      val result = await(saIncomeController.saPensionsAndStateBenefitsIncome(matchIdString, taxYearInterval)(fakeRequest))
+      val result =
+        await(saIncomeController.saPensionsAndStateBenefitsIncome(matchIdString, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -1477,18 +1455,20 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "return a bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+      given(
+        mockLiveSaIncomeService
+          .fetchPensionAndStateBenefits(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaPensionAndStateBenefits.transform(ifSa)))
 
-      val result = await(saIncomeController.saPensionsAndStateBenefitsIncome(matchIdString, taxYearInterval)(fakeRequest))
+      val result =
+        await(saIncomeController.saPensionsAndStateBenefitsIncome(matchIdString, taxYearInterval)(fakeRequest))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -1500,8 +1480,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
   }
@@ -1545,8 +1524,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1588,8 +1567,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1605,14 +1584,14 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+      given(
+        mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val result = await(saIncomeController.saInterestsAndDividendsIncome(matchIdString, taxYearInterval)(fakeRequest))
@@ -1627,15 +1606,15 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+      given(
+        mockLiveSaIncomeService.fetchInterestAndDividends(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaInterestAndDividends.transform(ifSa)))
 
       val result = await(saIncomeController.saInterestsAndDividendsIncome(matchIdString, taxYearInterval)(fakeRequest))
@@ -1650,8 +1629,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1691,8 +1669,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1731,8 +1709,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1746,8 +1724,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -1768,8 +1745,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -1791,8 +1767,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1834,8 +1809,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -1876,8 +1851,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -1892,14 +1867,14 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+      given(
+        mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val result = await(saIncomeController.saAdditionalInformation(matchIdString, taxYearInterval)(fakeRequest))
@@ -1914,15 +1889,15 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 
-      given(mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
+      given(
+        mockLiveSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval), any())(any(), any()))
         .willReturn(successful(SaAdditionalInformationRecords.transform(ifSa)))
 
       val result = await(saIncomeController.saAdditionalInformation(matchIdString, taxYearInterval)(fakeRequest))
@@ -1937,8 +1912,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -1979,8 +1953,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -2019,8 +1993,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -2034,8 +2008,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -2056,8 +2029,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with corrrect message when malformed CorrelationId" in new Setup {
@@ -2079,8 +2051,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 
@@ -2130,8 +2101,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -2180,8 +2151,8 @@ class LiveSaIncomeControllerSpec
            |}""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1))
+        .auditSaApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -2195,8 +2166,7 @@ class LiveSaIncomeControllerSpec
 
       status(result) shouldBe NOT_FOUND
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
@@ -2217,8 +2187,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "returns bad request with correct message when malformed CorrelationId" in new Setup {
@@ -2240,8 +2209,7 @@ class LiveSaIncomeControllerSpec
           |""".stripMargin
       )
 
-      verify(saIncomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 }

@@ -31,19 +31,17 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class RootController @Inject()(
-                                val citizenMatchingService: LiveCitizenMatchingService,
-                                val scopeService: ScopesService,
-                                scopesHelper: ScopesHelper,
-                                val authConnector: AuthConnector,
-                                implicit val auditHelper: AuditHelper,
-                                cc: ControllerComponents)(implicit ec: ExecutionContext)
-  extends CommonController(cc) with PrivilegedAuthentication {
+  val citizenMatchingService: LiveCitizenMatchingService,
+  val scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
+  val authConnector: AuthConnector,
+  implicit val auditHelper: AuditHelper,
+  cc: ControllerComponents)(implicit ec: ExecutionContext)
+    extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
     authenticate(scopeService.getAllScopes, matchId) { authScopes =>
-
       withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
-
         val correlationId = validateCorrelationId(request);
 
         citizenMatchingService.matchCitizen(matchUuid) map { _: MatchedCitizen =>
@@ -51,10 +49,16 @@ class RootController @Inject()(
           val allowedList = Some(List("sa", "paye"))
           val excludeList = Some(List())
 
-          val response = Json.toJson(scopesHelper.getHalLinks(matchUuid, excludeList, authScopes, allowedList) ++ selfLink)
+          val response =
+            Json.toJson(scopesHelper.getHalLinks(matchUuid, excludeList, authScopes, allowedList) ++ selfLink)
 
-          auditHelper.auditApiResponse(correlationId.toString, matchId,
-            authScopes.mkString(","), request, response.toString, None)
+          auditHelper.auditApiResponse(
+            correlationId.toString,
+            matchId,
+            authScopes.mkString(","),
+            request,
+            response.toString,
+            None)
 
           Ok(response)
         }

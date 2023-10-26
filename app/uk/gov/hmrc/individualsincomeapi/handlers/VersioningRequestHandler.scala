@@ -27,14 +27,14 @@ import uk.gov.hmrc.play.bootstrap.http.RequestHandler
 import javax.inject.Inject
 
 class VersioningRequestHandler @Inject()(
-                                          config: Configuration,
-                                          webCommands: WebCommands,
-                                          optDevContext: OptionalDevContext,
-                                          router: Router,
-                                          errorHandler: HttpErrorHandler,
-                                          httpConfiguration: HttpConfiguration,
-                                          filters: HttpFilters)
-  extends RequestHandler(webCommands, optDevContext, router, errorHandler, httpConfiguration, filters) {
+  config: Configuration,
+  webCommands: WebCommands,
+  optDevContext: OptionalDevContext,
+  router: Router,
+  errorHandler: HttpErrorHandler,
+  httpConfiguration: HttpConfiguration,
+  filters: HttpFilters)
+    extends RequestHandler(webCommands, optDevContext, router, errorHandler, httpConfiguration, filters) {
 
   private lazy val unversionedContexts = config
     .getOptional[Seq[String]]("versioning.unversionedContexts")

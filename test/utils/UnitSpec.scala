@@ -63,9 +63,9 @@ trait UnitSpec extends AnyWordSpec with Matchers {
     resultF.map(bodyOf)
 
   case class ExternalService(
-                              serviceName: String,
-                              runFrom: String = "SNAPSHOT_JAR",
-                              classifier: Option[String] = None,
-                              version: Option[String] = None)
+    serviceName: String,
+    runFrom: String = "SNAPSHOT_JAR",
+    classifier: Option[String] = None,
+    version: Option[String] = None)
 
 }

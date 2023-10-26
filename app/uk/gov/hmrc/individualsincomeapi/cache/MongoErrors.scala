@@ -22,4 +22,3 @@ object MongoErrors {
       if (ex.getMessage.contains("E11000")) Some(ex) else None
   }
 }
-

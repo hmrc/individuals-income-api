@@ -19,7 +19,6 @@ package uk.gov.hmrc.individualsincomeapi.cache
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
 
-
 case class Entry(id: String, data: Data, modifiedDetails: ModifiedDetails)
 
 object Entry {
@@ -28,11 +27,11 @@ object Entry {
       (JsPath \ "id").read[String] and
         (JsPath \ "data").read[Data] and
         (JsPath \ "modifiedDetails").read[ModifiedDetails]
-      )(Entry.apply _),
+    )(Entry.apply _),
     (
       (JsPath \ "id").write[String] and
         (JsPath \ "data").write[Data] and
         (JsPath \ "modifiedDetails").write[ModifiedDetails]
-      )(unlift(Entry.unapply))
+    )(unlift(Entry.unapply))
   )
 }

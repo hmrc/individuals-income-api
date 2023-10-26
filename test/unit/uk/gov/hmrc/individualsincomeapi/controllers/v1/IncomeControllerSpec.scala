@@ -51,7 +51,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     new LocalDate(toDateString).toDateTimeAtStartOfDay)
   val payments = Seq(
     Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
     val mockIncomeService: LiveIncomeService = mock[LiveIncomeService]

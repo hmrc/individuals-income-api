@@ -75,7 +75,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       Then("the response status should be 401 (unauthorized)")
       response.code shouldBe UNAUTHORIZED
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "UNAUTHORIZED",
+        "code"    -> "UNAUTHORIZED",
         "message" -> "Bearer token is missing or not authorized"
       )
 
@@ -251,7 +251,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "TOO_MANY_REQUESTS",
+        "code"    -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }

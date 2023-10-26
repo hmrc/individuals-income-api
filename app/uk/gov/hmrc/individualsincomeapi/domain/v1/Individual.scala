@@ -28,20 +28,20 @@ import java.util.UUID
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
 case class Individual(
-                       matchId: UUID,
-                       nino: String,
-                       firstName: String,
-                       lastName: String,
-                       dateOfBirth: LocalDate,
-                       income: Seq[Payment],
-                       saIncome: Seq[DesSAIncome])
+  matchId: UUID,
+  nino: String,
+  firstName: String,
+  lastName: String,
+  dateOfBirth: LocalDate,
+  income: Seq[Payment],
+  saIncome: Seq[DesSAIncome])
 
 case class Payment(
-                    taxablePayment: Double,
-                    paymentDate: LocalDate,
-                    employerPayeReference: Option[EmpRef] = None,
-                    monthPayNumber: Option[Int] = None,
-                    weekPayNumber: Option[Int] = None)
+  taxablePayment: Double,
+  paymentDate: LocalDate,
+  employerPayeReference: Option[EmpRef] = None,
+  monthPayNumber: Option[Int] = None,
+  weekPayNumber: Option[Int] = None)
 
 object Payment {
   implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
@@ -54,7 +54,7 @@ object SandboxIncomeData {
 
   def matchedCitizen(matchId: UUID): Option[MatchedCitizen] = matchId match {
     case `sandboxMatchId` => Some(MatchedCitizen(sandboxMatchId, sandboxNino))
-    case _ => None
+    case _                => None
   }
 
   private lazy val individuals = Seq(amanda())

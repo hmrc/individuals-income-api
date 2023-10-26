@@ -35,7 +35,8 @@ object IfPaye {
 
   def isInRange(value: Double): Boolean = value >= minValue && value <= maxValue
 
-  def isInRangeTaxDeductedOrRefunded(value: Double): Boolean = value >= minValueTaxDeductedOrRefunded && value <= maxValueTaxDeductedOrRefunded
+  def isInRangeTaxDeductedOrRefunded(value: Double): Boolean =
+    value >= minValueTaxDeductedOrRefunded && value <= maxValueTaxDeductedOrRefunded
 
   def isInPositiveRange(value: Double): Boolean = value >= minPositiveValue && value <= maxValue
 

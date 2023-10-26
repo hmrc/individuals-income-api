@@ -30,31 +30,31 @@ import utils.TestSupport
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ShortLivedCacheSpec
-  extends AnyWordSpec with Matchers with MongoSupport with BeforeAndAfterEach with TestSupport {
+class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
   val id = UUID.randomUUID().toString
   val cachekey = "test-class-key-v1"
   val testValue = TestClass("one", "two")
 
-  def fakeApplication() = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
-    .bindings(bindModules: _*)
-    .build()
+  def fakeApplication() =
+    new GuiceApplicationBuilder()
+      .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
+      .bindings(bindModules: _*)
+      .build()
 
   val shortLivedCache = fakeApplication().injector.instanceOf[ShortLivedCache]
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
 
     super.beforeEach()
     await(shortLivedCache.collection.drop().toFuture())
 
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit = {
 
     super.afterEach()
     await(shortLivedCache.collection.drop().toFuture())
@@ -100,16 +100,15 @@ class ShortLivedCacheSpec
     }
   }
 
-  private def retrieveRawCachedValue(id: String, key: String) = {
-
-    await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
-      .headOption()
-      .map {
-        case Some(entry) => entry.data.value
-        case None => None
-      })
-
-  }
+  private def retrieveRawCachedValue(id: String, key: String) =
+    await(
+      shortLivedCache.collection
+        .find(Filters.equal("id", toBson(id)))
+        .headOption()
+        .map {
+          case Some(entry) => entry.data.value
+          case None        => None
+        })
 
   case class TestClass(one: String, two: String)
 

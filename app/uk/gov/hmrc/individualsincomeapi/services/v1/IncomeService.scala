@@ -38,20 +38,20 @@ trait IncomeService {
 
 @Singleton
 class LiveIncomeService @Inject()(
-                                   matchingConnector: IndividualsMatchingApiConnector,
-                                   desConnector: DesConnector,
-                                   @Named("retryDelay") retryDelay: Int,
-                                   cache: CacheService)(implicit ec: ExecutionContext)
-  extends IncomeService {
+  matchingConnector: IndividualsMatchingApiConnector,
+  desConnector: DesConnector,
+  @Named("retryDelay") retryDelay: Int,
+  cache: CacheService)(implicit ec: ExecutionContext)
+    extends IncomeService {
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(
     implicit hc: HeaderCarrier): Future[Seq[Payment]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       desEmployments <- cache.get(
-        cacheId(matchId, interval),
-        withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
-      )
+                         cacheId(matchId, interval),
+                         withRetry(desConnector.fetchEmployments(ninoMatch.nino, interval))
+                       )
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
 
   private def cacheId(matchId: UUID, interval: Interval) = new CacheId {

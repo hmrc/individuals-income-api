@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with TestDates with IncomePayeHelpers {
 
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
 
@@ -58,7 +58,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     val mockIfConnector = mock[IfConnector]
     val scopesService = mock[ScopesService]
     val scopesHelper = mock[ScopesHelper]
-    implicit val ec : ExecutionContext = ExecutionContext.global
+    implicit val ec: ExecutionContext = ExecutionContext.global
 
     val liveIncomeService = new IncomeService(
       mockMatchingConnector,

@@ -55,9 +55,7 @@ class ScopesService @Inject()(configuration: Configuration) {
   def getValidFilters(scopes: Iterable[String]): Iterable[String] = {
     val filterKeys = scopes.flatMap(getScopeFilterKeys).toList
     getInternalEndpoints(scopes).flatMap(endpoint =>
-      endpoint.filters.filter(filterMap =>
-        filterKeys.contains(filterMap._1))
-        .values)
+      endpoint.filters.filter(filterMap => filterKeys.contains(filterMap._1)).values)
   }
 
   def getIfDataPaths(scopes: Iterable[String], endpoints: List[String]): Set[String] = {
@@ -73,7 +71,7 @@ class ScopesService @Inject()(configuration: Configuration) {
     val keys = uniqueDataFields.filter(endpointDataItems.contains)
     keys.nonEmpty match {
       case true => keys.reduce(_ + _)
-      case _ => ""
+      case _    => ""
     }
   }
 
@@ -96,6 +94,7 @@ class ScopesService @Inject()(configuration: Configuration) {
 
     apiConfig.scopes
       .filter(_.fields.toSet.intersect(keys.toSet).nonEmpty)
-      .map(_.name).sorted
+      .map(_.name)
+      .sorted
   }
 }

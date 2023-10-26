@@ -31,7 +31,7 @@ case class ErrorInvalidRequest(errorMessage: String) extends ErrorResponse(BAD_R
 case class ErrorUnauthorized(errorMessage: String) extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", errorMessage)
 
 case class ErrorInternalServer(errorMessage: String = "Failed to process request")
-  extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", errorMessage)
+    extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", errorMessage)
 
 case object ErrorNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource can not be found")
 

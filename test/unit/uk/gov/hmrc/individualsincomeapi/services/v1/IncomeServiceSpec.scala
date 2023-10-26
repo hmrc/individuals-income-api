@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with TestDates {
 
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()

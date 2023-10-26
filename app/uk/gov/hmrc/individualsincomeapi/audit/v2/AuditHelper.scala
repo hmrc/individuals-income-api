@@ -26,16 +26,15 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class AuditHelper @Inject()(auditConnector: AuditConnector)
-                           (implicit ec: ExecutionContext) {
+class AuditHelper @Inject()(auditConnector: AuditConnector)(implicit ec: ExecutionContext) {
 
-  def auditApiResponse[T](correlationId: String,
-                          matchId: String,
-                          scopes: String,
-                          request: RequestHeader,
-                          selfLink: String,
-                          response: Option[Seq[JsValue]])
-                         (implicit hc: HeaderCarrier) =
+  def auditApiResponse[T](
+    correlationId: String,
+    matchId: String,
+    scopes: String,
+    request: RequestHeader,
+    selfLink: String,
+    response: Option[Seq[JsValue]])(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ApiPayeResponseEventModel(
@@ -53,13 +52,13 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
       )
     )
 
-  def auditSaApiResponse[T](correlationId: String,
-                            matchId: String,
-                            scopes: String,
-                            request: RequestHeader,
-                            selfLink: String,
-                            response: Option[JsValue])
-                           (implicit hc: HeaderCarrier) =
+  def auditSaApiResponse[T](
+    correlationId: String,
+    matchId: String,
+    scopes: String,
+    request: RequestHeader,
+    selfLink: String,
+    response: Option[JsValue])(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ApiSaResponseEventModel(
@@ -77,12 +76,12 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
       )
     )
 
-  def auditApiFailure(correlationId: Option[String],
-                      matchId: String,
-                      request: RequestHeader,
-                      requestUrl: String,
-                      msg: String)
-                     (implicit hc: HeaderCarrier) =
+  def auditApiFailure(
+    correlationId: Option[String],
+    matchId: String,
+    request: RequestHeader,
+    requestUrl: String,
+    msg: String)(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "ApiFailureEvent",
       ApiFailureResponseEventModel(
@@ -99,12 +98,12 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
       )
     )
 
-  def auditIfPayeApiResponse(correlationId: String,
-                             matchId: String,
-                             request: RequestHeader,
-                             requestUrl: String,
-                             ifPaye: Seq[IfPayeEntry])
-                            (implicit hc: HeaderCarrier) =
+  def auditIfPayeApiResponse(
+    correlationId: String,
+    matchId: String,
+    request: RequestHeader,
+    requestUrl: String,
+    ifPaye: Seq[IfPayeEntry])(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "IntegrationFrameworkApiResponseEvent",
       IfPayeApiResponseEventModel(
@@ -121,12 +120,12 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
       )
     )
 
-  def auditIfSaApiResponse(correlationId: String,
-                           matchId: String,
-                           request: RequestHeader,
-                           requestUrl: String,
-                           ifSa: Seq[IfSaEntry])
-                          (implicit hc: HeaderCarrier) =
+  def auditIfSaApiResponse(
+    correlationId: String,
+    matchId: String,
+    request: RequestHeader,
+    requestUrl: String,
+    ifSa: Seq[IfSaEntry])(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "IntegrationFrameworkApiResponseEvent",
       IfSaApiResponseEventModel(
@@ -143,12 +142,12 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
       )
     )
 
-  def auditIfApiFailure(correlationId: String,
-                        matchId: String,
-                        request: RequestHeader,
-                        requestUrl: String,
-                        msg: String)
-                       (implicit hc: HeaderCarrier) =
+  def auditIfApiFailure(
+    correlationId: String,
+    matchId: String,
+    request: RequestHeader,
+    requestUrl: String,
+    msg: String)(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "IntegrationFrameworkApiFailureEvent",
       ApiFailureResponseEventModel(
@@ -165,10 +164,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
       )
     )
 
-  def auditAuthScopes(matchId: String,
-                      scopes: String,
-                      request: RequestHeader)
-                     (implicit hc: HeaderCarrier) =
+  def auditAuthScopes(matchId: String, scopes: String, request: RequestHeader)(implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
       "AuthScopesAuditEvent",
       ScopesAuditEventModel(

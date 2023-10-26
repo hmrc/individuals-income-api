@@ -88,8 +88,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                   "self": {"href": "/individuals/income/sa?$requestParameters"},
@@ -165,7 +164,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 429 Too Many Requests")
       response.code shouldBe TOO_MANY_REQUESTS
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "TOO_MANY_REQUESTS",
+        "code"    -> "TOO_MANY_REQUESTS",
         "message" -> "Rate limit exceeded"
       )
     }
@@ -190,8 +189,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the employments")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -248,8 +246,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the self employments")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -306,8 +303,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the self employments")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -364,8 +360,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the trusts income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -422,8 +417,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -482,8 +476,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -543,8 +536,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -607,8 +599,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the foreign income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -668,8 +659,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the UK properties income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -729,8 +719,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the UK properties income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -791,8 +780,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with the other income")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
             {
               "_links": {
                  "self": {
@@ -852,8 +840,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
       response.code shouldBe OK
 
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
            {
              "_links": {
                "self": {"href": "/individuals/income/sa/sources?matchId=$matchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -897,5 +884,3 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
   private def headers: Map[String, String] = requestHeaders(acceptHeaderP1) + ("X-Client-ID" -> clientId)
 }
-
-

@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaFootprintTaxReturn(
-                                 taxYear: String,
-                                 submissions: Seq[SaFootprintSubmission]
-                               )
+  taxYear: String,
+  submissions: Seq[SaFootprintSubmission]
+)
 
 object SaFootprintTaxReturn {
   implicit val saFootprintTaxReturn = Json.format[SaFootprintTaxReturn]

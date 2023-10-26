@@ -19,17 +19,17 @@ package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 
-case class IfPayeApiResponseEventModel(deviceId: String,
-                                       input: String,
-                                       method: String,
-                                       userAgent: String,
-                                       apiVersion: String,
-                                       matchId: String,
-                                       correlationId: String,
-                                       applicationId: String,
-                                       requestUrl: String,
-                                       integrationFrameworkPaye: Seq[IfPayeEntry])
-
+case class IfPayeApiResponseEventModel(
+  deviceId: String,
+  input: String,
+  method: String,
+  userAgent: String,
+  apiVersion: String,
+  matchId: String,
+  correlationId: String,
+  applicationId: String,
+  requestUrl: String,
+  integrationFrameworkPaye: Seq[IfPayeEntry])
 
 object IfPayeApiResponseEventModel {
   implicit val formatIfApiResponseEventModel = Json.format[IfPayeApiResponseEventModel]

@@ -49,9 +49,9 @@ class LiveRootControllerSpec extends BaseSpec {
       Http(endpoint).timeout(10000, 10000).headers(requestHeaders(acceptHeaderP2)).asString
 
     def assertResponseIs(
-                          httpResponse: HttpResponse[String],
-                          expectedResponseCode: Int,
-                          expectedResponseBody: String) = {
+      httpResponse: HttpResponse[String],
+      expectedResponseCode: Int,
+      expectedResponseBody: String) = {
       httpResponse.code shouldBe expectedResponseCode
       parse(httpResponse.body) shouldBe parse(expectedResponseBody)
     }
@@ -88,7 +88,7 @@ class LiveRootControllerSpec extends BaseSpec {
       Then("The response status should be 401")
       response.code shouldBe UNAUTHORIZED
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "UNAUTHORIZED",
+        "code"    -> "UNAUTHORIZED",
         "message" -> "Insufficient Enrolments"
       )
     }
@@ -101,8 +101,7 @@ class LiveRootControllerSpec extends BaseSpec {
       val response = invokeEndpoint(serviceUrl)
 
       Then("the response status should be 400 (bad request)")
-      assertResponseIs(response, BAD_REQUEST,
-        """
+      assertResponseIs(response, BAD_REQUEST, """
           {
              "code" : "INVALID_REQUEST",
              "message" : "matchId is required"
@@ -155,8 +154,7 @@ class LiveRootControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, allIncomeScopes)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.willRespondWith(matchId, OK,
-        """
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, """
           {
             "matchId" : "951dcf9f-8dd1-44e0-91d5-cb772c8e8e5e",
             "nino" : "AB123456C"
@@ -170,25 +168,23 @@ class LiveRootControllerSpec extends BaseSpec {
       response.code shouldBe OK
 
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""{
-             |  "_links": {
-             |    "sa": {
-             |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
-             |      "title": "Get an individual's Self Assessment income data"
-             |    },
-             |    "paye": {
-             |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
-             |      "title": "Get an individual's PAYE income data per employment"
-             |    },
-             |    "self": {
-             |      "href": "/individuals/income/?matchId=$matchId"
-             |    }
-             |  }
-             |}""".stripMargin)
+        Json.parse(s"""{
+                      |  "_links": {
+                      |    "sa": {
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "title": "Get an individual's Self Assessment income data"
+                      |    },
+                      |    "paye": {
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "title": "Get an individual's PAYE income data per employment"
+                      |    },
+                      |    "self": {
+                      |      "href": "/individuals/income/?matchId=$matchId"
+                      |    }
+                      |  }
+                      |}""".stripMargin)
     }
 
   }
-
 
 }
