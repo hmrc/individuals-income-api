@@ -56,7 +56,10 @@ lazy val microservice =
         "-h",
         "target/component-test-reports/html-report")
     )
-    .settings(scalacOptions += "-Wconf:src=routes/.*:s")
+    .settings(
+      scalacOptions += "-Wconf:src=routes/.*:s",
+      scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s"
+    )
     .settings(PlayKeys.playDefaultPort := 9652)
     .settings(majorVersion := 0)
     // Disable default sbt Test options (might change with new versions of bootstrap)
