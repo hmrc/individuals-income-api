@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import play.api.libs.json.JodaReads._
-import play.api.libs.json.JodaWrites._
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
 
@@ -260,6 +259,7 @@ case class SourceAddress(line1: Option[String] = None,
 }
 
 object SourceAddress {
+  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
   implicit val apiWrites: Format[SourceAddress] = Json.format[SourceAddress]
 }
 

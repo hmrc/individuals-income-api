@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 
 case class Income(
                    employerPayeReference: Option[String],
@@ -43,5 +42,5 @@ case class Income(
                    employeeNics: Option[IfEmployeeNics])
 
 object Income {
-  implicit val incomeJsonFormat = Json.format[Income]
+  implicit val incomeJsonFormat: OFormat[Income] = Json.format[Income]
 }

@@ -36,8 +36,8 @@ import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.{IncomePayeHelpers, SpecBase}
 
 import java.util.UUID
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with TestDates with IncomePayeHelpers {
 
