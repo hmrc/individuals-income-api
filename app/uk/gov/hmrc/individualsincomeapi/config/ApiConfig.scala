@@ -22,16 +22,13 @@ import uk.gov.hmrc.individualsincomeapi.services.v2.PathTree
 
 import scala.jdk.CollectionConverters._
 
-case class ApiConfig(scopes: List[ScopeConfig], internalEndpoints: List[InternalEndpointConfig], externalEndpoints: List[ExternalEndpointConfig]) {
+case class ApiConfig(scopes: List[ScopeConfig], internalEndpoints: List[InternalEndpointConfig]) {
 
   def getScope(scope: String): Option[ScopeConfig] =
     scopes.find(c => c.name == scope)
 
   def getInternalEndpoint(endpoint: String): Option[InternalEndpointConfig] =
     internalEndpoints.find(e => e.name == endpoint)
-
-  def getExternalEndpoint(endpoint: String): Option[ExternalEndpointConfig] =
-    externalEndpoints.find(e => e.name == endpoint)
 }
 
 case class ScopeConfig(name: String,
@@ -50,11 +47,6 @@ case class InternalEndpointConfig(override val name: String,
                                   override val title: String,
                                   fields: Map[String, String],
                                   filters: Map[String, String]) extends EndpointConfig
-
-case class ExternalEndpointConfig(override val name: String,
-                                  override val link: String,
-                                  override val title: String,
-                                  key: String) extends EndpointConfig
 
 object ApiConfig {
 
@@ -91,16 +83,6 @@ object ApiConfig {
             .map(filter => (filter, config.getString(s"filters.$filter"))).toMap,
         )).toList).getOrElse(List())
 
-    val extEndpointsOpt = parseConfig("endpoints.external")
-    val externalEndpointConfig: List[ExternalEndpointConfig] =
-      extEndpointsOpt.map(extEndpoints => extEndpoints.listChildren.map(key =>
-        ExternalEndpointConfig(
-          name = key,
-          key = config.getString(s"endpoints.external.$key.key"),
-          link = config.getString(s"endpoints.external.$key.endpoint"),
-          title = config.getString(s"endpoints.external.$key.title")
-        )).toList).getOrElse(List())
-
     val scopesOpt = parseConfig("scopes")
     val scopeConfig = scopesOpt.map(scopes => scopes.listChildren
       .map(key => ScopeConfig(
@@ -114,7 +96,6 @@ object ApiConfig {
     ApiConfig(
       scopes = scopeConfig,
       internalEndpoints = internalEndpointConfig,
-      externalEndpoints = externalEndpointConfig
     )
   }
 }

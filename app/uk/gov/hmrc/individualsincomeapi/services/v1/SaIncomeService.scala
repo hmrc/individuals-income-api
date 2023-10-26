@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
@@ -26,8 +26,8 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1._
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 trait SaIncomeService {
   def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint]
@@ -120,7 +120,7 @@ class LiveSaIncomeService @Inject()(
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+    case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(

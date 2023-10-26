@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.connector
 
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters.matchedCitizenJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
@@ -34,7 +34,6 @@ class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig, 
 
   def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     http.GET[MatchedCitizen](s"$serviceUrl/match-record/$matchId") recover {
-      case Upstream4xxResponse(_, 404, _, _) => throw new MatchNotFoundException
+      case UpstreamErrorResponse(_, 404, _, _) => throw new MatchNotFoundException
     }
-
 }

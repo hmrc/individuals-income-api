@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.connector
 
 import org.joda.time.Interval
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -32,16 +32,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext) {
+class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext) extends Logging {
 
-  val logger: Logger = Logger(getClass)
+  private val serviceUrl = servicesConfig.baseUrl("des")
 
-  val serviceUrl = servicesConfig.baseUrl("des")
+  private lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
+  private lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
-  lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
-  lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
-
-  def setHeaders = Seq(
+  private def setHeaders() = Seq(
     HeaderNames.authorisation -> s"Bearer $desBearerToken",
     "Environment" -> desEnvironment,
     "Source" -> "MDTP"
@@ -55,7 +53,7 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
 
-    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = setHeaders).map(_.employments))
+    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = setHeaders()).map(_.employments))
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
@@ -71,15 +69,13 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
 
-    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders :+ ("OriginatorId" -> originator)))
+    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator)))
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {
-    case Upstream4xxResponse(_, 404, _, _) => Future.successful(Seq.empty)
-    case Upstream4xxResponse(msg, 429, _, _) => {
+    case UpstreamErrorResponse(_, 404, _, _) => Future.successful(Seq.empty)
+    case UpstreamErrorResponse(msg, 429, _, _) =>
       logger.warn(s"DES Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
-    }
   }
-
 }

@@ -15,4 +15,3 @@ GET        /sa/pensions-and-state-benefits        uk.gov.hmrc.individualsincomea
 GET        /sa/additional-information             uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController.saAdditionalInformation(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/other                              uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController.saOtherIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/source                             uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController.saIncomeSource(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
-

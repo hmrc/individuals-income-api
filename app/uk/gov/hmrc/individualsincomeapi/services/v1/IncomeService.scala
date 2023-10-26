@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
 import org.joda.time.{Interval, LocalDate}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
@@ -27,8 +27,8 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchI
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
@@ -59,7 +59,7 @@ class LiveIncomeService @Inject()(
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
-    case Upstream5xxResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
+    case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 }
 
