@@ -19,13 +19,13 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaSourceAddress(
-                            line1: Option[String],
-                            line2: Option[String],
-                            line3: Option[String],
-                            line4: Option[String],
-                            line5: Option[String],
-                            postalCode: Option[String]
-                          )
+  line1: Option[String],
+  line2: Option[String],
+  line3: Option[String],
+  line4: Option[String],
+  line5: Option[String],
+  postalCode: Option[String]
+)
 
 object SaSourceAddress {
 

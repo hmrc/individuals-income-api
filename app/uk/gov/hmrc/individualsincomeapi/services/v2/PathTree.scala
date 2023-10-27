@@ -110,8 +110,8 @@ case class B(value: String, children: Iterable[Node]) extends Node {
               merge(n1, b.getChild(n1.get).get)
             } else {
               n1
-            }) ++ b.children.filter(n1 => !a.hasChild(n1.get)))
+          }) ++ b.children.filter(n1 => !a.hasChild(n1.get)))
       case (a: L, b: B) => b
-      case _ => a1
+      case _            => a1
     }
 }

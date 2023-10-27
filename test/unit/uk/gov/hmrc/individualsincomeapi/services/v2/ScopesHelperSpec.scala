@@ -22,11 +22,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v2.{ScopesHelper, ScopesService
 import unit.uk.gov.hmrc.individualsincomeapi.services.ScopesConfig
 import utils.UnitSpec
 
-class ScopesHelperSpec
-  extends UnitSpec
-    with ScopesConfig
-    with BeforeAndAfterEach
-    with Matchers {
+class ScopesHelperSpec extends UnitSpec with ScopesConfig with BeforeAndAfterEach with Matchers {
 
   "Scopes helper" should {
 
@@ -34,7 +30,8 @@ class ScopesHelperSpec
     val scopesHelper = new ScopesHelper(scopesService)
 
     "return correct query string" in {
-      val scopeOneResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointOne, endpointTwo, endpointThree))
+      val scopeOneResult =
+        scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointOne, endpointTwo, endpointThree))
       scopeOneResult shouldBe "path(to(a,b,c,d))"
 
       val scopeOneEndpointOneResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointOne))
@@ -46,10 +43,12 @@ class ScopesHelperSpec
       val scopeOneEndpointThreeResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointThree))
       scopeOneEndpointThreeResult shouldBe ""
 
-      val scopeTwoResult = scopesHelper.getQueryStringFor(List(mockScopeTwo), List(endpointOne, endpointTwo, endpointThree))
+      val scopeTwoResult =
+        scopesHelper.getQueryStringFor(List(mockScopeTwo), List(endpointOne, endpointTwo, endpointThree))
       scopeTwoResult shouldBe "path(to(e,f,g,h,i))"
 
-      val twoScopesResult = scopesHelper.getQueryStringFor(List(mockScopeOne, mockScopeTwo), List(endpointOne, endpointTwo, endpointThree))
+      val twoScopesResult =
+        scopesHelper.getQueryStringFor(List(mockScopeOne, mockScopeTwo), List(endpointOne, endpointTwo, endpointThree))
       twoScopesResult shouldBe "path(to(a,b,c,d,e,f,g,h,i))"
     }
 

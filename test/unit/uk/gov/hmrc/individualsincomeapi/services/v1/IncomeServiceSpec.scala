@@ -36,12 +36,12 @@ import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.SpecBase
 
 import java.util.UUID
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures with TestDates {
 
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()

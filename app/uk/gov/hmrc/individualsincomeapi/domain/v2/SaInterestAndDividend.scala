@@ -19,10 +19,10 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaInterestAndDividend(
-                                  ukInterestsIncome: Double,
-                                  foreignDividendsIncome: Double,
-                                  ukDividendsIncome: Double
-                                )
+  ukInterestsIncome: Double,
+  foreignDividendsIncome: Double,
+  ukDividendsIncome: Double
+)
 
 object SaInterestAndDividend {
 

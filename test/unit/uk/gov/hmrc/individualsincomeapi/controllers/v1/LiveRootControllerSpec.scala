@@ -65,8 +65,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) shouldBe NOT_FOUND
-      contentAsJson(eventualResult) shouldBe parse(
-        """
+      contentAsJson(eventualResult) shouldBe parse("""
           {
             "code":"NOT_FOUND",
             "message":"The resource can not be found"
@@ -81,8 +80,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
       val eventualResult = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
 
       status(eventualResult) shouldBe OK
-      contentAsJson(eventualResult) shouldBe parse(
-        s"""
+      contentAsJson(eventualResult) shouldBe parse(s"""
           {
             "_links":{
               "paye":{

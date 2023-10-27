@@ -49,7 +49,7 @@ object RequestHeaderUtils {
   def maybeCorrelationId(requestHeader: RequestHeader) =
     Try(validateCorrelationId(requestHeader)) match {
       case Success(value) => Some(value.toString)
-      case _ => None
+      case _              => None
     }
 
   def getVersionedRequest(originalRequest: RequestHeader) = {

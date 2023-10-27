@@ -28,8 +28,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService}
 
 import scala.concurrent.Future
 
-class CacheServiceSpec
-  extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
+class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
 
   implicit val hc = HeaderCarrier()
 

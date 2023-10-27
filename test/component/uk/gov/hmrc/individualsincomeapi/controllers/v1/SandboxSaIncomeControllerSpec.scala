@@ -38,8 +38,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa?$requestParameters"},
@@ -98,8 +97,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -141,8 +139,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -184,8 +181,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -226,8 +222,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -268,8 +263,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Then("The response status should be 200 (OK) with a valid payload")
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -311,8 +305,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -353,8 +346,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -395,8 +387,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -441,8 +432,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -483,8 +473,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
@@ -526,8 +515,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Then("The response status should be 200 (OK) with a valid payload")
     response.code shouldBe OK
     Json.parse(response.body) shouldBe
-      Json.parse(
-        s"""
+      Json.parse(s"""
              {
                "_links": {
                  "self": {"href": "/individuals/income/sa/other?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}

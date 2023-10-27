@@ -25,7 +25,8 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CacheService @Inject()(shortLivedCache: ShortLivedCache, conf: CacheRepositoryConfiguration)(implicit ec: ExecutionContext) {
+class CacheService @Inject()(shortLivedCache: ShortLivedCache, conf: CacheRepositoryConfiguration)(
+  implicit ec: ExecutionContext) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 

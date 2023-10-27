@@ -30,20 +30,19 @@ class SaSelfEmploymentsSpec extends AnyWordSpec with Matchers with IncomeSaHelpe
 
   "SaSelfEmployments" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "selfEmployments": [
-          |        {
-          |          "selfEmploymentProfit": 100,
-          |          "utr": "1234567890"
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "selfEmployments": [
+                                      |        {
+                                      |          "selfEmploymentProfit": 100,
+                                      |          "utr": "1234567890"
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSelfEmployments.transform(ifSa))
 
@@ -51,10 +50,9 @@ class SaSelfEmploymentsSpec extends AnyWordSpec with Matchers with IncomeSaHelpe
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSelfEmployments.transform(Seq()))
 
@@ -63,19 +61,18 @@ class SaSelfEmploymentsSpec extends AnyWordSpec with Matchers with IncomeSaHelpe
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "selfEmployments": [
-          |        {
-          |          "selfEmploymentProfit": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "selfEmployments": [
+                                      |        {
+                                      |          "selfEmploymentProfit": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSelfEmployments.transform(ifSaNoData))
 
@@ -84,20 +81,19 @@ class SaSelfEmploymentsSpec extends AnyWordSpec with Matchers with IncomeSaHelpe
 
     "Write to Json with defaults no values" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "selfEmployments": [
-          |        {
-          |          "selfEmploymentProfit": 0.0,
-          |          "utr": "1234567890"
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "selfEmployments": [
+                                      |        {
+                                      |          "selfEmploymentProfit": 0.0,
+                                      |          "utr": "1234567890"
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSelfEmployments.transform(ifSaNoValues))
 

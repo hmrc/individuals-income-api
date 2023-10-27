@@ -37,7 +37,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
   val stubPort = sys.env.getOrElse("WIREMOCK", "11121").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
-  implicit val ec : ExecutionContext = ExecutionContext.global
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Fixture {
     implicit val hc = HeaderCarrier()
@@ -50,7 +50,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
 
   def externalServices: Seq[String] = Seq("Stub")
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
@@ -92,8 +92,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
 
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit =
     wireMockServer.stop()
-  }
 
 }

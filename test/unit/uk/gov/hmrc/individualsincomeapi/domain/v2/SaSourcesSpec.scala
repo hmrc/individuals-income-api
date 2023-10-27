@@ -30,27 +30,26 @@ class SaSourcesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
   "SaSources" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "sources": [
-          |        {
-          |          "businessDescription": "This is a business description",
-          |          "businessAddress": {
-          |            "line1": "line1",
-          |            "line2": "line2",
-          |            "line3": "line3",
-          |            "line4": "line4",
-          |            "postalCode": "QW123QW"
-          |          },
-          |          "telephoneNumber": "12345678901"
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "sources": [
+                                      |        {
+                                      |          "businessDescription": "This is a business description",
+                                      |          "businessAddress": {
+                                      |            "line1": "line1",
+                                      |            "line2": "line2",
+                                      |            "line3": "line3",
+                                      |            "line4": "line4",
+                                      |            "postalCode": "QW123QW"
+                                      |          },
+                                      |          "telephoneNumber": "12345678901"
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSources.transform(ifSa))
 
@@ -58,10 +57,9 @@ class SaSourcesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSources.transform(Seq()))
 
@@ -70,27 +68,26 @@ class SaSourcesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "sources": [
-          |        {
-          |          "businessDescription": "This is a business description",
-          |          "businessAddress": {
-          |            "line1": "line1",
-          |            "line2": "line2",
-          |            "line3": "line3",
-          |            "line4": "line4",
-          |            "postalCode": "QW123QW"
-          |          },
-          |          "telephoneNumber": "12345678901"
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "sources": [
+                                      |        {
+                                      |          "businessDescription": "This is a business description",
+                                      |          "businessAddress": {
+                                      |            "line1": "line1",
+                                      |            "line2": "line2",
+                                      |            "line3": "line3",
+                                      |            "line4": "line4",
+                                      |            "postalCode": "QW123QW"
+                                      |          },
+                                      |          "telephoneNumber": "12345678901"
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSources.transform(ifSaNoData))
 
@@ -99,27 +96,26 @@ class SaSourcesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "sources": [
-          |        {
-          |          "businessDescription": "This is a business description",
-          |          "businessAddress": {
-          |            "line1": "line1",
-          |            "line2": "line2",
-          |            "line3": "line3",
-          |            "line4": "line4",
-          |            "postalCode": "QW123QW"
-          |          },
-          |          "telephoneNumber": "12345678901"
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "sources": [
+                                      |        {
+                                      |          "businessDescription": "This is a business description",
+                                      |          "businessAddress": {
+                                      |            "line1": "line1",
+                                      |            "line2": "line2",
+                                      |            "line3": "line3",
+                                      |            "line4": "line4",
+                                      |            "postalCode": "QW123QW"
+                                      |          },
+                                      |          "telephoneNumber": "12345678901"
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaSources.transform(ifSaNoValues))
 

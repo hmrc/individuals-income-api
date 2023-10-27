@@ -16,32 +16,31 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 
 case class Income(
-                   employerPayeReference: Option[String],
-                   taxYear: Option[String],
-                   employee: Option[Employee],
-                   payroll: Option[Payroll],
-                   payFrequency: Option[String],
-                   monthPayNumber: Option[Int],
-                   weekPayNumber: Option[Int],
-                   paymentDate: Option[String],
-                   paidHoursWorked: Option[String],
-                   taxCode: Option[String],
-                   taxablePayToDate: Option[Double],
-                   taxablePay: Option[Double],
-                   totalTaxToDate: Option[Double],
-                   taxDeductedOrRefunded: Option[Double],
-                   dednsFromNetPay: Option[Double],
-                   employeePensionContribs: Option[IfEmployeePensionContribs],
-                   statutoryPayYTD: Option[IfStatutoryPayYTD],
-                   grossEarningsForNics: Option[IfGrossEarningsForNics],
-                   totalEmployerNics: Option[IfTotalEmployerNics],
-                   employeeNics: Option[IfEmployeeNics])
+  employerPayeReference: Option[String],
+  taxYear: Option[String],
+  employee: Option[Employee],
+  payroll: Option[Payroll],
+  payFrequency: Option[String],
+  monthPayNumber: Option[Int],
+  weekPayNumber: Option[Int],
+  paymentDate: Option[String],
+  paidHoursWorked: Option[String],
+  taxCode: Option[String],
+  taxablePayToDate: Option[Double],
+  taxablePay: Option[Double],
+  totalTaxToDate: Option[Double],
+  taxDeductedOrRefunded: Option[Double],
+  dednsFromNetPay: Option[Double],
+  employeePensionContribs: Option[IfEmployeePensionContribs],
+  statutoryPayYTD: Option[IfStatutoryPayYTD],
+  grossEarningsForNics: Option[IfGrossEarningsForNics],
+  totalEmployerNics: Option[IfTotalEmployerNics],
+  employeeNics: Option[IfEmployeeNics])
 
 object Income {
-  implicit val incomeJsonFormat = Json.format[Income]
+  implicit val incomeJsonFormat: OFormat[Income] = Json.format[Income]
 }

@@ -40,53 +40,53 @@ object DesSAIncome {
 }
 
 case class DesSAReturn(
-                        caseStartDate: Option[LocalDate],
-                        receivedDate: Option[LocalDate],
-                        utr: SaUtr,
-                        income: SAIncome = SAIncome(),
-                        businessDescription: Option[String] = None,
-                        addressLine1: Option[String] = None,
-                        addressLine2: Option[String] = None,
-                        addressLine3: Option[String] = None,
-                        addressLine4: Option[String] = None,
-                        postalCode: Option[String] = None,
-                        telephoneNumber: Option[String] = None,
-                        baseAddressEffectiveDate: Option[LocalDate] = None,
-                        addressTypeIndicator: Option[String] = None)
+  caseStartDate: Option[LocalDate],
+  receivedDate: Option[LocalDate],
+  utr: SaUtr,
+  income: SAIncome = SAIncome(),
+  businessDescription: Option[String] = None,
+  addressLine1: Option[String] = None,
+  addressLine2: Option[String] = None,
+  addressLine3: Option[String] = None,
+  addressLine4: Option[String] = None,
+  postalCode: Option[String] = None,
+  telephoneNumber: Option[String] = None,
+  baseAddressEffectiveDate: Option[LocalDate] = None,
+  addressTypeIndicator: Option[String] = None)
 
 object DesSAReturn {
   implicit val format: Format[DesSAReturn] = new Format[DesSAReturn] {
     override def writes(o: DesSAReturn): JsValue =
       Json.obj(
-        "caseStartDate" -> o.caseStartDate,
-        "receivedDate" -> o.receivedDate,
-        "utr" -> o.utr,
-        "businessDescription" -> o.businessDescription,
-        "addressLine1" -> o.addressLine1,
-        "addressLine2" -> o.addressLine2,
-        "addressLine3" -> o.addressLine3,
-        "addressLine4" -> o.addressLine4,
-        "postalCode" -> o.postalCode,
-        "telephoneNumber" -> o.telephoneNumber,
+        "caseStartDate"            -> o.caseStartDate,
+        "receivedDate"             -> o.receivedDate,
+        "utr"                      -> o.utr,
+        "businessDescription"      -> o.businessDescription,
+        "addressLine1"             -> o.addressLine1,
+        "addressLine2"             -> o.addressLine2,
+        "addressLine3"             -> o.addressLine3,
+        "addressLine4"             -> o.addressLine4,
+        "postalCode"               -> o.postalCode,
+        "telephoneNumber"          -> o.telephoneNumber,
         "baseAddressEffectiveDate" -> o.baseAddressEffectiveDate,
-        "addressTypeIndicator" -> o.addressTypeIndicator
+        "addressTypeIndicator"     -> o.addressTypeIndicator
       ) ++ Json.toJson(o.income).as[JsObject]
 
     override def reads(json: JsValue): JsResult[DesSAReturn] =
       for {
-        caseStartDate <- (json \ "caseStartDate").validateOpt[LocalDate]
-        receivedDate <- (json \ "receivedDate").validateOpt[LocalDate]
-        utr <- (json \ "utr").validate[SaUtr]
-        income <- json.validate[SAIncome]
-        businessDescription <- (json \ "businessDescription").validateOpt[String]
-        addressLine1 <- (json \ "addressLine1").validateOpt[String]
-        addressLine2 <- (json \ "addressLine2").validateOpt[String]
-        addressLine3 <- (json \ "addressLine3").validateOpt[String]
-        addressLine4 <- (json \ "addressLine4").validateOpt[String]
-        postalCode <- (json \ "postalCode").validateOpt[String]
-        telephoneNumber <- (json \ "telephoneNumber").validateOpt[String]
+        caseStartDate            <- (json \ "caseStartDate").validateOpt[LocalDate]
+        receivedDate             <- (json \ "receivedDate").validateOpt[LocalDate]
+        utr                      <- (json \ "utr").validate[SaUtr]
+        income                   <- json.validate[SAIncome]
+        businessDescription      <- (json \ "businessDescription").validateOpt[String]
+        addressLine1             <- (json \ "addressLine1").validateOpt[String]
+        addressLine2             <- (json \ "addressLine2").validateOpt[String]
+        addressLine3             <- (json \ "addressLine3").validateOpt[String]
+        addressLine4             <- (json \ "addressLine4").validateOpt[String]
+        postalCode               <- (json \ "postalCode").validateOpt[String]
+        telephoneNumber          <- (json \ "telephoneNumber").validateOpt[String]
         baseAddressEffectiveDate <- (json \ "baseAddressEffectiveDate").validateOpt[LocalDate]
-        addressTypeIndicator <- (json \ "addressTypeIndicator").validateOpt[String]
+        addressTypeIndicator     <- (json \ "addressTypeIndicator").validateOpt[String]
       } yield
         DesSAReturn(
           caseStartDate,
@@ -108,19 +108,19 @@ object DesSAReturn {
   val desReads: Reads[DesSAReturn] = new Reads[DesSAReturn] {
     override def reads(json: JsValue): JsResult[DesSAReturn] =
       for {
-        caseStartDate <- (json \ "caseStartDate").validateOpt[LocalDate]
-        receivedDate <- (json \ "receivedDate").validateOpt[LocalDate]
-        utr <- (json \ "utr").validate[SaUtr]
-        income <- json.validate[SAIncome]
+        caseStartDate       <- (json \ "caseStartDate").validateOpt[LocalDate]
+        receivedDate        <- (json \ "receivedDate").validateOpt[LocalDate]
+        utr                 <- (json \ "utr").validate[SaUtr]
+        income              <- json.validate[SAIncome]
         businessDescription <- (json \ "businessDescription").validateOpt[String]
-        addressLine1 <- (json \ "addressLine1").validateOpt[String]
-        addressLine2 <- (json \ "addressLine2").validateOpt[String]
-        addressLine3 <- (json \ "addressLine3").validateOpt[String]
-        addressLine4 <- (json \ "addressLine4").validateOpt[String]
-        postalCode <- (json \ "postalCode").validateOpt[String]
-        telephoneNumber <- (json \ "telephoneNumber").validateOpt[String]
+        addressLine1        <- (json \ "addressLine1").validateOpt[String]
+        addressLine2        <- (json \ "addressLine2").validateOpt[String]
+        addressLine3        <- (json \ "addressLine3").validateOpt[String]
+        addressLine4        <- (json \ "addressLine4").validateOpt[String]
+        postalCode          <- (json \ "postalCode").validateOpt[String]
+        telephoneNumber     <- (json \ "telephoneNumber").validateOpt[String]
         baseAddressEffectiveDate <- (json \ "baseAddressEffectivetDate")
-          .validateOpt[LocalDate] // misspelled as per the DES Spec
+                                     .validateOpt[LocalDate] // misspelled as per the DES Spec
         addressTypeIndicator <- (json \ "addressTypeIndicator").validateOpt[String]
       } yield
         DesSAReturn(
@@ -142,20 +142,20 @@ object DesSAReturn {
 }
 
 case class SAIncome(
-                     incomeFromAllEmployments: Option[Double] = None,
-                     profitFromSelfEmployment: Option[Double] = None,
-                     incomeFromSelfAssessment: Option[Double] = None,
-                     incomeFromTrust: Option[Double] = None,
-                     incomeFromForeign4Sources: Option[Double] = None,
-                     profitFromPartnerships: Option[Double] = None,
-                     incomeFromUkInterest: Option[Double] = None,
-                     incomeFromForeignDividends: Option[Double] = None,
-                     incomeFromInterestNDividendsFromUKCompaniesNTrusts: Option[Double] = None,
-                     incomeFromProperty: Option[Double] = None,
-                     incomeFromPensions: Option[Double] = None,
-                     incomeFromSharesOptions: Option[Double] = None,
-                     incomeFromGainsOnLifePolicies: Option[Double] = None,
-                     incomeFromOther: Option[Double] = None)
+  incomeFromAllEmployments: Option[Double] = None,
+  profitFromSelfEmployment: Option[Double] = None,
+  incomeFromSelfAssessment: Option[Double] = None,
+  incomeFromTrust: Option[Double] = None,
+  incomeFromForeign4Sources: Option[Double] = None,
+  profitFromPartnerships: Option[Double] = None,
+  incomeFromUkInterest: Option[Double] = None,
+  incomeFromForeignDividends: Option[Double] = None,
+  incomeFromInterestNDividendsFromUKCompaniesNTrusts: Option[Double] = None,
+  incomeFromProperty: Option[Double] = None,
+  incomeFromPensions: Option[Double] = None,
+  incomeFromSharesOptions: Option[Double] = None,
+  incomeFromGainsOnLifePolicies: Option[Double] = None,
+  incomeFromOther: Option[Double] = None)
 
 object SAIncome {
   implicit val format: Format[SAIncome] = Json.format[SAIncome]

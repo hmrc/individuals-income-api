@@ -34,9 +34,9 @@ class LiveRootControllerSpec extends BaseSpec {
       Http(endpoint).timeout(10000, 10000).headers(requestHeaders(acceptHeaderP1)).asString
 
     def assertResponseIs(
-                          httpResponse: HttpResponse[String],
-                          expectedResponseCode: Int,
-                          expectedResponseBody: String) = {
+      httpResponse: HttpResponse[String],
+      expectedResponseCode: Int,
+      expectedResponseBody: String) = {
       httpResponse.code shouldBe expectedResponseCode
       parse(httpResponse.body) shouldBe parse(expectedResponseBody)
     }
@@ -69,8 +69,7 @@ class LiveRootControllerSpec extends BaseSpec {
       val response = invokeEndpoint(serviceUrl)
 
       Then("the response status should be 400 (bad request)")
-      assertResponseIs(response, BAD_REQUEST,
-        """
+      assertResponseIs(response, BAD_REQUEST, """
           {
              "code" : "INVALID_REQUEST",
              "message" : "matchId is required"
@@ -123,8 +122,7 @@ class LiveRootControllerSpec extends BaseSpec {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, incomeScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.willRespondWith(matchId, OK,
-        """
+      IndividualsMatchingApiStub.willRespondWith(matchId, OK, """
           {
             "matchId" : "951dcf9f-8dd1-44e0-91d5-cb772c8e8e5e",
             "nino" : "AB123456C"

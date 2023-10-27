@@ -30,19 +30,18 @@ class SaTrustsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
   "SaTrusts" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "trusts": [
-          |        {
-          |          "trustIncome": 100
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "trusts": [
+                                      |        {
+                                      |          "trustIncome": 100
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaTrusts.transform(ifSa))
 
@@ -50,10 +49,9 @@ class SaTrustsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaTrusts.transform(Seq()))
 
@@ -62,19 +60,18 @@ class SaTrustsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "trusts": [
-          |        {
-          |          "trustIncome": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "trusts": [
+                                      |        {
+                                      |          "trustIncome": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaTrusts.transform(ifSaNoData))
 
@@ -83,19 +80,18 @@ class SaTrustsSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "trusts": [
-          |        {
-          |          "trustIncome": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "trusts": [
+                                      |        {
+                                      |          "trustIncome": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaTrusts.transform(ifSaNoValues))
 

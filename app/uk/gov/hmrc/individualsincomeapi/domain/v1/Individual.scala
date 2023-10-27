@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
 import org.joda.time.LocalDate
 import org.joda.time.LocalDate.parse
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
+import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
 import java.util.UUID
@@ -29,45 +28,46 @@ import java.util.UUID
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
 case class Individual(
-                       matchId: UUID,
-                       nino: String,
-                       firstName: String,
-                       lastName: String,
-                       dateOfBirth: LocalDate,
-                       income: Seq[Payment],
-                       saIncome: Seq[DesSAIncome])
+  matchId: UUID,
+  nino: String,
+  firstName: String,
+  lastName: String,
+  dateOfBirth: LocalDate,
+  income: Seq[Payment],
+  saIncome: Seq[DesSAIncome])
 
 case class Payment(
-                    taxablePayment: Double,
-                    paymentDate: LocalDate,
-                    employerPayeReference: Option[EmpRef] = None,
-                    monthPayNumber: Option[Int] = None,
-                    weekPayNumber: Option[Int] = None)
+  taxablePayment: Double,
+  paymentDate: LocalDate,
+  employerPayeReference: Option[EmpRef] = None,
+  monthPayNumber: Option[Int] = None,
+  weekPayNumber: Option[Int] = None)
 
 object Payment {
-  implicit val paymentJsonFormat = Json.format[Payment]
+  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
+  implicit val paymentJsonFormat: OFormat[Payment] = Json.format[Payment]
 }
 
 object SandboxIncomeData {
 
   def findByMatchId(matchId: UUID): Option[Individual] = individuals.find(_.matchId == matchId)
 
-  def matchedCitizen(matchId: UUID) = matchId match {
+  def matchedCitizen(matchId: UUID): Option[MatchedCitizen] = matchId match {
     case `sandboxMatchId` => Some(MatchedCitizen(sandboxMatchId, sandboxNino))
-    case _ => None
+    case _                => None
   }
 
   private lazy val individuals = Seq(amanda())
 
-  val sandboxNino = Nino("NA000799C")
+  val sandboxNino: Nino = Nino("NA000799C")
 
-  val sandboxMatchId = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
+  val sandboxMatchId: UUID = UUID.fromString("57072660-1df9-4aeb-b4ea-cd2d7f96e430")
 
-  val acmeEmployerReference = EmpRef.fromIdentifiers("123/AI45678")
+  private val acmeEmployerReference = EmpRef.fromIdentifiers("123/AI45678")
 
-  val disneyEmployerReference = EmpRef.fromIdentifiers("123/DI45678")
+  private val disneyEmployerReference = EmpRef.fromIdentifiers("123/DI45678")
 
-  val sandboxUtr = SaUtr("2432552635")
+  val sandboxUtr: SaUtr = SaUtr("2432552635")
 
   private def amanda() = Individual(
     sandboxMatchId,

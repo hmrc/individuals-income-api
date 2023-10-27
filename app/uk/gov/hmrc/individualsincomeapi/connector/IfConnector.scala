@@ -34,7 +34,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper) extends Logging {
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
+    extends Logging {
 
   private val serviceUrl = servicesConfig.baseUrl("integration-framework")
 
@@ -46,10 +47,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     "microservice.services.integration-framework.environment"
   )
 
-  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String], matchId: String)
-                     (implicit hc: HeaderCarrier,
-                      request: RequestHeader,
-                      ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
+  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String], matchId: String)(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
     val startDate = interval.getStart.toLocalDate
     val endDate = interval.getEnd.toLocalDate
 
@@ -60,10 +61,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
   }
 
-  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String], matchId: String)
-                               (implicit hc: HeaderCarrier,
-                                request: RequestHeader,
-                                ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
+  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String], matchId: String)(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
     val startYear = taxYearInterval.fromTaxYear.endYr
     val endYear = taxYearInterval.toTaxYear.endYr
     val saUrl = s"$serviceUrl/individuals/income/sa/" +
@@ -78,52 +79,60 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case Some(uuidString) =>
         Try(UUID.fromString(uuidString)) match {
           case Success(_) => uuidString
-          case _ => throw new BadRequestException("Malformed CorrelationId")
+          case _          => throw new BadRequestException("Malformed CorrelationId")
         }
       case None => throw new BadRequestException("CorrelationId is required")
     }
 
   private def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
-    "Environment" -> integrationFrameworkEnvironment,
-    "CorrelationId" -> extractCorrelationId(requestHeader)
+    "Environment"             -> integrationFrameworkEnvironment,
+    "CorrelationId"           -> extractCorrelationId(requestHeader)
   )
 
-  private def callPaye(url: String, matchId: String)
-                      (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
-    recover[IfPayeEntry](http.GET[IfPaye](url, headers = setHeaders(request)) map {
-      response =>
-        auditHelper.auditIfPayeApiResponse(
-          extractCorrelationId(request),
-          matchId, request, url, response.paye)
+  private def callPaye(
+    url: String,
+    matchId: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover[IfPayeEntry](
+      http.GET[IfPaye](url, headers = setHeaders(request)) map { response =>
+        auditHelper.auditIfPayeApiResponse(extractCorrelationId(request), matchId, request, url, response.paye)
 
         response.paye
-    },
-    extractCorrelationId(request), matchId, request, url)
-  }
+      },
+      extractCorrelationId(request),
+      matchId,
+      request,
+      url
+    )
 
-  private def callSa(url: String, matchId: String)
-                    (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
-    recover[IfSaEntry](http.GET[IfSa](url, headers = setHeaders(request)) map {
-      response =>
-        auditHelper.auditIfSaApiResponse(
-          extractCorrelationId(request),
-          matchId, request, url, response.sa)
+  private def callSa(
+    url: String,
+    matchId: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover[IfSaEntry](
+      http.GET[IfSa](url, headers = setHeaders(request)) map { response =>
+        auditHelper.auditIfSaApiResponse(extractCorrelationId(request), matchId, request, url, response.sa)
 
         response.sa
-    },
-    extractCorrelationId(request), matchId, request, url)
-  }
+      },
+      extractCorrelationId(request),
+      matchId,
+      request,
+      url
+    )
 
-  private def recover[A](x: Future[Seq[A]],
-                         correlationId: String,
-                         matchId: String,
-                         request: RequestHeader,
-                         requestUrl: String)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
+  private def recover[A](
+    x: Future[Seq[A]],
+    correlationId: String,
+    matchId: String,
+    request: RequestHeader,
+    requestUrl: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
     case validationError: JsValidationException =>
       logger.warn("Integration Framework JsValidationException encountered")
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl,
+      auditHelper.auditIfApiFailure(
+        correlationId,
+        matchId,
+        request,
+        requestUrl,
         s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
 

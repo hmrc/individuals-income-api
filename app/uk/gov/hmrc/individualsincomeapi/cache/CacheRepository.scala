@@ -30,30 +30,24 @@ import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
-                               configuration: Configuration,
-                               mongo: MongoComponent)(implicit ec: ExecutionContext
-                              ) extends PlayMongoRepository[Entry](
-  mongoComponent = mongo,
-  collectionName = cacheConfig.collName,
-  domainFormat = Entry.format,
-  replaceIndexes = true,
-  indexes = Seq(
-    IndexModel(
-      ascending("id"),
-      IndexOptions().name("_id").
-        unique(true).
-        background(false).
-        sparse(true)),
-    IndexModel(
-      ascending("modifiedDetails.lastUpdated"),
-      IndexOptions().name("lastUpdatedIndex").
-        background(false).
-        expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
-) {
+abstract class CacheRepository(
+  val cacheConfig: CacheRepositoryConfiguration,
+  configuration: Configuration,
+  mongo: MongoComponent)(implicit ec: ExecutionContext)
+    extends PlayMongoRepository[Entry](
+      mongoComponent = mongo,
+      collectionName = cacheConfig.collName,
+      domainFormat = Entry.format,
+      replaceIndexes = true,
+      indexes = Seq(
+        IndexModel(ascending("id"), IndexOptions().name("_id").unique(true).background(false).sparse(true)),
+        IndexModel(
+          ascending("modifiedDetails.lastUpdated"),
+          IndexOptions().name("lastUpdatedIndex").background(false).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS))
+      )
+    ) {
 
-  implicit lazy val crypto = new ApplicationCrypto(
-    configuration.underlying).JsonCrypto
+  implicit lazy val crypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
   def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
@@ -69,13 +63,16 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
       )
     )
 
-    collection.replaceOne(
-      Filters.equal("id", toBson(id)), entry, ReplaceOptions().upsert(true)
-    ).toFuture()
+    collection
+      .replaceOne(
+        Filters.equal("id", toBson(id)),
+        entry,
+        ReplaceOptions().upsert(true)
+      )
+      .toFuture()
   }
 
-  def fetchAndGetEntry[T](id: String)(
-    implicit formats: Format[T]): Future[Option[T]] = {
+  def fetchAndGetEntry[T](id: String)(implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = new JsonDecryptor[T]()
 
     collection
@@ -83,7 +80,7 @@ abstract class CacheRepository(val cacheConfig: CacheRepositoryConfiguration,
       .headOption()
       .map {
         case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
-        case None => None
+        case None        => None
       }
   }
 }

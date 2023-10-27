@@ -32,17 +32,16 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     */
   def getQueryStringFor(scopes: Iterable[String], endpoints: List[String]): String = {
     val filters = scopesService.getValidFilters(scopes)
-    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${
-      if (filters.nonEmpty)
-        s"&filter=${filters.mkString("&filter=")}"
-      else ""
-    }"
+    s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if (filters.nonEmpty)
+      s"&filter=${filters.mkString("&filter=")}"
+    else ""}"
   }
 
-  def getHalLinks(matchId: UUID,
-                  excludeList: Option[List[String]],
-                  scopes: Iterable[String],
-                  allowedList: Option[List[String]]): HalResource = {
+  def getHalLinks(
+    matchId: UUID,
+    excludeList: Option[List[String]],
+    scopes: Iterable[String],
+    allowedList: Option[List[String]]): HalResource = {
 
     val links = getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getInternalEndpoints(scopes))
 
@@ -50,19 +49,20 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
   }
 
   private def getAllHalLinks(
-                              matchId: UUID,
-                              excludeList: Option[List[String]],
-                              allowedList: Option[List[String]],
-                              getEndpoints: () => Iterable[EndpointConfig]): Seq[HalLink] =
-
+    matchId: UUID,
+    excludeList: Option[List[String]],
+    allowedList: Option[List[String]],
+    getEndpoints: () => Iterable[EndpointConfig]): Seq[HalLink] =
     getEndpoints()
-      .filter(c =>
-        !excludeList.getOrElse(List()).contains(c.name) &&
-          allowedList.getOrElse(getEndpoints().map(e => e.name).toList).contains(c.name))
-      .map(endpoint =>
-        HalLink(
-          rel = endpoint.name,
-          href = endpoint.link.replaceAll("<matchId>", s"$matchId"),
-          title = Some(endpoint.title)))
+      .filter(
+        c =>
+          !excludeList.getOrElse(List()).contains(c.name) &&
+            allowedList.getOrElse(getEndpoints().map(e => e.name).toList).contains(c.name))
+      .map(
+        endpoint =>
+          HalLink(
+            rel = endpoint.name,
+            href = endpoint.link.replaceAll("<matchId>", s"$matchId"),
+            title = Some(endpoint.title)))
       .toSeq
 }

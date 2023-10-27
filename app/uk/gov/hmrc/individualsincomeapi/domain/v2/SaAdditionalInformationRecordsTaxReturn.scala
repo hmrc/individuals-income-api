@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsincomeapi.domain.v2
 import play.api.libs.json.Json
 
 case class SaAdditionalInformationRecordsTaxReturn(
-                                                    taxYear: String,
-                                                    additionalInformation: Seq[SaAdditionalInformationRecord]
-                                                  )
+  taxYear: String,
+  additionalInformation: Seq[SaAdditionalInformationRecord]
+)
 
 object SaAdditionalInformationRecordsTaxReturn {
 

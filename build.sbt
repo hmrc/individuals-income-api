@@ -8,9 +8,11 @@ lazy val ComponentTest = config("component") extend Test
 lazy val microservice =
   Project(appName, file("."))
     .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
+    .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
     .settings(onLoadMessage := "")
     .settings(CodeCoverageSettings.settings *)
     .settings(scalaVersion := "2.13.8")
+    .settings(scalafmtOnCompile := true)
     .settings(
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies.test()),
       routesImport := Seq("uk.gov.hmrc.individualsincomeapi.Binders._"),
@@ -24,7 +26,7 @@ lazy val microservice =
       IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "test")).value,
       IntegrationTest / testOptions := Seq(Tests.Filter((name: String) => name startsWith "it")),
       addTestReportOption(IntegrationTest, "int-test-reports"),
-      IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests ).value),
+      IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
       IntegrationTest / parallelExecution := false,
       // Disable default sbt Test options (might change with new versions of bootstrap)
       IntegrationTest / testOptions -= Tests
@@ -55,7 +57,10 @@ lazy val microservice =
         "-h",
         "target/component-test-reports/html-report")
     )
-    .settings(scalacOptions += "-Wconf:src=routes/.*:s")
+    .settings(
+      scalacOptions += "-Wconf:src=routes/.*:s",
+      scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s"
+    )
     .settings(PlayKeys.playDefaultPort := 9652)
     .settings(majorVersion := 0)
     // Disable default sbt Test options (might change with new versions of bootstrap)
@@ -74,4 +79,4 @@ lazy val microservice =
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
   tests.map { test =>
     Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
-}
+  }

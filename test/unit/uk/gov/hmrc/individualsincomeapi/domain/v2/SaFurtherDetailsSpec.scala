@@ -32,29 +32,28 @@ class SaFurtherDetailsSpec extends AnyWordSpec with Matchers with IncomeSaHelper
 
   "SaFurtherDetails" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "furtherDetails": [
-          |        {
-          |          "busStartDate": "2020-01-01",
-          |          "busEndDate": "2020-01-30",
-          |          "totalTaxPaid": 100.01,
-          |          "totalNIC": 100.01,
-          |          "turnover": 100.01,
-          |          "otherBusIncome": 100.01,
-          |          "tradingIncomeAllowance": 100.01,
-          |          "deducts": {
-          |            "totalBusExpenses": 200,
-          |            "totalDisallowBusExp": 200
-          |          }
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "furtherDetails": [
+                                      |        {
+                                      |          "busStartDate": "2020-01-01",
+                                      |          "busEndDate": "2020-01-30",
+                                      |          "totalTaxPaid": 100.01,
+                                      |          "totalNIC": 100.01,
+                                      |          "turnover": 100.01,
+                                      |          "otherBusIncome": 100.01,
+                                      |          "tradingIncomeAllowance": 100.01,
+                                      |          "deducts": {
+                                      |            "totalBusExpenses": 200,
+                                      |            "totalDisallowBusExp": 200
+                                      |          }
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaFurtherDetails.transform(ifSa))
 
@@ -62,10 +61,9 @@ class SaFurtherDetailsSpec extends AnyWordSpec with Matchers with IncomeSaHelper
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaFurtherDetails.transform(Seq()))
 
@@ -74,25 +72,24 @@ class SaFurtherDetailsSpec extends AnyWordSpec with Matchers with IncomeSaHelper
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "furtherDetails": [
-          |        {
-          |          "busStartDate": "2020-01-01",
-          |          "busEndDate": "2020-01-30",
-          |          "totalTaxPaid": 100.01,
-          |          "totalNIC": 100.01,
-          |          "turnover": 100.01,
-          |          "otherBusIncome": 100.01,
-          |          "tradingIncomeAllowance": 100.01
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "furtherDetails": [
+                                      |        {
+                                      |          "busStartDate": "2020-01-01",
+                                      |          "busEndDate": "2020-01-30",
+                                      |          "totalTaxPaid": 100.01,
+                                      |          "totalNIC": 100.01,
+                                      |          "turnover": 100.01,
+                                      |          "otherBusIncome": 100.01,
+                                      |          "tradingIncomeAllowance": 100.01
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaFurtherDetails.transform(ifSaNoData))
 
@@ -101,20 +98,19 @@ class SaFurtherDetailsSpec extends AnyWordSpec with Matchers with IncomeSaHelper
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "furtherDetails": [
-          |        {
-          |          "busStartDate": "2020-01-01",
-          |          "busEndDate": "2020-01-30"
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "furtherDetails": [
+                                      |        {
+                                      |          "busStartDate": "2020-01-01",
+                                      |          "busEndDate": "2020-01-30"
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaFurtherDetails.transform(ifSaNoValues))
 

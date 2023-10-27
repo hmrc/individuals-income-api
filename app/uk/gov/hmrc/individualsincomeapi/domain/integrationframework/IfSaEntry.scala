@@ -22,59 +22,59 @@ import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa._
 
 case class IfAddress(
-                      line1: Option[String],
-                      line2: Option[String],
-                      line3: Option[String],
-                      line4: Option[String],
-                      line5: Option[String] = None,
-                      postcode: Option[String]
-                    )
+  line1: Option[String],
+  line2: Option[String],
+  line3: Option[String],
+  line4: Option[String],
+  line5: Option[String] = None,
+  postcode: Option[String]
+)
 
 case class IfSaIncome(
-                       selfAssessment: Option[Double],
-                       allEmployments: Option[Double],
-                       ukInterest: Option[Double],
-                       foreignDivs: Option[Double],
-                       ukDivsAndInterest: Option[Double],
-                       partnerships: Option[Double],
-                       pensions: Option[Double],
-                       selfEmployment: Option[Double],
-                       trusts: Option[Double],
-                       ukProperty: Option[Double],
-                       foreign: Option[Double],
-                       lifePolicies: Option[Double],
-                       shares: Option[Double],
-                       other: Option[Double]
-                     )
+  selfAssessment: Option[Double],
+  allEmployments: Option[Double],
+  ukInterest: Option[Double],
+  foreignDivs: Option[Double],
+  ukDivsAndInterest: Option[Double],
+  partnerships: Option[Double],
+  pensions: Option[Double],
+  selfEmployment: Option[Double],
+  trusts: Option[Double],
+  ukProperty: Option[Double],
+  foreign: Option[Double],
+  lifePolicies: Option[Double],
+  shares: Option[Double],
+  other: Option[Double]
+)
 
 case class IfDeducts(
-                      totalBusExpenses: Option[Double],
-                      totalDisallowBusExp: Option[Double]
-                    )
+  totalBusExpenses: Option[Double],
+  totalDisallowBusExp: Option[Double]
+)
 
 case class IfSaReturn(
-                       utr: Option[String],
-                       caseStartDate: Option[String],
-                       receivedDate: Option[String],
-                       businessDescription: Option[String],
-                       telephoneNumber: Option[String],
-                       busStartDate: Option[String],
-                       busEndDate: Option[String],
-                       totalTaxPaid: Option[Double],
-                       totalNIC: Option[Double],
-                       turnover: Option[Double],
-                       otherBusinessIncome: Option[Double],
-                       tradingIncomeAllowance: Option[Double],
-                       address: Option[IfAddress],
-                       income: Option[IfSaIncome],
-                       deducts: Option[IfDeducts]
-                     )
+  utr: Option[String],
+  caseStartDate: Option[String],
+  receivedDate: Option[String],
+  businessDescription: Option[String],
+  telephoneNumber: Option[String],
+  busStartDate: Option[String],
+  busEndDate: Option[String],
+  totalTaxPaid: Option[Double],
+  totalNIC: Option[Double],
+  turnover: Option[Double],
+  otherBusinessIncome: Option[Double],
+  tradingIncomeAllowance: Option[Double],
+  address: Option[IfAddress],
+  income: Option[IfSaIncome],
+  deducts: Option[IfDeducts]
+)
 
 case class IfSaEntry(
-                      taxYear: Option[String],
-                      income: Option[Double],
-                      returnList: Option[Seq[IfSaReturn]]
-                    )
+  taxYear: Option[String],
+  income: Option[Double],
+  returnList: Option[Seq[IfSaReturn]]
+)
 
 object IfSaEntry {
 
@@ -96,7 +96,7 @@ object IfSaEntry {
         (JsPath \ "line4").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "line5").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
         (JsPath \ "postcode").readNullable[String](minLength[String](0).andKeep(maxLength[String](10)))
-      )(IfAddress.apply _),
+    )(IfAddress.apply _),
     (
       (JsPath \ "line1").writeNullable[String] and
         (JsPath \ "line2").writeNullable[String] and
@@ -104,7 +104,7 @@ object IfSaEntry {
         (JsPath \ "line4").writeNullable[String] and
         (JsPath \ "line5").writeNullable[String] and
         (JsPath \ "postcode").writeNullable[String]
-      )(unlift(IfAddress.unapply))
+    )(unlift(IfAddress.unapply))
   )
 
   implicit val saIncomeFormat: Format[IfSaIncome] = Format(
@@ -123,7 +123,7 @@ object IfSaEntry {
         (JsPath \ "lifePolicies").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "shares").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "other").readNullable[Double](verifying(paymentAmountValidator))
-      )(IfSaIncome.apply _),
+    )(IfSaIncome.apply _),
     (
       (JsPath \ "selfAssessment").writeNullable[Double] and
         (JsPath \ "allEmployments").writeNullable[Double] and
@@ -139,18 +139,18 @@ object IfSaEntry {
         (JsPath \ "lifePolicies").writeNullable[Double] and
         (JsPath \ "shares").writeNullable[Double] and
         (JsPath \ "other").writeNullable[Double]
-      )(unlift(IfSaIncome.unapply))
+    )(unlift(IfSaIncome.unapply))
   )
 
   implicit val saDeductsFormat: Format[IfDeducts] = Format(
     (
       (JsPath \ "totalBusExpenses").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "totalDisallowBusExp").readNullable[Double](verifying(paymentAmountValidator))
-      )(IfDeducts.apply _),
+    )(IfDeducts.apply _),
     (
       (JsPath \ "totalBusExpenses").writeNullable[Double] and
         (JsPath \ "totalDisallowBusExp").writeNullable[Double]
-      )(unlift(IfDeducts.unapply))
+    )(unlift(IfDeducts.unapply))
   )
 
   implicit val saReturnTypeFormat: Format[IfSaReturn] = Format(
@@ -170,7 +170,7 @@ object IfSaEntry {
         (JsPath \ "address").readNullable[IfAddress] and
         (JsPath \ "income").readNullable[IfSaIncome] and
         (JsPath \ "deducts").readNullable[IfDeducts]
-      )(IfSaReturn.apply _),
+    )(IfSaReturn.apply _),
     (
       (JsPath \ "utr").writeNullable[String] and
         (JsPath \ "caseStartDate").writeNullable[String] and
@@ -187,7 +187,7 @@ object IfSaEntry {
         (JsPath \ "address").writeNullable[IfAddress] and
         (JsPath \ "income").writeNullable[IfSaIncome] and
         (JsPath \ "deducts").writeNullable[IfDeducts]
-      )(unlift(IfSaReturn.unapply))
+    )(unlift(IfSaReturn.unapply))
   )
 
   implicit val saTaxYearEntryFormat: Format[IfSaEntry] = Format(
@@ -195,12 +195,12 @@ object IfSaEntry {
       (JsPath \ "taxYear").readNullable[String](pattern(taxYearPattern, "Invalid Tax Year")) and
         (JsPath \ "income").readNullable[Double](verifying(paymentAmountValidator)) and
         (JsPath \ "returnList").readNullable[Seq[IfSaReturn]]
-      )(IfSaEntry.apply _),
+    )(IfSaEntry.apply _),
     (
       (JsPath \ "taxYear").writeNullable[String] and
         (JsPath \ "income").writeNullable[Double] and
         (JsPath \ "returnList").writeNullable[Seq[IfSaReturn]]
-      )(unlift(IfSaEntry.unapply))
+    )(unlift(IfSaEntry.unapply))
   )
 
 }

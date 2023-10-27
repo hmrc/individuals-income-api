@@ -30,20 +30,19 @@ class SaAdditionalInformationRecordsSpec extends AnyWordSpec with Matchers with 
 
   "SaAdditionalInformationRecords" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "additionalInformation": [
-          |        {
-          |          "gainsOnLifePolicies": 100,
-          |          "sharesOptionsIncome": 100
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "additionalInformation": [
+                                      |        {
+                                      |          "gainsOnLifePolicies": 100,
+                                      |          "sharesOptionsIncome": 100
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaAdditionalInformationRecords.transform(ifSa))
 
@@ -51,10 +50,9 @@ class SaAdditionalInformationRecordsSpec extends AnyWordSpec with Matchers with 
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaAdditionalInformationRecords.transform(Seq()))
 
@@ -63,20 +61,19 @@ class SaAdditionalInformationRecordsSpec extends AnyWordSpec with Matchers with 
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "additionalInformation": [
-          |        {
-          |          "gainsOnLifePolicies": 0.0,
-          |          "sharesOptionsIncome": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "additionalInformation": [
+                                      |        {
+                                      |          "gainsOnLifePolicies": 0.0,
+                                      |          "sharesOptionsIncome": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaAdditionalInformationRecords.transform(ifSaNoData))
 
@@ -85,20 +82,19 @@ class SaAdditionalInformationRecordsSpec extends AnyWordSpec with Matchers with 
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "additionalInformation": [
-          |        {
-          |          "gainsOnLifePolicies": 0.0,
-          |          "sharesOptionsIncome": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "additionalInformation": [
+                                      |        {
+                                      |          "gainsOnLifePolicies": 0.0,
+                                      |          "sharesOptionsIncome": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaAdditionalInformationRecords.transform(ifSaNoValues))
 

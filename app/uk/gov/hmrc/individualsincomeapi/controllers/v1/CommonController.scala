@@ -47,20 +47,20 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   private[controllers] def urlWithTaxYearInterval[T](url: String)(implicit request: Request[T]) =
     (getQueryParam("fromTaxYear"), getQueryParam("toTaxYear")) match {
       case (Some(fromTaxYear), Some(toTaxYear)) => s"$url&fromTaxYear=$fromTaxYear&toTaxYear=$toTaxYear"
-      case (Some(fromTaxYear), None) => s"$url&fromTaxYear=$fromTaxYear"
-      case _ => url
+      case (Some(fromTaxYear), None)            => s"$url&fromTaxYear=$fromTaxYear"
+      case _                                    => url
     }
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException => ErrorNotFound.toHttpResponse
-    case e: AuthorisationException => ErrorUnauthorized(e.getMessage).toHttpResponse
-    case _: TooManyRequestException => ErrorTooManyRequests.toHttpResponse
+    case _: MatchNotFoundException   => ErrorNotFound.toHttpResponse
+    case e: AuthorisationException   => ErrorUnauthorized(e.getMessage).toHttpResponse
+    case _: TooManyRequestException  => ErrorTooManyRequests.toHttpResponse
     case e: IllegalArgumentException => ErrorInvalidRequest(e.getMessage).toHttpResponse
   }
 
-  private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
-                                            (implicit request: RequestHeader,
-                                             auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
+  private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)(
+    implicit request: RequestHeader,
+    auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException => {
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
@@ -103,13 +103,11 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
-  def authenticate(endpointScopes: Iterable[String],
-                   matchId: String)
-                  (f: Iterable[String] => Future[Result])
-                  (implicit hc: HeaderCarrier,
-                   request: RequestHeader,
-                   auditHelper: AuditHelper,
-                   ec: ExecutionContext): Future[Result] = {
+  def authenticate(endpointScopes: Iterable[String], matchId: String)(f: Iterable[String] => Future[Result])(
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    auditHelper: AuditHelper,
+    ec: ExecutionContext): Future[Result] = {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
@@ -127,8 +125,8 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
     }
   }
 
-  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] =
+  def requiresPrivilegedAuthentication(scope: String)(
+    body: => Future[Result])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] =
     if (environment == SANDBOX) body
     else authorised(Enrolment(scope))(body)
 }

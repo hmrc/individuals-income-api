@@ -32,7 +32,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext) extends Logging {
+class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext)
+    extends Logging {
 
   private val serviceUrl = servicesConfig.baseUrl("des")
 
@@ -41,8 +42,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
 
   private def setHeaders() = Seq(
     HeaderNames.authorisation -> s"Bearer $desBearerToken",
-    "Environment" -> desEnvironment,
-    "Source" -> "MDTP"
+    "Environment"             -> desEnvironment,
+    "Source"                  -> "MDTP"
   )
 
   def fetchEmployments(nino: Nino, interval: Interval)(
@@ -69,7 +70,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
 
-    recover[DesSAIncome](http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator)))
+    recover[DesSAIncome](
+      http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator)))
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {

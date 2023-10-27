@@ -63,8 +63,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe
-        Json.parse(
-          s"""
+        Json.parse(s"""
          {
              "_links": {
                  "paye": {

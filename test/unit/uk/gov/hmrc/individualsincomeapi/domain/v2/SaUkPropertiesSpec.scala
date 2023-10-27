@@ -30,19 +30,18 @@ class SaUkPropertiesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
 
   "SaUkProperties" should {
     "Write to Json for verbose data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "ukProperties": [
-          |        {
-          |          "totalProfit": 100
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "ukProperties": [
+                                      |        {
+                                      |          "totalProfit": 100
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaUkProperties.transform(ifSa))
 
@@ -50,10 +49,9 @@ class SaUkPropertiesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
     }
 
     "Write to Json for no root data" in {
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": []
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": []
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaUkProperties.transform(Seq()))
 
@@ -62,19 +60,18 @@ class SaUkPropertiesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
 
     "Write to Json with defaults no data containers" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "ukProperties": [
-          |        {
-          |          "totalProfit": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "ukProperties": [
+                                      |        {
+                                      |          "totalProfit": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaUkProperties.transform(ifSaNoData))
 
@@ -83,19 +80,18 @@ class SaUkPropertiesSpec extends AnyWordSpec with Matchers with IncomeSaHelpers 
 
     "Write to Json with defaults no vales" in {
 
-      val expectedJson = Json.parse(
-        """{
-          |  "taxReturns": [
-          |    {
-          |      "taxYear": "2019-20",
-          |      "ukProperties": [
-          |        {
-          |          "totalProfit": 0.0
-          |        }
-          |      ]
-          |    }
-          |  ]
-          |}""".stripMargin)
+      val expectedJson = Json.parse("""{
+                                      |  "taxReturns": [
+                                      |    {
+                                      |      "taxYear": "2019-20",
+                                      |      "ukProperties": [
+                                      |        {
+                                      |          "totalProfit": 0.0
+                                      |        }
+                                      |      ]
+                                      |    }
+                                      |  ]
+                                      |}""".stripMargin)
 
       val result = Json.toJson(SaUkProperties.transform(ifSaNoValues))
 

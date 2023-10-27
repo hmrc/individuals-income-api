@@ -23,7 +23,6 @@ import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfS
 
 object IfStub extends MockHost(24000) {
 
-
   def searchPayeIncomeForPeriodReturns(nino: String, fromDate: String, toDate: String, fields: String, ifPaye: IfPaye) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
@@ -64,7 +63,13 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
 
-  def saCustomResponse(nino: String, status: Int, fromTaxYear: String, toTaxYear: String, fields: String, response: JsValue) =
+  def saCustomResponse(
+    nino: String,
+    status: Int,
+    fromTaxYear: String,
+    toTaxYear: String,
+    fields: String,
+    response: JsValue) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))
@@ -72,12 +77,11 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("fields", equalTo(fields))
         .willReturn(aResponse().withStatus(status).withBody(Json.toJson(response.toString()).toString())))
 
-
   def searchSaIncomeReturnsRateLimitErrorFor(
-                                              nino: String,
-                                              fromTaxYear: String,
-                                              toTaxYear: String,
-                                              fields: String): Unit =
+    nino: String,
+    fromTaxYear: String,
+    toTaxYear: String,
+    fields: String): Unit =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))

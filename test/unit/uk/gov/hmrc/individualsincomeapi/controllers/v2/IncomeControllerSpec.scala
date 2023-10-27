@@ -170,8 +170,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -199,13 +198,13 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 200 with correct self link response when toDate is not provided in the request" in new Setup {
 
-      val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
+      val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
@@ -229,8 +228,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).
-        auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
     }
 
     "return 404 for an invalid matchId" in new Setup {
@@ -243,8 +241,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
       status(result) shouldBe NOT_FOUND
 
-      verify(incomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
 
     }
 
@@ -264,16 +261,16 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
           |""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "return bad request with correct message when CorrelationId Header is malformed" in new Setup {
       given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(incomeController.income(matchId.toString, interval)(FakeRequest()
-        .withHeaders("CorrelationId" -> "test")))
+      val result = await(
+        incomeController.income(matchId.toString, interval)(FakeRequest()
+          .withHeaders("CorrelationId" -> "test")))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -285,8 +282,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
           |""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).
-        auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
   }
 }

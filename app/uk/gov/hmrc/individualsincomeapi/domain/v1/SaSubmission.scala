@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import play.api.libs.json.JodaReads._
-import play.api.libs.json.JodaWrites._
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.SaUtr
+import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
 
@@ -156,14 +155,14 @@ object SaAnnualPartnershipIncomes {
 }
 
 case class SaAnnualInterestAndDividendIncomes(
-                                               taxYear: TaxYear,
-                                               interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome])
+  taxYear: TaxYear,
+  interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome])
 
 case class SaAnnualInterestAndDividendIncome(
-                                              utr: SaUtr,
-                                              ukInterestsIncome: Double,
-                                              foreignDividendsIncome: Double,
-                                              ukDividendsIncome: Double)
+  utr: SaUtr,
+  ukInterestsIncome: Double,
+  foreignDividendsIncome: Double,
+  ukDividendsIncome: Double)
 
 object SaAnnualInterestAndDividendIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualInterestAndDividendIncomes =
@@ -176,13 +175,13 @@ object SaAnnualInterestAndDividendIncomes {
             sa.income.incomeFromUkInterest.getOrElse(0.0),
             sa.income.incomeFromForeignDividends.getOrElse(0.0),
             sa.income.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)
-          ))
+        ))
     )
 }
 
 case class SaAnnualPensionAndStateBenefitIncomes(
-                                                  taxYear: TaxYear,
-                                                  pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome])
+  taxYear: TaxYear,
+  pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome])
 
 case class SaAnnualPensionAndStateBenefitIncome(utr: SaUtr, totalIncome: Double)
 
@@ -218,8 +217,8 @@ object SaIncomeSources {
           val addressType = sa.addressTypeIndicator match {
             case Some("B") => Some("homeAddress")
             case Some("C") => Some("correspondenceAddress")
-            case Some(_) => Some("other")
-            case None => None
+            case Some(_)   => Some("other")
+            case None      => None
           }
 
           val address = SourceAddress(
@@ -246,28 +245,29 @@ object SaIncomeSources {
   implicit val format: Format[SaIncomeSources] = Json.format[SaIncomeSources]
 }
 
-
-case class SourceAddress(line1: Option[String] = None,
-                         line2: Option[String] = None,
-                         line3: Option[String] = None,
-                         line4: Option[String] = None,
-                         line5: Option[String] = None,
-                         postcode: Option[String] = None,
-                         effectiveDate: Option[LocalDate] = None,
-                         addressType: Option[String] = None) {
+case class SourceAddress(
+  line1: Option[String] = None,
+  line2: Option[String] = None,
+  line3: Option[String] = None,
+  line4: Option[String] = None,
+  line5: Option[String] = None,
+  postcode: Option[String] = None,
+  effectiveDate: Option[LocalDate] = None,
+  addressType: Option[String] = None) {
 
   def isEmpty: Boolean = this == SourceAddress()
 }
 
 object SourceAddress {
+  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
   implicit val apiWrites: Format[SourceAddress] = Json.format[SourceAddress]
 }
 
 case class SaIncomeSource(
-                           utr: SaUtr,
-                           businessDescription: Option[String],
-                           businessAddress: Option[SourceAddress],
-                           telephoneNumber: Option[String])
+  utr: SaUtr,
+  businessDescription: Option[String],
+  businessAddress: Option[SourceAddress],
+  telephoneNumber: Option[String])
 
 object SaIncomeSource {
   implicit val format: Format[SaIncomeSource] = Json.format[SaIncomeSource]

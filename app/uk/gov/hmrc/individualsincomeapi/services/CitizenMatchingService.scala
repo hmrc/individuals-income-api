@@ -35,13 +35,13 @@ class SandboxCitizenMatchingService extends CitizenMatchingService {
   override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     SandboxIncomeData.matchedCitizen(matchId) match {
       case Some(matchedCitizen) => successful(matchedCitizen)
-      case None => failed(new MatchNotFoundException)
+      case None                 => failed(new MatchNotFoundException)
     }
 }
 
 @Singleton
 class LiveCitizenMatchingService @Inject()(individualsMatchingApiConnector: IndividualsMatchingApiConnector)
-  extends CitizenMatchingService {
+    extends CitizenMatchingService {
   override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)
 }

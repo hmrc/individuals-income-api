@@ -25,7 +25,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import uk.gov.hmrc.individualsincomeapi.util.IntervalQueryStringBinder
 
 class IntervalQueryStringBinderSpec
-  extends AnyFlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {
+    extends AnyFlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {
 
   lazy val intervalQueryStringBinder = new IntervalQueryStringBinder
 
