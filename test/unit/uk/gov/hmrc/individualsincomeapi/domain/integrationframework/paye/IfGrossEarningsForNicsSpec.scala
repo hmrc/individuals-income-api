@@ -20,7 +20,6 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfGrossEarningsForNics
-import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry._
 
 class IfGrossEarningsForNicsSpec extends AnyWordSpec with Matchers {
 
