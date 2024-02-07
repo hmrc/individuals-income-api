@@ -84,7 +84,7 @@ abstract class CacheRepository(
         .headOption()
         .map {
           case Some(entry) => decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
-          case None => None
+          case None        => None
         }
     }
   }
