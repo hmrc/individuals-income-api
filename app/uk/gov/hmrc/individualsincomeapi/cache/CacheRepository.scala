@@ -20,8 +20,8 @@ import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
-import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
+import uk.gov.hmrc.crypto.json.JsonEncryption
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Sensitive}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -52,8 +52,8 @@ abstract class CacheRepository(
 
   def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
-    val jsonEncryptor = new JsonEncryptor[T]()
-    val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
+    val jsonEncryptor = JsonEncryption.sensitiveEncrypter[T, SensitiveT[T]]
+    val encryptedValue: JsValue = jsonEncryptor.writes(SensitiveT(value))
 
     val entry = new Entry(
       id,
@@ -76,7 +76,7 @@ abstract class CacheRepository(
   }
 
   def fetchAndGetEntry[T](id: String)(implicit formats: Format[T]): Future[Option[T]] = {
-    val decryptor = new JsonDecryptor[T]()
+    val decryptor = JsonEncryption.sensitiveDecrypter[T, SensitiveT[T]](SensitiveT.apply)
 
     preservingMdc {
       collection
@@ -89,3 +89,4 @@ abstract class CacheRepository(
     }
   }
 }
+private case class SensitiveT[A](override val decryptedValue: A) extends Sensitive[A]
