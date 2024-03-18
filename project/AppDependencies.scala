@@ -6,25 +6,25 @@ object AppDependencies {
   val hmrc = "uk.gov.hmrc"
   val hmrcMongo = s"$hmrc.mongo"
 
-  val mongoVersion = "0.73.0"
-  val bootstrapVersion = "7.23.0"
+  val playVersion = "play-30"
+  val mongoVersion = "1.7.0"
+  val bootstrapVersion = "8.4.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    hmrc                %% "bootstrap-backend-play-28"  % bootstrapVersion,
-    hmrc                %% "domain"                     % "8.3.0-play-28",
-    hmrc                %% "play-hal"                   % "3.4.0-play-28",
-    hmrc                %% "json-encryption"            % "5.1.0-play-28",
-    "com.typesafe.play" %% "play-json-joda"             % "2.9.2",
-    hmrcMongo           %% "hmrc-mongo-play-28"         % mongoVersion
+    hmrc                %% s"bootstrap-backend-$playVersion"               % bootstrapVersion,
+    hmrc                %% s"domain-$playVersion"                          % "9.0.0",
+    hmrc                %% s"play-hal-$playVersion"                        % "4.0.0",
+    hmrc                %% s"crypto-json-$playVersion"                     % "7.6.0",
+    hmrcMongo           %% s"hmrc-mongo-$playVersion"                      % mongoVersion
   )
 
   def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
-    hmrc                     %% "bootstrap-test-play-28"             % bootstrapVersion    % scope,
-    "org.scalatestplus"      %% "mockito-3-4"              % "3.2.1.0"           % scope,
-    "org.scalatestplus"      %% "scalacheck-1-15"          % "3.2.10.0"          % scope,
-    "com.vladsch.flexmark"   % "flexmark-all"              % "0.64.6"           % scope,
-    "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
-    hmrcMongo                %% "hmrc-mongo-test-play-28"  % mongoVersion        % scope,
+    hmrc                     %% s"bootstrap-test-$playVersion"             % bootstrapVersion     % scope,
+    "org.scalatestplus"      %% "mockito-3-4"                              % "3.2.10.0"           % scope,
+    "org.scalatestplus"      %% "scalacheck-1-17"                          % "3.2.17.0"           % scope,
+    "com.vladsch.flexmark"   % "flexmark-all"                              % "0.64.8"             % scope,
+    "org.scalaj"             %% "scalaj-http"                              % "2.4.2"              % scope,
+    hmrcMongo                %% s"hmrc-mongo-test-$playVersion"            % mongoVersion         % scope,
   )
 }
