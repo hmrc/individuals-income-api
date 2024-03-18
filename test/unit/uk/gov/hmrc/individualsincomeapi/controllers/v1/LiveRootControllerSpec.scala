@@ -51,7 +51,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector, cc)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
-    implicit val hc = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
   }
 
   "Live match citizen controller match citizen function" should {

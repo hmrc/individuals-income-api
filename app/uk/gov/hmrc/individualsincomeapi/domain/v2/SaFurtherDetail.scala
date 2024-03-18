@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SaFurtherDetail(
   busStartDate: Option[String],
@@ -31,6 +31,6 @@ case class SaFurtherDetail(
 
 object SaFurtherDetail {
 
-  implicit val saFurtherDetailJsonFormat = Json.format[SaFurtherDetail]
+  implicit val saFurtherDetailJsonFormat: OFormat[SaFurtherDetail] = Json.format[SaFurtherDetail]
 
 }

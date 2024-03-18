@@ -31,7 +31,7 @@ case class TaxYear(formattedTaxYear: String) {
 
 object TaxYear {
 
-  implicit val formatTaxYear = new Format[TaxYear] {
+  implicit val formatTaxYear: Format[TaxYear] = new Format[TaxYear] {
     override def reads(json: JsValue): JsResult[TaxYear] = JsSuccess(TaxYear(json.asInstanceOf[JsString].value))
 
     override def writes(taxYear: TaxYear): JsValue = JsString(taxYear.formattedTaxYear)

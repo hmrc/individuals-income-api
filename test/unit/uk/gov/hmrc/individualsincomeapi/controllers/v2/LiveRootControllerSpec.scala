@@ -54,7 +54,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
     val mockAuditHelper = mock[AuditHelper]
 
-    implicit lazy val ec = fakeApplication().injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
