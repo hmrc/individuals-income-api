@@ -18,7 +18,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import controllers.Assets
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
