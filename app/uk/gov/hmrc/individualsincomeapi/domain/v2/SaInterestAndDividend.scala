@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SaInterestAndDividend(
   ukInterestsIncome: Double,
@@ -26,6 +26,6 @@ case class SaInterestAndDividend(
 
 object SaInterestAndDividend {
 
-  implicit val saInterestAndDividendJsonFormat = Json.format[SaInterestAndDividend]
+  implicit val saInterestAndDividendJsonFormat: OFormat[SaInterestAndDividend] = Json.format[SaInterestAndDividend]
 
 }

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SaSourceAddress(
   line1: Option[String],
@@ -29,6 +29,6 @@ case class SaSourceAddress(
 
 object SaSourceAddress {
 
-  implicit val saSourceAddressJsonFormat = Json.format[SaSourceAddress]
+  implicit val saSourceAddressJsonFormat: OFormat[SaSourceAddress] = Json.format[SaSourceAddress]
 
 }
