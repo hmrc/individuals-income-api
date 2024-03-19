@@ -39,7 +39,7 @@ object TaxYear {
 
   private final val TaxYearRegex = "^(\\d{4})-(\\d{2})$"
 
-  private final def firstDayOfTaxYear(year: Int): LocalDate = new MonthDay(4, 6).toLocalDate(year)
+  private final def firstDayOfTaxYear(year: Int): LocalDate = LocalDate.of(year, Month.APRIL, 6)
 
   private val matchTaxYear: String => Option[Match] = new Regex(TaxYearRegex, "first", "second") findFirstMatchIn _
 
@@ -50,7 +50,7 @@ object TaxYear {
   }
 
   def current(): TaxYear = {
-    val date = new LocalDate(DateTime.now(), DateTimeZone.forID("Europe/London"))
+    val date = ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDate
     if (date isBefore firstDayOfTaxYear(date.getYear)) fromEndYear(date.getYear)
     else fromEndYear(date.getYear + 1)
   }

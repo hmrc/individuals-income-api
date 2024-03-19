@@ -16,22 +16,26 @@
 
 package uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.{DateTime, Interval, LocalDate}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval, ValidationException}
+
+import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.format.DateTimeFormatter
+
+case class Interval(from: LocalDateTime, to: LocalDateTime)
 
 object Dates {
 
-  val localDatePattern = "yyyy-MM-dd"
+  val localDatePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
   private lazy val desDataInceptionDate = LocalDate.parse("2013-03-31")
   private lazy val selfAssessmentYearHistory = 6
 
-  def toFormattedLocalDate(date: DateTime): String = date.toLocalDate.toString(localDatePattern)
+  def toFormattedLocalDate(date: LocalDateTime): String = localDatePattern.format(date)
 
   def toInterval(fromDate: LocalDate, toDate: LocalDate): Interval =
     if (fromDate.isBefore(desDataInceptionDate))
       throw new ValidationException("fromDate earlier than 31st March 2013")
-    else new Interval(fromDate.toDate.getTime, toDate.toDateTimeAtStartOfDay.plusMillis(1).toDate.getTime)
+    else new Interval(fromDate.atTime(LocalTime.MIN), toDate.atTime(0, 0, 0, 1000000))
 
   def toTaxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): TaxYearInterval = {
     if (fromTaxYear.startYr > toTaxYear.startYr)

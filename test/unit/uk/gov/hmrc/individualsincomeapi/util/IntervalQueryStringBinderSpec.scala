@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

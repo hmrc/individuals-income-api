@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import org.joda.time.Interval
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json
@@ -27,6 +26,7 @@ import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -47,7 +47,7 @@ class IncomeController @Inject()(
       withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
         incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
           val selfLink =
-            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.from))
 
           val incomeJsObject = Json.obj("income" -> toJson(paye))
           val payeJsObject = obj("paye"          -> incomeJsObject)

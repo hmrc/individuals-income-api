@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{times, verify}

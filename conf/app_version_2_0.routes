@@ -1,6 +1,6 @@
 # microservice specific routes
 GET        /                                      uk.gov.hmrc.individualsincomeapi.controllers.v2.RootController.root(matchId: java.lang.String)
-GET        /paye                                  uk.gov.hmrc.individualsincomeapi.controllers.v2.IncomeController.income(matchId: java.lang.String, interval: org.joda.time.Interval)
+GET        /paye                                  uk.gov.hmrc.individualsincomeapi.controllers.v2.IncomeController.income(matchId: java.lang.String, interval: uk.gov.hmrc.individualsincomeapi.util.Interval)
 GET        /sa                                    uk.gov.hmrc.individualsincomeapi.controllers.v2.SaIncomeController.saFootprint(matchId: java.lang.String, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/employments                        uk.gov.hmrc.individualsincomeapi.controllers.v2.SaIncomeController.employmentsIncome(matchId: java.lang.String, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/self-employments                   uk.gov.hmrc.individualsincomeapi.controllers.v2.SaIncomeController.selfEmploymentsIncome(matchId: java.lang.String, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)

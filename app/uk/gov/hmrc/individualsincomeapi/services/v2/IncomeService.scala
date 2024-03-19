@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import org.joda.time.Interval
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}

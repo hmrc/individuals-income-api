@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import org.joda.time.DateTime
+import java.time.LocalDateTime
 import play.api.Logger
 import play.api.mvc.{ControllerComponents, Request, RequestHeader, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -39,7 +39,7 @@ abstract class CommonController @Inject()(cc: ControllerComponents) extends Back
   private def getQueryParam[T](name: String)(implicit request: Request[T]) =
     request.queryString.get(name).flatMap(_.headOption)
 
-  private[controllers] def urlWithInterval[T](url: String, from: DateTime)(implicit request: Request[T]) = {
+  private[controllers] def urlWithInterval[T](url: String, from: LocalDateTime)(implicit request: Request[T]) = {
     val urlWithFromDate = s"$url&fromDate=${toFormattedLocalDate(from)}"
     getQueryParam("toDate").map(x => s"$urlWithFromDate&toDate=$x").getOrElse(urlWithFromDate)
   }
