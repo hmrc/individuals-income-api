@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "cache service" - {
 

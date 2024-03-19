@@ -741,7 +741,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
             addressLine4 = Some("line 4"),
             postalCode = Some("AA11 1AA"),
             telephoneNumber = Some("01234567890"),
-            baseAddressEffectiveDate = Some(new LocalDate(2018, 9, 7)),
+            baseAddressEffectiveDate = Some(LocalDate.parse("2018-9-7")),
             addressTypeIndicator = Some("B")
           ))
       )
@@ -768,7 +768,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
                   Some("line 4"),
                   None,
                   Some("AA11 1AA"),
-                  Some(new LocalDate(2018, 9, 7)),
+                  Some(LocalDate.parse("2018-9-7")),
                   Some("homeAddress")
                 )),
               Some("01234567890")

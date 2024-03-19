@@ -57,7 +57,7 @@ class DesConnectorSpec
       .build()
 
   trait Setup {
-    implicit val hc = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val underTest = fakeApplication().injector.instanceOf[DesConnector]
   }

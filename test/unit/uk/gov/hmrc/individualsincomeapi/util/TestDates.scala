@@ -16,8 +16,9 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.LocalDateTime.parse
-import org.joda.time.{Interval, LocalDateTime}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
+import java.time.LocalDateTime.parse
+import java.time.LocalDateTime
 
 trait TestDates {
 
@@ -25,6 +26,6 @@ trait TestDates {
     toInterval(parse(fromDate), parse(toDate))
 
   protected def toInterval(fromDate: LocalDateTime, toDate: LocalDateTime): Interval =
-    new Interval(fromDate.toDate.getTime, toDate.toDate.getTime)
+    Interval(fromDate, toDate)
 
 }

@@ -16,13 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import uk.gov.hmrc.individualsincomeapi.util.IntervalQueryStringBinder
+import uk.gov.hmrc.individualsincomeapi.util.{Interval, IntervalQueryStringBinder}
 
 class IntervalQueryStringBinderSpec
     extends AnyFlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {
@@ -51,7 +51,10 @@ class IntervalQueryStringBinderSpec
     val parameters = Map("fromDate" -> Seq("2017-01-31"))
     val maybeEither = intervalQueryStringBinder.bind("", parameters)
     maybeEither shouldBe Some(
-      Right(toInterval("2017-01-31T00:00:00.000", LocalDateTime.now().withTime(0, 0, 0, 1).toString())))
+      Right(
+        Interval(
+          LocalDate.parse("2017-01-31T00:00:00.000").atStartOfDay(),
+          LocalDate.now().atTime(0, 0, 0, 1_000_000))))
   }
 
   it should "succeed in binding an interval from well formed fromDate and toDate parameters" in {

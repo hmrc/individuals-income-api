@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers with IncomeSaHelpers {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val nino = "CS700100A"
   val correlationId = "test"

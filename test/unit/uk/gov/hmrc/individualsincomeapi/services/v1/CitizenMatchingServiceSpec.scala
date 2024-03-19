@@ -29,7 +29,7 @@ import java.util.UUID
 
 class CitizenMatchingServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
   val sandboxCitizenMatchingService = new SandboxCitizenMatchingService
   val matchedCitizen = MatchedCitizen(sandboxMatchId, sandboxNino)
 

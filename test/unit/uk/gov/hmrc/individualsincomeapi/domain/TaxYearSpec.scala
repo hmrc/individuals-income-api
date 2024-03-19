@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain
 
-import org.joda.time.{DateTimeUtils, LocalDate}
+import java.time.{DateTimeUtils, LocalDate}
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear

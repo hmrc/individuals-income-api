@@ -17,7 +17,7 @@
 package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
-import org.joda.time.{DateTime, LocalDate}
+import java.time.{LocalDate, LocalDateTime}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK

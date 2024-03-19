@@ -17,7 +17,7 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import org.apache.pekko.stream.Materializer
-import org.joda.time.{Interval, LocalDate}
+import java.time.{LocalDate, LocalTime}
 import org.mockito.ArgumentMatchers._
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyNoInteractions
@@ -34,6 +34,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment.paymentJsonFormat
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 import utils.SpecBase
 
 import java.util.UUID
@@ -46,9 +47,8 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
   val matchId = UUID.randomUUID()
   val fromDateString = "2017-03-02"
   val toDateString = "2017-05-31"
-  val interval = new Interval(
-    new LocalDate(fromDateString).toDateTimeAtStartOfDay,
-    new LocalDate(toDateString).toDateTimeAtStartOfDay)
+  val interval =
+    new Interval(new LocalDate(fromDateString).atTime(LocalTime.MIN), new LocalDate(toDateString).atTime(LocalTime.MIN))
   val payments = Seq(
     Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
   implicit val ec: ExecutionContext = ExecutionContext.global

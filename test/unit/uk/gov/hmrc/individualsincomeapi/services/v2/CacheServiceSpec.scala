@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
-import org.joda.time.{Interval, LocalDate}
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verify, verifyNoInteractions}
@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService, PayeCacheId, SaCacheId}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 import utils.TestSupport
 
 import java.util.UUID
@@ -88,14 +89,12 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
       val fromDateString = "2017-03-02"
       val toDateString = "2017-05-31"
 
-      val interval = new Interval(
-        new LocalDate(fromDateString).toDateTimeAtStartOfDay,
-        new LocalDate(toDateString).toDateTimeAtStartOfDay)
+      val interval = Interval(LocalDate.parse(fromDateString).atStartOfDay, LocalDate.parse(toDateString).atStartOfDay)
 
       val fields = "ABDFH"
 
       PayeCacheId(matchId, interval, fields).id shouldBe
-        s"$matchId-${interval.getStart}-${interval.getEnd}-ABDFH"
+        s"$matchId-${interval.from}-${interval.to}-ABDFH"
 
     }
 
