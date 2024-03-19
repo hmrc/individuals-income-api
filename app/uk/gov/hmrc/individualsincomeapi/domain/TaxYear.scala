@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain
 
-import org.joda.time.{DateTime, DateTimeZone, LocalDate, MonthDay}
 import play.api.libs.json._
 
+import java.time.{LocalDate, Month, ZoneId, ZonedDateTime}
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
 

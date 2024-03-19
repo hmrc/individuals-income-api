@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import org.joda.time.LocalDate
 import play.api.libs.json._
-import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmploymentPayFrequency, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorResponse}
 
