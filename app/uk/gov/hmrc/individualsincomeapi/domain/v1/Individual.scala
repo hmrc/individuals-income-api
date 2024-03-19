@@ -44,7 +44,6 @@ case class Payment(
   weekPayNumber: Option[Int] = None)
 
 object Payment {
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
   implicit val paymentJsonFormat: OFormat[Payment] = Json.format[Payment]
 }
 

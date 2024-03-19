@@ -36,7 +36,6 @@ case class DesAddress(
   addressType: Option[String] = None)
 
 object DesAddress {
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
 
   implicit val desReads: Reads[DesAddress] = (
     (__ \ "line1").readNullable[String] and

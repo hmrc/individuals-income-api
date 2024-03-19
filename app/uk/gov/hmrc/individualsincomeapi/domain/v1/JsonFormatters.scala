@@ -28,8 +28,6 @@ import scala.util.{Failure, Try}
 
 object JsonFormatters {
 
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
-
   implicit val errorResponseWrites: Writes[ErrorResponse] = new Writes[ErrorResponse] {
     def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)
   }

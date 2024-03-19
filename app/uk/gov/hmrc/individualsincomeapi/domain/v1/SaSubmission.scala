@@ -259,7 +259,6 @@ case class SourceAddress(
 }
 
 object SourceAddress {
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
   implicit val apiWrites: Format[SourceAddress] = Json.format[SourceAddress]
 }
 
