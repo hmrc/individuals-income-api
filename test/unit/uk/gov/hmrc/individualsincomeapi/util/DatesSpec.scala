@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.{DateTime, LocalDate}
+import java.time.{LocalDate, LocalDateTime}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.individualsincomeapi.domain.ValidationException
@@ -39,7 +39,7 @@ class DatesSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "format date time instances" in {
-    Dates.toFormattedLocalDate(DateTime.parse("2017-12-31")) shouldBe "2017-12-31"
+    Dates.toFormattedLocalDate(LocalDateTime.parse("2017-12-31T00:00:00")) shouldBe "2017-12-31"
   }
 
 }

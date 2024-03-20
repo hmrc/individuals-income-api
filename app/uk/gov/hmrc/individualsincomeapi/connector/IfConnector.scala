@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.connector
 
-import org.joda.time.Interval
 import play.api.Logging
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
@@ -26,6 +25,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.util.UUID

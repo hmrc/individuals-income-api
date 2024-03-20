@@ -16,8 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
-import org.joda.time.LocalDate
-import org.joda.time.LocalDate.parse
+import java.time.LocalDate
+import java.time.LocalDate.parse
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito._
@@ -137,7 +137,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     }
 
     "return a cached value if it exists" in {
-      val employments = Seq(DesEmployment(Seq(DesPayment(new LocalDate(2016, 1, 1), 1))))
+      val employments = Seq(DesEmployment(Seq(DesPayment(LocalDate.of(2016, 1, 1), 1))))
 
       val mockMatching = mock[IndividualsMatchingApiConnector]
       given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))

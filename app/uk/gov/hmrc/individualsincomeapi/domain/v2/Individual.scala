@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPayeEntry, IfSaEntry}
 

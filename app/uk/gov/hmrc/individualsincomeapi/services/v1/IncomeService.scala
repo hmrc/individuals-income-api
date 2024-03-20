@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
-import org.joda.time.{Interval, LocalDate}
+import java.time.LocalDate
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
@@ -24,6 +24,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
@@ -67,7 +68,7 @@ class LiveIncomeService @Inject()(
 class SandboxIncomeService extends IncomeService {
 
   private def paymentFilter(interval: Interval)(payment: Payment): Boolean = {
-    val paymentDate = payment.paymentDate.toDateTimeAtStartOfDay
+    val paymentDate = payment.paymentDate.atStartOfDay()
     interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
   }
 

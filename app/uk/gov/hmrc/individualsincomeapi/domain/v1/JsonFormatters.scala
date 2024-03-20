@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import org.joda.time.LocalDate
 import play.api.libs.json._
-import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmploymentPayFrequency, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorResponse}
 
@@ -27,8 +25,6 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.util.{Failure, Try}
 
 object JsonFormatters {
-
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
 
   implicit val errorResponseWrites: Writes[ErrorResponse] = new Writes[ErrorResponse] {
     def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)

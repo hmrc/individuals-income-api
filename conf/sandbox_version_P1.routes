@@ -1,7 +1,7 @@
 # microservice privileged sandbox specific routes
 
 GET        /                                      uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxRootController.root(matchId: java.util.UUID)
-GET        /paye                                  uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxIncomeController.income(matchId: java.util.UUID, interval: org.joda.time.Interval)
+GET        /paye                                  uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxIncomeController.income(matchId: java.util.UUID, interval: uk.gov.hmrc.individualsincomeapi.util.Interval)
 GET        /sa                                    uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController.saFootprint(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/employments                        uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController.employmentsIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)
 GET        /sa/self-employments                   uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxSaIncomeController.selfEmploymentsIncome(matchId: java.util.UUID, taxYearInterval: uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval)

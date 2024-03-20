@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import org.joda.time.Interval
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}

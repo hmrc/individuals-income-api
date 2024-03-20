@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import org.joda.time.Interval
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
@@ -25,6 +24,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}

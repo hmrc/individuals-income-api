@@ -17,7 +17,8 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import akka.stream.Materializer
-import org.joda.time.{Interval, LocalDate}
+
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo, _}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{times, verify}
@@ -37,6 +38,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v2.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
 
 import java.util.UUID
@@ -67,9 +69,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     val fromDateString = "2017-03-02"
     val toDateString = "2017-05-31"
 
-    val interval = new Interval(
-      new LocalDate(fromDateString).toDateTimeAtStartOfDay,
-      new LocalDate(toDateString).toDateTimeAtStartOfDay
+    val interval = Interval(
+      LocalDate.parse(fromDateString).atStartOfDay(),
+      LocalDate.parse(toDateString).atStartOfDay()
     )
 
     val ifPaye = Seq(createValidPayeEntry())

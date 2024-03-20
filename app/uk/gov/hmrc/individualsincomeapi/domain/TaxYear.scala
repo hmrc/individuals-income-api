@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain
 
-import org.joda.time.{DateTime, DateTimeZone, LocalDate, MonthDay}
 import play.api.libs.json._
 
+import java.time.LocalDate
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
 
@@ -39,7 +39,7 @@ object TaxYear {
 
   private final val TaxYearRegex = "^(\\d{4})-(\\d{2})$"
 
-  private final def firstDayOfTaxYear(year: Int): LocalDate = new MonthDay(4, 6).toLocalDate(year)
+  private final def firstDayOfTaxYear(year: Int): LocalDate = LocalDate.of(year, 4, 6)
 
   private val matchTaxYear: String => Option[Match] = new Regex(TaxYearRegex, "first", "second") findFirstMatchIn _
 
@@ -49,11 +49,9 @@ object TaxYear {
     (r.group("first").toInt + 1) % 100 == r.group("second").toInt
   }
 
-  def current(): TaxYear = {
-    val date = new LocalDate(DateTime.now(), DateTimeZone.forID("Europe/London"))
-    if (date isBefore firstDayOfTaxYear(date.getYear)) fromEndYear(date.getYear)
-    else fromEndYear(date.getYear + 1)
-  }
+  def current(now: LocalDate = LocalDate.now()): TaxYear =
+    if (now isBefore firstDayOfTaxYear(now.getYear)) fromEndYear(now.getYear)
+    else fromEndYear(now.getYear + 1)
 }
 
 case class TaxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear)
