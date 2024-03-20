@@ -47,7 +47,7 @@ object Dates {
   def toInterval(fromDate: LocalDate, toDate: LocalDate): Interval =
     if (fromDate.isBefore(desDataInceptionDate))
       throw new ValidationException("fromDate earlier than 31st March 2013")
-    else new Interval(fromDate.atStartOfDay(), toDate.atStartOfDay().plusNanos(1000000))
+    else Interval(fromDate.atStartOfDay(), toDate.atStartOfDay().plusNanos(1000000))
 
   def toTaxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): TaxYearInterval = {
     if (fromTaxYear.startYr > toTaxYear.startYr)

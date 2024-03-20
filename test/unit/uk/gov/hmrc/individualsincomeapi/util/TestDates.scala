@@ -24,9 +24,5 @@ trait TestDates {
   private def normalize(dateStr: String): String = if (dateStr contains 'T') dateStr else s"${dateStr}T00:00:00"
 
   protected def toInterval(fromDate: String, toDate: String): Interval =
-    toInterval(parse(normalize(fromDate)), parse(normalize(toDate)))
-
-  protected def toInterval(fromDate: LocalDateTime, toDate: LocalDateTime): Interval =
-    new Interval(fromDate, toDate)
-
+    Interval(parse(normalize(fromDate)), parse(normalize(toDate)))
 }
