@@ -49,8 +49,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
   def fetchEmployments(nino: Nino, interval: Interval)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Seq[DesEmployment]] = {
-    val fromDate = interval.getStart.toLocalDate
-    val toDate = interval.getEnd.toLocalDate
+    val fromDate = interval.fromDate.toLocalDate
+    val toDate = interval.toDate.toLocalDate
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
 

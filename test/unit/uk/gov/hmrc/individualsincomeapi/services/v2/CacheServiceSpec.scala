@@ -95,7 +95,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
       val fields = "ABDFH"
 
       PayeCacheId(matchId, interval, fields).id shouldBe
-        s"$matchId-${interval.getStart}-${interval.getEnd}-ABDFH"
+        s"$matchId-${interval.fromDate}-${interval.toDate}-ABDFH"
 
     }
 

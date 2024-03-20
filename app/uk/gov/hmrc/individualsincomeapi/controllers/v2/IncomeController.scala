@@ -47,7 +47,7 @@ class IncomeController @Inject()(
       withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
         incomeService.fetchIncomeByMatchId(matchUuid, interval, authScopes).map { paye =>
           val selfLink =
-            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+            HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
 
           val incomeJsObject = Json.obj("income" -> toJson(paye))
           val payeJsObject = obj("paye"          -> incomeJsObject)

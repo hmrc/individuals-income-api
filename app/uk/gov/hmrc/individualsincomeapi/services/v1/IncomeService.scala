@@ -56,7 +56,7 @@ class LiveIncomeService @Inject()(
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
 
   private def cacheId(matchId: UUID, interval: Interval) = new CacheId {
-    override val id: String = s"$matchId-${interval.getStart}-${interval.getEnd}"
+    override val id: String = s"$matchId-${interval.fromDate}-${interval.toDate}"
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
@@ -69,7 +69,7 @@ class SandboxIncomeService extends IncomeService {
 
   private def paymentFilter(interval: Interval)(payment: Payment): Boolean = {
     val paymentDate = payment.paymentDate.atStartOfDay()
-    interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
+    interval.contains(paymentDate) || interval.toDate.isEqual(paymentDate)
   }
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(

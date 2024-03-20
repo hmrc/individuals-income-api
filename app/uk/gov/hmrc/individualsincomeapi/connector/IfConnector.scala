@@ -51,8 +51,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     implicit hc: HeaderCarrier,
     request: RequestHeader,
     ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
-    val startDate = interval.getStart.toLocalDate
-    val endDate = interval.getEnd.toLocalDate
+    val startDate = interval.fromDate.toLocalDate
+    val endDate = interval.toDate.toLocalDate
 
     val payeUrl = s"$serviceUrl/individuals/income/paye/" +
       s"nino/$nino?startDate=$startDate&endDate=$endDate${filter.map(f => s"&fields=$f").getOrElse("")}"

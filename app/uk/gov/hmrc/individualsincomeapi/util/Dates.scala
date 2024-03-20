@@ -23,8 +23,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 case class Interval(fromDate: LocalDateTime, toDate: LocalDateTime) {
-  def getStart: LocalDateTime = fromDate
-  def getEnd: LocalDateTime = toDate
   def contains(date: LocalDateTime): Boolean =
     !date.isBefore(fromDate) && !date.isAfter(toDate)
   def overlaps(other: Interval): Boolean =

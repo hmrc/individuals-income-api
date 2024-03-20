@@ -36,7 +36,7 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-paye") {
       incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
-        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
         val incomeJsObject = obj("income" -> toJson(income))
         val payeJsObject = obj("paye"     -> incomeJsObject)
         Ok(state(payeJsObject) ++ halLink)
