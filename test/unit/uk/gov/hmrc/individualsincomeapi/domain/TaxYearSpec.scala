@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain
 
-import org.joda.time.DateTimeUtils
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
@@ -29,9 +28,6 @@ class TaxYearSpec extends TestSupport with BeforeAndAfterEach {
   val validTaxYears = Seq("2014-15", "2013-14", "2016-17", "2019-20", "2099-00")
 
   val invalidTaxYears = Seq("2014", "201314", "2016-1X", "A2014-15", "2015-17", "2013-18", "2015-14", "2015-15")
-
-  override def afterEach(): Unit =
-    DateTimeUtils.setCurrentMillisSystem()
 
   "isValid" should {
 
