@@ -25,8 +25,6 @@ import java.time.format.DateTimeFormatter
 case class Interval(fromDate: LocalDateTime, toDate: LocalDateTime) {
   def contains(date: LocalDateTime): Boolean =
     !date.isBefore(fromDate) && !date.isAfter(toDate)
-  def overlaps(other: Interval): Boolean =
-    !other.fromDate.isAfter(toDate) & !other.toDate.isBefore(fromDate)
   override def toString: String = {
     val format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     s"${fromDate.format(format)}/${toDate.format(format)}"
