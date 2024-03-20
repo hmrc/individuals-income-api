@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
 case class SaTrust(trustIncome: Double)
 
 object SaTrust {
 
-  implicit val saSummaryJsonFormat: OFormat[SaTrust] = Json.format[SaTrust]
+  implicit val saSummaryJsonFormat: Format[SaTrust] = Json.format[SaTrust]
 
 }

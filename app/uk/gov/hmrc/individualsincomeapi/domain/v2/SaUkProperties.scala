@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
@@ -24,7 +24,7 @@ case class SaUkProperties(taxReturns: Seq[SaUkPropertiesTaxReturn])
 
 object SaUkProperties {
 
-  implicit val saUkPropertiesJsonFormat: OFormat[SaUkProperties] = Json.format[SaUkProperties]
+  implicit val saUkPropertiesJsonFormat: Format[SaUkProperties] = Json.format[SaUkProperties]
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaUkProperties =
     SaUkProperties(transformSaUkPropertiesTaxReturn(ifSaEntry))

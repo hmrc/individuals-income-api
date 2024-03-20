@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
 case class SaUkProperty(totalProfit: Double)
 
 object SaUkProperty {
 
-  implicit val saUkPropertyJsonFormat: OFormat[SaUkProperty] = Json.format[SaUkProperty]
+  implicit val saUkPropertyJsonFormat: Format[SaUkProperty] = Json.format[SaUkProperty]
 
 }

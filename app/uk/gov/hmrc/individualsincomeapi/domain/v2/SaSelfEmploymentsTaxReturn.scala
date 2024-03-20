@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
 case class SaSelfEmploymentsTaxReturn(
   taxYear: String,
@@ -25,7 +25,7 @@ case class SaSelfEmploymentsTaxReturn(
 
 object SaSelfEmploymentsTaxReturn {
 
-  implicit val saSelfEmploymentsTaxReturnJsonFormat: OFormat[SaSelfEmploymentsTaxReturn] =
+  implicit val saSelfEmploymentsTaxReturnJsonFormat: Format[SaSelfEmploymentsTaxReturn] =
     Json.format[SaSelfEmploymentsTaxReturn]
 
 }

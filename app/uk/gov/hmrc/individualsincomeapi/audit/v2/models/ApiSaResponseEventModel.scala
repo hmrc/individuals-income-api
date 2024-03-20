@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
-import play.api.libs.json.{JsValue, Json, OFormat}
+import play.api.libs.json.{Format, JsValue, Json}
 
 case class ApiSaResponseEventModel(
   deviceId: String,
@@ -32,5 +32,5 @@ case class ApiSaResponseEventModel(
   response: Option[JsValue])
 
 object ApiSaResponseEventModel {
-  implicit val formatApiSaResponseEventModel: OFormat[ApiSaResponseEventModel] = Json.format[ApiSaResponseEventModel]
+  implicit val formatApiSaResponseEventModel: Format[ApiSaResponseEventModel] = Json.format[ApiSaResponseEventModel]
 }

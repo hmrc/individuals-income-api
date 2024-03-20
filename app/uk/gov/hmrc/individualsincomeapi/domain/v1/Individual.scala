@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.v1
 
 import java.time.LocalDate
 import java.time.LocalDate.parse
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
@@ -43,7 +43,7 @@ case class Payment(
   weekPayNumber: Option[Int] = None)
 
 object Payment {
-  implicit val paymentJsonFormat: OFormat[Payment] = Json.format[Payment]
+  implicit val paymentJsonFormat: Format[Payment] = Json.format[Payment]
 }
 
 object SandboxIncomeData {

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.audit.v2.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
 case class IfSaApiResponseEventModel(
@@ -32,6 +32,6 @@ case class IfSaApiResponseEventModel(
   integrationFrameworkSa: Seq[IfSaEntry])
 
 object IfSaApiResponseEventModel {
-  implicit val formatIfSaApiResponseEventModel: OFormat[IfSaApiResponseEventModel] =
+  implicit val formatIfSaApiResponseEventModel: Format[IfSaApiResponseEventModel] =
     Json.format[IfSaApiResponseEventModel]
 }
