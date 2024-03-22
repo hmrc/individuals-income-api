@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.LocalDateTime
+import java.time.LocalDate
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -51,7 +51,7 @@ class IntervalQueryStringBinderSpec
     val parameters = Map("fromDate" -> Seq("2017-01-31"))
     val maybeEither = intervalQueryStringBinder.bind("", parameters)
     maybeEither shouldBe Some(
-      Right(toInterval("2017-01-31T00:00:00.000", LocalDateTime.now().withTime(0, 0, 0, 1).toString())))
+      Right(toInterval("2017-01-31T00:00:00.000", LocalDate.now().atStartOfDay().plusNanos(1000000).toString)))
   }
 
   it should "succeed in binding an interval from well formed fromDate and toDate parameters" in {

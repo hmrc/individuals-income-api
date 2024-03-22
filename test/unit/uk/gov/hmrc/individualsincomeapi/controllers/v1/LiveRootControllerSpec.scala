@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verifyNoInteractions, when}
@@ -51,7 +51,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val liveMatchCitizenController = new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector, cc)
 
     given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
-    implicit val hc = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
   }
 
   "Live match citizen controller match citizen function" should {

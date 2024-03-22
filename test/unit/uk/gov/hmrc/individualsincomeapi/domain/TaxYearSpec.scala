@@ -16,20 +16,18 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.domain
 
-import org.joda.time.{DateTimeUtils, LocalDate}
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import utils.TestSupport
+
+import java.time.LocalDate
 
 class TaxYearSpec extends TestSupport with BeforeAndAfterEach {
 
   val validTaxYears = Seq("2014-15", "2013-14", "2016-17", "2019-20", "2099-00")
 
   val invalidTaxYears = Seq("2014", "201314", "2016-1X", "A2014-15", "2015-17", "2013-18", "2015-14", "2015-15")
-
-  override def afterEach(): Unit =
-    DateTimeUtils.setCurrentMillisSystem()
 
   "isValid" should {
 
@@ -71,15 +69,11 @@ class TaxYearSpec extends TestSupport with BeforeAndAfterEach {
 
   "TaxYear.current()" should {
     "return tax year 2015-16 when date is before 2016-04-05" in {
-      DateTimeUtils.setCurrentMillisFixed(LocalDate.parse("2016-04-05").toDate.getTime)
-
-      TaxYear.current() shouldBe TaxYear("2015-16")
+      TaxYear.current(now = LocalDate.parse("2016-04-05")) shouldBe TaxYear("2015-16")
     }
 
     "return tax year 2016-17 when date is after 2016-04-06" in {
-      DateTimeUtils.setCurrentMillisFixed(LocalDate.parse("2016-04-06").toDate.getTime)
-
-      TaxYear.current() shouldBe TaxYear("2016-17")
+      TaxYear.current(now = LocalDate.parse("2016-04-06")) shouldBe TaxYear("2016-17")
     }
   }
 

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.connector
 
-import org.joda.time.Interval
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
@@ -26,6 +25,7 @@ import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -49,8 +49,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
   def fetchEmployments(nino: Nino, interval: Interval)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[Seq[DesEmployment]] = {
-    val fromDate = interval.getStart.toLocalDate
-    val toDate = interval.getEnd.toLocalDate
+    val fromDate = interval.fromDate.toLocalDate
+    val toDate = interval.toDate.toLocalDate
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
 

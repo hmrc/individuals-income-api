@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.cache
 
-import play.api.libs.json.{JsValue, Json, OFormat}
+import play.api.libs.json.{Format, JsValue, Json}
 
 case class Data(value: JsValue)
 
 object Data {
-  implicit val format: OFormat[Data] = Json.format[Data]
+  implicit val format: Format[Data] = Json.format[Data]
 }

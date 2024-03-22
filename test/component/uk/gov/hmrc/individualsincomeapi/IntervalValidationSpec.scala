@@ -17,7 +17,8 @@
 package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
-import org.joda.time.{DateTime, LocalDate}
+
+import java.time.{LocalDate, LocalDateTime}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
@@ -32,8 +33,8 @@ class IntervalValidationSpec extends BaseSpec {
   val matchId = UUID.randomUUID.toString
   val nino = "CS700100A"
   val fromDate = "2016-04-01"
-  lazy val today = DateTime.now.toString(Dates.localDatePattern)
-  lazy val yesterday = DateTime.now.minusDays(1).toString(Dates.localDatePattern)
+  lazy val today = LocalDateTime.now.format(Dates.localDatePattern)
+  lazy val yesterday = LocalDateTime.now.minusDays(1).format(Dates.localDatePattern)
   val payeIncomeScope = "read:individuals-income-paye"
 
   Feature("Date interval query parameter validation") {

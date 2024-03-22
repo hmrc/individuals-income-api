@@ -16,15 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import org.joda.time.LocalDateTime.parse
-import org.joda.time.{Interval, LocalDateTime}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
+
+import java.time.LocalDateTime.parse
 
 trait TestDates {
+  private def normalize(dateStr: String): String = if (dateStr contains 'T') dateStr else s"${dateStr}T00:00:00"
 
   protected def toInterval(fromDate: String, toDate: String): Interval =
-    toInterval(parse(fromDate), parse(toDate))
-
-  protected def toInterval(fromDate: LocalDateTime, toDate: LocalDateTime): Interval =
-    new Interval(fromDate.toDate.getTime, toDate.toDate.getTime)
-
+    Interval(parse(normalize(fromDate)), parse(normalize(toDate)))
 }

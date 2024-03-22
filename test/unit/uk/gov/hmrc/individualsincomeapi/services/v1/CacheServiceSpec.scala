@@ -21,7 +21,7 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService}
@@ -75,5 +75,5 @@ case class TestCacheId(id: String) extends CacheId
 case class TestClass(value: String)
 
 object TestClass {
-  implicit val format: OFormat[TestClass] = Json.format[TestClass]
+  implicit val format: Format[TestClass] = Json.format[TestClass]
 }

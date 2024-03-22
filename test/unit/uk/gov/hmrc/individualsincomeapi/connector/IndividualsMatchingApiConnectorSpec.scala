@@ -40,7 +40,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
   implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Fixture {
-    implicit val hc = HeaderCarrier()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val individualsMatchingApiConnector =
       new IndividualsMatchingApiConnector(servicesConfig, fakeApplication().injector.instanceOf[HttpClient]) {

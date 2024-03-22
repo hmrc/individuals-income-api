@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import org.joda.time.LocalDate
 import play.api.libs.json._
-import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmploymentPayFrequency, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorResponse}
 
@@ -27,8 +25,6 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.util.{Failure, Try}
 
 object JsonFormatters {
-
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
 
   implicit val errorResponseWrites: Writes[ErrorResponse] = new Writes[ErrorResponse] {
     def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)
@@ -49,61 +45,61 @@ object JsonFormatters {
     override def reads(json: JsValue): JsSuccess[UUID] = JsSuccess(UUID.fromString(json.asInstanceOf[JsString].value))
   }
 
-  implicit val matchedCitizenJsonFormat: OFormat[MatchedCitizen] = Json.format[MatchedCitizen]
+  implicit val matchedCitizenJsonFormat: Format[MatchedCitizen] = Json.format[MatchedCitizen]
 
-  implicit val desPaymentJsonFormat: OFormat[DesPayment] = Json.format[DesPayment]
+  implicit val desPaymentJsonFormat: Format[DesPayment] = Json.format[DesPayment]
   implicit val desEmploymentPayFrequencyJsonFormat: Format[DesEmploymentPayFrequency.Value] =
     EnumJson.enumFormat(DesEmploymentPayFrequency)
-  implicit val desEmploymentJsonFormat: OFormat[DesEmployment] = Json.format[DesEmployment]
-  implicit val desEmploymentsJsonFormat: OFormat[DesEmployments] = Json.format[DesEmployments]
+  implicit val desEmploymentJsonFormat: Format[DesEmployment] = Json.format[DesEmployment]
+  implicit val desEmploymentsJsonFormat: Format[DesEmployments] = Json.format[DesEmployments]
 
-  implicit val formatSaReturn: OFormat[SaSubmission] = Json.format[SaSubmission]
-  implicit val formatSaAnnualReturns: OFormat[SaTaxReturn] = Json.format[SaTaxReturn]
-  implicit val formatSaRegistration: OFormat[SaRegistration] = Json.format[SaRegistration]
-  implicit val formatSaFootprint: OFormat[SaFootprint] = Json.format[SaFootprint]
+  implicit val formatSaReturn: Format[SaSubmission] = Json.format[SaSubmission]
+  implicit val formatSaAnnualReturns: Format[SaTaxReturn] = Json.format[SaTaxReturn]
+  implicit val formatSaRegistration: Format[SaRegistration] = Json.format[SaRegistration]
+  implicit val formatSaFootprint: Format[SaFootprint] = Json.format[SaFootprint]
 
-  implicit val formatSaEmploymentsIncome: OFormat[SaEmploymentsIncome] = Json.format[SaEmploymentsIncome]
-  implicit val formatSaAnnualEmployments: OFormat[SaAnnualEmployments] = Json.format[SaAnnualEmployments]
+  implicit val formatSaEmploymentsIncome: Format[SaEmploymentsIncome] = Json.format[SaEmploymentsIncome]
+  implicit val formatSaAnnualEmployments: Format[SaAnnualEmployments] = Json.format[SaAnnualEmployments]
 
-  implicit val formatSaSelfEmploymentsIncome: OFormat[SaSelfEmploymentsIncome] = Json.format[SaSelfEmploymentsIncome]
-  implicit val formatSaAnnualSelfEmployments: OFormat[SaAnnualSelfEmployments] = Json.format[SaAnnualSelfEmployments]
+  implicit val formatSaSelfEmploymentsIncome: Format[SaSelfEmploymentsIncome] = Json.format[SaSelfEmploymentsIncome]
+  implicit val formatSaAnnualSelfEmployments: Format[SaAnnualSelfEmployments] = Json.format[SaAnnualSelfEmployments]
 
-  implicit val formatSaTaxReturnSummary: OFormat[SaTaxReturnSummary] = Json.format[SaTaxReturnSummary]
-  implicit val formatSaTaxReturnSummaries: OFormat[SaTaxReturnSummaries] = Json.format[SaTaxReturnSummaries]
+  implicit val formatSaTaxReturnSummary: Format[SaTaxReturnSummary] = Json.format[SaTaxReturnSummary]
+  implicit val formatSaTaxReturnSummaries: Format[SaTaxReturnSummaries] = Json.format[SaTaxReturnSummaries]
 
-  implicit val formatSaAnnualTrustIncome: OFormat[SaAnnualTrustIncome] = Json.format[SaAnnualTrustIncome]
-  implicit val formatSaAnnualTrustIncomes: OFormat[SaAnnualTrustIncomes] = Json.format[SaAnnualTrustIncomes]
+  implicit val formatSaAnnualTrustIncome: Format[SaAnnualTrustIncome] = Json.format[SaAnnualTrustIncome]
+  implicit val formatSaAnnualTrustIncomes: Format[SaAnnualTrustIncomes] = Json.format[SaAnnualTrustIncomes]
 
-  implicit val formatSaAnnualForeignIncome: OFormat[SaAnnualForeignIncome] = Json.format[SaAnnualForeignIncome]
-  implicit val formatSaAnnualForeignIncomes: OFormat[SaAnnualForeignIncomes] = Json.format[SaAnnualForeignIncomes]
+  implicit val formatSaAnnualForeignIncome: Format[SaAnnualForeignIncome] = Json.format[SaAnnualForeignIncome]
+  implicit val formatSaAnnualForeignIncomes: Format[SaAnnualForeignIncomes] = Json.format[SaAnnualForeignIncomes]
 
-  implicit val formatSaAnnualPartnershipIncome: OFormat[SaAnnualPartnershipIncome] =
+  implicit val formatSaAnnualPartnershipIncome: Format[SaAnnualPartnershipIncome] =
     Json.format[SaAnnualPartnershipIncome]
-  implicit val formatSaAnnualPartnershipIncomes: OFormat[SaAnnualPartnershipIncomes] =
+  implicit val formatSaAnnualPartnershipIncomes: Format[SaAnnualPartnershipIncomes] =
     Json.format[SaAnnualPartnershipIncomes]
 
-  implicit val formatSaAnnualInterestAndDividendIncome: OFormat[SaAnnualInterestAndDividendIncome] =
+  implicit val formatSaAnnualInterestAndDividendIncome: Format[SaAnnualInterestAndDividendIncome] =
     Json.format[SaAnnualInterestAndDividendIncome]
-  implicit val formatSaAnnualInterestAndDividendIncomes: OFormat[SaAnnualInterestAndDividendIncomes] =
+  implicit val formatSaAnnualInterestAndDividendIncomes: Format[SaAnnualInterestAndDividendIncomes] =
     Json.format[SaAnnualInterestAndDividendIncomes]
 
-  implicit val formatSaAnnualUkPropertiesIncome: OFormat[SaAnnualUkPropertiesIncome] =
+  implicit val formatSaAnnualUkPropertiesIncome: Format[SaAnnualUkPropertiesIncome] =
     Json.format[SaAnnualUkPropertiesIncome]
-  implicit val formatSaAnnualUkPropertiesIncomes: OFormat[SaAnnualUkPropertiesIncomes] =
+  implicit val formatSaAnnualUkPropertiesIncomes: Format[SaAnnualUkPropertiesIncomes] =
     Json.format[SaAnnualUkPropertiesIncomes]
 
-  implicit val formatSaAnnualPensionAndStateBenefitIncome: OFormat[SaAnnualPensionAndStateBenefitIncome] =
+  implicit val formatSaAnnualPensionAndStateBenefitIncome: Format[SaAnnualPensionAndStateBenefitIncome] =
     Json.format[SaAnnualPensionAndStateBenefitIncome]
-  implicit val formatSaAnnualPensionAndStateBenefitIncomes: OFormat[SaAnnualPensionAndStateBenefitIncomes] =
+  implicit val formatSaAnnualPensionAndStateBenefitIncomes: Format[SaAnnualPensionAndStateBenefitIncomes] =
     Json.format[SaAnnualPensionAndStateBenefitIncomes]
 
-  implicit val formatSaAnnualAdditionalInformation: OFormat[SaAnnualAdditionalInformation] =
+  implicit val formatSaAnnualAdditionalInformation: Format[SaAnnualAdditionalInformation] =
     Json.format[SaAnnualAdditionalInformation]
-  implicit val formatSaAnnualAdditionalInformations: OFormat[SaAnnualAdditionalInformations] =
+  implicit val formatSaAnnualAdditionalInformations: Format[SaAnnualAdditionalInformations] =
     Json.format[SaAnnualAdditionalInformations]
 
-  implicit val formatSaAnnualOtherIncome: OFormat[SaAnnualOtherIncome] = Json.format[SaAnnualOtherIncome]
-  implicit val formatSaAnnualOtherIncomes: OFormat[SaAnnualOtherIncomes] = Json.format[SaAnnualOtherIncomes]
+  implicit val formatSaAnnualOtherIncome: Format[SaAnnualOtherIncome] = Json.format[SaAnnualOtherIncome]
+  implicit val formatSaAnnualOtherIncomes: Format[SaAnnualOtherIncomes] = Json.format[SaAnnualOtherIncomes]
 }
 
 object EnumJson {

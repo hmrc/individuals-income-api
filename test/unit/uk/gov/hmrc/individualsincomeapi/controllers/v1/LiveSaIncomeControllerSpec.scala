@@ -15,9 +15,8 @@
  */
 
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
-
-import akka.stream.Materializer
-import org.joda.time.LocalDate
+import org.apache.pekko.stream.Materializer
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyNoInteractions

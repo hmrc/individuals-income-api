@@ -21,7 +21,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsString, Json, OFormat}
+import play.api.libs.json.{Format, JsString, Json}
 import uk.gov.hmrc.individualsincomeapi.cache.v2.ShortLivedCache
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.test.MongoSupport
@@ -114,7 +114,7 @@ class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport wi
 
   object TestClass {
 
-    implicit val format: OFormat[TestClass] = Json.format[TestClass]
+    implicit val format: Format[TestClass] = Json.format[TestClass]
 
   }
 }

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class SaFurtherDetailDeducts(
   totalBusExpenses: Option[Double],
@@ -25,6 +25,6 @@ case class SaFurtherDetailDeducts(
 
 object SaFurtherDetailDeducts {
 
-  implicit val saFurtherDetailDeductsJsonFormat = Json.format[SaFurtherDetailDeducts]
+  implicit val saFurtherDetailDeductsJsonFormat: Format[SaFurtherDetailDeducts] = Json.format[SaFurtherDetailDeducts]
 
 }

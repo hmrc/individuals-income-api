@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class SaOtherIncomeRecord(otherIncome: Double, utr: Option[String])
 
 object SaOtherIncomeRecord {
 
-  implicit val saOtherIncomeRecord = Json.format[SaOtherIncomeRecord]
+  implicit val saOtherIncomeRecord: Format[SaOtherIncomeRecord] = Json.format[SaOtherIncomeRecord]
 
 }

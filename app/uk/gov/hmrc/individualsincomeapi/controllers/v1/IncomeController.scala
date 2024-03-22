@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v1
 
-import org.joda.time.Interval
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.Json.{obj, toJson}
@@ -25,6 +24,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -36,7 +36,7 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
     requiresPrivilegedAuthentication("read:individuals-income-paye") {
       incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
-        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.getStart))
+        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
         val incomeJsObject = obj("income" -> toJson(income))
         val payeJsObject = obj("paye"     -> incomeJsObject)
         Ok(state(payeJsObject) ++ halLink)

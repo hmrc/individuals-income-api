@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
-import org.joda.time.{Interval, LocalDate}
+import java.time.LocalDate
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
@@ -24,6 +24,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
@@ -55,7 +56,7 @@ class LiveIncomeService @Inject()(
     } yield (desEmployments flatMap DesEmployments.toPayments).sortBy(_.paymentDate).reverse
 
   private def cacheId(matchId: UUID, interval: Interval) = new CacheId {
-    override val id: String = s"$matchId-${interval.getStart}-${interval.getEnd}"
+    override val id: String = s"$matchId-${interval.fromDate}-${interval.toDate}"
   }
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
@@ -67,8 +68,8 @@ class LiveIncomeService @Inject()(
 class SandboxIncomeService extends IncomeService {
 
   private def paymentFilter(interval: Interval)(payment: Payment): Boolean = {
-    val paymentDate = payment.paymentDate.toDateTimeAtStartOfDay
-    interval.contains(paymentDate) || interval.getEnd.isEqual(paymentDate)
+    val paymentDate = payment.paymentDate.atStartOfDay()
+    interval.contains(paymentDate) || interval.toDate.isEqual(paymentDate)
   }
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(

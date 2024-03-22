@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import org.joda.time.LocalDate
-import org.joda.time.LocalDate.parse
-import play.api.libs.json.{Format, Json, OFormat}
+import java.time.LocalDate
+import java.time.LocalDate.parse
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
-import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
 import java.util.UUID
@@ -44,8 +43,7 @@ case class Payment(
   weekPayNumber: Option[Int] = None)
 
 object Payment {
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
-  implicit val paymentJsonFormat: OFormat[Payment] = Json.format[Payment]
+  implicit val paymentJsonFormat: Format[Payment] = Json.format[Payment]
 }
 
 object SandboxIncomeData {

@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.des
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.EmpRef
-import uk.gov.hmrc.http.controllers.RestFormats
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 
 case class DesEmployments(employments: Seq[DesEmployment])
@@ -36,8 +35,6 @@ case class DesAddress(
   addressType: Option[String] = None)
 
 object DesAddress {
-  implicit val dateFormat: Format[LocalDate] = RestFormats.localDateFormats
-
   implicit val desReads: Reads[DesAddress] = (
     (__ \ "line1").readNullable[String] and
       (__ \ "line2").readNullable[String] and

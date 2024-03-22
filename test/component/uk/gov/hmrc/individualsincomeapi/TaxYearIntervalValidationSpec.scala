@@ -17,7 +17,6 @@
 package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
@@ -25,10 +24,12 @@ import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxMatchId
 
+import java.time.{LocalDateTime, ZoneId}
+
 class TaxYearIntervalValidationSpec extends BaseSpec {
 
   val fromYear = "2015-16"
-  val today = new LocalDate(DateTime.now(), DateTimeZone.forID("Europe/London"))
+  val today = LocalDateTime.now(ZoneId.of("Europe/London"))
 
   Feature("Tax Year Interval query parameter validation") {
 

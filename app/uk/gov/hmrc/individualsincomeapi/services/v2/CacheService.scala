@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v2
 
-import org.joda.time.Interval
 import play.api.libs.json.Format
 import uk.gov.hmrc.individualsincomeapi.cache.v2.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
+import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
 import javax.inject.Inject
@@ -63,7 +63,7 @@ trait CacheIdBase {
 case class PayeCacheId(matchId: UUID, interval: Interval, fields: String) extends CacheIdBase {
 
   lazy val id: String =
-    s"$matchId-${interval.getStart}-${interval.getEnd}-$fields"
+    s"$matchId-${interval.fromDate}-${interval.toDate}-$fields"
 
 }
 

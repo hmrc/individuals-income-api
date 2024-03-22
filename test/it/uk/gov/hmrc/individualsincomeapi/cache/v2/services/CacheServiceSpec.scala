@@ -21,7 +21,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService}
@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "cache service" - {
 
@@ -130,6 +130,6 @@ case class TestClass(param: String)
 
 object TestClass {
 
-  implicit val format: OFormat[TestClass] = Json.format[TestClass]
+  implicit val format: Format[TestClass] = Json.format[TestClass]
 
 }
