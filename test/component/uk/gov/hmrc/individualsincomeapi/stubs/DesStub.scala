@@ -17,6 +17,7 @@
 package component.uk.gov.hmrc.individualsincomeapi.stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Nino
@@ -56,7 +57,7 @@ object DesStub extends MockHost(23000) {
     startYear: TaxYear,
     endYear: TaxYear,
     clientId: String,
-    desSAIncomes: Seq[DesSAIncome]) =
+    desSAIncomes: Seq[DesSAIncome]): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))

@@ -112,6 +112,7 @@ class IntervalValidationSpec extends BaseSpec {
 
       When("I request individual income for the existing matchId without a toDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate")
+        .timeout(10000, 10000)
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 

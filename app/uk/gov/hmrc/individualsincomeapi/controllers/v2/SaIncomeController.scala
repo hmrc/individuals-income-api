@@ -66,7 +66,11 @@ class SaIncomeController @Inject()(
             Ok(response)
           }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa")
+      }.recover(e => {
+          logger.error("", e)
+          throw e
+        })
+        .recover(recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa"))
 
   }
 
@@ -365,8 +369,11 @@ class SaIncomeController @Inject()(
             Ok(response)
           }
         }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/employments")
-
+      }.recover(e => {
+          logger.error("", e)
+          throw e
+        })
+        .recover(recoveryWithAudit(maybeCorrelationId(request), matchId, "/individuals/income/sa/employments"))
   }
 
   def selfEmploymentsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {

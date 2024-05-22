@@ -64,6 +64,7 @@ class IndividualIncomeSpec extends BaseSpec {
 
       When("I request individual income for the existing matchId")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate")
+        .timeout(10000, 10000)
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 

@@ -71,7 +71,11 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: C
                 "ukProperties",
                 urlWithTaxYearInterval(s"/individuals/income/sa/uk-properties?matchId=$matchId")))
         }
-      }.recover(recovery)
+      }.recover(e => {
+          logger.error("", e)
+          throw e
+        })
+        .recover(recovery)
   }
 
   def saReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval): Action[AnyContent] = Action.async {

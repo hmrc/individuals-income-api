@@ -9,5 +9,5 @@
             </pattern>
         </encoder>
     </appender>
-    <root level="OFF" />
+    <root level="DEBUG" />
 </configuration>
