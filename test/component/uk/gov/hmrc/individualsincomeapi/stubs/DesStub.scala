@@ -56,8 +56,7 @@ object DesStub extends MockHost(23000) {
     nino: Nino,
     startYear: TaxYear,
     endYear: TaxYear,
-    clientId: String,
-    desSAIncomes: Seq[DesSAIncome]): StubMapping =
+    clientId: String): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))

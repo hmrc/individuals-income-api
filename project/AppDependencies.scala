@@ -8,7 +8,7 @@ object AppDependencies {
 
   val playVersion = "play-30"
   val mongoVersion = "1.7.0"
-  val bootstrapVersion = "8.4.0"
+  val bootstrapVersion = "8.6.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
@@ -23,7 +23,6 @@ object AppDependencies {
     hmrc                   %% s"bootstrap-test-$playVersion"  % bootstrapVersion % scope,
     "org.scalatestplus"    %% "mockito-3-4"                   % "3.2.10.0"       % scope,
     "org.scalatestplus"    %% "scalacheck-1-17"               % "3.2.17.0"       % scope,
-    "com.vladsch.flexmark" % "flexmark-all"                   % "0.64.8"         % scope,
     "org.scalaj"           %% "scalaj-http"                   % "2.4.2"          % scope,
     hmrcMongo              %% s"hmrc-mongo-test-$playVersion" % mongoVersion     % scope,
   )

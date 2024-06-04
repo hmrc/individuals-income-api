@@ -35,7 +35,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
   val toTaxYear = TaxYear("2019-20")
   val desIncomes = Seq(
     DesSAIncome(
-      taxYear = "2018",
+      taxYear = "2019",
       returnList = Seq(
         DesSAReturn(
           caseStartDate = Some(LocalDate.parse("2015-01-15")),
@@ -154,7 +154,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
 
       And("DES is rate limited")
       DesStub
-        .searchSelfAssessmentIncomeForPeriodReturnsRateLimitErrorFor(nino, fromTaxYear, toTaxYear, clientId, desIncomes)
+        .searchSelfAssessmentIncomeForPeriodReturnsRateLimitErrorFor(nino, fromTaxYear, toTaxYear, clientId)
 
       When("I request the sa root resources")
       val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
@@ -198,7 +198,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "employments": [
                        {
                          "utr":"2432552644",
@@ -255,7 +255,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
              "selfAssessment": {
                "taxReturns": [
                  {
-                   "taxYear": "2017-18",
+                   "taxYear": "2018-19",
                    "selfEmployments": [
                      {
                        "utr":"2432552644",
@@ -312,7 +312,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
              "selfAssessment": {
                "taxReturns": [
                  {
-                   "taxYear": "2017-18",
+                   "taxYear": "2018-19",
                    "summary": [
                      {
                        "utr":"2432552644",
@@ -369,7 +369,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
              "selfAssessment": {
                "taxReturns": [
                  {
-                   "taxYear": "2017-18",
+                   "taxYear": "2018-19",
                    "trusts": [
                      {
                        "utr":"2432552644",
@@ -428,7 +428,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "foreign": [
                        {
                          "utr": "2432552644",
@@ -487,7 +487,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "partnerships": [
                        {
                          "utr": "2432552644",
@@ -547,7 +547,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "interestsAndDividends": [
                        {
                          "utr": "2432552644",
@@ -610,7 +610,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "pensionsAndStateBenefits": [
                        {
                          "utr": "2432552644",
@@ -670,7 +670,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "ukProperties": [
                        {
                          "utr": "2432552644",
@@ -730,7 +730,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "additionalInformation": [
                        {
                          "utr": "2432552644",
@@ -791,7 +791,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "other": [
                        {
                          "utr": "2432552644",
@@ -849,7 +849,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
              "selfAssessment": {
                "taxReturns": [
                  {
-                   "taxYear": "2017-18",
+                   "taxYear": "2018-19",
                    "sources" : [ {
                       "utr" : "2432552644",
                       "businessAddress" : {
