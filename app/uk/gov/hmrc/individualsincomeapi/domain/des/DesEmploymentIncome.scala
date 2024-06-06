@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.des
 
-import java.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.domain.EmpRef
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
+
+import java.time.LocalDate
 
 case class DesEmployments(employments: Seq[DesEmployment])
 

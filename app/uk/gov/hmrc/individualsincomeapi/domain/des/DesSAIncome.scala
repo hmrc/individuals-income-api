@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.des
 
-import java.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
+
+import java.time.LocalDate
 
 case class DesSAIncome(taxYear: String, returnList: Seq[DesSAReturn]) {
 

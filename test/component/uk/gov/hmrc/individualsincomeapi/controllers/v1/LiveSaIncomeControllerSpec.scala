@@ -17,7 +17,6 @@
 package component.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
-import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
@@ -25,6 +24,7 @@ import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
+import java.time.LocalDate
 import java.util.UUID
 
 class LiveSaIncomeControllerSpec extends BaseSpec {

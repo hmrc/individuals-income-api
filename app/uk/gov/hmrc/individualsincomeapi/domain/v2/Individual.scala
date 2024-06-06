@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
-import java.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPayeEntry, IfSaEntry}
 
+import java.time.LocalDate
 import java.util.UUID
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
