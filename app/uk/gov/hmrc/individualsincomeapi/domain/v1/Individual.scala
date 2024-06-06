@@ -84,7 +84,7 @@ object SandboxIncomeData {
     ),
     Seq(
       DesSAIncome(
-        "2018",
+        "2019",
         Seq(
           DesSAReturn(
             caseStartDate = Some(parse("2015-01-06")),
@@ -114,7 +114,7 @@ object SandboxIncomeData {
             postalCode = None
           ))
       ),
-      DesSAIncome("2019", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
+      DesSAIncome("2020", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
     )
   )
 }

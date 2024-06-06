@@ -29,12 +29,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Scenario("SA root endpoint for the sandbox implementation") {
 
       When("I request the self-assessments for Sandbox")
-      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 
       Then("The response status should be 200 (OK) with a valid payload")
-      val requestParameters = s"matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"
+      val requestParameters = s"matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"
 
       response.code shouldBe OK
       Json.parse(response.body) shouldBe
@@ -63,7 +63,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                  ],
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "submissions": [
                        {
                          "utr": "$sandboxUtr",
@@ -72,7 +72,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "submissions": [
                        {
                          "utr": "$sandboxUtr",
@@ -90,7 +90,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the SA employments for Sandbox")
       val response =
-        Http(s"$serviceUrl/sandbox/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sandbox/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
@@ -100,12 +100,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/employments?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "employments": [
                        {
                          "utr": "$sandboxUtr",
@@ -114,7 +114,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "employments": [
                        {
                          "utr": "$sandboxUtr",
@@ -132,7 +132,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the SA self employments for Sandbox")
       val response =
-        Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sandbox/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
@@ -142,12 +142,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/self-employments?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "selfEmployments": [
                        {
                          "utr": "$sandboxUtr",
@@ -156,7 +156,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "selfEmployments": [
                        {
                           "utr": "$sandboxUtr",
@@ -174,7 +174,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
       When("I request the SA returns summary for Sandbox")
       val response =
-        Http(s"$serviceUrl/sandbox/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sandbox/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
@@ -184,12 +184,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/summary?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "summary": [
                        {
                          "utr": "$sandboxUtr",
@@ -198,7 +198,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "summary": [
                        {
                           "utr": "$sandboxUtr",
@@ -215,7 +215,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Scenario("SA trusts endpoint for the sandbox implementation") {
       When("I request the SA trusts income for Sandbox")
       val response =
-        Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sandbox/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
@@ -225,12 +225,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/trusts?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "trusts": [
                        {
                          "utr": "$sandboxUtr",
@@ -239,7 +239,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "trusts": [
                        {
                           "utr": "$sandboxUtr",
@@ -256,7 +256,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
     Scenario("SA foreign endpoint for the sandbox implementation") {
       When("I request the SA foreign income for Sandbox")
       val response =
-        Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sandbox/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
@@ -266,12 +266,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
         Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/foreign?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "foreign": [
                        {
                          "utr": "$sandboxUtr",
@@ -280,7 +280,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "foreign": [
                        {
                           "utr": "$sandboxUtr",
@@ -298,7 +298,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA partnerships endpoint for the sandbox implementation") {
     When("I request the SA partnerships income for Sandbox")
     val response =
-      Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+      Http(s"$serviceUrl/sandbox/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 
@@ -308,12 +308,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/partnerships?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "partnerships": [
                        {
                          "utr": "$sandboxUtr",
@@ -322,7 +322,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "partnerships": [
                        {
                           "utr": "$sandboxUtr",
@@ -339,7 +339,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA pensions and state benefits endpoint for the sandbox implementation") {
     When("I request the SA pensions and state benefits income for Sandbox")
     val response = Http(
-      s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+      s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 
@@ -349,12 +349,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "pensionsAndStateBenefits": [
                        {
                          "utr": "$sandboxUtr",
@@ -363,7 +363,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "pensionsAndStateBenefits": [
                        {
                           "utr": "$sandboxUtr",
@@ -380,7 +380,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA interests and dividends endpoint for the sandbox implementation") {
     When("I request the SA interests and dividends income for Sandbox")
     val response = Http(
-      s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+      s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 
@@ -390,12 +390,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "interestsAndDividends": [
                        {
                          "utr": "$sandboxUtr",
@@ -406,7 +406,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "interestsAndDividends": [
                        {
                           "utr": "$sandboxUtr",
@@ -425,7 +425,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA uk-properties endpoint for the sandbox implementation") {
     When("I request the SA uk-properties income for Sandbox")
     val response =
-      Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+      Http(s"$serviceUrl/sandbox/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 
@@ -435,12 +435,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/uk-properties?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "ukProperties": [
                        {
                          "utr": "$sandboxUtr",
@@ -449,7 +449,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "ukProperties": [
                        {
                           "utr": "$sandboxUtr",
@@ -466,7 +466,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA additional-information endpoint for the sandbox implementation") {
     When("I request the SA additional-information income for Sandbox")
     val response = Http(
-      s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+      s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 
@@ -476,12 +476,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "additionalInformation": [
                        {
                          "utr": "$sandboxUtr",
@@ -491,7 +491,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "additionalInformation": [
                        {
                           "utr": "$sandboxUtr",
@@ -508,7 +508,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
 
   Scenario("SA other endpoint for the sandbox implementation") {
     When("I request the SA other income for Sandbox")
-    val response = Http(s"$serviceUrl/sandbox/sa/other?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20")
+    val response = Http(s"$serviceUrl/sandbox/sa/other?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 
@@ -518,12 +518,12 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(s"""
              {
                "_links": {
-                 "self": {"href": "/individuals/income/sa/other?matchId=$sandboxMatchId&fromTaxYear=2017-18&toTaxYear=2019-20"}
+                 "self": {"href": "/individuals/income/sa/other?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"}
                },
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2018-19",
+                     "taxYear": "2019-20",
                      "other": [
                        {
                          "utr": "$sandboxUtr",
@@ -532,7 +532,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2017-18",
+                     "taxYear": "2018-19",
                      "other": [
                        {
                           "utr": "$sandboxUtr",
