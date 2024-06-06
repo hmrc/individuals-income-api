@@ -69,7 +69,6 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
 
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
-
     recover[DesSAIncome](
       http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator)))
   }
