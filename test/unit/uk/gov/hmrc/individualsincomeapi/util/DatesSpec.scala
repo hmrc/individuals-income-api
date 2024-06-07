@@ -16,11 +16,12 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import java.time.{LocalDate, LocalDateTime}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.individualsincomeapi.domain.ValidationException
 import uk.gov.hmrc.individualsincomeapi.util.Dates
+
+import java.time.{LocalDate, LocalDateTime}
 
 class DatesSpec extends AnyFlatSpec with Matchers {
 

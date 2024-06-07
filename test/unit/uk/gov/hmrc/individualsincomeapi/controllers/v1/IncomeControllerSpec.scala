@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import org.apache.pekko.stream.Materializer
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers._
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyNoInteractions
@@ -37,6 +36,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveIncomeService, SandboxI
 import uk.gov.hmrc.individualsincomeapi.util.Interval
 import utils.SpecBase
 
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future.{failed, successful}

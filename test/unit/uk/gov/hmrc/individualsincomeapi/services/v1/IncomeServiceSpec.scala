@@ -16,8 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
-import java.time.LocalDate
-import java.time.LocalDate.parse
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito._
@@ -35,6 +33,8 @@ import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheId, CacheService, Live
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.SpecBase
 
+import java.time.LocalDate
+import java.time.LocalDate.parse
 import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}

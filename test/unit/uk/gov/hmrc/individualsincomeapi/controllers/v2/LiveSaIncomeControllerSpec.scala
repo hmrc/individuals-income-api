@@ -2032,7 +2032,7 @@ class LiveSaIncomeControllerSpec
       verify(saIncomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
-    "returns bad request with corrrect message when malformed CorrelationId" in new Setup {
+    "returns bad request with correct message when malformed CorrelationId" in new Setup {
       val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/other?$requestParameters")
         .withHeaders("CorrelationId" -> "test")
 

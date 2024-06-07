@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.v1
 
-import java.time.LocalDate
-import java.time.LocalDate.parse
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 
+import java.time.LocalDate
+import java.time.LocalDate.parse
 import java.util.UUID
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
@@ -84,7 +84,7 @@ object SandboxIncomeData {
     ),
     Seq(
       DesSAIncome(
-        "2018",
+        "2019",
         Seq(
           DesSAReturn(
             caseStartDate = Some(parse("2015-01-06")),
@@ -114,7 +114,7 @@ object SandboxIncomeData {
             postalCode = None
           ))
       ),
-      DesSAIncome("2019", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
+      DesSAIncome("2020", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
     )
   )
 }

@@ -19,7 +19,6 @@ package it.uk.gov.hmrc.individualsincomeapi.connectors
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
-import java.time.LocalDate
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -33,6 +32,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.des._
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorSpec

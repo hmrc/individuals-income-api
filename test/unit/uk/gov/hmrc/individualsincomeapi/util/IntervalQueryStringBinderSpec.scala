@@ -16,13 +16,14 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.util
 
-import java.time.LocalDate
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import uk.gov.hmrc.individualsincomeapi.util.IntervalQueryStringBinder
+
+import java.time.LocalDate
 
 class IntervalQueryStringBinderSpec
     extends AnyFlatSpec with Matchers with EitherValues with TestDates with GuiceOneAppPerSuite {

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
-import java.time.LocalDate
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
@@ -26,6 +25,7 @@ import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.util.Interval
 
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.Future.{failed, successful}

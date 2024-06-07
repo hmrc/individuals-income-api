@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import org.apache.pekko.stream.Materializer
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => eqTo, _}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{times, verify}
@@ -40,6 +39,7 @@ import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesHelper
 import uk.gov.hmrc.individualsincomeapi.util.Interval
 import utils.{AuthHelper, IncomePayeHelpers, SpecBase}
 
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}

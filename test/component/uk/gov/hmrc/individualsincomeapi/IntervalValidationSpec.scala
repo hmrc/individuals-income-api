@@ -17,8 +17,6 @@
 package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, DesStub, IndividualsMatchingApiStub}
-
-import java.time.{LocalDate, LocalDateTime}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
@@ -26,6 +24,7 @@ import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesPayment}
 import uk.gov.hmrc.individualsincomeapi.util.Dates
 
+import java.time.{LocalDate, LocalDateTime}
 import java.util.UUID
 
 class IntervalValidationSpec extends BaseSpec {

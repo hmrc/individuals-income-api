@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.individualsincomeapi.util
 
-import java.time.LocalDate
 import uk.gov.hmrc.individualsincomeapi.domain.{TaxYear, TaxYearInterval, ValidationException}
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 
 case class Interval(fromDate: LocalDateTime, toDate: LocalDateTime) {
