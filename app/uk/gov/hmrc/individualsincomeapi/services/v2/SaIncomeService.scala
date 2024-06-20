@@ -28,13 +28,14 @@ import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SaIncomeService @Inject()(
+class SaIncomeService @Inject() (
   matchingConnector: IndividualsMatchingApiConnector,
   ifConnector: IfConnector,
   cache: CacheService,
   scopeService: ScopesService,
   scopesHelper: ScopesHelper,
-  @Named("retryDelay") retryDelay: Int)(implicit ec: ExecutionContext) {
+  @Named("retryDelay") retryDelay: Int
+)(implicit ec: ExecutionContext) {
 
   private def endpoints =
     List(
@@ -54,138 +55,154 @@ class SaIncomeService @Inject()(
       "furtherDetails"
     )
 
-  private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[Seq[IfSaEntry]] =
+  private def fetchSaIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[Seq[IfSaEntry]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       saIncome <- cache.get(
-                   SaCacheId(
-                     matchId,
-                     taxYearInterval,
-                     scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)),
-                   withRetry(
-                     ifConnector.fetchSelfAssessmentIncome(
-                       ninoMatch.nino,
-                       taxYearInterval,
-                       Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty),
-                       matchId.toString
-                     )
-                   )
-                 )
+                    SaCacheId(
+                      matchId,
+                      taxYearInterval,
+                      scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)
+                    ),
+                    withRetry(
+                      ifConnector.fetchSelfAssessmentIncome(
+                        ninoMatch.nino,
+                        taxYearInterval,
+                        Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty),
+                        matchId.toString
+                      )
+                    )
+                  )
     } yield saIncome
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
     case UpstreamErrorResponse(_, 503, 503, _) => Thread.sleep(retryDelay); body
   }
 
-  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaFootprint] =
+  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaFootprint] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaFootprint.transform(ifSaEntries)
 
-  def fetchSummary(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaSummaries] =
+  def fetchSummary(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaSummaries] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaSummaries.transform(ifSaEntries)
 
-  def fetchTrusts(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaTrusts] =
+  def fetchTrusts(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaTrusts] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaTrusts.transform(ifSaEntries)
 
-  def fetchForeign(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaForeignIncomes] =
+  def fetchForeign(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaForeignIncomes] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaForeignIncomes.transform(ifSaEntries)
 
-  def fetchPartnerships(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaPartnerships] =
+  def fetchPartnerships(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaPartnerships] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaPartnerships.transform(ifSaEntries)
 
-  def fetchInterestAndDividends(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaInterestAndDividends] =
+  def fetchInterestAndDividends(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaInterestAndDividends] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaInterestAndDividends.transform(ifSaEntries)
 
-  def fetchPensionAndStateBenefits(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaPensionAndStateBenefits] =
+  def fetchPensionAndStateBenefits(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaPensionAndStateBenefits] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaPensionAndStateBenefits.transform(ifSaEntries)
 
-  def fetchUkProperties(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaUkProperties] =
+  def fetchUkProperties(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaUkProperties] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaUkProperties.transform(ifSaEntries)
 
-  def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaAdditionalInformationRecords] =
+  def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaAdditionalInformationRecords] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaAdditionalInformationRecords.transform(ifSaEntries)
 
-  def fetchOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaOtherIncomeRecords] =
+  def fetchOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaOtherIncomeRecords] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaOtherIncomeRecords.transform(ifSaEntries)
 
-  def fetchSources(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaSources] =
+  def fetchSources(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaSources] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaSources.transform(ifSaEntries)
 
-  def fetchEmployments(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaEmployments] =
+  def fetchEmployments(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaEmployments] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaEmployments.transform(ifSaEntries)
 
-  def fetchSelfEmployments(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaSelfEmployments] =
+  def fetchSelfEmployments(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaSelfEmployments] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)
     } yield SaSelfEmployments.transform(ifSaEntries)
 
-  def fetchFurtherDetails(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[SaFurtherDetails] =
+  def fetchFurtherDetails(matchId: UUID, taxYearInterval: TaxYearInterval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaFurtherDetails] =
     for {
       ninoMatch   <- matchingConnector.resolve(matchId)
       ifSaEntries <- fetchSaIncome(ninoMatch.matchId, taxYearInterval, scopes)

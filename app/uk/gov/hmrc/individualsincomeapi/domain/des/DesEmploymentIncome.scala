@@ -33,7 +33,8 @@ case class DesAddress(
   line5: Option[String] = None,
   postalCode: Option[String] = None,
   effectiveDate: Option[LocalDate] = None,
-  addressType: Option[String] = None)
+  addressType: Option[String] = None
+)
 
 object DesAddress {
   implicit val desReads: Reads[DesAddress] = (
@@ -53,7 +54,8 @@ case class DesPayment(
   paymentDate: LocalDate,
   totalPayInPeriod: Double,
   weekPayNumber: Option[Int] = None,
-  monthPayNumber: Option[Int] = None)
+  monthPayNumber: Option[Int] = None
+)
 
 case class DesEmployment(
   payments: Seq[DesPayment],
@@ -63,14 +65,14 @@ case class DesEmployment(
   employerSchemeReference: Option[String] = None,
   employmentStartDate: Option[LocalDate] = None,
   employmentLeavingDate: Option[LocalDate] = None,
-  employmentPayFrequency: Option[DesEmploymentPayFrequency.Value] = None) {
+  employmentPayFrequency: Option[DesEmploymentPayFrequency.Value] = None
+) {
 
-  val employerPayeReference: Option[EmpRef] = {
+  val employerPayeReference: Option[EmpRef] =
     (employerDistrictNumber, employerSchemeReference) match {
       case (Some(districtNumber), Some(schemeReference)) => Some(EmpRef(districtNumber, schemeReference))
       case _                                             => None
     }
-  }
 }
 
 object DesEmploymentPayFrequency extends Enumeration {

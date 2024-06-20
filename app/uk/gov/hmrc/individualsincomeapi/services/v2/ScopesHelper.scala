@@ -23,25 +23,28 @@ import uk.gov.hmrc.individualsincomeapi.config.EndpointConfig
 import java.util.UUID
 import javax.inject.Inject
 
-class ScopesHelper @Inject()(scopesService: ScopesService) {
+class ScopesHelper @Inject() (scopesService: ScopesService) {
 
-  /**
-    * @param scopes    The list of scopes associated with the user
-    * @param endpoints The endpoint that the user has called
-    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+  /** @param scopes
+    *   The list of scopes associated with the user
+    * @param endpoints
+    *   The endpoint that the user has called
+    * @return
+    *   A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
     */
   def getQueryStringFor(scopes: Iterable[String], endpoints: List[String]): String = {
     val filters = scopesService.getValidFilters(scopes)
     s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if (filters.nonEmpty)
-      s"&filter=${filters.mkString("&filter=")}"
-    else ""}"
+        s"&filter=${filters.mkString("&filter=")}"
+      else ""}"
   }
 
   def getHalLinks(
     matchId: UUID,
     excludeList: Option[List[String]],
     scopes: Iterable[String],
-    allowedList: Option[List[String]]): HalResource = {
+    allowedList: Option[List[String]]
+  ): HalResource = {
 
     val links = getAllHalLinks(matchId, excludeList, allowedList, () => scopesService.getInternalEndpoints(scopes))
 
@@ -52,17 +55,19 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     matchId: UUID,
     excludeList: Option[List[String]],
     allowedList: Option[List[String]],
-    getEndpoints: () => Iterable[EndpointConfig]): Seq[HalLink] =
+    getEndpoints: () => Iterable[EndpointConfig]
+  ): Seq[HalLink] =
     getEndpoints()
-      .filter(
-        c =>
-          !excludeList.getOrElse(List()).contains(c.name) &&
-            allowedList.getOrElse(getEndpoints().map(e => e.name).toList).contains(c.name))
-      .map(
-        endpoint =>
-          HalLink(
-            rel = endpoint.name,
-            href = endpoint.link.replaceAll("<matchId>", s"$matchId"),
-            title = Some(endpoint.title)))
+      .filter(c =>
+        !excludeList.getOrElse(List()).contains(c.name) &&
+          allowedList.getOrElse(getEndpoints().map(e => e.name).toList).contains(c.name)
+      )
+      .map(endpoint =>
+        HalLink(
+          rel = endpoint.name,
+          href = endpoint.link.replaceAll("<matchId>", s"$matchId"),
+          title = Some(endpoint.title)
+        )
+      )
       .toSeq
 }

@@ -108,7 +108,8 @@ class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport wi
         .map {
           case Some(entry) => entry.data.value
           case None        => None
-        })
+        }
+    )
 
   case class TestClass(one: String, two: String)
 

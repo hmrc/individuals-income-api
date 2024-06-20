@@ -86,12 +86,14 @@ class DesConnectorSpec
       paymentDate = LocalDate.parse("2016-11-28"),
       totalPayInPeriod = 100,
       weekPayNumber = None,
-      monthPayNumber = Some(8)),
+      monthPayNumber = Some(8)
+    ),
     DesPayment(
       paymentDate = LocalDate.parse("2016-12-06"),
       totalPayInPeriod = 50,
       weekPayNumber = Some(49),
-      monthPayNumber = None)
+      monthPayNumber = None
+    )
   )
   val desEmployment = DesEmployment(
     employerName = Some("Acme Inc"),
@@ -155,7 +157,9 @@ class DesConnectorSpec
                ]
              }
           """
-              )))
+              )
+          )
+      )
 
       val result = await(underTest.fetchEmployments(nino, interval))
 
@@ -167,7 +171,8 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
           .withQueryParam("from", equalTo("2016-01-01"))
           .withQueryParam("to", equalTo("2017-03-01"))
-          .willReturn(aResponse().withStatus(404)))
+          .willReturn(aResponse().withStatus(404))
+      )
 
       val result = await(underTest.fetchEmployments(nino, interval))
 
@@ -177,7 +182,8 @@ class DesConnectorSpec
     "fail when DES returns an error" in new Setup {
       stubFor(
         get(urlPathMatching(s"/individuals/nino/$nino/employments/income"))
-          .willReturn(aResponse().withStatus(500)))
+          .willReturn(aResponse().withStatus(500))
+      )
 
       intercept[UpstreamErrorResponse] {
         await(underTest.fetchEmployments(nino, interval))
@@ -219,7 +225,9 @@ class DesConnectorSpec
                ]
              }]
           """
-              )))
+              )
+          )
+      )
 
       val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
@@ -243,7 +251,8 @@ class DesConnectorSpec
         get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
           .withQueryParam("startYear", equalTo(startYear))
           .withQueryParam("endYear", equalTo(endYear))
-          .willReturn(aResponse().withStatus(404)))
+          .willReturn(aResponse().withStatus(404))
+      )
 
       val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
@@ -253,7 +262,8 @@ class DesConnectorSpec
     "fail when DES returns an error" in new Setup {
       stubFor(
         get(urlPathMatching(s"/individuals/nino/$nino/self-assessment/income"))
-          .willReturn(aResponse().withStatus(500)))
+          .willReturn(aResponse().withStatus(500))
+      )
 
       intercept[UpstreamErrorResponse] {
         await(underTest.fetchSelfAssessmentIncome(nino, interval))

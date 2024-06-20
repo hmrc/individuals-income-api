@@ -67,7 +67,8 @@ class SaFootprintSpec extends AnyWordSpec with Matchers with IncomeSaHelpers {
     "Write empty array when submissions are without receivedDate" in {
       val saFootPrint = SaFootprint.transform(ifSa)
       val withoutReceivedDate = saFootPrint.copy(taxReturns =
-        Seq(SaFootprintTaxReturn("2019-20", Seq(SaFootprintSubmission(receivedDate = None, utr = Some("1234567890"))))))
+        Seq(SaFootprintTaxReturn("2019-20", Seq(SaFootprintSubmission(receivedDate = None, utr = Some("1234567890")))))
+      )
 
       val expected =
         """{

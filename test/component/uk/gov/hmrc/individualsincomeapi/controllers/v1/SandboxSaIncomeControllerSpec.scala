@@ -339,7 +339,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA pensions and state benefits endpoint for the sandbox implementation") {
     When("I request the SA pensions and state benefits income for Sandbox")
     val response = Http(
-      s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      s"$serviceUrl/sandbox/sa/pensions-and-state-benefits?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+    )
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 
@@ -380,7 +381,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA interests and dividends endpoint for the sandbox implementation") {
     When("I request the SA interests and dividends income for Sandbox")
     val response = Http(
-      s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      s"$serviceUrl/sandbox/sa/interests-and-dividends?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+    )
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 
@@ -466,7 +468,8 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
   Scenario("SA additional-information endpoint for the sandbox implementation") {
     When("I request the SA additional-information income for Sandbox")
     val response = Http(
-      s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      s"$serviceUrl/sandbox/sa/additional-information?matchId=$sandboxMatchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+    )
       .headers(requestHeaders(acceptHeaderP1))
       .asString
 

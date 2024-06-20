@@ -32,13 +32,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SaIncomeController @Inject()(
+class SaIncomeController @Inject() (
   val saIncomeService: SaIncomeService,
   val scopeService: ScopesService,
   val scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
   cc: ControllerComponents,
-  implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+  implicit val auditHelper: AuditHelper
+)(implicit val ec: ExecutionContext)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))
@@ -53,7 +54,8 @@ class SaIncomeController @Inject()(
             val saJsObject = obj("selfAssessment" -> sa)
             val excludeList = Some(List("sa", "paye"))
             val response = Json.toJson(
-              state(saJsObject) ++ scopesHelper.getHalLinks(matchUuid, excludeList, authScopes, None) ++ selfLink)
+              state(saJsObject) ++ scopesHelper.getHalLinks(matchUuid, excludeList, authScopes, None) ++ selfLink
+            )
 
             auditHelper.auditSaApiResponse(
               correlationId.toString,
@@ -61,7 +63,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -88,7 +91,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -113,7 +117,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -138,7 +143,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -165,7 +171,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -183,7 +190,8 @@ class SaIncomeController @Inject()(
           saIncomeService.fetchInterestAndDividends(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink(
               "self",
-              urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId"))
+              urlWithTaxYearInterval(s"/individuals/income/sa/interests-and-dividends?matchId=$matchId")
+            )
             val saJsObject = obj("selfAssessment" -> sa)
             val response = Json.toJson(state(saJsObject) ++ selfLink)
 
@@ -193,7 +201,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -201,7 +210,8 @@ class SaIncomeController @Inject()(
       } recover recoveryWithAudit(
         maybeCorrelationId(request),
         matchId,
-        "/individuals/income/sa/interests-and-dividends")
+        "/individuals/income/sa/interests-and-dividends"
+      )
     }
 
   def saPensionsAndStateBenefitsIncome(matchId: String, taxYearInterval: TaxYearInterval): Action[AnyContent] =
@@ -213,7 +223,8 @@ class SaIncomeController @Inject()(
           saIncomeService.fetchPensionAndStateBenefits(matchUuid, taxYearInterval, authScopes).map { sa =>
             val selfLink = HalLink(
               "self",
-              urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId"))
+              urlWithTaxYearInterval(s"/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId")
+            )
             val saJsObject = obj("selfAssessment" -> sa)
             val response = Json.toJson(state(saJsObject) ++ selfLink)
 
@@ -223,7 +234,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -231,7 +243,8 @@ class SaIncomeController @Inject()(
       } recover recoveryWithAudit(
         maybeCorrelationId(request),
         matchId,
-        "/individuals/income/sa/pensions-and-state-benefits")
+        "/individuals/income/sa/pensions-and-state-benefits"
+      )
 
     }
 
@@ -253,7 +266,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -280,7 +294,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -306,7 +321,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -332,7 +348,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -360,7 +377,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -387,7 +405,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }
@@ -414,7 +433,8 @@ class SaIncomeController @Inject()(
               authScopes.mkString(","),
               request,
               selfLink.toString,
-              Some(Json.toJson(sa)))
+              Some(Json.toJson(sa))
+            )
 
             Ok(response)
           }

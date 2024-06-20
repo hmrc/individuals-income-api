@@ -30,13 +30,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RootController @Inject()(
+class RootController @Inject() (
   val citizenMatchingService: LiveCitizenMatchingService,
   val scopeService: ScopesService,
   scopesHelper: ScopesHelper,
   val authConnector: AuthConnector,
   implicit val auditHelper: AuditHelper,
-  cc: ControllerComponents)(implicit ec: ExecutionContext)
+  cc: ControllerComponents
+)(implicit ec: ExecutionContext)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
@@ -58,7 +59,8 @@ class RootController @Inject()(
             authScopes.mkString(","),
             request,
             response.toString,
-            None)
+            None
+          )
 
           Ok(response)
         }

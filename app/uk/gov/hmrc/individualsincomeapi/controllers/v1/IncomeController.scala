@@ -38,7 +38,7 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
       incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
         val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
         val incomeJsObject = obj("income" -> toJson(income))
-        val payeJsObject = obj("paye"     -> incomeJsObject)
+        val payeJsObject = obj("paye" -> incomeJsObject)
         Ok(state(payeJsObject) ++ halLink)
       }
     }.recover(recovery)
@@ -46,19 +46,21 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
 }
 
 @Singleton
-class LiveIncomeController @Inject()(
+class LiveIncomeController @Inject() (
   val incomeService: LiveIncomeService,
   val authConnector: AuthConnector,
-  cc: ControllerComponents)(implicit ec: ExecutionContext)
+  cc: ControllerComponents
+)(implicit ec: ExecutionContext)
     extends IncomeController(incomeService, cc) {
   override val environment = PRODUCTION
 }
 
 @Singleton
-class SandboxIncomeController @Inject()(
+class SandboxIncomeController @Inject() (
   val incomeService: SandboxIncomeService,
   val authConnector: AuthConnector,
-  cc: ControllerComponents)(implicit ec: ExecutionContext)
+  cc: ControllerComponents
+)(implicit ec: ExecutionContext)
     extends IncomeController(incomeService, cc) {
   override val environment = SANDBOX
 }

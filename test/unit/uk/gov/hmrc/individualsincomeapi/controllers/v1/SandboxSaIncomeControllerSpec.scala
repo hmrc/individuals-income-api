@@ -63,7 +63,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     val saFootprint = SaFootprint(
       registrations = Seq(SaRegistration(SaUtr("1234567890"), Some(LocalDate.parse("2014-05-01")))),
       taxReturns = Seq(
-        SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(SaUtr("1234567890"), Some(LocalDate.parse("2016-06-01"))))))
+        SaTaxReturn(TaxYear("2015-16"), Seq(SaSubmission(SaUtr("1234567890"), Some(LocalDate.parse("2016-06-01")))))
+      )
     )
 
     "return 200 (OK) with the registration information and self assessment returns for the period" in new Setup {
@@ -128,7 +129,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(employmentsIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(employmentsIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -170,7 +172,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(selfEmploymentIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(selfEmploymentIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -211,7 +214,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(taxReturnSummaries)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(taxReturnSummaries))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -252,7 +256,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saTrustIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saTrustIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -294,7 +299,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saForeignIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saForeignIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -336,7 +342,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saPartnershipIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saPartnershipIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -355,11 +362,14 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     val saPensionsAndStateBenefitsIncomes = Seq(
       SaAnnualPensionAndStateBenefitIncomes(
         TaxYear("2015-16"),
-        Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))))
+        Seq(SaAnnualPensionAndStateBenefitIncome(sandboxUtr, 123.65))
+      )
+    )
 
     "return 200 (OK) with the self tax return pensions and state benefits income for the period" in new Setup {
       given(
-        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any())
+      )
         .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
       val result =
@@ -367,7 +377,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequest.uri, Json.toJson(saPensionsAndStateBenefitsIncomes)))
+        expectedSaPayload(fakeRequest.uri, Json.toJson(saPensionsAndStateBenefitsIncomes))
+      )
     }
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -376,21 +387,26 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
         FakeRequest("GET", s"/individuals/income/sa/pensions-and-state-benefits?$requestParametersWithoutToTaxYear")
 
       given(
-        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any())
+      )
         .willReturn(successful(saPensionsAndStateBenefitsIncomes))
 
       val result = await(
         sandboxSaIncomeController.saPensionsAndStateBenefitsIncome(matchId, taxYearInterval)(
-          fakeRequestWithoutToTaxYear))
+          fakeRequestWithoutToTaxYear
+        )
+      )
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saPensionsAndStateBenefitsIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saPensionsAndStateBenefitsIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
       given(
-        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
+        mockSandboxSaIncomeService.fetchPensionsAndStateBenefitsIncome(refEq(matchId), refEq(taxYearInterval))(any())
+      )
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -406,7 +422,9 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
     val saInterestsAndDividendsIncomes = Seq(
       SaAnnualInterestAndDividendIncomes(
         TaxYear("2015-16"),
-        Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 10.56, 56.34, 52.56))))
+        Seq(SaAnnualInterestAndDividendIncome(sandboxUtr, 10.56, 56.34, 52.56))
+      )
+    )
 
     "return 200 (OK) with the self tax return interests and dividends income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchInterestsAndDividendsIncome(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -416,7 +434,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequest.uri, Json.toJson(saInterestsAndDividendsIncomes)))
+        expectedSaPayload(fakeRequest.uri, Json.toJson(saInterestsAndDividendsIncomes))
+      )
     }
 
     "return 200 (Ok) and the self link without toTaxYear when it is not passed in the request" in new Setup {
@@ -428,11 +447,13 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
         .willReturn(successful(saInterestsAndDividendsIncomes))
 
       val result = await(
-        sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear))
+        sandboxSaIncomeController.saInterestsAndDividendsIncome(matchId, taxYearInterval)(fakeRequestWithoutToTaxYear)
+      )
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saInterestsAndDividendsIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saInterestsAndDividendsIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -474,7 +495,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saUkPropertiesIncomes)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saUkPropertiesIncomes))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -491,7 +513,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
   "SandboxSaIncomeController.saAdditionalInformation" should {
     val fakeRequest = FakeRequest("GET", s"/individuals/income/sa/additional-information?$requestParameters")
     val saAdditionalInformation = Seq(
-      SaAnnualAdditionalInformations(TaxYear("2015-16"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 76.67, 13.56))))
+      SaAnnualAdditionalInformations(TaxYear("2015-16"), Seq(SaAnnualAdditionalInformation(sandboxUtr, 76.67, 13.56)))
+    )
 
     "return 200 (OK) with the additional information income for the period" in new Setup {
       given(mockSandboxSaIncomeService.fetchAdditionalInformation(refEq(matchId), refEq(taxYearInterval))(any()))
@@ -516,7 +539,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saAdditionalInformation)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(saAdditionalInformation))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
@@ -556,7 +580,8 @@ class SandboxSaIncomeControllerSpec extends SpecBase with MockitoSugar {
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe Json.parse(
-        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(otherIncome)))
+        expectedSaPayload(fakeRequestWithoutToTaxYear.uri, Json.toJson(otherIncome))
+      )
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {

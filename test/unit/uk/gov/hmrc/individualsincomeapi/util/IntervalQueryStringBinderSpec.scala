@@ -41,10 +41,9 @@ class IntervalQueryStringBinderSpec
       (Map("fromDate" -> Seq("2020-01-31"), "toDate" -> Seq("20201231")), "toDate: invalid date format")
     )
 
-    fixtures foreach {
-      case (parameters, response) =>
-        val maybeEither = intervalQueryStringBinder.bind("", parameters)
-        maybeEither shouldBe Some(Left(response))
+    fixtures foreach { case (parameters, response) =>
+      val maybeEither = intervalQueryStringBinder.bind("", parameters)
+      maybeEither shouldBe Some(Left(response))
     }
   }
 
@@ -52,7 +51,8 @@ class IntervalQueryStringBinderSpec
     val parameters = Map("fromDate" -> Seq("2017-01-31"))
     val maybeEither = intervalQueryStringBinder.bind("", parameters)
     maybeEither shouldBe Some(
-      Right(toInterval("2017-01-31T00:00:00.000", LocalDate.now().atStartOfDay().plusNanos(1000000).toString)))
+      Right(toInterval("2017-01-31T00:00:00.000", LocalDate.now().atStartOfDay().plusNanos(1000000).toString))
+    )
   }
 
   it should "succeed in binding an interval from well formed fromDate and toDate parameters" in {

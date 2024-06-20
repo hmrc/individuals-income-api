@@ -49,7 +49,8 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
   val toDateString = "2017-05-31"
   val interval = Interval(LocalDate.parse(fromDateString).atStartOfDay(), LocalDate.parse(toDateString).atStartOfDay())
   val payments = Seq(
-    Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10)))
+    Payment(1000.50, LocalDate.parse("2016-01-28"), Some(EmpRef.fromIdentifiers("123/AI45678")), Some(10))
+  )
   implicit val ec: ExecutionContext = ExecutionContext.global
 
   trait Setup {

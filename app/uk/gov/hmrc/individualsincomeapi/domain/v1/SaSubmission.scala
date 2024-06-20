@@ -35,7 +35,8 @@ object SaTaxReturn {
   def apply(desSaIncome: DesSAIncome): SaTaxReturn =
     SaTaxReturn(
       TaxYear.fromEndYear(desSaIncome.taxYear.toInt),
-      desSaIncome.returnList.map(r => SaSubmission(r.utr, r.receivedDate)))
+      desSaIncome.returnList.map(r => SaSubmission(r.utr, r.receivedDate))
+    )
 }
 
 object SaFootprint {
@@ -71,7 +72,8 @@ object SaAnnualSelfEmployments {
     SaAnnualSelfEmployments(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map(sa =>
-        SaSelfEmploymentsIncome(sa.utr, sa.income.profitFromSelfEmployment.getOrElse(0.0)))
+        SaSelfEmploymentsIncome(sa.utr, sa.income.profitFromSelfEmployment.getOrElse(0.0))
+      )
     )
 }
 
@@ -108,7 +110,8 @@ object SaAnnualForeignIncomes {
     SaAnnualForeignIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map(sa =>
-        SaAnnualForeignIncome(sa.utr, sa.income.incomeFromForeign4Sources.getOrElse(0.0)))
+        SaAnnualForeignIncome(sa.utr, sa.income.incomeFromForeign4Sources.getOrElse(0.0))
+      )
     )
 }
 
@@ -132,12 +135,13 @@ object SaAnnualAdditionalInformations {
   def apply(desSAIncome: DesSAIncome): SaAnnualAdditionalInformations =
     SaAnnualAdditionalInformations(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(
-        sa =>
-          SaAnnualAdditionalInformation(
-            sa.utr,
-            sa.income.incomeFromGainsOnLifePolicies.getOrElse(0.0),
-            sa.income.incomeFromSharesOptions.getOrElse(0.0)))
+      desSAIncome.returnList.map(sa =>
+        SaAnnualAdditionalInformation(
+          sa.utr,
+          sa.income.incomeFromGainsOnLifePolicies.getOrElse(0.0),
+          sa.income.incomeFromSharesOptions.getOrElse(0.0)
+        )
+      )
     )
 }
 
@@ -150,38 +154,42 @@ object SaAnnualPartnershipIncomes {
     SaAnnualPartnershipIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map(sa =>
-        SaAnnualPartnershipIncome(sa.utr, sa.income.profitFromPartnerships.getOrElse(0.0)))
+        SaAnnualPartnershipIncome(sa.utr, sa.income.profitFromPartnerships.getOrElse(0.0))
+      )
     )
 }
 
 case class SaAnnualInterestAndDividendIncomes(
   taxYear: TaxYear,
-  interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome])
+  interestsAndDividends: Seq[SaAnnualInterestAndDividendIncome]
+)
 
 case class SaAnnualInterestAndDividendIncome(
   utr: SaUtr,
   ukInterestsIncome: Double,
   foreignDividendsIncome: Double,
-  ukDividendsIncome: Double)
+  ukDividendsIncome: Double
+)
 
 object SaAnnualInterestAndDividendIncomes {
   def apply(desSAIncome: DesSAIncome): SaAnnualInterestAndDividendIncomes =
     SaAnnualInterestAndDividendIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
-      desSAIncome.returnList.map(
-        sa =>
-          SaAnnualInterestAndDividendIncome(
-            sa.utr,
-            sa.income.incomeFromUkInterest.getOrElse(0.0),
-            sa.income.incomeFromForeignDividends.getOrElse(0.0),
-            sa.income.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)
-        ))
+      desSAIncome.returnList.map(sa =>
+        SaAnnualInterestAndDividendIncome(
+          sa.utr,
+          sa.income.incomeFromUkInterest.getOrElse(0.0),
+          sa.income.incomeFromForeignDividends.getOrElse(0.0),
+          sa.income.incomeFromInterestNDividendsFromUKCompaniesNTrusts.getOrElse(0.0)
+        )
+      )
     )
 }
 
 case class SaAnnualPensionAndStateBenefitIncomes(
   taxYear: TaxYear,
-  pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome])
+  pensionsAndStateBenefits: Seq[SaAnnualPensionAndStateBenefitIncome]
+)
 
 case class SaAnnualPensionAndStateBenefitIncome(utr: SaUtr, totalIncome: Double)
 
@@ -190,7 +198,8 @@ object SaAnnualPensionAndStateBenefitIncomes {
     SaAnnualPensionAndStateBenefitIncomes(
       TaxYear.fromEndYear(desSAIncome.taxYear.toInt),
       desSAIncome.returnList.map(sa =>
-        SaAnnualPensionAndStateBenefitIncome(sa.utr, sa.income.incomeFromPensions.getOrElse(0.0)))
+        SaAnnualPensionAndStateBenefitIncome(sa.utr, sa.income.incomeFromPensions.getOrElse(0.0))
+      )
     )
 }
 
@@ -253,7 +262,8 @@ case class SourceAddress(
   line5: Option[String] = None,
   postcode: Option[String] = None,
   effectiveDate: Option[LocalDate] = None,
-  addressType: Option[String] = None) {
+  addressType: Option[String] = None
+) {
 
   def isEmpty: Boolean = this == SourceAddress()
 }
@@ -266,7 +276,8 @@ case class SaIncomeSource(
   utr: SaUtr,
   businessDescription: Option[String],
   businessAddress: Option[SourceAddress],
-  telephoneNumber: Option[String])
+  telephoneNumber: Option[String]
+)
 
 object SaIncomeSource {
   implicit val format: Format[SaIncomeSource] = Json.format[SaIncomeSource]

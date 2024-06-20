@@ -101,7 +101,8 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
 
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
       given(
-        mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any()))
+        mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any())
+      )
         .willReturn(failed(new InsufficientEnrolments()))
 
       val result = await(liveMatchCitizenController.root(randomMatchId).apply(FakeRequest()))

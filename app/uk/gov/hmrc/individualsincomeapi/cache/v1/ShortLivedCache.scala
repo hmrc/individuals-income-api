@@ -23,8 +23,9 @@ import uk.gov.hmrc.mongo.MongoComponent
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ShortLivedCache @Inject()(
+class ShortLivedCache @Inject() (
   override val cacheConfig: CacheRepositoryConfiguration,
   configuration: Configuration,
-  mongo: MongoComponent)(implicit ec: ExecutionContext)
+  mongo: MongoComponent
+)(implicit ec: ExecutionContext)
     extends BaseCache(cacheConfig, configuration, mongo)

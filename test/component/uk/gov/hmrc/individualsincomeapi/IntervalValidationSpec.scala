@@ -107,7 +107,8 @@ class IntervalValidationSpec extends BaseSpec {
         nino,
         fromDate,
         today,
-        DesEmployments(Seq(DesEmployment(Seq(DesPayment(LocalDate.parse(yesterday), 100.5))))))
+        DesEmployments(Seq(DesEmployment(Seq(DesPayment(LocalDate.parse(yesterday), 100.5)))))
+      )
 
       When("I request individual income for the existing matchId without a toDate")
       val response = Http(s"$serviceUrl/paye?matchId=$matchId&fromDate=$fromDate")

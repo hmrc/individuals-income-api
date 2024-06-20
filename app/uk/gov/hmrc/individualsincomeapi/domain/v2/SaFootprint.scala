@@ -22,9 +22,9 @@ import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
 case class SaFootprint(
-                        registrations: Seq[SaFootprintRegistration],
-                        taxReturns: Seq[SaFootprintTaxReturn]
-                      )
+  registrations: Seq[SaFootprintRegistration],
+  taxReturns: Seq[SaFootprintTaxReturn]
+)
 
 object SaFootprint {
 
@@ -32,17 +32,21 @@ object SaFootprint {
     (
       (JsPath \ "registrations").read[Seq[SaFootprintRegistration]] and
         (JsPath \ "taxReturns").read[Seq[SaFootprintTaxReturn]]
-      )(SaFootprint.apply _),
+    )(SaFootprint.apply _),
     (
       (JsPath \ "registrations").write[Seq[SaFootprintRegistration]] and
         (JsPath \ "taxReturns").write[Seq[SaFootprintTaxReturn]]
-      )(unlift(SaFootprint.unapply)).contramap(footprint => {
+    )(unlift(SaFootprint.unapply)).contramap { footprint =>
       val registrations = footprint.registrations
         .filter(registration => registration.registrationDate.isDefined)
-      val taxReturns = footprint.taxReturns.map(tr => tr.copy(submissions = tr.submissions
-        .filter(submission => submission.receivedDate.isDefined)))
+      val taxReturns = footprint.taxReturns.map(tr =>
+        tr.copy(submissions =
+          tr.submissions
+            .filter(submission => submission.receivedDate.isDefined)
+        )
+      )
       footprint.copy(registrations = registrations, taxReturns = taxReturns)
-    })
+    }
   )
 
   def transform(ifSaEntry: Seq[IfSaEntry]): SaFootprint =
@@ -55,9 +59,11 @@ object SaFootprint {
     ifSaEntry
       .flatMap { entryList =>
         entryList.returnList.map { returns =>
-          returns.map { entry =>
-            SaFootprintRegistration(entry.caseStartDate, entry.utr)
-          }.filter(entry => entry.registrationDate.isDefined)
+          returns
+            .map { entry =>
+              SaFootprintRegistration(entry.caseStartDate, entry.utr)
+            }
+            .filter(entry => entry.registrationDate.isDefined)
         }
       }
       .flatten
@@ -67,11 +73,12 @@ object SaFootprint {
 
   private def transformSaFootprintSubmissions(entry: IfSaEntry) = {
     entry.returnList match {
-      case Some(list) => {
-        list.map { entry =>
-          SaFootprintSubmission(entry.receivedDate, entry.utr)
-        }.filter(entry => entry.receivedDate.isDefined)
-      }
+      case Some(list) =>
+        list
+          .map { entry =>
+            SaFootprintSubmission(entry.receivedDate, entry.utr)
+          }
+          .filter(entry => entry.receivedDate.isDefined)
       case _ => Seq(default)
     }
   }.sortBy(_.receivedDate)

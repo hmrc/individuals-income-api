@@ -32,7 +32,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext)
+class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext)
     extends Logging {
 
   private val serviceUrl = servicesConfig.baseUrl("des")
@@ -46,9 +46,10 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     "Source"                  -> "MDTP"
   )
 
-  def fetchEmployments(nino: Nino, interval: Interval)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Seq[DesEmployment]] = {
+  def fetchEmployments(nino: Nino, interval: Interval)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Seq[DesEmployment]] = {
     val fromDate = interval.fromDate.toLocalDate
     val toDate = interval.toDate.toLocalDate
 
@@ -57,9 +58,10 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = setHeaders()).map(_.employments))
   }
 
-  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Seq[DesSAIncome]] = {
+  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Seq[DesSAIncome]] = {
 
     val fromTaxYear = taxYearInterval.fromTaxYear.endYr
     val toTaxYear = taxYearInterval.toTaxYear.endYr
@@ -70,7 +72,8 @@ class DesConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(i
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
     recover[DesSAIncome](
-      http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator)))
+      http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator))
+    )
   }
 
   def recover[A](x: Future[Seq[A]]): Future[Seq[A]] = x.recoverWith {

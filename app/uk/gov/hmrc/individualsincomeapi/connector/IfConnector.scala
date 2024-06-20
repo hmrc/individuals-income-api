@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
+class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
     extends Logging {
 
   private val serviceUrl = servicesConfig.baseUrl("integration-framework")
@@ -47,10 +47,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     "microservice.services.integration-framework.environment"
   )
 
-  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String], matchId: String)(
-    implicit hc: HeaderCarrier,
+  def fetchPayeIncome(nino: Nino, interval: Interval, filter: Option[String], matchId: String)(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[Seq[IfPayeEntry]] = {
+    ec: ExecutionContext
+  ): Future[Seq[IfPayeEntry]] = {
     val startDate = interval.fromDate.toLocalDate
     val endDate = interval.toDate.toLocalDate
 
@@ -61,10 +62,12 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
   }
 
-  def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval, filter: Option[String], matchId: String)(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader,
-    ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
+  def fetchSelfAssessmentIncome(
+    nino: Nino,
+    taxYearInterval: TaxYearInterval,
+    filter: Option[String],
+    matchId: String
+  )(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Seq[IfSaEntry]] = {
     val startYear = taxYearInterval.fromTaxYear.endYr
     val endYear = taxYearInterval.toTaxYear.endYr
     val saUrl = s"$serviceUrl/individuals/income/sa/" +
@@ -90,9 +93,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     "CorrelationId"           -> extractCorrelationId(requestHeader)
   )
 
-  private def callPaye(
-    url: String,
-    matchId: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+  private def callPaye(url: String, matchId: String)(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ) =
     recover[IfPayeEntry](
       http.GET[IfPaye](url, headers = setHeaders(request)) map { response =>
         auditHelper.auditIfPayeApiResponse(extractCorrelationId(request), matchId, request, url, response.paye)
@@ -105,9 +110,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       url
     )
 
-  private def callSa(
-    url: String,
-    matchId: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+  private def callSa(url: String, matchId: String)(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ) =
     recover[IfSaEntry](
       http.GET[IfSa](url, headers = setHeaders(request)) map { response =>
         auditHelper.auditIfSaApiResponse(extractCorrelationId(request), matchId, request, url, response.sa)
@@ -125,7 +132,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     correlationId: String,
     matchId: String,
     request: RequestHeader,
-    requestUrl: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
+    requestUrl: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[A]] = x.recoverWith {
     case validationError: JsValidationException =>
       logger.warn("Integration Framework JsValidationException encountered")
       auditHelper.auditIfApiFailure(
@@ -133,7 +141,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         matchId,
         request,
         requestUrl,
-        s"Error parsing IF response: ${validationError.errors}")
+        s"Error parsing IF response: ${validationError.errors}"
+      )
       Future.failed(new InternalServerException("Something went wrong."))
 
     case UpstreamErrorResponse(msg, 404, _, _) =>

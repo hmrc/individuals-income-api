@@ -71,7 +71,8 @@ class VersioningSpec extends BaseSpec {
       val response = invokeWithHeaders(
         s"/sandbox?matchId=$sandboxMatchId",
         AUTHORIZATION -> authToken,
-        ACCEPT        -> "application/vnd.hmrc.1.0+json")
+        ACCEPT        -> "application/vnd.hmrc.1.0+json"
+      )
 
       Then("The response status should be 404 (Not Found)")
       response.code shouldBe NOT_FOUND

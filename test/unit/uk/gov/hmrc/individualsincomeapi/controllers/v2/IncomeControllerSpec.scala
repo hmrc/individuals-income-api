@@ -50,7 +50,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
   trait Setup extends ScopesConfigHelper {
 
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+    val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
     val controllerComponent = fakeApplication().injector.instanceOf[ControllerComponents]
     val mockLiveIncomeService = mock[IncomeService]
@@ -270,8 +270,11 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
         .willReturn(successful(Seq.empty))
 
       val result = await(
-        incomeController.income(matchId.toString, interval)(FakeRequest()
-          .withHeaders("CorrelationId" -> "test")))
+        incomeController.income(matchId.toString, interval)(
+          FakeRequest()
+            .withHeaders("CorrelationId" -> "test")
+        )
+      )
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(

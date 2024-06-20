@@ -30,10 +30,11 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomErrorHandler @Inject()(
+class CustomErrorHandler @Inject() (
   auditConnector: AuditConnector,
   httpAuditEvent: HttpAuditEvent,
-  configuration: Configuration)(implicit ec: ExecutionContext)
+  configuration: Configuration
+)(implicit ec: ExecutionContext)
     extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
 
   import httpAuditEvent.dataEvent

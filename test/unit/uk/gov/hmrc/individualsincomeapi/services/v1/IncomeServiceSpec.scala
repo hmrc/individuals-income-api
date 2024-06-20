@@ -80,7 +80,10 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           Seq(
             DesPayment(parse("2016-02-28"), 10.50),
             DesPayment(parse("2016-04-28"), 10.50),
-            DesPayment(parse("2016-03-28"), 10.50))))
+            DesPayment(parse("2016-03-28"), 10.50)
+          )
+        )
+      )
 
       given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
       given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
@@ -91,7 +94,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       result shouldBe List(
         Payment(10.5, parse("2016-04-28")),
         Payment(10.5, parse("2016-03-28")),
-        Payment(10.5, parse("2016-02-28")))
+        Payment(10.5, parse("2016-02-28"))
+      )
     }
 
     "Return empty list when there are no payments for a given period" in new Setup {
@@ -152,7 +156,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
       val res = await(
         testService.fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"))(
-          HeaderCarrier()))
+          HeaderCarrier()
+        )
+      )
       res shouldBe employments.flatMap(DesEmployments.toPayments)
 
       verify(mockDes, never).fetchEmployments(any(), any())(any(), any())
@@ -216,7 +222,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     "throw not found exception when no individual exists for the given matchId" in new Setup {
       intercept[MatchNotFoundException](
-        await(sandboxIncomeService.fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"))(hc)))
+        await(sandboxIncomeService.fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"))(hc))
+      )
     }
   }
 }

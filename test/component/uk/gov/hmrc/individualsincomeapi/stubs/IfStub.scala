@@ -29,7 +29,8 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifPaye).toString())))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifPaye).toString()))
+    )
 
   def searchSaIncomeForPeriodReturns(nino: String, fromTaxYear: String, toTaxYear: String, fields: String, ifSa: IfSa) =
     mock.register(
@@ -37,7 +38,8 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifSa).toString())))
+        .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifSa).toString()))
+    )
 
   def searchPayeIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String, fields: String) =
     mock.register(
@@ -45,7 +47,8 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND"))
+    )
 
   def searchSaIncomeReturnsNoIncomeFor(nino: String, fromTaxYear: String, toTaxYear: String, fields: String) =
     mock.register(
@@ -53,7 +56,8 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND")))
+        .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND"))
+    )
 
   def searchPayeIncomeReturnsRateLimitErrorFor(nino: String, fromDate: String, toDate: String, fields: String): Unit =
     mock.register(
@@ -61,7 +65,8 @@ object IfStub extends MockHost(24000) {
         .withQueryParam("startDate", equalTo(fromDate))
         .withQueryParam("endDate", equalTo(toDate))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS))
+    )
 
   def saCustomResponse(
     nino: String,
@@ -69,24 +74,28 @@ object IfStub extends MockHost(24000) {
     fromTaxYear: String,
     toTaxYear: String,
     fields: String,
-    response: JsValue) =
+    response: JsValue
+  ) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(status).withBody(Json.toJson(response.toString()).toString())))
+        .willReturn(aResponse().withStatus(status).withBody(Json.toJson(response.toString()).toString()))
+    )
 
   def searchSaIncomeReturnsRateLimitErrorFor(
     nino: String,
     fromTaxYear: String,
     toTaxYear: String,
-    fields: String): Unit =
+    fields: String
+  ): Unit =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))
         .withQueryParam("endYear", equalTo(toTaxYear))
         .withQueryParam("fields", equalTo(fields))
-        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS)))
+        .willReturn(aResponse().withStatus(Status.TOO_MANY_REQUESTS))
+    )
 
 }
