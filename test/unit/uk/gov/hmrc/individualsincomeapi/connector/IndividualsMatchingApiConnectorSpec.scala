@@ -62,7 +62,8 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
     def stubWithResponseStatus(responseStatus: Int, body: String = ""): Unit =
       stubFor(
         get(urlPathMatching(s"/match-record/$matchId"))
-          .willReturn(aResponse().withStatus(responseStatus).withBody(body)))
+          .willReturn(aResponse().withStatus(responseStatus).withBody(body))
+      )
 
     "fail when upstream service fails" in new Fixture {
       stubWithResponseStatus(INTERNAL_SERVER_ERROR)
@@ -86,7 +87,8 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
             "matchId":"${matchId.toString}",
             "nino":"AB123456C"
           }
-        """)
+        """
+      )
       await(individualsMatchingApiConnector.resolve(matchId)) shouldBe MatchedCitizen(matchId, Nino("AB123456C"))
     }
 

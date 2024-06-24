@@ -39,7 +39,8 @@ case class Income(
   statutoryPayYTD: Option[IfStatutoryPayYTD],
   grossEarningsForNics: Option[IfGrossEarningsForNics],
   totalEmployerNics: Option[IfTotalEmployerNics],
-  employeeNics: Option[IfEmployeeNics])
+  employeeNics: Option[IfEmployeeNics]
+)
 
 object Income {
   implicit val incomeJsonFormat: Format[Income] = Json.format[Income]

@@ -29,7 +29,8 @@ case class ApiPayeResponseEventModel(
   applicationId: String,
   scopes: String,
   returnLinks: String,
-  response: Option[Seq[JsValue]])
+  response: Option[Seq[JsValue]]
+)
 
 object ApiPayeResponseEventModel {
 

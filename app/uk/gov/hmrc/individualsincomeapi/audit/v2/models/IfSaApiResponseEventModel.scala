@@ -29,7 +29,8 @@ case class IfSaApiResponseEventModel(
   correlationId: String,
   applicationId: String,
   requestUrl: String,
-  integrationFrameworkSa: Seq[IfSaEntry])
+  integrationFrameworkSa: Seq[IfSaEntry]
+)
 
 object IfSaApiResponseEventModel {
   implicit val formatIfSaApiResponseEventModel: Format[IfSaApiResponseEventModel] =

@@ -31,4 +31,5 @@ case class Individual(
   lastName: String,
   dateOfBirth: LocalDate,
   income: Seq[IfPayeEntry],
-  saIncome: Seq[IfSaEntry])
+  saIncome: Seq[IfSaEntry]
+)

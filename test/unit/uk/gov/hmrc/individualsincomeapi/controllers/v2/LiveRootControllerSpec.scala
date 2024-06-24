@@ -47,7 +47,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
   trait Setup extends ScopesConfigHelper {
 
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+    val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
     val controllerComponent = fakeApplication().injector.instanceOf[ControllerComponents]
     val mockLiveIncomeService = mock[IncomeService]
@@ -70,7 +70,8 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       scopesHelper,
       mockAuthConnector,
       mockAuditHelper,
-      controllerComponent)
+      controllerComponent
+    )
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -88,7 +89,8 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
       val result =
         await(
-          liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+          liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader))
+        )
 
       status(result) shouldBe NOT_FOUND
 
@@ -136,7 +138,8 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
       val result =
         await(
-          liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+          liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader))
+        )
 
       status(result) shouldBe UNAUTHORIZED
 

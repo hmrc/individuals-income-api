@@ -50,16 +50,19 @@ class IndividualIncomeSpec extends BaseSpec {
         fromDate,
         toDate,
         DesEmployments(
-          Seq(DesEmployment(
-            employerDistrictNumber = Some("123"),
-            employerSchemeReference = Some("DI45678"),
-            payments = Seq(
-              DesPayment(LocalDate.parse("2020-02-09"), 500.25, weekPayNumber = Some(45)),
-              DesPayment(LocalDate.parse("2020-02-16"), 500.25, weekPayNumber = Some(46)),
-              DesPayment(LocalDate.parse("2019-04-15"), 1000.25, monthPayNumber = Some(1)),
-              DesPayment(LocalDate.parse("2019-05-15"), 1000.25, weekPayNumber = Some(2))
+          Seq(
+            DesEmployment(
+              employerDistrictNumber = Some("123"),
+              employerSchemeReference = Some("DI45678"),
+              payments = Seq(
+                DesPayment(LocalDate.parse("2020-02-09"), 500.25, weekPayNumber = Some(45)),
+                DesPayment(LocalDate.parse("2020-02-16"), 500.25, weekPayNumber = Some(46)),
+                DesPayment(LocalDate.parse("2019-04-15"), 1000.25, monthPayNumber = Some(1)),
+                DesPayment(LocalDate.parse("2019-05-15"), 1000.25, weekPayNumber = Some(2))
+              )
             )
-          )))
+          )
+        )
       )
 
       When("I request individual income for the existing matchId")

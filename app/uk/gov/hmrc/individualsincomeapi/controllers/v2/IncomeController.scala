@@ -32,12 +32,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class IncomeController @Inject()(
+class IncomeController @Inject() (
   val incomeService: IncomeService,
   val scopeService: ScopesService,
   val authConnector: AuthConnector,
   cc: ControllerComponents,
-  implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+  implicit val auditHelper: AuditHelper
+)(implicit val ec: ExecutionContext)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
@@ -50,7 +51,7 @@ class IncomeController @Inject()(
             HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
 
           val incomeJsObject = Json.obj("income" -> toJson(paye))
-          val payeJsObject = obj("paye"          -> incomeJsObject)
+          val payeJsObject = obj("paye" -> incomeJsObject)
           val response = Json.toJson(state(payeJsObject) ++ selfLink)
 
           auditHelper.auditApiResponse(
@@ -59,7 +60,8 @@ class IncomeController @Inject()(
             authScopes.mkString(","),
             request,
             selfLink.toString,
-            Some(paye.map(i => Json.toJson(i))))
+            Some(paye.map(i => Json.toJson(i)))
+          )
 
           Ok(response)
         }

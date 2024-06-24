@@ -33,7 +33,7 @@ object SaPartnerships {
 
   private def transformSaPartnership(entry: IfSaEntry) =
     entry.returnList match {
-      case Some(list) => {
+      case Some(list) =>
         list.map { entry =>
           entry.income match {
             case Some(value) =>
@@ -41,7 +41,6 @@ object SaPartnerships {
             case _ => default
           }
         }
-      }
       case _ => Seq(default)
     }
 

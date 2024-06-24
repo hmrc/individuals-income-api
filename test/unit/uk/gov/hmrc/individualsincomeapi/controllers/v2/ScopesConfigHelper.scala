@@ -24,7 +24,8 @@ trait ScopesConfigHelper {
     (s"api-config.scopes.test-scope.fields", Seq("A", "B", "C")),
     (
       s"api-config.scopes.test-scope-1.fields",
-      Seq("D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q")),
+      Seq("D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q")
+    ),
     (s"api-config.endpoints.internal.paye.endpoint", "/individuals/income/paye?matchId=<matchId>{&fromDate,toDate}"),
     (s"api-config.endpoints.internal.paye.title", "Get an individual's income paye data"),
     (s"api-config.endpoints.internal.paye.fields", Seq("A", "B", "C")),
@@ -33,73 +34,89 @@ trait ScopesConfigHelper {
     (s"api-config.endpoints.internal.sa.fields", Seq("D")),
     (
       s"api-config.endpoints.internal.summary.endpoint",
-      "/individuals/income/sa/summary?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/summary?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.summary.title", "Get an individual's income sa summary data"),
     (s"api-config.endpoints.internal.summary.fields", Seq("E")),
     (
       s"api-config.endpoints.internal.trusts.endpoint",
-      "/individuals/income/sa/trusts?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/trusts?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.trusts.title", "Get an individual's income sa trusts data"),
     (s"api-config.endpoints.internal.trusts.fields", Seq("F")),
     (
       s"api-config.endpoints.internal.foreign.endpoint",
-      "/individuals/income/sa/foreign?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/foreign?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.foreign.title", "Get an individual's income sa foreign data"),
     (s"api-config.endpoints.internal.foreign.fields", Seq("G")),
     (
       s"api-config.endpoints.internal.partnerships.endpoint",
-      "/individuals/income/sa/partnerships?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/partnerships?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.partnerships.title", "Get an individual's income sa partnerships data"),
     (s"api-config.endpoints.internal.partnerships.fields", Seq("H")),
     (
       s"api-config.endpoints.internal.interestsAndDividends.endpoint",
-      "/individuals/income/sa/interests-and-dividends?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/interests-and-dividends?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (
       s"api-config.endpoints.internal.interestsAndDividends.title",
-      "Get an individual's interests-and-dividends sa data"),
+      "Get an individual's interests-and-dividends sa data"
+    ),
     (s"api-config.endpoints.internal.interestsAndDividends.fields", Seq("I")),
     (
       s"api-config.endpoints.internal.pensionsAndStateBenefits.endpoint",
-      "/individuals/income/sa/pensions-and-state-benefits?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/pensions-and-state-benefits?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (
       s"api-config.endpoints.internal.pensionsAndStateBenefits.title",
-      "Get an individual's pensions-and-state-benefits sa data"),
+      "Get an individual's pensions-and-state-benefits sa data"
+    ),
     (s"api-config.endpoints.internal.pensionsAndStateBenefits.fields", Seq("J")),
     (
       s"api-config.endpoints.internal.ukProperties.endpoint",
-      "/individuals/income/sa/uk-properties?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/uk-properties?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.ukProperties.title", "Get an individual's uk-properties sa data"),
     (s"api-config.endpoints.internal.ukProperties.fields", Seq("K")),
     (
       s"api-config.endpoints.internal.additionalInformation.endpoint",
-      "/individuals/income/sa/additional-information?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/additional-information?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (
       s"api-config.endpoints.internal.additionalInformation.title",
-      "Get an individual's additional-information sa data"),
+      "Get an individual's additional-information sa data"
+    ),
     (s"api-config.endpoints.internal.additionalInformation.fields", Seq("L")),
     (
       s"api-config.endpoints.internal.other.endpoint",
-      "/individuals/income/sa/other?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/other?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.other.title", "Get an individual's other sa data"),
     (s"api-config.endpoints.internal.other.fields", Seq("M")),
     (
       s"api-config.endpoints.internal.source.endpoint",
-      "/individuals/income/sa/source?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/source?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.source.title", "Get an individual's source sa data"),
     (s"api-config.endpoints.internal.source.fields", Seq("N")),
     (
       s"api-config.endpoints.internal.employments.endpoint",
-      "/individuals/income/sa/employments?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/employments?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.employments.title", "Get an individual's employments sa data"),
     (s"api-config.endpoints.internal.employments.fields", Seq("O")),
     (
       s"api-config.endpoints.internal.selfEmployments.endpoint",
-      "/individuals/income/sa/self-employments?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/self-employments?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.selfEmployments.title", "Get an individual's self-employments sa data"),
     (s"api-config.endpoints.internal.selfEmployments.fields", Seq("P")),
     (
       s"api-config.endpoints.internal.furtherDetails.endpoint",
-      "/individuals/income/sa/further-details?matchId=<matchId>{&fromTaxYear,toTaxYear}"),
+      "/individuals/income/sa/further-details?matchId=<matchId>{&fromTaxYear,toTaxYear}"
+    ),
     (s"api-config.endpoints.internal.furtherDetails.title", "Get an individual's further-details sa data"),
     (s"api-config.endpoints.internal.furtherDetails.fields", Seq("Q")),
     (s"api-config.fields.A", "foo/bar/one"),

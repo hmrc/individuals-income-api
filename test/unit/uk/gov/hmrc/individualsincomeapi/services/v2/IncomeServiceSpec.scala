@@ -87,7 +87,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           eqTo(matchedCitizen.nino),
           eqTo(interval),
           any(),
-          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
+          eqTo(matchedCitizen.matchId.toString)
+        )(any(), any(), any())
+      )
         .willReturn(successful(ifPaye))
 
       val result =
@@ -158,7 +160,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           eqTo(matchedCitizen.nino),
           eqTo(interval),
           any(),
-          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
+          eqTo(matchedCitizen.matchId.toString)
+        )(any(), any(), any())
+      )
         .willReturn(successful(ifPaye))
 
       val result =
@@ -185,7 +189,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           None,
           None,
           None,
-          None),
+          None
+        ),
         Income(
           None,
           None,
@@ -206,7 +211,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           None,
           None,
           None,
-          None)
+          None
+        )
       )
     }
 
@@ -221,7 +227,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           eqTo(matchedCitizen.nino),
           eqTo(interval),
           any(),
-          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
+          eqTo(matchedCitizen.matchId.toString)
+        )(any(), any(), any())
+      )
         .willReturn(successful(Seq.empty))
 
       val result =
@@ -252,11 +260,14 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           eqTo(matchedCitizen.nino),
           eqTo(interval),
           any(),
-          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
+          eqTo(matchedCitizen.matchId.toString)
+        )(any(), any(), any())
+      )
         .willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException](
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc, FakeRequest())))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(hc, FakeRequest()))
+      )
     }
 
     "retry once if IF returns a 503" in new Setup {
@@ -271,7 +282,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           eqTo(matchedCitizen.nino),
           eqTo(interval),
           any(),
-          eqTo(matchedCitizen.matchId.toString))(any(), any(), any()))
+          eqTo(matchedCitizen.matchId.toString)
+        )(any(), any(), any())
+      )
         .willReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(ifPaye))
 
@@ -283,7 +296,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .fetchPayeIncome(eqTo(matchedCitizen.nino), eqTo(interval), any(), eqTo(matchedCitizen.matchId.toString))(
           any(),
           any(),
-          any())
+          any()
+        )
     }
 
     "return a cached value if it exists" in {
@@ -309,14 +323,17 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         testService
           .fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"), scopes)(
             HeaderCarrier(),
-            FakeRequest()))
+            FakeRequest()
+          )
+      )
       res shouldBe (paye map IfPayeEntry.toIncome)
 
       verify(mockIf, never).fetchPayeIncome(
         eqTo(matchedCitizen.nino),
         eqTo(interval),
         any(),
-        eqTo(matchedCitizen.matchId.toString))(any(), any(), any())
+        eqTo(matchedCitizen.matchId.toString)
+      )(any(), any(), any())
     }
   }
 }

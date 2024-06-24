@@ -35,7 +35,8 @@ trait SpecBase extends TestSupport with GuiceOneAppPerSuite {
                                       | metrics.jvm = false
                                       | metrics.enabled = true
           """.stripMargin)
-        ).withFallback(extraConfig))
+        ).withFallback(extraConfig)
+      )
       .build()
 
   override def fakeApplication(): Application = buildFakeApplication(additionalConfig)

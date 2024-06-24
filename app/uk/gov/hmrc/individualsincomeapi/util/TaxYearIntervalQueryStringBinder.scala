@@ -30,22 +30,23 @@ class TaxYearIntervalQueryStringBinder extends QueryStringBindable[TaxYearInterv
     }
 
   private def taxYearInterval(fromTaxYear: TaxYear, toTaxYear: TaxYear): Either[String, TaxYearInterval] =
-    try {
+    try
       Right(toTaxYearInterval(fromTaxYear, toTaxYear))
-    } catch {
+    catch {
       case e: ValidationException => Left(e.getMessage)
     }
 
   private def getParam(
     params: Map[String, Seq[String]],
     paramName: String,
-    default: Option[TaxYear] = None): Either[String, TaxYear] =
-    try {
+    default: Option[TaxYear] = None
+  ): Either[String, TaxYear] =
+    try
       params.get(paramName).flatMap(_.headOption) match {
         case Some(taxYear) => Right(TaxYear(taxYear))
         case None          => default.map(Right(_)).getOrElse(Left(s"$paramName is required"))
       }
-    } catch {
+    catch {
       case _: Throwable => Left(s"$paramName: invalid tax year format")
     }
 

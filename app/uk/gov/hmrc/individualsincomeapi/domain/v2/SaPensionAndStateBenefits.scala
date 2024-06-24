@@ -34,7 +34,7 @@ object SaPensionAndStateBenefits {
 
   private def transformSaPensionAndStateBenefit(entry: IfSaEntry) =
     entry.returnList match {
-      case Some(list) => {
+      case Some(list) =>
         list.map { entry =>
           entry.income match {
             case Some(value) =>
@@ -42,7 +42,6 @@ object SaPensionAndStateBenefits {
             case _ => default
           }
         }
-      }
       case _ => Seq(default)
     }
 

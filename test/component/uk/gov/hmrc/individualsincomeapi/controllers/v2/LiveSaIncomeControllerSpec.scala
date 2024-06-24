@@ -332,7 +332,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-nictsejo-c4"
     )
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
@@ -831,7 +831,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-nictsejo-c4"
     )
 
     testAuthorisation("sa/trusts", trustsScopes)
@@ -1155,7 +1155,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-nictsejo-c4"
     )
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
@@ -1321,7 +1321,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-nictsejo-c4"
     )
 
     testAuthorisation("sa/interests-and-dividends", interestsAndDividendsScopes)
@@ -2392,7 +2392,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fromTaxYear.toString,
         toTaxYear.toString,
         fields,
-        Json.obj("reason" -> "Server error"))
+        Json.obj("reason" -> "Server error")
+      )
 
       When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
       val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
@@ -2422,7 +2423,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         fields,
         Json.obj(
           "reason" ->
-            "There are 1 or more unknown data items in the 'fields' query string")
+            "There are 1 or more unknown data items in the 'fields' query string"
+        )
       )
 
       When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")

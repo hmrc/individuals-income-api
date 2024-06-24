@@ -29,7 +29,8 @@ case class IfPayeApiResponseEventModel(
   correlationId: String,
   applicationId: String,
   requestUrl: String,
-  integrationFrameworkPaye: Seq[IfPayeEntry])
+  integrationFrameworkPaye: Seq[IfPayeEntry]
+)
 
 object IfPayeApiResponseEventModel {
   implicit val formatIfApiResponseEventModel: Format[IfPayeApiResponseEventModel] =

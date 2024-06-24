@@ -33,14 +33,16 @@ case class Individual(
   lastName: String,
   dateOfBirth: LocalDate,
   income: Seq[Payment],
-  saIncome: Seq[DesSAIncome])
+  saIncome: Seq[DesSAIncome]
+)
 
 case class Payment(
   taxablePayment: Double,
   paymentDate: LocalDate,
   employerPayeReference: Option[EmpRef] = None,
   monthPayNumber: Option[Int] = None,
-  weekPayNumber: Option[Int] = None)
+  weekPayNumber: Option[Int] = None
+)
 
 object Payment {
   implicit val paymentJsonFormat: Format[Payment] = Json.format[Payment]
@@ -112,7 +114,8 @@ object SandboxIncomeData {
             addressLine3 = None,
             addressLine4 = None,
             postalCode = None
-          ))
+          )
+        )
       ),
       DesSAIncome("2020", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2018-10-06")), sandboxUtr)))
     )

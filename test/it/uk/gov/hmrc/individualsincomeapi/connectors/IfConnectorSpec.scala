@@ -118,9 +118,12 @@ class IfConnectorSpec
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
-            .willReturn(aResponse()
-              .withStatus(200)
-              .withBody(Json.toJson(incomePayeNoData).toString())))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(Json.toJson(incomePayeNoData).toString())
+            )
+        )
 
         val result: Seq[IfPayeEntry] = await(
           underTest
@@ -166,7 +169,9 @@ class IfConnectorSpec
             .fetchPayeIncome(nino, interval, Some(fields), matchId)(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
-              ec))
+              ec
+            )
+        )
 
         verify(underTest.auditHelper, times(1))
           .auditIfPayeApiResponse(any(), any(), any(), any(), any())(any())
@@ -189,16 +194,21 @@ class IfConnectorSpec
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
-            .willReturn(aResponse()
-              .withStatus(200)
-              .withBody(Json.toJson(incomePayeMulti).toString())))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(Json.toJson(incomePayeMulti).toString())
+            )
+        )
 
         val result: Seq[IfPayeEntry] = await(
           underTest
             .fetchPayeIncome(nino, interval, Some(fields), matchId)(
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
-              ec))
+              ec
+            )
+        )
 
         verify(underTest.auditHelper, times(1))
           .auditIfPayeApiResponse(any(), any(), any(), any(), any())(any())
@@ -214,11 +224,18 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(500)))
+          .willReturn(aResponse().withStatus(500))
+      )
 
       intercept[InternalServerException] {
-        await(underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        await(
+          underTest
+            .fetchPayeIncome(nino, interval, None, matchId)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
+        )
       }
 
       verify(underTest.auditHelper, times(1))
@@ -232,11 +249,18 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(400)))
+          .willReturn(aResponse().withStatus(400))
+      )
 
       intercept[InternalServerException] {
-        await(underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        await(
+          underTest
+            .fetchPayeIncome(nino, interval, None, matchId)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
+        )
       }
 
       verify(underTest.auditHelper, times(1))
@@ -250,11 +274,13 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND")))
+          .willReturn(aResponse().withStatus(404).withBody("NO_DATA_FOUND"))
+      )
 
       val result: Seq[IfPayeEntry] = await(
         underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec)
+      )
 
       result shouldBe List()
 
@@ -269,11 +295,18 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/paye/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
+          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND"))
+      )
 
       intercept[NotFoundException] {
-        await(underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec))
+        await(
+          underTest
+            .fetchPayeIncome(nino, interval, None, matchId)(
+              hc,
+              FakeRequest().withHeaders(sampleCorrelationIdHeader),
+              ec
+            )
+        )
       }
 
       verify(underTest.auditHelper, times(1))
@@ -303,9 +336,12 @@ class IfConnectorSpec
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
-            .willReturn(aResponse()
-              .withStatus(200)
-              .withBody(Json.toJson(incomeSaNoData).toString())))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(Json.toJson(incomeSaNoData).toString())
+            )
+        )
 
         val result: Seq[IfSaEntry] = await {
           underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
@@ -374,9 +410,12 @@ class IfConnectorSpec
             .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
             .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
             .withHeader("CorrelationId", equalTo(sampleCorrelationId))
-            .willReturn(aResponse()
-              .withStatus(200)
-              .withBody(Json.toJson(incomeSaMulti).toString())))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(Json.toJson(incomeSaMulti).toString())
+            )
+        )
 
         val result: Seq[IfSaEntry] = await {
           underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
@@ -400,7 +439,8 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
-          .willReturn(aResponse().withStatus(500)))
+          .willReturn(aResponse().withStatus(500))
+      )
 
       intercept[InternalServerException] {
         await {
@@ -423,7 +463,8 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/income/sa/nino/$nino"))
-          .willReturn(aResponse().withStatus(400)))
+          .willReturn(aResponse().withStatus(400))
+      )
 
       intercept[InternalServerException] {
         await {

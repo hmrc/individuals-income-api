@@ -34,7 +34,8 @@ import scala.concurrent.{ExecutionContext, Future}
 abstract class CacheRepository(
   val cacheConfig: CacheRepositoryConfiguration,
   configuration: Configuration,
-  mongo: MongoComponent)(implicit ec: ExecutionContext)
+  mongo: MongoComponent
+)(implicit ec: ExecutionContext)
     extends PlayMongoRepository[Entry](
       mongoComponent = mongo,
       collectionName = cacheConfig.collName,
@@ -44,7 +45,8 @@ abstract class CacheRepository(
         IndexModel(ascending("id"), IndexOptions().name("_id").unique(true).background(false).sparse(true)),
         IndexModel(
           ascending("modifiedDetails.lastUpdated"),
-          IndexOptions().name("lastUpdatedIndex").background(false).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS))
+          IndexOptions().name("lastUpdatedIndex").background(false).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)
+        )
       )
     ) {
 

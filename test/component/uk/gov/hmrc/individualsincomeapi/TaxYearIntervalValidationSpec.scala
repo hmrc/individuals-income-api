@@ -94,7 +94,8 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
       When("I request individual income with fromTaxYear 7 years before the current tax year")
       val fromTaxYear = TaxYear.fromEndYear(today.getYear - 8)
       val response = Http(
-        s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=2015-16")
+        s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=${fromTaxYear.formattedTaxYear}&toTaxYear=2015-16"
+      )
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 

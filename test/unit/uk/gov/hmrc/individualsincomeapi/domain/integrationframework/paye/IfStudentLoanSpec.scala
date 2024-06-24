@@ -40,7 +40,7 @@ class IfStudentLoanSpec extends AnyWordSpec with Matchers {
 
       val result = Json.toJson(validStudentLoan)
 
-      result shouldBe (expectedJson)
+      result shouldBe expectedJson
     }
 
     "Validate successfully when given a valid Student Loan" in {

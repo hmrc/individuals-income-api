@@ -45,7 +45,7 @@ object SaSources {
 
   private def transformSaSource(entry: IfSaEntry) =
     entry.returnList match {
-      case Some(list) => {
+      case Some(list) =>
         list.map { entry =>
           SaSource(
             entry.businessDescription,
@@ -53,7 +53,6 @@ object SaSources {
             entry.telephoneNumber
           )
         }
-      }
       case _ => Seq(default)
     }
 

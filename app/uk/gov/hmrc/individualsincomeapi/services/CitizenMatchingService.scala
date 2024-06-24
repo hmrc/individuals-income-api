@@ -40,7 +40,7 @@ class SandboxCitizenMatchingService extends CitizenMatchingService {
 }
 
 @Singleton
-class LiveCitizenMatchingService @Inject()(individualsMatchingApiConnector: IndividualsMatchingApiConnector)
+class LiveCitizenMatchingService @Inject() (individualsMatchingApiConnector: IndividualsMatchingApiConnector)
     extends CitizenMatchingService {
   override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)

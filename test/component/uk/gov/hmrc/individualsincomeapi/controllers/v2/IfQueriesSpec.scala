@@ -180,9 +180,10 @@ class IfQueriesSpec extends BaseSpec {
 
     val res8 = "sa(returnList(address(line1,line2,line3,line4,postcode),businessDescription,telephoneNumber),taxYear)"
 
-    val res9 = "sa(returnList(busEndDate,busStartDate,deducts(totalBusExpenses),income(allEmployments,foreign,foreignDivs," +
-      "lifePolicies,other,partnerships,pensions,selfAssessment,selfEmployment,shares,trusts,ukDivsAndInterest," +
-      "ukInterest,ukProperty),receivedDate,totalNIC,totalTaxPaid),taxYear)"
+    val res9 =
+      "sa(returnList(busEndDate,busStartDate,deducts(totalBusExpenses),income(allEmployments,foreign,foreignDivs," +
+        "lifePolicies,other,partnerships,pensions,selfAssessment,selfEmployment,shares,trusts,ukDivsAndInterest," +
+        "ukInterest,ukProperty),receivedDate,totalNIC,totalTaxPaid),taxYear)"
 
     Scenario("For read:individuals-income-nictsejo-c4") {
       val queryString = helper.getQueryStringFor(Seq("read:individuals-income-nictsejo-c4"), endpoints)

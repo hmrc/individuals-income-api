@@ -28,32 +28,34 @@ import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncomeService @Inject()(
+class IncomeService @Inject() (
   matchingConnector: IndividualsMatchingApiConnector,
   ifConnector: IfConnector,
   @Named("retryDelay") retryDelay: Int,
   cache: CacheService,
   scopeService: ScopesService,
-  scopesHelper: ScopesHelper)(implicit ec: ExecutionContext) {
+  scopesHelper: ScopesHelper
+)(implicit ec: ExecutionContext) {
 
   private def endpoints = List("paye")
 
-  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader): Future[Seq[Income]] =
+  def fetchIncomeByMatchId(matchId: UUID, interval: Interval, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[Seq[Income]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
       payeIncome <- cache.get(
-                     PayeCacheId(matchId, interval, scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)),
-                     withRetry(
-                       ifConnector.fetchPayeIncome(
-                         ninoMatch.nino,
-                         interval,
-                         Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty),
-                         matchId.toString
-                       )
-                     )
-                   )
+                      PayeCacheId(matchId, interval, scopeService.getValidFieldsForCacheKey(scopes.toList, endpoints)),
+                      withRetry(
+                        ifConnector.fetchPayeIncome(
+                          ninoMatch.nino,
+                          interval,
+                          Option(scopesHelper.getQueryStringFor(scopes.toList, endpoints)).filter(_.nonEmpty),
+                          matchId.toString
+                        )
+                      )
+                    )
     } yield (payeIncome map IfPayeEntry.toIncome).sortBy(_.paymentDate).reverse
 
   private def withRetry[T](body: => Future[T]): Future[T] = body recoverWith {
