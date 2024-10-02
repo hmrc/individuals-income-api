@@ -17,13 +17,14 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, refEq}
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchersSugar.*
+import org.mockito.IdiomaticMockito.StubbingOps
+import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
@@ -47,22 +48,22 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
   trait Setup extends ScopesConfigHelper {
 
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-    val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
+    val sampleCorrelationIdHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
-    val controllerComponent = fakeApplication().injector.instanceOf[ControllerComponents]
-    val mockLiveIncomeService = mock[IncomeService]
-    val mockLiveCitizenMatchingService = mock[LiveCitizenMatchingService]
-    val mockAuditHelper = mock[AuditHelper]
+    val controllerComponent: ControllerComponents = fakeApplication().injector.instanceOf[ControllerComponents]
+    val mockLiveIncomeService: IncomeService = mock[IncomeService]
+    val mockLiveCitizenMatchingService: LiveCitizenMatchingService = mock[LiveCitizenMatchingService]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
-    val fakeRequest = FakeRequest().withHeaders(sampleCorrelationIdHeader)
-    val matchId = UUID.randomUUID()
-    val matchIdString = matchId.toString
-    val nino = Nino("NA000799C")
-    val matchedCitizen = MatchedCitizen(matchId, nino)
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders(sampleCorrelationIdHeader)
+    val matchId: UUID = UUID.randomUUID()
+    val matchIdString: String = matchId.toString
+    val nino: Nino = Nino("NA000799C")
+    val matchedCitizen: MatchedCitizen = MatchedCitizen(matchId, nino)
 
     val liveRootController = new RootController(
       mockLiveCitizenMatchingService,
@@ -75,8 +76,9 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
-      .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope"), Enrolment("test-scope-1")))))
+    mockAuthConnector.authorise(*, Retrievals.allEnrolments)(*, *) returns
+      Future.successful(Enrolments(Set(Enrolment("test-scope"), Enrolment("test-scope-1"))))
+
   }
 
   "Live match citizen controller match citizen function" should {
@@ -84,10 +86,11 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val randomMatchId = UUID.randomUUID()
 
     "return a 404 when a match id does not match live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
-        .thenReturn(failed(new MatchNotFoundException))
+      mockLiveCitizenMatchingService.matchCitizen(randomMatchId)(any[HeaderCarrier]) returns failed(
+        new MatchNotFoundException
+      )
 
-      val result =
+      val result: Result =
         await(
           liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader))
         )
@@ -103,10 +106,9 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     "return a 200 when a match id matches live data" in new Setup {
 
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
-        .thenReturn(successful(matchedCitizen))
+      mockLiveCitizenMatchingService.matchCitizen(matchId)(any[HeaderCarrier]) returns successful(matchedCitizen)
 
-      val result =
+      val result: Result =
         await(liveRootController.root(matchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe OK
@@ -128,15 +130,14 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
                       |  }
                       |}""".stripMargin)
 
-      verify(liveRootController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiResponse(*, *, *, *, *, *)(*)
     }
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
 
-      given(mockAuthConnector.authorise(any(), refEq(Retrievals.allEnrolments))(any(), any()))
-        .willReturn(Future.failed(InsufficientEnrolments()))
+      mockAuthConnector.authorise(*, Retrievals.allEnrolments)(*, *) returns Future.failed(InsufficientEnrolments())
 
-      val result =
+      val result: Result =
         await(
           liveRootController.root(randomMatchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader))
         )
@@ -146,17 +147,16 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       jsonBodyOf(result) shouldBe Json.parse(s"""{"code":"UNAUTHORIZED", "message":"Insufficient Enrolments"}""")
       verifyNoInteractions(mockLiveCitizenMatchingService)
 
-      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(*, *, *, *, *)(*)
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
 
-      override val fakeRequest = FakeRequest()
+      override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
-        .thenReturn(successful(matchedCitizen))
+      mockLiveCitizenMatchingService.matchCitizen(matchId)(any[HeaderCarrier]) returns successful(matchedCitizen)
 
-      val result = await(liveRootController.root(matchId.toString)(fakeRequest))
+      val result: Result = await(liveRootController.root(matchId.toString)(fakeRequest))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -172,12 +172,12 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     }
 
     "throws an exception when malformed CorrelationId" in new Setup {
-      override val fakeRequest = FakeRequest().withHeaders("CorrelationId" -> "test")
+      override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest().withHeaders("CorrelationId" -> "test")
 
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
-        .thenReturn(successful(matchedCitizen))
+      mockLiveCitizenMatchingService.matchCitizen(matchId)(any[HeaderCarrier]) returns successful(matchedCitizen)
 
-      val result = await(liveRootController.root(matchIdString)(fakeRequest))
+      val result: Result = await(liveRootController.root(matchIdString)(fakeRequest))
 
       status(result) shouldBe BAD_REQUEST
       jsonBodyOf(result) shouldBe Json.parse(
@@ -189,7 +189,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
           |""".stripMargin
       )
 
-      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(*, *, *, *, *)(*)
     }
 
   }
