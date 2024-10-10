@@ -31,7 +31,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.connector.IfConnector
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
@@ -73,7 +74,7 @@ class IfConnectorSpec
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val config: ServicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
-    val httpClient: HttpClient = fakeApplication().injector.instanceOf[HttpClient]
+    val httpClient: HttpClientV2 = fakeApplication().injector.instanceOf[HttpClientV2]
     val auditHelper: AuditHelper = mock[AuditHelper]
     val underTest = new IfConnector(config, httpClient, auditHelper)
 
