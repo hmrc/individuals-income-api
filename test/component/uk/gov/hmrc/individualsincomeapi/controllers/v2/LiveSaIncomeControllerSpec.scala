@@ -20,7 +20,6 @@ import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfS
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import scalaj.http.Http
-import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa
 import utils.IncomeSaHelpers
 

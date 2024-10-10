@@ -19,9 +19,10 @@ package uk.gov.hmrc.individualsincomeapi.connector
 import play.api.Logging
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, InternalServerException, JsValidationException, NotFoundException, StringContextOps, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream5xxResponse
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfPayeEntry, IfSa, IfSaEntry}
@@ -34,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
+class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2, val auditHelper: AuditHelper)
     extends Logging {
 
   private val serviceUrl = servicesConfig.baseUrl("integration-framework")
@@ -73,8 +74,17 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, v
     val saUrl = s"$serviceUrl/individuals/income/sa/" +
       s"nino/$nino?startYear=$startYear&endYear=$endYear${filter.map(f => s"&fields=$f").getOrElse("")}"
 
-    callSa(saUrl, matchId)
+    recover[IfSaEntry](
+      http.get(url"$saUrl").transform(_.addHttpHeaders(setHeaders(request): _*)).execute[IfSa] map { response =>
+        auditHelper.auditIfSaApiResponse(extractCorrelationId(request), matchId, request, saUrl, response.sa)
 
+        response.sa
+      },
+      extractCorrelationId(request),
+      matchId,
+      request,
+      saUrl
+    )
   }
 
   private def extractCorrelationId(requestHeader: RequestHeader) =
@@ -99,27 +109,10 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, v
     ec: ExecutionContext
   ) =
     recover[IfPayeEntry](
-      http.GET[IfPaye](url, headers = setHeaders(request)) map { response =>
+      http.get(url"$url").transform(_.addHttpHeaders(setHeaders(request): _*)).execute[IfPaye] map { response =>
         auditHelper.auditIfPayeApiResponse(extractCorrelationId(request), matchId, request, url, response.paye)
 
         response.paye
-      },
-      extractCorrelationId(request),
-      matchId,
-      request,
-      url
-    )
-
-  private def callSa(url: String, matchId: String)(implicit
-    hc: HeaderCarrier,
-    request: RequestHeader,
-    ec: ExecutionContext
-  ) =
-    recover[IfSaEntry](
-      http.GET[IfSa](url, headers = setHeaders(request)) map { response =>
-        auditHelper.auditIfSaApiResponse(extractCorrelationId(request), matchId, request, url, response.sa)
-
-        response.sa
       },
       extractCorrelationId(request),
       matchId,

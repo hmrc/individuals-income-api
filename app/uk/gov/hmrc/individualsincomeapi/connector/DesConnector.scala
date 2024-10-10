@@ -20,7 +20,8 @@ import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, StringContextOps, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.domain._
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
@@ -32,7 +33,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient)(implicit ec: ExecutionContext)
+class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2)(implicit ec: ExecutionContext)
     extends Logging {
 
   private val serviceUrl = servicesConfig.baseUrl("des")
@@ -55,7 +56,13 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient)(
 
     val employmentsUrl = s"$serviceUrl/individuals/nino/$nino/employments/income?from=$fromDate&to=$toDate"
 
-    recover[DesEmployment](http.GET[DesEmployments](employmentsUrl, headers = setHeaders()).map(_.employments))
+    recover[DesEmployment](
+      http
+        .get(url"$employmentsUrl")
+        .transform(_.addHttpHeaders(setHeaders(): _*))
+        .execute[DesEmployments]
+        .map(_.employments)
+    )
   }
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit
@@ -72,7 +79,10 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient)(
     val saIncomeUrl =
       s"$serviceUrl/individuals/nino/$nino/self-assessment/income?startYear=$fromTaxYear&endYear=$toTaxYear"
     recover[DesSAIncome](
-      http.GET[Seq[DesSAIncome]](saIncomeUrl, headers = setHeaders() :+ ("OriginatorId" -> originator))
+      http
+        .get(url"$saIncomeUrl")
+        .transform(_.addHttpHeaders(setHeaders() :+ ("OriginatorId" -> originator): _*))
+        .execute[Seq[DesSAIncome]]
     )
   }
 

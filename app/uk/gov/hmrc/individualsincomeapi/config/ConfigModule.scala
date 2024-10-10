@@ -20,9 +20,9 @@ import com.google.inject.AbstractModule
 import com.google.inject.name.Names
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.bootstrap.http.HttpClientV2Provider
 
 class ConfigModule(environment: Environment, configuration: Configuration) extends AbstractModule {
   override def configure(): Unit = {
@@ -30,7 +30,7 @@ class ConfigModule(environment: Environment, configuration: Configuration) exten
 
     bindConstant().annotatedWith(Names.named("retryDelay")).to(delay)
 
-    bind(classOf[HttpClient]).to(classOf[DefaultHttpClient])
+    bind(classOf[HttpClientV2]).toProvider(classOf[HttpClientV2Provider])
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
   }
 }

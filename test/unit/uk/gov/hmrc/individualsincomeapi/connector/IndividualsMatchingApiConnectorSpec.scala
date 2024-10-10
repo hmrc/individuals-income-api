@@ -23,7 +23,8 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
@@ -43,7 +44,7 @@ class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with Be
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val individualsMatchingApiConnector =
-      new IndividualsMatchingApiConnector(servicesConfig, fakeApplication().injector.instanceOf[HttpClient]) {
+      new IndividualsMatchingApiConnector(servicesConfig, fakeApplication().injector.instanceOf[HttpClientV2]) {
         override val serviceUrl = "http://127.0.0.1:11121"
       }
   }
