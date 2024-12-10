@@ -23,6 +23,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
@@ -38,14 +39,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DesConnectorSpec
     extends AnyWordSpec with Matchers with BeforeAndAfterEach with MockitoSugar with TestDates with TestSupport {
 
-  val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
+  val stubPort: Int = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
   val desAuthorizationToken = "DES_TOKEN"
   val desEnvironment = "DES_ENVIRONMENT"
   val clientId = "CLIENT_ID"
 
-  def fakeApplication() =
+  def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .bindings(bindModules: _*)
       .configure(
@@ -59,7 +60,7 @@ class DesConnectorSpec
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val underTest = fakeApplication().injector.instanceOf[DesConnector]
+    val underTest: DesConnector = fakeApplication().injector.instanceOf[DesConnector]
   }
 
   def externalServices: Seq[String] = Seq.empty
@@ -72,7 +73,7 @@ class DesConnectorSpec
   override def afterEach(): Unit =
     wireMockServer.stop()
 
-  val desAddress = DesAddress(
+  val desAddress: DesAddress = DesAddress(
     line1 = Some("Acme House"),
     line2 = Some("23 Acme Street"),
     line3 = Some("Richmond"),
@@ -81,7 +82,7 @@ class DesConnectorSpec
     postalCode = Some("AI22 9LL")
   )
 
-  val desPayments = Seq(
+  val desPayments: Seq[DesPayment] = Seq(
     DesPayment(
       paymentDate = LocalDate.parse("2016-11-28"),
       totalPayInPeriod = 100,
@@ -95,7 +96,7 @@ class DesConnectorSpec
       monthPayNumber = None
     )
   )
-  val desEmployment = DesEmployment(
+  val desEmployment: DesEmployment = DesEmployment(
     employerName = Some("Acme Inc"),
     employerAddress = Some(desAddress),
     employerDistrictNumber = Some("123"),
@@ -161,7 +162,7 @@ class DesConnectorSpec
           )
       )
 
-      val result = await(underTest.fetchEmployments(nino, interval))
+      val result: Seq[DesEmployment] = await(underTest.fetchEmployments(nino, interval))
 
       result shouldBe Seq(desEmployment)
     }
@@ -174,7 +175,7 @@ class DesConnectorSpec
           .willReturn(aResponse().withStatus(404))
       )
 
-      val result = await(underTest.fetchEmployments(nino, interval))
+      val result: Seq[DesEmployment] = await(underTest.fetchEmployments(nino, interval))
 
       result shouldBe Seq.empty
     }
@@ -188,6 +189,7 @@ class DesConnectorSpec
       intercept[UpstreamErrorResponse] {
         await(underTest.fetchEmployments(nino, interval))
       }
+
     }
 
   }
@@ -229,7 +231,7 @@ class DesConnectorSpec
           )
       )
 
-      val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
+      val result: Seq[DesSAIncome] = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
       result shouldBe Seq(
         DesSAIncome(
@@ -254,7 +256,7 @@ class DesConnectorSpec
           .willReturn(aResponse().withStatus(404))
       )
 
-      val result = await(underTest.fetchSelfAssessmentIncome(nino, interval))
+      val result: Seq[DesSAIncome] = await(underTest.fetchSelfAssessmentIncome(nino, interval))
 
       result shouldBe Seq.empty
     }

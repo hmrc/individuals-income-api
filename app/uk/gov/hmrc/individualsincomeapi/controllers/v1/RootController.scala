@@ -21,6 +21,7 @@ import play.api.hal.HalLink
 import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
 
@@ -29,7 +30,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 abstract class RootController(citizenMatchingService: CitizenMatchingService, cc: ControllerComponents)(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  auditHelper: AuditHelper
 ) extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
@@ -48,7 +50,7 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService, cc
         val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
         Ok(links(saLink, payeLink, selfLink))
       }
-    }.recover(recovery)
+    }.recover(recoveryWithAudit(matchId.toString, "/individuals/income/"))
   }
 }
 
@@ -56,18 +58,20 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService, cc
 class SandboxRootController @Inject() (
   val citizenMatchingService: SandboxCitizenMatchingService,
   val authConnector: AuthConnector,
-  cc: ControllerComponents
+  cc: ControllerComponents,
+  implicit val auditHelper: AuditHelper
 )(implicit ec: ExecutionContext)
     extends RootController(citizenMatchingService, cc) {
-  override val environment = SANDBOX
+  override val environment: String = SANDBOX
 }
 
 @Singleton
 class LiveRootController @Inject() (
   val citizenMatchingService: LiveCitizenMatchingService,
   val authConnector: AuthConnector,
-  cc: ControllerComponents
+  cc: ControllerComponents,
+  implicit val auditHelper: AuditHelper
 )(implicit ec: ExecutionContext)
     extends RootController(citizenMatchingService, cc) {
-  override val environment = PRODUCTION
+  override val environment: String = PRODUCTION
 }

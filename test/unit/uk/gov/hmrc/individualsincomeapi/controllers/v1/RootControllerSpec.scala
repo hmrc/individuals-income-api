@@ -19,15 +19,17 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyNoInteractions
+import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.SandboxRootController
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
@@ -42,15 +44,17 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   implicit lazy val materializer: Materializer = fakeApplication().materializer
 
   trait Setup {
-    val fakeRequest = FakeRequest()
-    val matchId = UUID.randomUUID()
-    val nino = Nino("NA000799C")
-    val matchedCitizen = MatchedCitizen(matchId, nino)
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    val matchId: UUID = UUID.randomUUID()
+    val nino: Nino = Nino("NA000799C")
+    val matchedCitizen: MatchedCitizen = MatchedCitizen(matchId, nino)
     implicit val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
-    val mockSandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
-    val mockAuthConnector = mock[AuthConnector]
+    val mockSandboxCitizenMatchingService: SandboxCitizenMatchingService = mock[SandboxCitizenMatchingService]
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
-    val sandboxController = new SandboxRootController(mockSandboxCitizenMatchingService, mockAuthConnector, cc)
+    val sandboxController =
+      new SandboxRootController(mockSandboxCitizenMatchingService, mockAuthConnector, cc, mockAuditHelper)
   }
 
   "sandbox match citizen function" should {
@@ -59,7 +63,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
-      val result = await(sandboxController.root(matchId)(fakeRequest))
+      val result: Result = await(sandboxController.root(matchId)(fakeRequest))
 
       status(result) shouldBe OK
       jsonBodyOf(result) shouldBe
@@ -85,17 +89,31 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(failed(new MatchNotFoundException))
 
-      val result = await(sandboxController.root(matchId)(fakeRequest))
+      val result: Result = await(sandboxController.root(matchId)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse("""{"code" : "NOT_FOUND", "message" : "The resource can not be found"}""")
+      verify(mockAuditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+    }
+
+    "return 500 (Internal Server Error) for an invalid matchId" in new Setup {
+      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+        .willReturn(failed(new Exception()))
+
+      val result: Result = await(sandboxController.root(matchId)(fakeRequest))
+
+      status(result) shouldBe INTERNAL_SERVER_ERROR
+      jsonBodyOf(result) shouldBe Json.parse(
+        """{"code" : "INTERNAL_SERVER_ERROR", "message" : "Something went wrong."}"""
+      )
+      verify(mockAuditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "not require bearer token authentication" in new Setup {
       given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
-      val result = await(sandboxController.root(matchId)(fakeRequest))
+      val result: Result = await(sandboxController.root(matchId)(fakeRequest))
 
       status(result) shouldBe OK
       verifyNoInteractions(mockAuthConnector)

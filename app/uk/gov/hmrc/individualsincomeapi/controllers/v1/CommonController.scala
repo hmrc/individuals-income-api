@@ -51,14 +51,11 @@ abstract class CommonController @Inject() (cc: ControllerComponents) extends Bac
       case _                                    => url
     }
 
-  private[controllers] def recovery: PartialFunction[Throwable, Result] = {
-    case _: MatchNotFoundException   => ErrorNotFound.toHttpResponse
-    case e: AuthorisationException   => ErrorUnauthorized(e.getMessage).toHttpResponse
-    case _: TooManyRequestException  => ErrorTooManyRequests.toHttpResponse
-    case e: IllegalArgumentException => ErrorInvalidRequest(e.getMessage).toHttpResponse
-  }
-
-  private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)(implicit
+  private[controllers] def recoveryWithAudit(
+    matchId: String,
+    url: String,
+    correlationId: Option[String] = None
+  )(implicit
     request: RequestHeader,
     auditHelper: AuditHelper
   ): PartialFunction[Throwable, Result] = {
@@ -109,7 +106,7 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
     if (environment == Environment.SANDBOX)
       f(endpointScopes.toList)
     else {
-      authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) { case scopes =>
+      authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) { scopes =>
         auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
 
         f(scopes.enrolments.map(e => e.key))
