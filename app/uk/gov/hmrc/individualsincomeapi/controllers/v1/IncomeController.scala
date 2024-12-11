@@ -22,6 +22,7 @@ import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
 import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
 import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeService, SandboxIncomeService}
 import uk.gov.hmrc.individualsincomeapi.util.Interval
@@ -30,18 +31,20 @@ import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-abstract class IncomeController(incomeService: IncomeService, cc: ControllerComponents)(implicit ec: ExecutionContext)
-    extends CommonController(cc) with PrivilegedAuthentication {
+abstract class IncomeController(incomeService: IncomeService, cc: ControllerComponents)(implicit
+  ec: ExecutionContext,
+  auditHelper: AuditHelper
+) extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: UUID, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
+    val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
     requiresPrivilegedAuthentication("read:individuals-income-paye") {
       incomeService.fetchIncomeByMatchId(matchId, interval) map { income =>
-        val halLink = HalLink("self", urlWithInterval(s"/individuals/income/paye?matchId=$matchId", interval.fromDate))
         val incomeJsObject = obj("income" -> toJson(income))
         val payeJsObject = obj("paye" -> incomeJsObject)
         Ok(state(payeJsObject) ++ halLink)
       }
-    }.recover(recovery)
+    }.recover(recoveryWithAudit(matchId.toString, halLink.href))
   }
 }
 
@@ -49,18 +52,20 @@ abstract class IncomeController(incomeService: IncomeService, cc: ControllerComp
 class LiveIncomeController @Inject() (
   val incomeService: LiveIncomeService,
   val authConnector: AuthConnector,
-  cc: ControllerComponents
+  cc: ControllerComponents,
+  implicit val auditHelper: AuditHelper
 )(implicit ec: ExecutionContext)
     extends IncomeController(incomeService, cc) {
-  override val environment = PRODUCTION
+  override val environment: String = PRODUCTION
 }
 
 @Singleton
 class SandboxIncomeController @Inject() (
   val incomeService: SandboxIncomeService,
   val authConnector: AuthConnector,
-  cc: ControllerComponents
+  cc: ControllerComponents,
+  implicit val auditHelper: AuditHelper
 )(implicit ec: ExecutionContext)
     extends IncomeController(incomeService, cc) {
-  override val environment = SANDBOX
+  override val environment: String = SANDBOX
 }
