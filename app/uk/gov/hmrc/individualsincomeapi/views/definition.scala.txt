@@ -13,14 +13,14 @@
     "versions": [
       {
         "version": "P1.0",
-        "status": "PUBLISHED",
-        "access" : {"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(v1WhitelistedApplicationIDs)}
+        "status": "STABLE",
+        "access" : {"type":"PRIVATE"}
       },
       {
         "version":"2.0",
         "status":@Json.toJson(v2Status),
         "endpointsEnabled":@Json.toJson(v2EndpointsEnabled),
-        "access":{"type":"PRIVATE", "whitelistedApplicationIds": @Json.toJson(v2WhitelistedApplicationIDs)}
+        "access":{"type":"PRIVATE"}
       }
     ]
   }
