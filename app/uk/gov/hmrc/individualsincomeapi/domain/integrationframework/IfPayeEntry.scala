@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
-import play.api.libs.functional.syntax.{unlift, _}
+import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
 import play.api.libs.json.{Format, JsPath, Reads}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye._
@@ -42,7 +42,7 @@ object IfGrossEarningsForNics {
         (JsPath \ "inPayPeriod2").writeNullable[Double] and
         (JsPath \ "inPayPeriod3").writeNullable[Double] and
         (JsPath \ "inPayPeriod4").writeNullable[Double]
-    )(unlift(IfGrossEarningsForNics.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -78,7 +78,7 @@ object IfTotalEmployerNics {
         (JsPath \ "ytd2").writeNullable[Double] and
         (JsPath \ "ytd3").writeNullable[Double] and
         (JsPath \ "ytd4").writeNullable[Double]
-    )(unlift(IfTotalEmployerNics.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -114,7 +114,7 @@ object IfEmployeeNics {
         (JsPath \ "ytd2").writeNullable[Double] and
         (JsPath \ "ytd3").writeNullable[Double] and
         (JsPath \ "ytd4").writeNullable[Double]
-    )(unlift(IfEmployeeNics.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -138,7 +138,7 @@ object IfEmployeePensionContribs {
         (JsPath \ "notPaidYTD").writeNullable[Double] and
         (JsPath \ "paid").writeNullable[Double] and
         (JsPath \ "notPaid").writeNullable[Double]
-    )(unlift(IfEmployeePensionContribs.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -167,7 +167,7 @@ object IfStatutoryPayYTD {
         (JsPath \ "paternity").writeNullable[Double] and
         (JsPath \ "adoption").writeNullable[Double] and
         (JsPath \ "parentalBereavement").writeNullable[Double]
-    )(unlift(IfStatutoryPayYTD.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }
 
@@ -241,7 +241,7 @@ object IfPayeEntry {
     (
       (JsPath \ "taxedViaPayroll").writeNullable[Double] and
         (JsPath \ "taxedViaPayrollYTD").writeNullable[Double]
-    )(unlift(IfBenefits.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val studentLoanFormat: Format[IfStudentLoan] = Format(
@@ -255,7 +255,7 @@ object IfPayeEntry {
       (JsPath \ "planType").writeNullable[String] and
         (JsPath \ "repaymentsInPayPeriod").writeNullable[Int] and
         (JsPath \ "repaymentsYTD").writeNullable[Int]
-    )(unlift(IfStudentLoan.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val postGradLoanFormat: Format[IfPostGradLoan] = Format(
@@ -266,7 +266,7 @@ object IfPayeEntry {
     (
       (JsPath \ "repaymentsInPayPeriod").writeNullable[Int] and
         (JsPath \ "repaymentsYTD").writeNullable[Int]
-    )(unlift(IfPostGradLoan.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val additionalFieldsFormat: Format[IfAdditionalFields] = Format(
@@ -277,7 +277,7 @@ object IfPayeEntry {
     (
       (JsPath \ "employee" \ "hasPartner").writeNullable[Boolean] and
         (JsPath \ "payroll" \ "id").writeNullable[String]
-    )(unlift(IfAdditionalFields.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val payeEntryFormat: Format[IfPayeEntry] = Format(
@@ -349,7 +349,7 @@ object IfPayeEntry {
         (JsPath \ "studentLoan").writeNullable[IfStudentLoan] and
         (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan] and
         JsPath.writeNullable[IfAdditionalFields]
-    )(unlift(IfPayeEntry.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   private def toEmployee(additionalFields: Option[IfAdditionalFields]): Option[Employee] =

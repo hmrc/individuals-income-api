@@ -17,7 +17,7 @@
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
@@ -44,18 +44,18 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockCacheConfig.cacheEnabled).willReturn(true)
+    `given`(mockCacheConfig.cacheEnabled).willReturn(true)
   }
 
   "cacheService.get" should {
     "return the cached value for a given id and key" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
     }
 
     "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
@@ -63,7 +63,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
     }
 
     "ignore the cache when caching is not enabled" in new Setup {
-      given(mockCacheConfig.cacheEnabled).willReturn(false)
+      `given`(mockCacheConfig.cacheEnabled).willReturn(false)
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verifyNoInteractions(mockClient)
     }

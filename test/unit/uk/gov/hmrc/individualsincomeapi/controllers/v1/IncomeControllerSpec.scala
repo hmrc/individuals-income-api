@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers._
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
@@ -68,7 +68,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     val sandboxIncomeController =
       new SandboxIncomeController(new SandboxIncomeService, mockAuthConnector, cc, mockAuditHelper)
 
-    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
+    `given`(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
   }
 
   def externalServices: Seq[String] = Seq("Stub")
@@ -78,7 +78,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
       FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString&toDate=$toDateString")
 
     "return 200 (OK) when matching succeeds and service returns payments" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(successful(payments))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -88,7 +88,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 200 (OK) when matching succeeds and service returns no payments" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(successful(Seq.empty))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -101,7 +101,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
       val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(successful(payments))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -111,7 +111,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 404 (Not Found) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -122,7 +122,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 401 (UNAUTHORIZED) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(InsufficientEnrolments()))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -133,7 +133,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 429 (TOO_MANY_REQUESTS) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(new TooManyRequestException("Too Many Requests")))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -144,7 +144,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 400 (BAD_REQUEST) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(new BadRequestException("Bad Request")))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -155,7 +155,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 400 (Illegal Argument) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(new IllegalArgumentException("Illegal Argument")))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))
@@ -166,7 +166,7 @@ class IncomeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return 500 (Internal Server) for an invalid matchId" in new Setup {
-      given(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
+      `given`(mockIncomeService.fetchIncomeByMatchId(refEq(matchId), refEq(interval))(any()))
         .willReturn(failed(new Exception()))
 
       val result: Result = await(liveIncomeController.income(matchId, interval)(fakeRequest))

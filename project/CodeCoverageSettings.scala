@@ -10,6 +10,7 @@ object CodeCoverageSettings {
     "uk.gov.hmrc.BuildInfo",
     ".*Routes",
     ".*RoutesPrefix*",
+    ".*models.*",
     ".*definition*"
   )
 

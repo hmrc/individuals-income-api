@@ -22,7 +22,6 @@ import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorRespon
 
 import java.util.UUID
 import scala.language.{implicitConversions, postfixOps}
-import scala.util.{Failure, Try}
 
 object JsonFormatters {
 
@@ -49,7 +48,8 @@ object JsonFormatters {
 
   implicit val desPaymentJsonFormat: Format[DesPayment] = Json.format[DesPayment]
   implicit val desEmploymentPayFrequencyJsonFormat: Format[DesEmploymentPayFrequency.Value] =
-    EnumJson.enumFormat(DesEmploymentPayFrequency)
+    Json.formatEnum(DesEmploymentPayFrequency)
+  // EnumJson.enumFormat(DesEmploymentPayFrequency)
   implicit val desEmploymentJsonFormat: Format[DesEmployment] = Json.format[DesEmployment]
   implicit val desEmploymentsJsonFormat: Format[DesEmployments] = Json.format[DesEmployments]
 
@@ -102,10 +102,10 @@ object JsonFormatters {
   implicit val formatSaAnnualOtherIncomes: Format[SaAnnualOtherIncomes] = Json.format[SaAnnualOtherIncomes]
 }
 
-object EnumJson {
+/*object EnumJson {
 
-  private def enumReads[E <: Enumeration](anEnum: E): Reads[E#Value] = new Reads[E#Value] {
-    def reads(json: JsValue): JsResult[E#Value] = json match {
+  private def enumReads[E <: Enumeration](anEnum: E): Reads[anEnum.Value] = new Reads[anEnum.Value] {
+    def reads(json: JsValue): JsResult[anEnum.Value] = json match {
       case JsString(s) =>
         Try(JsSuccess(anEnum.withName(s))) recoverWith { case _: NoSuchElementException =>
           Failure(new InvalidEnumException(anEnum.getClass.getSimpleName, s))
@@ -114,13 +114,13 @@ object EnumJson {
     }
   }
 
-  implicit def enumWrites[E <: Enumeration]: Writes[E#Value] = new Writes[E#Value] {
-    def writes(v: E#Value): JsValue = JsString(v.toString)
+  implicit def enumWrites[E <: Enumeration](anEnum: E): Writes[anEnum.Value] = new Writes[anEnum.Value] {
+    def writes(v: anEnum.Value): JsValue = JsString(v.toString)
   }
 
-  implicit def enumFormat[E <: Enumeration](anEnum: E): Format[E#Value] =
-    Format(enumReads(anEnum), enumWrites)
-}
+  implicit def enumFormat[E <: Enumeration](anEnum: E): Format[anEnum.Value] =
+    Format(enumReads(anEnum), enumWrites(anEnum))
+}*/
 
 class InvalidEnumException(className: String, input: String)
     extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")

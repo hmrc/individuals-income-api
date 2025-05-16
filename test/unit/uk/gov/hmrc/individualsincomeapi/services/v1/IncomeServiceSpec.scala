@@ -17,7 +17,7 @@
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
@@ -65,8 +65,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     "return the employment's income" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(successful(desEmployments))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
@@ -85,8 +85,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         )
       )
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(successful(desEmployments))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
@@ -99,8 +99,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     }
 
     "Return empty list when there are no payments for a given period" in new Setup {
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
@@ -110,7 +110,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     "propagate MatchNotFoundException when the matchId does not exist" in new Setup {
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willThrow(new MatchNotFoundException)
+      `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willThrow(new MatchNotFoundException)
 
       intercept[MatchNotFoundException] {
         await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
@@ -119,8 +119,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     "fail when DES returns an error" in new Setup {
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException](await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc)))
@@ -129,8 +129,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     "retry once if DES returns a 503" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
-      given(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      given(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
         .willReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(desEmployments))
 
@@ -144,7 +144,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val employments = Seq(DesEmployment(Seq(DesPayment(LocalDate.of(2016, 1, 1), 1))))
 
       val mockMatching = mock[IndividualsMatchingApiConnector]
-      given(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
+      `given`(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
 
       val mockDes = mock[DesConnector]
       val stubCache = new CacheService(null, null) {

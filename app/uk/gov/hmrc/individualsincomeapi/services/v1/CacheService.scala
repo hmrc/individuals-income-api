@@ -46,7 +46,7 @@ class CacheService @Inject() (shortLivedCache: ShortLivedCache, conf: CacheRepos
 }
 
 trait CacheId {
-  val id: String
+  def id: String
 
   override def toString: String = id
 }

@@ -18,11 +18,13 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, eq => eqTo, _}
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
-import play.api.libs.json.Json
+import org.scalatest.matchers.should.Matchers._
+import play.api.libs.json._
+
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -80,7 +82,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+    `given`(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
       .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
   }
 
@@ -90,7 +92,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 200 when matching succeeds and service returns income" in new Setup {
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
 
       val result =
@@ -177,7 +179,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 200 when matching succeeds and service returns no income" in new Setup {
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result =
@@ -207,7 +209,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result =
@@ -234,7 +236,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 404 for an invalid matchId" in new Setup {
 
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -247,7 +249,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     }
 
     "returns bad request with correct message when missing CorrelationId Header" in new Setup {
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(incomeController.income(matchId.toString, interval)(FakeRequest()))
@@ -266,7 +268,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
     }
 
     "return bad request with correct message when CorrelationId Header is malformed" in new Setup {
-      given(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(

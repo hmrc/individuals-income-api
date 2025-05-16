@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.individualsincomeapi.cache
 
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
-import play.api.libs.json.{Format, JsPath}
-
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.{Format, JsPath, Json, Reads}
 import java.time.LocalDateTime
 
 case class ModifiedDetails(createdAt: LocalDateTime, lastUpdated: LocalDateTime)
@@ -29,9 +28,6 @@ object ModifiedDetails {
       (JsPath \ "createdAt").read[LocalDateTime] and
         (JsPath \ "lastUpdated").read[LocalDateTime]
     )(ModifiedDetails.apply _),
-    (
-      (JsPath \ "createdAt").write[LocalDateTime] and
-        (JsPath \ "lastUpdated").write[LocalDateTime]
-    )(unlift(ModifiedDetails.unapply))
+    Json.writes[ModifiedDetails]
   )
 }

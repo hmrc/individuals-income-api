@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.http.logging.Mdc.preservingMdc
 import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
+import org.mongodb.scala.SingleObservableFuture
 
 abstract class CacheRepository(
   val cacheConfig: CacheRepositoryConfiguration,
@@ -45,7 +46,10 @@ abstract class CacheRepository(
         IndexModel(ascending("id"), IndexOptions().name("_id").unique(true).background(false).sparse(true)),
         IndexModel(
           ascending("modifiedDetails.lastUpdated"),
-          IndexOptions().name("lastUpdatedIndex").background(false).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)
+          IndexOptions()
+            .name("lastUpdatedIndex")
+            .background(false)
+            .expireAfter(cacheConfig.cacheTtl.toLong, TimeUnit.SECONDS)
         )
       )
     ) {

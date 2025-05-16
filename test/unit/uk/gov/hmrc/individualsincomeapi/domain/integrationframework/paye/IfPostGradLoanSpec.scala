@@ -24,8 +24,8 @@ import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPostGradLo
 
 class IfPostGradLoanSpec extends AnyWordSpec with Matchers {
 
-  val validPostGradLoan = IfPostGradLoan(Some(99999), Some(22177))
-  val invalidPostGradLoan = IfPostGradLoan(Some(99999 + 1), Some(-5))
+  val validPostGradLoan: IfPostGradLoan = IfPostGradLoan(Some(99999), Some(22177))
+  val invalidPostGradLoan: IfPostGradLoan = IfPostGradLoan(Some(99999 + 1), Some(-5))
 
   "IfPostGradLoan" should {
     "Write to json" in {
