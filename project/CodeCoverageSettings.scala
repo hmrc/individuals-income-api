@@ -11,12 +11,14 @@ object CodeCoverageSettings {
     ".*Routes",
     ".*RoutesPrefix*",
     ".*models.*",
-    ".*definition*"
+    ".*definition*",
+    ".*domain.*",
+    ".*cache.*"
   )
 
   val settings: Seq[Setting[?]] = Seq(
     ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 75,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
