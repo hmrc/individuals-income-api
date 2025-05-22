@@ -49,7 +49,6 @@ object JsonFormatters {
   implicit val desPaymentJsonFormat: Format[DesPayment] = Json.format[DesPayment]
   implicit val desEmploymentPayFrequencyJsonFormat: Format[DesEmploymentPayFrequency.Value] =
     Json.formatEnum(DesEmploymentPayFrequency)
-  // EnumJson.enumFormat(DesEmploymentPayFrequency)
   implicit val desEmploymentJsonFormat: Format[DesEmployment] = Json.format[DesEmployment]
   implicit val desEmploymentsJsonFormat: Format[DesEmployments] = Json.format[DesEmployments]
 
@@ -101,26 +100,6 @@ object JsonFormatters {
   implicit val formatSaAnnualOtherIncome: Format[SaAnnualOtherIncome] = Json.format[SaAnnualOtherIncome]
   implicit val formatSaAnnualOtherIncomes: Format[SaAnnualOtherIncomes] = Json.format[SaAnnualOtherIncomes]
 }
-
-/*object EnumJson {
-
-  private def enumReads[E <: Enumeration](anEnum: E): Reads[anEnum.Value] = new Reads[anEnum.Value] {
-    def reads(json: JsValue): JsResult[anEnum.Value] = json match {
-      case JsString(s) =>
-        Try(JsSuccess(anEnum.withName(s))) recoverWith { case _: NoSuchElementException =>
-          Failure(new InvalidEnumException(anEnum.getClass.getSimpleName, s))
-        } get
-      case _ => JsError("String value expected")
-    }
-  }
-
-  implicit def enumWrites[E <: Enumeration](anEnum: E): Writes[anEnum.Value] = new Writes[anEnum.Value] {
-    def writes(v: anEnum.Value): JsValue = JsString(v.toString)
-  }
-
-  implicit def enumFormat[E <: Enumeration](anEnum: E): Format[anEnum.Value] =
-    Format(enumReads(anEnum), enumWrites(anEnum))
-}*/
 
 class InvalidEnumException(className: String, input: String)
     extends RuntimeException(s"Enumeration expected of type: '$className', but it does not contain '$input'")
