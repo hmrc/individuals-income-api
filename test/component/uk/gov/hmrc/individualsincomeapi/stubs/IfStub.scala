@@ -20,10 +20,17 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.{IfPaye, IfSa}
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 object IfStub extends MockHost(24000) {
 
-  def searchPayeIncomeForPeriodReturns(nino: String, fromDate: String, toDate: String, fields: String, ifPaye: IfPaye) =
+  def searchPayeIncomeForPeriodReturns(
+    nino: String,
+    fromDate: String,
+    toDate: String,
+    fields: String,
+    ifPaye: IfPaye
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
         .withQueryParam("startDate", equalTo(fromDate))
@@ -32,7 +39,13 @@ object IfStub extends MockHost(24000) {
         .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifPaye).toString()))
     )
 
-  def searchSaIncomeForPeriodReturns(nino: String, fromTaxYear: String, toTaxYear: String, fields: String, ifSa: IfSa) =
+  def searchSaIncomeForPeriodReturns(
+    nino: String,
+    fromTaxYear: String,
+    toTaxYear: String,
+    fields: String,
+    ifSa: IfSa
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))
@@ -41,7 +54,7 @@ object IfStub extends MockHost(24000) {
         .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(ifSa).toString()))
     )
 
-  def searchPayeIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String, fields: String) =
+  def searchPayeIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String, fields: String): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/paye/nino/$nino"))
         .withQueryParam("startDate", equalTo(fromDate))
@@ -50,7 +63,12 @@ object IfStub extends MockHost(24000) {
         .willReturn(aResponse().withStatus(Status.NOT_FOUND).withBody("NO_DATA_FOUND"))
     )
 
-  def searchSaIncomeReturnsNoIncomeFor(nino: String, fromTaxYear: String, toTaxYear: String, fields: String) =
+  def searchSaIncomeReturnsNoIncomeFor(
+    nino: String,
+    fromTaxYear: String,
+    toTaxYear: String,
+    fields: String
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))
@@ -75,7 +93,7 @@ object IfStub extends MockHost(24000) {
     toTaxYear: String,
     fields: String,
     response: JsValue
-  ) =
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/income/sa/nino/$nino"))
         .withQueryParam("startYear", equalTo(fromTaxYear))

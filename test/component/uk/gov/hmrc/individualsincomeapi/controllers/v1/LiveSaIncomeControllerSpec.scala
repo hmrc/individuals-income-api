@@ -30,8 +30,8 @@ import java.util.UUID
 class LiveSaIncomeControllerSpec extends BaseSpec {
   private val matchId = UUID.randomUUID().toString
   private val nino = Nino("AA100009B")
-  private val fromTaxYear = TaxYear("2018-19")
-  private val toTaxYear = TaxYear("2020-21")
+  private val fromTaxYear = TaxYear("2019-20")
+  private val toTaxYear = TaxYear("2021-22")
   private val desIncomes = Seq(
     DesSAIncome(
       taxYear = "2019",

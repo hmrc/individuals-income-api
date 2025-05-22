@@ -82,7 +82,6 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
     }
 
     Scenario("Individual has employment income") {
-
       Given("A valid privileged Auth bearer token")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
@@ -112,71 +111,69 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
             s"""{
                |  "_links":{
                |    "self":{
-               |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2019-04-01&toDate=2020-01-01"
+               |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=$fromDate&toDate=$toDate"
                |    }
                |  },
-               |  "paye":{
-               |    "income":[
-               |      {
-               |        "employerPayeReference":"345/34678",
-               |        "taxYear":"18-19",
-               |        "employee":{
-               |          "hasPartner": false
-               |        },
-               |        "payroll": {
-               |          "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
-               |        },
-               |        "payFrequency":"W4",
-               |        "monthPayNumber": 3,
-               |        "weekPayNumber": 2,
-               |        "paymentDate":"2006-02-27",
-               |        "paidHoursWorked":"36",
-               |        "taxCode":"K971",
-               |        "taxablePayToDate":19157.5,
-               |        "taxablePay":16533.95,
-               |        "totalTaxToDate":3095.89,
-               |        "taxDeductedOrRefunded":159228.49,
-               |        "dednsFromNetPay":198035.8,
-               |        "employeePensionContribs":{
-               |          "paidYTD":169731.51,
-               |          "notPaidYTD":173987.07,
-               |          "paid":822317.49,
-               |          "notPaid":818841.65
-               |        },
-               |        "statutoryPayYTD":{
-               |          "maternity":15797.45,
-               |          "paternity":13170.69,
-               |          "adoption":16193.76,
-               |          "parentalBereavement":30846.56
-               |        },
-               |        "grossEarningsForNics":{
-               |          "inPayPeriod1":169731.51,
-               |          "inPayPeriod2":173987.07,
-               |          "inPayPeriod3":822317.49,
-               |          "inPayPeriod4":818841.65
-               |        },
-               |        "totalEmployerNics":{
-               |          "inPayPeriod1":15797.45,
-               |          "inPayPeriod2":13170.69,
-               |          "inPayPeriod3":16193.76,
-               |          "inPayPeriod4":30846.56,
-               |          "ytd1":10633.5,
-               |          "ytd2":15579.18,
-               |          "ytd3":110849.27,
-               |          "ytd4":162081.23
-               |        },
-               |        "employeeNics":{
-               |          "inPayPeriod1":15797.45,
-               |          "inPayPeriod2":13170.69,
-               |          "inPayPeriod3":16193.76,
-               |          "inPayPeriod4":30846.56,
-               |          "ytd1":10633.5,
-               |          "ytd2":15579.18,
-               |          "ytd3":110849.27,
-               |          "ytd4":162081.23
-               |        }
+               |  "paye" : {
+               |    "income" : [ {
+               |      "monthPayNumber" : 3,
+               |      "taxCode" : "K971",
+               |      "taxablePay" : 16533.95,
+               |      "employeePensionContribs" : {
+               |        "paidYTD" : 169731.51,
+               |        "notPaidYTD" : 173987.07,
+               |        "paid" : 822317.49,
+               |        "notPaid" : 818841.65
+               |      },
+               |      "taxDeductedOrRefunded" : 159228.49,
+               |      "weekPayNumber" : 2,
+               |      "payFrequency" : "W4",
+               |      "totalEmployerNics" : {
+               |        "inPayPeriod1" : 15797.45,
+               |        "inPayPeriod2" : 13170.69,
+               |        "inPayPeriod3" : 16193.76,
+               |        "inPayPeriod4" : 30846.56,
+               |        "ytd1" : 10633.5,
+               |        "ytd2" : 15579.18,
+               |        "ytd3" : 110849.27,
+               |        "ytd4" : 162081.23
+               |      },
+               |      "statutoryPayYTD" : {
+               |        "maternity" : 15797.45,
+               |        "paternity" : 13170.69,
+               |        "adoption" : 16193.76,
+               |        "parentalBereavement" : 30846.56
+               |      },
+               |      "paymentDate" : "2006-02-27",
+               |      "taxablePayToDate" : 19157.5,
+               |      "employerPayeReference" : "345/34678",
+               |      "paidHoursWorked" : "36",
+               |      "employee" : {
+               |        "hasPartner" : false
+               |      },
+               |      "totalTaxToDate" : 3095.89,
+               |      "employeeNics" : {
+               |        "inPayPeriod1" : 15797.45,
+               |        "inPayPeriod2" : 13170.69,
+               |        "inPayPeriod3" : 16193.76,
+               |        "inPayPeriod4" : 30846.56,
+               |        "ytd1" : 10633.5,
+               |        "ytd2" : 15579.18,
+               |        "ytd3" : 110849.27,
+               |        "ytd4" : 162081.23
+               |      },
+               |      "taxYear" : "18-19",
+               |      "dednsFromNetPay" : 198035.8,
+               |      "grossEarningsForNics" : {
+               |        "inPayPeriod1" : 169731.51,
+               |        "inPayPeriod2" : 173987.07,
+               |        "inPayPeriod3" : 822317.49,
+               |        "inPayPeriod4" : 818841.65
+               |      },
+               |      "payroll" : {
+               |        "id" : "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
                |      }
-               |    ]
+               |    } ]
                |  }
                |}""".stripMargin
           )

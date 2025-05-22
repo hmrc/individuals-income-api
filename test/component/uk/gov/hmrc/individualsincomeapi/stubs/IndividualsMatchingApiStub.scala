@@ -18,16 +18,17 @@ package component.uk.gov.hmrc.individualsincomeapi.stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.libs.json.Json
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 object IndividualsMatchingApiStub extends MockHost(21000) {
 
-  def willRespondWith(matchId: String, responseCode: Int, responseBody: String = "") =
+  def willRespondWith(matchId: String, responseCode: Int, responseBody: String = ""): StubMapping =
     mock.register(
       get(urlEqualTo(s"/match-record/$matchId"))
         .willReturn(aResponse().withStatus(responseCode).withBody(responseBody))
     )
 
-  def hasMatchFor(matchId: String, nino: String): Unit =
+  def hasMatchFor(matchId: String, nino: String): StubMapping =
     mock.register(
       get(s"/match-record/$matchId")
         .willReturn(
