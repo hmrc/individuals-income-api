@@ -29,6 +29,7 @@ import utils.TestSupport
 import scala.annotation.unused
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.mongodb.scala.SingleObservableFuture
 
 class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport with BeforeAndAfterEach with TestSupport {
 

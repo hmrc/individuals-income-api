@@ -58,7 +58,6 @@ lazy val microservice =
       )
     )
     .settings(scalacOptions += "-Wconf:src=routes/.*:s,src=txt/.*:s")
-    .settings(scalacOptions ++= Seq("-source:3.0-migration", "-rewrite"))
     .settings(PlayKeys.playDefaultPort := 9652)
     .settings(majorVersion := 0)
     // Disable default sbt Test options (might change with new versions of bootstrap)
