@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
@@ -60,7 +60,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   "sandbox match citizen function" should {
 
     "return 200 (OK) for a valid matchId" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -86,7 +86,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "return 400 (Not Found) for an invalid matchId" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(failed(new MatchNotFoundException))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -97,7 +97,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "return 500 (Internal Server Error) for an invalid matchId" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(failed(new Exception()))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -110,7 +110,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "not require bearer token authentication" in new Setup {
-      given(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))

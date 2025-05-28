@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import play.api.hal.HalLink
 import play.api.libs.json.Json
+import play.api.hal.*
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
@@ -45,7 +45,7 @@ class RootController @Inject() (
       withValidUuid(matchId, "matchId format is invalid") { matchUuid =>
         val correlationId = validateCorrelationId(request);
 
-        citizenMatchingService.matchCitizen(matchUuid) map { _: MatchedCitizen =>
+        citizenMatchingService.matchCitizen(matchUuid) map { (_: MatchedCitizen) =>
           val selfLink = HalLink("self", s"/individuals/income/?matchId=$matchId")
           val allowedList = Some(List("sa", "paye"))
           val excludeList = Some(List())

@@ -18,10 +18,9 @@ package unit.uk.gov.hmrc.individualsincomeapi.controllers.v1
 
 import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq}
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
 import play.api.mvc.Result
@@ -54,7 +53,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val liveMatchCitizenController =
       new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector, cc, mockAuditHelper)
 
-    given(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
+    `given`(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
     implicit val hc: HeaderCarrier = HeaderCarrier()
   }
 
@@ -104,7 +103,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
-      given(
+      `given`(
         mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any())
       )
         .willReturn(failed(InsufficientEnrolments()))

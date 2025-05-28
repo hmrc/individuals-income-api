@@ -23,6 +23,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployments, DesSAIncome}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 object DesStub extends MockHost(23000) {
 
@@ -31,7 +32,7 @@ object DesStub extends MockHost(23000) {
     fromDate: String,
     toDate: String,
     desEmployments: DesEmployments
-  ) =
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
         .withQueryParam("from", equalTo(fromDate))
@@ -39,7 +40,7 @@ object DesStub extends MockHost(23000) {
         .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desEmployments).toString()))
     )
 
-  def searchEmploymentIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String) =
+  def searchEmploymentIncomeReturnsNoIncomeFor(nino: String, fromDate: String, toDate: String): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/employments/income"))
         .withQueryParam("from", equalTo(fromDate))
@@ -60,7 +61,7 @@ object DesStub extends MockHost(23000) {
     startYear: TaxYear,
     endYear: TaxYear,
     clientId: String
-  ) =
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
@@ -75,7 +76,7 @@ object DesStub extends MockHost(23000) {
     endYear: TaxYear,
     clientId: String,
     desSAIncomes: Seq[DesSAIncome]
-  ) =
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withHeader("OriginatorId", equalTo(s"MDTP_CLIENTID=$clientId"))
@@ -84,7 +85,11 @@ object DesStub extends MockHost(23000) {
         .willReturn(aResponse().withStatus(Status.OK).withBody(Json.toJson(desSAIncomes).toString()))
     )
 
-  def searchSelfAssessmentIncomeForPeriodReturnsNoDataFor(nino: String, startYear: String, endYear: String) =
+  def searchSelfAssessmentIncomeForPeriodReturnsNoDataFor(
+    nino: String,
+    startYear: String,
+    endYear: String
+  ): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/nino/$nino/self-assessment/income"))
         .withQueryParam("startYear", equalTo(startYear))

@@ -23,8 +23,9 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.HttpClientV2Provider
+import scala.annotation.unused
 
-class ConfigModule(environment: Environment, configuration: Configuration) extends AbstractModule {
+class ConfigModule(@unused environment: Environment, configuration: Configuration) extends AbstractModule {
   override def configure(): Unit = {
     val delay = configuration.getOptional[Int]("retryDelay").getOrElse(1000)
 

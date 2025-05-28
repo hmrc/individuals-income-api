@@ -28,10 +28,13 @@ import java.util.UUID
 class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   val matchId = UUID.randomUUID().toString
-  val fromTaxYear = "2019"
-  val toTaxYear = "2020"
+  val fromTaxYear = "2020"
+  val toTaxYear = "2021"
 
   val nino = "CS700100A"
+
+  val fromTaxYr = "2019-20"
+  val toTaxYr = "2020-21"
 
   val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
 
@@ -91,7 +94,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -117,7 +120,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
              |      "title": "Get an individual's SA partnerships data"
              |    },
              |    "self": {
-             |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+             |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
              |    },
              |    "interestsAndDividends": {
              |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId{&fromTaxYear,toTaxYear}",
@@ -197,7 +200,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -224,7 +227,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
              |      "title": "Get an individual's SA partnerships data"
              |    },
              |    "self": {
-             |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+             |      "href": "/individuals/income/sa?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
              |    },
              |    "interestsAndDividends": {
              |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId{&fromTaxYear,toTaxYear}",
@@ -277,7 +280,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -290,7 +293,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
@@ -306,7 +308,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -363,7 +365,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -375,7 +377,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -398,7 +400,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment employments returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
@@ -414,7 +415,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -426,7 +427,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -443,7 +444,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -456,7 +457,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, employmentScopes)
 
@@ -472,7 +472,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -529,7 +529,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -541,7 +541,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -580,7 +580,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -592,7 +592,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/self-employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -609,7 +609,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -622,7 +622,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
@@ -638,7 +637,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/self-employments?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -697,7 +696,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -709,7 +708,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -732,7 +731,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment summary returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
@@ -748,7 +746,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -760,7 +758,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/summary?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -777,7 +775,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -790,7 +788,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, summaryScopes)
 
@@ -806,7 +803,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/summary?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -856,7 +853,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -868,7 +865,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -890,7 +887,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment trusts returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
@@ -906,7 +902,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -918,7 +914,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/trusts?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -935,7 +931,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -948,7 +944,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, trustsScopes)
 
@@ -964,7 +959,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/trusts?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1021,7 +1016,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1033,7 +1028,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1055,7 +1050,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment foreign returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
@@ -1071,7 +1065,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1083,7 +1077,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/foreign?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1100,7 +1094,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -1113,7 +1107,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, foreignScopes)
 
@@ -1129,7 +1122,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/foreign?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1186,7 +1179,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1198,7 +1191,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1220,7 +1213,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment partnerships returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
@@ -1236,7 +1228,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1248,7 +1240,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/partnerships?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1265,7 +1257,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
       When("I request the self assessments")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -1278,7 +1270,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, partnershipsScopes)
 
@@ -1294,7 +1285,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When("I request the resources")
-      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/sa/partnerships?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(headers)
         .asString
 
@@ -1347,7 +1338,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1359,7 +1350,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1383,7 +1374,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment interests and dividends returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
@@ -1400,7 +1390,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1412,7 +1402,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1430,7 +1420,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the self assessments")
       val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -1443,7 +1433,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, interestsAndDividendsScopes)
 
@@ -1460,7 +1449,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/interests-and-dividends?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1511,7 +1500,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1523,7 +1512,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1545,7 +1534,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment pensions and benefits returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
@@ -1562,7 +1550,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1574,7 +1562,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1592,7 +1580,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the self assessments")
       val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -1605,7 +1593,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with valid scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, pensionsAndStateBenefitsScopes)
 
@@ -1622,7 +1609,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/pensions-and-state-benefits?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1675,7 +1662,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1687,7 +1674,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1709,7 +1696,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment uk properties returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
@@ -1726,7 +1712,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1738,7 +1724,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/uk-properties?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1756,7 +1742,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the self assessments")
       val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -1769,7 +1755,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, ukPropertiesScopes)
 
@@ -1786,7 +1771,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/uk-properties?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1837,7 +1822,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1849,7 +1834,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1889,7 +1874,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -1901,7 +1886,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/additional-information?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -1919,7 +1904,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the self assessments")
       val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -1932,7 +1917,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
@@ -1949,7 +1933,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/additional-information?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -2007,7 +1991,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -2019,7 +2003,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -2042,7 +2026,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment other income returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
@@ -2059,7 +2042,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -2071,7 +2054,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/other?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -2089,7 +2072,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the self assessments")
       val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -2102,7 +2085,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, otherIncomeScopes)
 
@@ -2119,7 +2101,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/other?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -2174,7 +2156,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2019-20&toTaxYear=2020-21")
           .headers(headers)
           .asString
 
@@ -2184,32 +2166,28 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
         Json
           .parse(
             s"""{
-               |  "_links": {
-               |    "self": {
-               |      "href": "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20"
+               |  "_links" : {
+               |    "self" : {
+               |      "href" : "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2019-20&toTaxYear=2020-21"
                |    }
                |  },
-               |  "selfAssessment": {
-               |    "taxReturns": [
-               |      {
-               |        "taxYear": "2019-20",
-               |        "furtherDetails": [
-               |          {
-               |            "busStartDate": "2020-01-01",
-               |            "busEndDate": "2020-01-30",
-               |            "totalTaxPaid": 100.01,
-               |            "totalNIC": 100.01,
-               |            "turnover": 100.01,
-               |            "otherBusIncome": 100.01,
-               |            "tradingIncomeAllowance": 100.01,
-               |            "deducts": {
-               |              "totalBusExpenses": 200,
-               |              "totalDisallowBusExp": 200
-               |            }
-               |          }
-               |        ]
-               |      }
-               |    ]
+               |  "selfAssessment" : {
+               |    "taxReturns" : [ {
+               |      "taxYear" : "2019-20",
+               |      "furtherDetails" : [ {
+               |        "totalTaxPaid" : 100.01,
+               |        "deducts" : {
+               |          "totalBusExpenses" : 200,
+               |          "totalDisallowBusExp" : 200
+               |        },
+               |        "busStartDate" : "2020-01-01",
+               |        "otherBusIncome" : 100.01,
+               |        "totalNIC" : 100.01,
+               |        "busEndDate" : "2020-01-30",
+               |        "tradingIncomeAllowance" : 100.01,
+               |        "turnover" : 100.01
+               |      } ]
+               |    } ]
                |  }
                |}""".stripMargin
           )
@@ -2218,7 +2196,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment further details income returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
@@ -2235,7 +2212,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -2247,7 +2224,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links": {
                |    "self": {
-               |      "href": "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2020-21"
+               |      "href": "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr"
                |    }
                |  },
                |  "selfAssessment": {
@@ -2265,7 +2242,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the self assessments")
       val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(requestHeaders(acceptHeaderP2))
           .asString
 
@@ -2278,7 +2255,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("The self assessment data source is rate limited") {
 
-      val toTaxYear = "2020"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, furtherDetailsScopes)
 
@@ -2295,7 +2271,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
           .headers(headers)
           .asString
 
@@ -2315,7 +2291,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthToken(authToken, scopes)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2332,7 +2308,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
 
       When("the API is invoked")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2366,7 +2342,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
 
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2395,7 +2371,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2427,7 +2403,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       )
 
       When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2447,7 +2423,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("the API is invoked with a missing match id")
 
-      val response = Http(s"$serviceUrl/$endpoint?fromTaxYear=2017-18&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2466,7 +2442,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("the API is invoked with a malformed match id")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=malformed-id&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=malformed-id&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2485,7 +2461,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("the paye endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=2018-19&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&fromTaxYear=$fromTaxYr&toTaxYear=$toTaxYr")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 
@@ -2506,7 +2482,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("the endpoint is invoked with an invalid match id")
-      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&toTaxYear=2019-20")
+      val response = Http(s"$serviceUrl/$endpoint?matchId=$matchId&toTaxYear=2020-21")
         .headers(requestHeaders(acceptHeaderP2))
         .asString
 

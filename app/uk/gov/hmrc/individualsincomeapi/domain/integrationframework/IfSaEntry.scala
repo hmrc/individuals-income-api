@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
-import play.api.libs.functional.syntax.{unlift, _}
+import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
 import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa._
@@ -104,7 +104,7 @@ object IfSaEntry {
         (JsPath \ "line4").writeNullable[String] and
         (JsPath \ "line5").writeNullable[String] and
         (JsPath \ "postcode").writeNullable[String]
-    )(unlift(IfAddress.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val saIncomeFormat: Format[IfSaIncome] = Format(
@@ -139,7 +139,7 @@ object IfSaEntry {
         (JsPath \ "lifePolicies").writeNullable[Double] and
         (JsPath \ "shares").writeNullable[Double] and
         (JsPath \ "other").writeNullable[Double]
-    )(unlift(IfSaIncome.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val saDeductsFormat: Format[IfDeducts] = Format(
@@ -150,7 +150,7 @@ object IfSaEntry {
     (
       (JsPath \ "totalBusExpenses").writeNullable[Double] and
         (JsPath \ "totalDisallowBusExp").writeNullable[Double]
-    )(unlift(IfDeducts.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val saReturnTypeFormat: Format[IfSaReturn] = Format(
@@ -187,7 +187,7 @@ object IfSaEntry {
         (JsPath \ "address").writeNullable[IfAddress] and
         (JsPath \ "income").writeNullable[IfSaIncome] and
         (JsPath \ "deducts").writeNullable[IfDeducts]
-    )(unlift(IfSaReturn.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
   implicit val saTaxYearEntryFormat: Format[IfSaEntry] = Format(
@@ -200,7 +200,7 @@ object IfSaEntry {
       (JsPath \ "taxYear").writeNullable[String] and
         (JsPath \ "income").writeNullable[Double] and
         (JsPath \ "returnList").writeNullable[Seq[IfSaReturn]]
-    )(unlift(IfSaEntry.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 
 }

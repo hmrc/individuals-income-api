@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import play.api.hal.Hal.state
-import play.api.hal.HalLink
+import play.api.hal.*
 import play.api.libs.json.Json
 import play.api.libs.json.Json.obj
 import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}

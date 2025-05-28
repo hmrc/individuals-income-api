@@ -32,9 +32,10 @@ class DatesSpec extends AnyFlatSpec with Matchers {
 
   it should "fail to derive an interval with a from date which is before 31st March 2013" in {
     val (fromDate, toDate) = (LocalDate.parse("2013-03-30"), LocalDate.parse("2020-01-02"))
-    the[ValidationException] thrownBy {
+    val ex = intercept[ValidationException] {
       Dates.toInterval(fromDate, toDate)
-    } should have message "fromDate earlier than 31st March 2013"
+    }
+    ex.getMessage shouldBe "fromDate earlier than 31st March 2013"
 
     noException should be thrownBy Dates.toInterval(LocalDate.parse("2013-03-31"), toDate)
   }

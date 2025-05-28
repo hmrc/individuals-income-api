@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsincomeapi.domain.v2
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Format, JsPath}
+import play.api.libs.json.{Format, JsPath, Reads}
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYear
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
 
@@ -36,7 +36,7 @@ object SaFootprint {
     (
       (JsPath \ "registrations").write[Seq[SaFootprintRegistration]] and
         (JsPath \ "taxReturns").write[Seq[SaFootprintTaxReturn]]
-    )(unlift(SaFootprint.unapply)).contramap { footprint =>
+    )((footprint: SaFootprint) => (footprint.registrations, footprint.taxReturns)).contramap { footprint =>
       val registrations = footprint.registrations
         .filter(registration => registration.registrationDate.isDefined)
       val taxReturns = footprint.taxReturns.map(tr =>

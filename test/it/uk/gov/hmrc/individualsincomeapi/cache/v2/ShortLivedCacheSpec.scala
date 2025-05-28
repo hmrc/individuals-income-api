@@ -26,9 +26,10 @@ import uk.gov.hmrc.individualsincomeapi.cache.v2.ShortLivedCache
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.test.MongoSupport
 import utils.TestSupport
-
+import scala.annotation.unused
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.mongodb.scala.SingleObservableFuture
 
 class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport with BeforeAndAfterEach with TestSupport {
 
@@ -100,7 +101,7 @@ class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport wi
     }
   }
 
-  private def retrieveRawCachedValue(id: String, key: String) =
+  private def retrieveRawCachedValue(id: String, @unused key: String) =
     await(
       shortLivedCache.collection
         .find(Filters.equal("id", toBson(id)))

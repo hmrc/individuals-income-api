@@ -57,7 +57,7 @@ class CacheService @Inject() (shortLivedCache: ShortLivedCache, conf: CacheRepos
 // The `fields` param is obtained with scopeService.getValidFieldsForCacheKey(scopes: List[String])
 
 trait CacheIdBase {
-  val id: String
+  def id: String
 
   override def toString: String = id
 }
