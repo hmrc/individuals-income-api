@@ -27,6 +27,7 @@ import java.util.UUID
 class LiveRootControllerSpec extends BaseSpec {
 
   val allIncomeScopes = List(
+    "read:individuals-employments-ho-nrc",
     "read:individuals-income-hmcts-c2",
     "read:individuals-income-hmcts-c3",
     "read:individuals-income-hmcts-c4",
