@@ -53,7 +53,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val liveMatchCitizenController =
       new LiveRootController(mockLiveCitizenMatchingService, mockAuthConnector, cc, mockAuditHelper)
 
-    `given`(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(any(), any())).willReturn(successful(()))
+    `given`(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(using any(), any())).willReturn(successful(()))
     implicit val hc: HeaderCarrier = HeaderCarrier()
   }
 
@@ -62,7 +62,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val randomMatchId = UUID.randomUUID()
 
     "return a 404 (not found) when a match id does not match live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier]))
         .thenReturn(failed(new MatchNotFoundException))
 
       val eventualResult: Future[Result] = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
@@ -77,7 +77,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return a 200 (ok) when a match id matches live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier]))
         .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
 
       val eventualResult: Future[Result] = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
@@ -104,7 +104,10 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
 
     "fail with AuthorizedException when the bearer token does not have enrolment read:individuals-income" in new Setup {
       `given`(
-        mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(any(), any())
+        mockAuthConnector.authorise(refEq(Enrolment("read:individuals-income")), refEq(EmptyRetrieval))(using
+          any(),
+          any()
+        )
       )
         .willReturn(failed(InsufficientEnrolments()))
 
@@ -116,7 +119,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return a 500 (Internal Server Error)" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier]))
         .thenReturn(failed(new Exception()))
 
       val eventualResult: Future[Result] = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())

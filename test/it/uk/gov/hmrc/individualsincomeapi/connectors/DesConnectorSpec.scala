@@ -48,7 +48,7 @@ class DesConnectorSpec
 
   def fakeApplication(): Application =
     new GuiceApplicationBuilder()
-      .bindings(bindModules: _*)
+      .bindings(bindModules*)
       .configure(
         "microservice.services.des.host"                -> "127.0.0.1",
         "microservice.services.des.port"                -> "11122",

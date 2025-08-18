@@ -22,7 +22,6 @@ import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
-import org.scalatest.matchers.should.Matchers._
 import play.api.libs.json._
 
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
@@ -82,7 +81,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    `given`(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+    `given`(
+      mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(using any(), any())
+    )
       .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
   }
 
@@ -92,7 +93,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     "return 200 when matching succeeds and service returns income" in new Setup {
 
-      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
 
       val result =
@@ -173,13 +174,15 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(using
+        any()
+      )
 
     }
 
     "return 200 when matching succeeds and service returns no income" in new Setup {
 
-      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result =
@@ -201,7 +204,9 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(using
+        any()
+      )
     }
 
     "return 200 with correct self link response when toDate is not provided in the request" in new Setup {
@@ -209,7 +214,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
 
-      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result =
@@ -231,12 +236,14 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |}""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(using
+        any()
+      )
     }
 
     "return 404 for an invalid matchId" in new Setup {
 
-      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
       val result =
@@ -244,12 +251,12 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
       status(result) shouldBe NOT_FOUND
 
-      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
     "returns bad request with correct message when missing CorrelationId Header" in new Setup {
-      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(incomeController.income(matchId.toString, interval)(FakeRequest()))
@@ -264,11 +271,11 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
           |""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "return bad request with correct message when CorrelationId Header is malformed" in new Setup {
-      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(any(), any()))
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
 
       val result = await(
@@ -288,7 +295,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
           |""".stripMargin
       )
 
-      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
   }
 }

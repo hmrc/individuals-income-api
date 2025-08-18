@@ -66,10 +66,10 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(using any(), any()))
         .willReturn(successful(desEmployments))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(using hc))
 
       result shouldBe List(Payment(10.5, parse("2016-02-28")))
     }
@@ -86,10 +86,10 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       )
 
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(using any(), any()))
         .willReturn(successful(desEmployments))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(using hc))
 
       result shouldBe List(
         Payment(10.5, parse("2016-04-28")),
@@ -100,10 +100,10 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
 
     "Return empty list when there are no payments for a given period" in new Setup {
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(using any(), any()))
         .willReturn(successful(Seq.empty))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(using hc))
 
       result shouldBe List.empty
     }
@@ -113,38 +113,40 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willThrow(new MatchNotFoundException)
 
       intercept[MatchNotFoundException] {
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(using hc))
       }
     }
 
     "fail when DES returns an error" in new Setup {
 
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(using any(), any()))
         .willReturn(failed(new RuntimeException("test error")))
 
-      intercept[RuntimeException](await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc)))
+      intercept[RuntimeException](
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(using hc))
+      )
     }
 
     "retry once if DES returns a 503" in new Setup {
       val desEmployments = Seq(DesEmployment(Seq(DesPayment(parse("2016-02-28"), 10.50))))
 
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willReturn(successful(matchedCitizen))
-      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any()))
+      `given`(mockDesConnector.fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(using any(), any()))
         .willReturn(Future.failed(UpstreamErrorResponse("""¯\_(ツ)_/¯""", 503, 503)))
         .willReturn(successful(desEmployments))
 
-      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(hc))
+      val result = await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval)(using hc))
       result shouldBe List(Payment(10.5, parse("2016-02-28")))
 
-      verify(mockDesConnector, times(2)).fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(any(), any())
+      verify(mockDesConnector, times(2)).fetchEmployments(eqTo(matchedCitizen.nino), eqTo(interval))(using any(), any())
     }
 
     "return a cached value if it exists" in {
       val employments = Seq(DesEmployment(Seq(DesPayment(LocalDate.of(2016, 1, 1), 1))))
 
       val mockMatching = mock[IndividualsMatchingApiConnector]
-      `given`(mockMatching.resolve(eqTo(matchedCitizen.matchId))(any())).willReturn(successful(matchedCitizen))
+      `given`(mockMatching.resolve(eqTo(matchedCitizen.matchId))(using any())).willReturn(successful(matchedCitizen))
 
       val mockDes = mock[DesConnector]
       val stubCache = new CacheService(null, null) {
@@ -155,13 +157,13 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       val testService = new LiveIncomeService(mockMatching, mockDes, 1, stubCache)
 
       val res = await(
-        testService.fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"))(
+        testService.fetchIncomeByMatchId(matchedCitizen.matchId, toInterval("2016-01-01", "2018-01-01"))(using
           HeaderCarrier()
         )
       )
       res shouldBe employments.flatMap(DesEmployments.toPayments)
 
-      verify(mockDes, never).fetchEmployments(any(), any())(any(), any())
+      verify(mockDes, never).fetchEmployments(any(), any())(using any(), any())
     }
   }
 
@@ -180,7 +182,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       )
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2020-03-01"))(hc))
+        await(
+          sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2020-03-01"))(using hc)
+        )
       result shouldBe expected
     }
 
@@ -195,7 +199,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       )
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2019-07-01"))(hc))
+        await(
+          sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-01-01", "2019-07-01"))(using hc)
+        )
       result shouldBe expected
     }
 
@@ -207,7 +213,9 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       )
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-04-30", "2020-02-15"))(hc))
+        await(
+          sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2019-04-30", "2020-02-15"))(using hc)
+        )
 
       result shouldBe expected
     }
@@ -215,14 +223,18 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
     "return no income when the individual has no income for a given period" in new Setup {
 
       val result =
-        await(sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-08-01", "2016-09-01"))(hc))
+        await(
+          sandboxIncomeService.fetchIncomeByMatchId(sandboxMatchId, toInterval("2016-08-01", "2016-09-01"))(using hc)
+        )
 
       result shouldBe Seq.empty
     }
 
     "throw not found exception when no individual exists for the given matchId" in new Setup {
       intercept[MatchNotFoundException](
-        await(sandboxIncomeService.fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"))(hc))
+        await(
+          sandboxIncomeService.fetchIncomeByMatchId(UUID.randomUUID(), toInterval("2016-01-01", "2018-03-01"))(using hc)
+        )
       )
     }
   }

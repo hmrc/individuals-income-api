@@ -40,7 +40,7 @@ object SaTaxReturn {
 }
 
 object SaFootprint {
-  implicit def dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
+  implicit def dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ `isBefore` _)
 
   def apply(desSaIncomes: Seq[DesSAIncome]): SaFootprint = {
     val saRegistrations =

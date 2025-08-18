@@ -90,13 +90,13 @@ object IfSaEntry {
 
   implicit val addressFormat: Format[IfAddress] = Format(
     (
-      (JsPath \ "line1").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
-        (JsPath \ "line2").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
-        (JsPath \ "line3").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
-        (JsPath \ "line4").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
-        (JsPath \ "line5").readNullable[String](minLength[String](0).andKeep(maxLength[String](100))) and
-        (JsPath \ "postcode").readNullable[String](minLength[String](0).andKeep(maxLength[String](10)))
-    )(IfAddress.apply _),
+      (JsPath \ "line1").readNullable[String](using minLength[String](0).andKeep(maxLength[String](100))) and
+        (JsPath \ "line2").readNullable[String](using minLength[String](0).andKeep(maxLength[String](100))) and
+        (JsPath \ "line3").readNullable[String](using minLength[String](0).andKeep(maxLength[String](100))) and
+        (JsPath \ "line4").readNullable[String](using minLength[String](0).andKeep(maxLength[String](100))) and
+        (JsPath \ "line5").readNullable[String](using minLength[String](0).andKeep(maxLength[String](100))) and
+        (JsPath \ "postcode").readNullable[String](using minLength[String](0).andKeep(maxLength[String](10)))
+    )(IfAddress.apply),
     (
       (JsPath \ "line1").writeNullable[String] and
         (JsPath \ "line2").writeNullable[String] and
@@ -109,21 +109,21 @@ object IfSaEntry {
 
   implicit val saIncomeFormat: Format[IfSaIncome] = Format(
     (
-      (JsPath \ "selfAssessment").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "allEmployments").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "ukInterest").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "foreignDivs").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "ukDivsAndInterest").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "partnerships").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "pensions").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "selfEmployment").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "trusts").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "ukProperty").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "foreign").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "lifePolicies").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "shares").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "other").readNullable[Double](verifying(paymentAmountValidator))
-    )(IfSaIncome.apply _),
+      (JsPath \ "selfAssessment").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "allEmployments").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "ukInterest").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "foreignDivs").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "ukDivsAndInterest").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "partnerships").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "pensions").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "selfEmployment").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "trusts").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "ukProperty").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "foreign").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "lifePolicies").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "shares").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "other").readNullable[Double](using verifying(paymentAmountValidator))
+    )(IfSaIncome.apply),
     (
       (JsPath \ "selfAssessment").writeNullable[Double] and
         (JsPath \ "allEmployments").writeNullable[Double] and
@@ -144,9 +144,9 @@ object IfSaEntry {
 
   implicit val saDeductsFormat: Format[IfDeducts] = Format(
     (
-      (JsPath \ "totalBusExpenses").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "totalDisallowBusExp").readNullable[Double](verifying(paymentAmountValidator))
-    )(IfDeducts.apply _),
+      (JsPath \ "totalBusExpenses").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "totalDisallowBusExp").readNullable[Double](using verifying(paymentAmountValidator))
+    )(IfDeducts.apply),
     (
       (JsPath \ "totalBusExpenses").writeNullable[Double] and
         (JsPath \ "totalDisallowBusExp").writeNullable[Double]
@@ -155,22 +155,28 @@ object IfSaEntry {
 
   implicit val saReturnTypeFormat: Format[IfSaReturn] = Format(
     (
-      (JsPath \ "utr").readNullable[String](pattern(utrPattern, "Invalid UTR")) and
-        (JsPath \ "caseStartDate").readNullable[String](pattern(dateStringPattern, "Invalid Case Start Date")) and
-        (JsPath \ "receivedDate").readNullable[String](pattern(dateStringPattern, "Invalid Received Date")) and
-        (JsPath \ "businessDescription").readNullable[String](minLength[String](0).keepAnd(maxLength[String](100))) and
-        (JsPath \ "telephoneNumber").readNullable[String](minLength[String](0).keepAnd(maxLength[String](100))) and
-        (JsPath \ "busStartDate").readNullable[String](pattern(dateStringPattern, "Invalid Business Start Date")) and
-        (JsPath \ "busEndDate").readNullable[String](pattern(dateStringPattern, "Invalid Business End Date")) and
-        (JsPath \ "totalTaxPaid").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "totalNIC").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "turnover").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "otherBusIncome").readNullable[Double](verifying(paymentAmountValidator)) and
-        (JsPath \ "tradingIncomeAllowance").readNullable[Double](verifying(paymentAmountValidator)) and
+      (JsPath \ "utr").readNullable[String](using pattern(utrPattern, "Invalid UTR")) and
+        (JsPath \ "caseStartDate").readNullable[String](using pattern(dateStringPattern, "Invalid Case Start Date")) and
+        (JsPath \ "receivedDate").readNullable[String](using pattern(dateStringPattern, "Invalid Received Date")) and
+        (JsPath \ "businessDescription").readNullable[String](using
+          minLength[String](0).keepAnd(maxLength[String](100))
+        ) and
+        (JsPath \ "telephoneNumber").readNullable[String](using
+          minLength[String](0).keepAnd(maxLength[String](100))
+        ) and
+        (JsPath \ "busStartDate").readNullable[String](using
+          pattern(dateStringPattern, "Invalid Business Start Date")
+        ) and
+        (JsPath \ "busEndDate").readNullable[String](using pattern(dateStringPattern, "Invalid Business End Date")) and
+        (JsPath \ "totalTaxPaid").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "totalNIC").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "turnover").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "otherBusIncome").readNullable[Double](using verifying(paymentAmountValidator)) and
+        (JsPath \ "tradingIncomeAllowance").readNullable[Double](using verifying(paymentAmountValidator)) and
         (JsPath \ "address").readNullable[IfAddress] and
         (JsPath \ "income").readNullable[IfSaIncome] and
         (JsPath \ "deducts").readNullable[IfDeducts]
-    )(IfSaReturn.apply _),
+    )(IfSaReturn.apply),
     (
       (JsPath \ "utr").writeNullable[String] and
         (JsPath \ "caseStartDate").writeNullable[String] and
@@ -192,10 +198,10 @@ object IfSaEntry {
 
   implicit val saTaxYearEntryFormat: Format[IfSaEntry] = Format(
     (
-      (JsPath \ "taxYear").readNullable[String](pattern(taxYearPattern, "Invalid Tax Year")) and
-        (JsPath \ "income").readNullable[Double](verifying(paymentAmountValidator)) and
+      (JsPath \ "taxYear").readNullable[String](using pattern(taxYearPattern, "Invalid Tax Year")) and
+        (JsPath \ "income").readNullable[Double](using verifying(paymentAmountValidator)) and
         (JsPath \ "returnList").readNullable[Seq[IfSaReturn]]
-    )(IfSaEntry.apply _),
+    )(IfSaEntry.apply),
     (
       (JsPath \ "taxYear").writeNullable[String] and
         (JsPath \ "income").writeNullable[Double] and

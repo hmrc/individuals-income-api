@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.{ArgumentMatchers, Mockito}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.*
 import org.mockito.Mockito.{times, verify, verifyNoInteractions}
@@ -74,7 +73,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    when(mockAuthConnector.authorise(any(), eqTo(Retrievals.allEnrolments))(any(), any()))
+    when(mockAuthConnector.authorise(any(), eqTo(Retrievals.allEnrolments))(using any(), any()))
       .thenReturn(
         Future.successful(Enrolments(Set(Enrolment("test-scope"), Enrolment("test-scope-1"))))
       )
@@ -85,7 +84,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val randomMatchId = UUID.randomUUID()
 
     "return a 404 when a match id does not match live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(randomMatchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(randomMatchId))(using any[HeaderCarrier]))
         .thenReturn(Future.failed(new MatchNotFoundException))
 
       val result: Result =
@@ -99,12 +98,12 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         """{"code" : "NOT_FOUND", "message" : "The resource can not be found"}"""
       )
 
-      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "return a 200 when a match id matches live data" in new Setup {
 
-      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(using any[HeaderCarrier]))
         .thenReturn(Future.successful(matchedCitizen))
 
       val result: Result =
@@ -130,12 +129,12 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
                       |}""".stripMargin)
 
       verify(liveRootController.auditHelper, times(1))
-        .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+        .auditApiResponse(any(), any(), any(), any(), any(), any())(using any())
     }
 
     "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
 
-      when(mockAuthConnector.authorise(any(), eqTo(Retrievals.allEnrolments))(any(), any()))
+      when(mockAuthConnector.authorise(any(), eqTo(Retrievals.allEnrolments))(using any(), any()))
         .thenReturn(Future.failed(InsufficientEnrolments()))
 
       val result: Result =
@@ -149,14 +148,14 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       verifyNoInteractions(mockLiveCitizenMatchingService)
 
       verify(liveRootController.auditHelper, times(1))
-        .auditApiFailure(any(), any(), any(), any(), any())(any())
+        .auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "returns bad request with correct message when missing CorrelationId" in new Setup {
 
       override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(using any[HeaderCarrier]))
         .thenReturn(Future.successful(matchedCitizen))
 
       val result: Result = await(liveRootController.root(matchId.toString)(fakeRequest))
@@ -171,14 +170,14 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
           |""".stripMargin
       )
 
-      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "throws an exception when malformed CorrelationId" in new Setup {
       override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest().withHeaders("CorrelationId" -> "test")
 
-      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(any[HeaderCarrier]))
+      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(using any[HeaderCarrier]))
         .thenReturn(Future.successful(matchedCitizen))
 
       val result: Result = await(liveRootController.root(matchIdString)(fakeRequest))
@@ -194,7 +193,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       )
 
       verify(liveRootController.auditHelper, times(1))
-        .auditApiFailure(any(), any(), any(), any(), any())(any())
+        .auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
   }

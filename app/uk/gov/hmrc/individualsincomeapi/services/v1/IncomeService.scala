@@ -32,7 +32,7 @@ import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
 
 trait IncomeService {
-  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
+  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ `isBefore` _)
 
   def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]]
 }

@@ -75,7 +75,7 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2,
       s"nino/$nino?startYear=$startYear&endYear=$endYear${filter.map(f => s"&fields=$f").getOrElse("")}"
 
     recover[IfSaEntry](
-      http.get(url"$saUrl").transform(_.addHttpHeaders(setHeaders(request): _*)).execute[IfSa] map { response =>
+      http.get(url"$saUrl").transform(_.addHttpHeaders(setHeaders(request)*)).execute[IfSa] map { response =>
         auditHelper.auditIfSaApiResponse(extractCorrelationId(request), matchId, request, saUrl, response.sa)
 
         response.sa
@@ -109,7 +109,7 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2,
     ec: ExecutionContext
   ) =
     recover[IfPayeEntry](
-      http.get(url"$url").transform(_.addHttpHeaders(setHeaders(request): _*)).execute[IfPaye] map { response =>
+      http.get(url"$url").transform(_.addHttpHeaders(setHeaders(request)*)).execute[IfPaye] map { response =>
         auditHelper.auditIfPayeApiResponse(extractCorrelationId(request), matchId, request, url, response.paye)
 
         response.paye

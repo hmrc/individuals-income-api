@@ -56,7 +56,7 @@ class IfConnectorSpec
 
   def fakeApplication(): Application =
     new GuiceApplicationBuilder()
-      .bindings(bindModules: _*)
+      .bindings(bindModules*)
       .configure(
         "microservice.services.integration-framework.host"                -> "127.0.0.1",
         "microservice.services.integration-framework.port"                -> "11122",
@@ -128,7 +128,7 @@ class IfConnectorSpec
 
         val result: Seq[IfPayeEntry] = await(
           underTest
-            .fetchPayeIncome(nino, interval, Some(fields), matchId)(
+            .fetchPayeIncome(nino, interval, Some(fields), matchId)(using
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -136,7 +136,7 @@ class IfConnectorSpec
         )
 
         verify(underTest.auditHelper, times(1))
-          .auditIfPayeApiResponse(any(), any(), any(), any(), any())(any())
+          .auditIfPayeApiResponse(any(), any(), any(), any(), any())(using any())
 
         result shouldBe incomePayeNoData.paye
 
@@ -167,7 +167,7 @@ class IfConnectorSpec
 
         val result: Seq[IfPayeEntry] = await(
           underTest
-            .fetchPayeIncome(nino, interval, Some(fields), matchId)(
+            .fetchPayeIncome(nino, interval, Some(fields), matchId)(using
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -175,7 +175,7 @@ class IfConnectorSpec
         )
 
         verify(underTest.auditHelper, times(1))
-          .auditIfPayeApiResponse(any(), any(), any(), any(), any())(any())
+          .auditIfPayeApiResponse(any(), any(), any(), any(), any())(using any())
 
         result shouldBe incomePayeSingle.paye
 
@@ -204,7 +204,7 @@ class IfConnectorSpec
 
         val result: Seq[IfPayeEntry] = await(
           underTest
-            .fetchPayeIncome(nino, interval, Some(fields), matchId)(
+            .fetchPayeIncome(nino, interval, Some(fields), matchId)(using
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -212,7 +212,7 @@ class IfConnectorSpec
         )
 
         verify(underTest.auditHelper, times(1))
-          .auditIfPayeApiResponse(any(), any(), any(), any(), any())(any())
+          .auditIfPayeApiResponse(any(), any(), any(), any(), any())(using any())
 
         result shouldBe incomePayeMulti.paye
 
@@ -231,7 +231,7 @@ class IfConnectorSpec
       intercept[InternalServerException] {
         await(
           underTest
-            .fetchPayeIncome(nino, interval, None, matchId)(
+            .fetchPayeIncome(nino, interval, None, matchId)(using
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -240,7 +240,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
@@ -256,7 +256,7 @@ class IfConnectorSpec
       intercept[InternalServerException] {
         await(
           underTest
-            .fetchPayeIncome(nino, interval, None, matchId)(
+            .fetchPayeIncome(nino, interval, None, matchId)(using
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -265,7 +265,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
@@ -280,13 +280,17 @@ class IfConnectorSpec
 
       val result: Seq[IfPayeEntry] = await(
         underTest
-          .fetchPayeIncome(nino, interval, None, matchId)(hc, FakeRequest().withHeaders(sampleCorrelationIdHeader), ec)
+          .fetchPayeIncome(nino, interval, None, matchId)(using
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
       )
 
       result shouldBe List()
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
@@ -302,7 +306,7 @@ class IfConnectorSpec
       intercept[NotFoundException] {
         await(
           underTest
-            .fetchPayeIncome(nino, interval, None, matchId)(
+            .fetchPayeIncome(nino, interval, None, matchId)(using
               hc,
               FakeRequest().withHeaders(sampleCorrelationIdHeader),
               ec
@@ -311,7 +315,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
   }
@@ -345,7 +349,7 @@ class IfConnectorSpec
         )
 
         val result: Seq[IfSaEntry] = await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -355,7 +359,7 @@ class IfConnectorSpec
         result shouldBe incomeSaNoData.sa
 
         verify(underTest.auditHelper, times(1))
-          .auditIfSaApiResponse(any(), any(), any(), any(), any())(any())
+          .auditIfSaApiResponse(any(), any(), any(), any(), any())(using any())
 
       }
     }
@@ -383,7 +387,7 @@ class IfConnectorSpec
         )
 
         val result: Seq[IfSaEntry] = await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -393,7 +397,7 @@ class IfConnectorSpec
         result shouldBe incomeSaSingle.sa
 
         verify(underTest.auditHelper, times(1))
-          .auditIfSaApiResponse(any(), any(), any(), any(), any())(any())
+          .auditIfSaApiResponse(any(), any(), any(), any(), any())(using any())
 
       }
     }
@@ -419,7 +423,7 @@ class IfConnectorSpec
         )
 
         val result: Seq[IfSaEntry] = await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, Some(fields), matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -429,7 +433,7 @@ class IfConnectorSpec
         result shouldBe incomeSaMulti.sa
 
         verify(underTest.auditHelper, times(1))
-          .auditIfSaApiResponse(any(), any(), any(), any(), any())(any())
+          .auditIfSaApiResponse(any(), any(), any(), any(), any())(using any())
 
       }
     }
@@ -445,7 +449,7 @@ class IfConnectorSpec
 
       intercept[InternalServerException] {
         await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -454,7 +458,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
@@ -469,7 +473,7 @@ class IfConnectorSpec
 
       intercept[InternalServerException] {
         await {
-          underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(
+          underTest.fetchSelfAssessmentIncome(nino, interval, None, matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -478,7 +482,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
   }

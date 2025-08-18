@@ -41,7 +41,7 @@ class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport wi
   def fakeApplication() =
     new GuiceApplicationBuilder()
       .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
-      .bindings(bindModules: _*)
+      .bindings(bindModules*)
       .build()
 
   val shortLivedCache = fakeApplication().injector.instanceOf[ShortLivedCache]
@@ -60,29 +60,29 @@ class ShortLivedCacheSpec extends AnyWordSpec with Matchers with MongoSupport wi
 
   "cache" should {
     "store the encrypted version of a value" in {
-      await(shortLivedCache.cache(id, testValue)(TestClass.format))
+      await(shortLivedCache.cache(id, testValue)(using TestClass.format))
       retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
     }
 
     "update a cached value for a given id and key" in {
       val newValue = TestClass("three", "four")
 
-      await(shortLivedCache.cache(id, testValue)(TestClass.format))
+      await(shortLivedCache.cache(id, testValue)(using TestClass.format))
       retrieveRawCachedValue(id, cachekey) shouldBe JsString("6aZpkTxkw3C4e5xTyfy3Lf/OZOFz+GcaSkeFI++0HOs=")
 
-      await(shortLivedCache.cache(id, newValue)(TestClass.format))
+      await(shortLivedCache.cache(id, newValue)(using TestClass.format))
       retrieveRawCachedValue(id, cachekey) shouldBe JsString("8jVeGr+Ivyk5mkBj2VsQE3G+oPGXoYejrSp5hfVAPYU=")
     }
   }
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
-      await(shortLivedCache.cache(id, testValue)(TestClass.format))
-      await(shortLivedCache.fetchAndGetEntry[TestClass](id)(TestClass.format)) shouldBe Some(testValue)
+      await(shortLivedCache.cache(id, testValue)(using TestClass.format))
+      await(shortLivedCache.fetchAndGetEntry[TestClass](id)(using TestClass.format)) shouldBe Some(testValue)
     }
 
     "return None if no cached value exists for a given id and key" in {
-      await(shortLivedCache.fetchAndGetEntry[TestClass](id)(TestClass.format)) shouldBe None
+      await(shortLivedCache.fetchAndGetEntry[TestClass](id)(using TestClass.format)) shouldBe None
     }
   }
 

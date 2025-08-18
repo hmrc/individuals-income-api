@@ -27,7 +27,7 @@ object ModifiedDetails {
     (
       (JsPath \ "createdAt").read[LocalDateTime] and
         (JsPath \ "lastUpdated").read[LocalDateTime]
-    )(ModifiedDetails.apply _),
+    )(ModifiedDetails.apply),
     Json.writes[ModifiedDetails]
   )
 }
