@@ -60,7 +60,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   "sandbox match citizen function" should {
 
     "return 200 (OK) for a valid matchId" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -86,18 +86,18 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "return 400 (Not Found) for an invalid matchId" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
         .willReturn(failed(new MatchNotFoundException))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
 
       status(result) shouldBe NOT_FOUND
       jsonBodyOf(result) shouldBe Json.parse("""{"code" : "NOT_FOUND", "message" : "The resource can not be found"}""")
-      verify(mockAuditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(mockAuditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "return 500 (Internal Server Error) for an invalid matchId" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
         .willReturn(failed(new Exception()))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -106,11 +106,11 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
       jsonBodyOf(result) shouldBe Json.parse(
         """{"code" : "INTERNAL_SERVER_ERROR", "message" : "Something went wrong."}"""
       )
-      verify(mockAuditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(any())
+      verify(mockAuditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "not require bearer token authentication" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(any[HeaderCarrier]))
+      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
         .willReturn(successful(matchedCitizen))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))

@@ -23,7 +23,8 @@ import play.api.mvc.Results.Status
 import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.individualsincomeapi.domain.{ErrorInvalidRequest, ErrorNotFound}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.backend.http.{ErrorResponse, JsonErrorHandler}
+import uk.gov.hmrc.play.bootstrap.backend.http.JsonErrorHandler
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 

@@ -32,7 +32,7 @@ object SaFootprint {
     (
       (JsPath \ "registrations").read[Seq[SaFootprintRegistration]] and
         (JsPath \ "taxReturns").read[Seq[SaFootprintTaxReturn]]
-    )(SaFootprint.apply _),
+    )(SaFootprint.apply),
     (
       (JsPath \ "registrations").write[Seq[SaFootprintRegistration]] and
         (JsPath \ "taxReturns").write[Seq[SaFootprintTaxReturn]]

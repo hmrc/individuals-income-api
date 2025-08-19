@@ -35,11 +35,11 @@ class CitizenMatchingServiceSpec extends TestSupport with MockitoSugar with Scal
 
   "sandboxCitizenMatching service match citizen function" should {
     "return a matchedCitizen for a valid matchId" in {
-      await(sandboxCitizenMatchingService.matchCitizen(sandboxMatchId)(hc)) shouldBe matchedCitizen
+      await(sandboxCitizenMatchingService.matchCitizen(sandboxMatchId)(using hc)) shouldBe matchedCitizen
     }
 
     "throw exception for an invalid matchId" in {
-      intercept[MatchNotFoundException](await(sandboxCitizenMatchingService.matchCitizen(UUID.randomUUID())(hc)))
+      intercept[MatchNotFoundException](await(sandboxCitizenMatchingService.matchCitizen(UUID.randomUUID())(using hc)))
     }
   }
 }

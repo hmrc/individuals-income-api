@@ -56,7 +56,7 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
     "return the cached value for a given id and key" in new Setup {
 
-      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(using any()))
         .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
 
@@ -64,11 +64,11 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
     "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
 
-      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(any()))
+      `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(using any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(any())
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(using any())
 
     }
 

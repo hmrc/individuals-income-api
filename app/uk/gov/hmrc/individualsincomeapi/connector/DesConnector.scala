@@ -59,7 +59,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
     recover[DesEmployment](
       http
         .get(url"$employmentsUrl")
-        .transform(_.addHttpHeaders(setHeaders(): _*))
+        .transform(_.addHttpHeaders(setHeaders()*))
         .execute[DesEmployments]
         .map(_.employments)
     )
@@ -81,7 +81,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
     recover[DesSAIncome](
       http
         .get(url"$saIncomeUrl")
-        .transform(_.addHttpHeaders(setHeaders() :+ ("OriginatorId" -> originator): _*))
+        .transform(_.addHttpHeaders(setHeaders() :+ ("OriginatorId" -> originator)*))
         .execute[Seq[DesSAIncome]]
     )
   }

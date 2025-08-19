@@ -105,7 +105,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       Then("The response status should be 200")
       response.code shouldBe OK
 
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -177,7 +177,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
+
     }
 
     Scenario("Individual has no paye income") {
@@ -205,7 +205,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       Then("The response status should be 200")
       response.code shouldBe OK
 
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -220,7 +220,6 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("The employment income data source is rate limited") {

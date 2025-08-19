@@ -46,7 +46,7 @@ object DesAddress {
       (__ \ "postalCode").readNullable[String] and
       (__ \ "effectiveDate").readNullable[LocalDate] and
       (__ \ "addressType").readNullable[String]
-  )(DesAddress.apply _)
+  )(DesAddress.apply)
   implicit val apiWrites: Writes[DesAddress] = Json.writes[DesAddress]
 }
 

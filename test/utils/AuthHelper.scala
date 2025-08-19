@@ -33,7 +33,7 @@ trait AuthHelper {
     )
   )
 
-  protected def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector =
+  protected def fakeAuthConnector(stubbedRetrievalResult: Future[?]): AuthConnector =
     new AuthConnector {
 
       def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit

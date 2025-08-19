@@ -65,7 +65,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       auditHelper.auditAuthScopes(matchId, scopes, request)
 
       verify(auditConnector, times(1))
-        .sendExplicitAudit(eqTo("AuthScopesAuditEvent"), captor.capture())(any(), any(), any())
+        .sendExplicitAudit(eqTo("AuthScopesAuditEvent"), captor.capture())(using any(), any(), any())
 
       val capturedEvent = captor.getValue.asInstanceOf[ScopesAuditEventModel]
       capturedEvent.apiVersion shouldEqual "2.0"
@@ -84,7 +84,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       auditHelper.auditApiResponse(correlationId, matchId, scopes, request, endpoint, Some(apiResponse))
 
       verify(auditConnector, times(1))
-        .sendExplicitAudit(eqTo("ApiResponseEvent"), captor.capture())(any(), any(), any())
+        .sendExplicitAudit(eqTo("ApiResponseEvent"), captor.capture())(using any(), any(), any())
 
       val capturedEvent = captor.getValue.asInstanceOf[ApiPayeResponseEventModel]
       capturedEvent.matchId shouldEqual matchId
@@ -105,7 +105,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       auditHelper.auditSaApiResponse(correlationId, matchId, scopes, request, endpoint, Some(apiSaResponse))
 
       verify(auditConnector, times(1))
-        .sendExplicitAudit(eqTo("ApiResponseEvent"), captor.capture())(any(), any(), any())
+        .sendExplicitAudit(eqTo("ApiResponseEvent"), captor.capture())(using any(), any(), any())
 
       val capturedEvent = captor.getValue.asInstanceOf[ApiSaResponseEventModel]
       capturedEvent.matchId shouldEqual matchId
@@ -127,7 +127,11 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
 
       auditHelper.auditApiFailure(Some(correlationId), matchId, request, "/test", msg)
 
-      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiFailureEvent"), captor.capture())(any(), any(), any())
+      verify(auditConnector, times(1)).sendExplicitAudit(eqTo("ApiFailureEvent"), captor.capture())(using
+        any(),
+        any(),
+        any()
+      )
 
       val capturedEvent = captor.getValue.asInstanceOf[ApiFailureResponseEventModel]
       capturedEvent.matchId shouldEqual matchId
@@ -146,7 +150,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       auditHelper.auditIfPayeApiResponse(correlationId, matchId, request, ifUrl, ifApiResponse)
 
       verify(auditConnector, times(1))
-        .sendExplicitAudit(eqTo("IntegrationFrameworkApiResponseEvent"), captor.capture())(any(), any(), any())
+        .sendExplicitAudit(eqTo("IntegrationFrameworkApiResponseEvent"), captor.capture())(using any(), any(), any())
 
       val capturedEvent = captor.getValue.asInstanceOf[IfPayeApiResponseEventModel]
       capturedEvent.matchId shouldEqual matchId
@@ -166,7 +170,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       auditHelper.auditIfSaApiResponse(correlationId, matchId, request, ifSaUrl, ifSaApiResponse)
 
       verify(auditConnector, times(1))
-        .sendExplicitAudit(eqTo("IntegrationFrameworkApiResponseEvent"), captor.capture())(any(), any(), any())
+        .sendExplicitAudit(eqTo("IntegrationFrameworkApiResponseEvent"), captor.capture())(using any(), any(), any())
 
       val capturedEvent = captor.getValue.asInstanceOf[IfSaApiResponseEventModel]
       capturedEvent.matchId shouldEqual matchId
@@ -188,7 +192,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar with IncomePayeHelpers 
       auditHelper.auditIfApiFailure(correlationId, matchId, request, ifUrl, msg)
 
       verify(auditConnector, times(1))
-        .sendExplicitAudit(eqTo("IntegrationFrameworkApiFailureEvent"), captor.capture())(any(), any(), any())
+        .sendExplicitAudit(eqTo("IntegrationFrameworkApiFailureEvent"), captor.capture())(using any(), any(), any())
 
       val capturedEvent = captor.getValue.asInstanceOf[ApiFailureResponseEventModel]
       capturedEvent.matchId shouldEqual matchId

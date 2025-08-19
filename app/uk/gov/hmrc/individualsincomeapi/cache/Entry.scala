@@ -27,7 +27,7 @@ object Entry {
       (JsPath \ "id").read[String] and
         (JsPath \ "data").read[Data] and
         (JsPath \ "modifiedDetails").read[ModifiedDetails]
-    )(Entry.apply _),
+    )(Entry.apply),
     Json.writes[Entry]
   )
 }

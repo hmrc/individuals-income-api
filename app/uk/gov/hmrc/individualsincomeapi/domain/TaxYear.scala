@@ -50,7 +50,7 @@ object TaxYear {
   }
 
   def current(now: LocalDate = LocalDate.now()): TaxYear =
-    if (now isBefore firstDayOfTaxYear(now.getYear)) fromEndYear(now.getYear)
+    if (now `isBefore` firstDayOfTaxYear(now.getYear)) fromEndYear(now.getYear)
     else fromEndYear(now.getYear + 1)
 }
 

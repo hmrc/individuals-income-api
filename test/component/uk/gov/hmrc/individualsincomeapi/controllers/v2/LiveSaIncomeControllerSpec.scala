@@ -371,7 +371,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -395,7 +396,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment employments returns no root data") {
@@ -421,7 +421,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -435,7 +436,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -535,7 +535,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -559,7 +560,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment self employments returns no root data") {
@@ -586,7 +586,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -600,7 +601,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -702,7 +702,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -726,7 +727,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment summary returns no root data") {
@@ -752,7 +752,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -766,7 +767,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -859,7 +859,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -882,7 +883,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment trusts returns no root data") {
@@ -908,7 +908,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -922,7 +923,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1022,7 +1022,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1045,7 +1046,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment foreign returns no root data") {
@@ -1071,7 +1071,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1085,7 +1086,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1185,7 +1185,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1208,7 +1209,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment partnerships returns no root data") {
@@ -1234,7 +1234,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1248,7 +1249,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1344,7 +1344,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json
+        .parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1369,7 +1370,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment interests and dividends returns no root data") {
@@ -1396,7 +1396,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1410,7 +1410,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1506,7 +1505,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1529,7 +1528,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment pensions and benefits returns no root data") {
@@ -1556,7 +1554,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1570,7 +1568,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1668,7 +1665,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1691,7 +1688,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment uk properties returns no root data") {
@@ -1718,7 +1714,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1732,7 +1728,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1828,7 +1823,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1852,7 +1847,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment additional information returns no root data") {
@@ -1880,7 +1874,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -1894,7 +1888,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Invalid token") {
@@ -1997,7 +1990,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -2021,7 +2014,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment other income returns no root data") {
@@ -2162,7 +2154,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       Then("The response status should be 200 with the self-assessments")
       response.code shouldBe OK
-      response.body shouldBe
+      Json.parse(response.body) shouldBe
         Json
           .parse(
             s"""{
@@ -2191,7 +2183,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
                |  }
                |}""".stripMargin
           )
-          .toString()
     }
 
     Scenario("Fetch Self Assessment further details income returns no root data") {
