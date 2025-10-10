@@ -62,7 +62,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c4",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-scts"
     )
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
@@ -503,7 +504,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-ho-v2",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-scts"
     )
 
     testAuthorisation("sa/self-employments", selfAssessmentScopes)
