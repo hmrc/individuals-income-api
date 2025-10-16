@@ -26,7 +26,7 @@ import java.util.UUID
 
 class LiveRootControllerSpec extends BaseSpec {
 
-  val allIncomeScopes = List(
+  val allIncomeScopes: List[String] = List(
     "read:individuals-income-hmcts-c2",
     "read:individuals-income-hmcts-c3",
     "read:individuals-income-hmcts-c4",
@@ -39,8 +39,9 @@ class LiveRootControllerSpec extends BaseSpec {
     "read:individuals-income-lsani-c1",
     "read:individuals-income-lsani-c3",
     "read:individuals-income-nictsejo-c4",
-    "read:individuals-income-scts"
-  )
+    "read:individuals-income-scts",
+    "read:individuals-income-lad4"
+  ).sorted
 
   Feature("Root (hateoas) entry point is accessible") {
 
