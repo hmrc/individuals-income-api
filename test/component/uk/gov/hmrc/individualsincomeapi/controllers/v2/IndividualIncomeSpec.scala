@@ -27,14 +27,14 @@ import java.util.UUID
 
 class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
 
-  val matchId = UUID.randomUUID().toString
+  val matchId: String = UUID.randomUUID().toString
   val nino = "CS700100A"
   val fromDate = "2019-04-01"
   val toDate = "2020-01-01"
   val endpoint = "paye"
   val incomePayeSingle = IfPaye(Seq(createValidPayeEntry()))
 
-  val fields =
+  val fields: String =
     "paye(dednsFromNetPay,employee(hasPartner),employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3," +
       "inPayPeriod4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
       "employerPayeRef,grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber," +
@@ -43,7 +43,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
-  val rootScope = List(
+  val rootScope: List[String] = List(
     "read:individuals-income-hmcts-c2",
     "read:individuals-income-hmcts-c3",
     "read:individuals-income-hmcts-c4",
@@ -55,11 +55,12 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
     "read:individuals-income-lsani-c1",
     "read:individuals-income-lsani-c3",
     "read:individuals-income-nictsejo-c4",
-    "read:individuals-income-scts"
-  )
+    "read:individuals-income-scts",
+    "read:individuals-income-lad4"
+  ).sorted
 
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
+  val sampleCorrelationIdHeader: (String, String) = "CorrelationId" -> sampleCorrelationId
 
   Feature("Live individual income") {
 
@@ -87,7 +88,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return income data for the NINO")
       IfStub.searchPayeIncomeForPeriodReturns(
@@ -188,7 +189,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF will return paye for the NINO")
       IfStub.searchPayeIncomeReturnsNoIncomeFor(
@@ -230,7 +231,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
       And("a valid record in the matching API")
-      IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+      IndividualsMatchingApiStub.hasMatchFor(matchId, nino)
 
       And("IF is rate limited")
       IfStub.searchPayeIncomeReturnsRateLimitErrorFor(

@@ -130,6 +130,11 @@ class IfQueriesSpec extends BaseSpec {
       val queryString = helper.getQueryStringFor(Seq("read:individuals-income-scts"), List("paye"))
       queryString shouldBe "paye(taxYear,taxablePayToDate,totalTaxToDate)"
     }
+
+    Scenario("For read:individuals-income-lad4") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lad4"), List("paye"))
+      queryString shouldBe res4
+    }
   }
 
   Feature("Query strings for 'sa' endpoint") {
@@ -248,6 +253,11 @@ class IfQueriesSpec extends BaseSpec {
     Scenario("For read:individuals-income-scts") {
       val queryString = helper.getQueryStringFor(Seq("read:individuals-income-scts"), endpoints)
       queryString shouldBe "sa(returnList(address(line1,line2,line3,line4,postcode),income(selfEmployment)),taxYear)"
+    }
+
+    Scenario("For read:individuals-income-lad4") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lad4"), endpoints)
+      queryString shouldBe res5
     }
   }
 }

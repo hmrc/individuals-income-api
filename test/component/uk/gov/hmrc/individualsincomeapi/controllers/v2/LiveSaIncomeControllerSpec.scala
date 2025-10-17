@@ -27,7 +27,7 @@ import java.util.UUID
 
 class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
-  val matchId = UUID.randomUUID().toString
+  val matchId: String = UUID.randomUUID().toString
   val fromTaxYear = "2020"
   val toTaxYear = "2021"
 
@@ -40,7 +40,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   val invalidIncomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry().copy(taxYear = Some(""))))
 
-  val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
+  val fields: String = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
     "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
     "income(allEmployments,foreign,foreignDivs,lifePolicies,other,partnerships,pensions,selfAssessment," +
     "selfEmployment,shares,trusts,ukDivsAndInterest,ukInterest,ukProperty),otherBusIncome," +
@@ -63,8 +63,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
       "read:individuals-income-nictsejo-c4",
-      "read:individuals-income-scts"
-    )
+      "read:individuals-income-scts",
+      "read:individuals-income-lad4"
+    ).sorted
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -303,7 +304,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -334,8 +335,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -410,7 +412,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -467,7 +469,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -524,8 +526,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -576,7 +578,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -633,7 +635,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -666,8 +668,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -691,8 +694,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -742,7 +745,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -799,7 +802,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -829,8 +832,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     testAuthorisation("sa/trusts", trustsScopes)
     testMatchId("sa/trusts", trustsScopes)
@@ -848,8 +852,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -898,7 +902,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -955,7 +959,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -986,8 +990,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
-    )
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-lad4"
+    ).sorted
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -1011,8 +1016,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -1061,7 +1066,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1118,7 +1123,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1149,8 +1154,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -1174,8 +1180,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -1224,7 +1230,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1281,7 +1287,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1313,8 +1319,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     testAuthorisation("sa/interests-and-dividends", interestsAndDividendsScopes)
     testMatchId("sa/interests-and-dividends", interestsAndDividendsScopes)
@@ -1332,8 +1339,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -1385,7 +1392,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1443,7 +1450,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1474,8 +1481,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     testAuthorisation("sa/pensions-and-state-benefits", pensionsAndStateBenefitsScopes)
     testMatchId("sa/pensions-and-state-benefits", pensionsAndStateBenefitsScopes)
@@ -1493,8 +1501,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -1543,7 +1551,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1601,7 +1609,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1634,8 +1642,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     testAuthorisation("sa/uk-properties", ukPropertiesScopes)
     testMatchId("sa/uk-properties", ukPropertiesScopes)
@@ -1653,8 +1662,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -1703,7 +1712,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1761,7 +1770,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1792,8 +1801,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     testAuthorisation("sa/additional-information", additionalInformationScopes)
     testMatchId("sa/additional-information", additionalInformationScopes)
@@ -1811,8 +1821,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -1863,7 +1873,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1921,7 +1931,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -1953,8 +1963,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
       "read:individuals-income-lsani-c3",
-      "read:individuals-income-nictsejo-c4"
-    )
+      "read:individuals-income-nictsejo-c4",
+      "read:individuals-income-lad4"
+    ).sorted
 
     val fields = "sa(returnList(address(line1,line2,line3,line4,postcode),busEndDate," +
       "busStartDate,businessDescription,caseStartDate,deducts(totalBusExpenses,totalDisallowBusExp)," +
@@ -1978,8 +1989,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -2029,7 +2040,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -2088,7 +2099,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -2123,8 +2134,9 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       "read:individuals-income-laa-c2",
       "read:individuals-income-laa-c3",
       "read:individuals-income-lsani-c1",
-      "read:individuals-income-lsani-c3"
-    )
+      "read:individuals-income-lsani-c3",
+      "read:individuals-income-lad4"
+    ).sorted
 
     testAuthorisation("sa/further-details", furtherDetailsScopes)
     testMatchId("sa/further-details", furtherDetailsScopes)
@@ -2142,8 +2154,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment data for the user")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         incomeSaSingle
       )
@@ -2198,7 +2210,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return self-assessment no data for the user")
       IfStub.searchSaIncomeReturnsNoIncomeFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -2257,7 +2269,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF is rate limited")
       IfStub.searchSaIncomeReturnsRateLimitErrorFor(
         nino,
-        fromTaxYear.toString,
+        fromTaxYear,
         toTaxYear,
         fields
       )
@@ -2327,8 +2339,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       And("IF will return invalid response")
       IfStub.searchSaIncomeForPeriodReturns(
         nino,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         invalidIncomeSaSingle
       )
@@ -2357,8 +2369,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       IfStub.saCustomResponse(
         nino,
         INTERNAL_SERVER_ERROR,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         Json.obj("reason" -> "Server error")
       )
@@ -2386,8 +2398,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
       IfStub.saCustomResponse(
         nino,
         UNPROCESSABLE_ENTITY,
-        fromTaxYear.toString,
-        toTaxYear.toString,
+        fromTaxYear,
+        toTaxYear,
         fields,
         Json.obj(
           "reason" ->
