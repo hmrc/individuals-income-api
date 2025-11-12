@@ -16,18 +16,14 @@
 
 package uk.gov.hmrc.individualsincomeapi.cache
 
-import play.api.libs.functional.syntax.*
-import play.api.libs.json.{Format, JsPath, Json, Reads}
-import java.time.LocalDateTime
+import play.api.libs.json.{Format, JsPath, Json, OFormat, Reads}
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-case class ModifiedDetails(createdAt: LocalDateTime, lastUpdated: LocalDateTime)
+import java.time.Instant
+
+case class ModifiedDetails(createdAt: Instant, lastUpdated: Instant)
 
 object ModifiedDetails {
-  implicit val format: Format[ModifiedDetails] = Format(
-    (
-      (JsPath \ "createdAt").read[LocalDateTime] and
-        (JsPath \ "lastUpdated").read[LocalDateTime]
-    )(ModifiedDetails.apply),
-    Json.writes[ModifiedDetails]
-  )
+  given Format[Instant] = MongoJavatimeFormats.instantFormat
+  implicit val format: OFormat[ModifiedDetails] = Json.format[ModifiedDetails]
 }
