@@ -8,7 +8,7 @@ object AppDependencies {
 
   val playVersion = "play-30"
   val mongoVersion = "2.10.0"
-  val bootstrapVersion = "10.2.0"
+  val bootstrapVersion = "10.4.0"
   val mockitoScalaVersion = "3.2.18.0"
 
   val compile: Seq[ModuleID] = Seq(
