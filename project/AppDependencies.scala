@@ -7,8 +7,8 @@ object AppDependencies {
   val hmrcMongo = s"$hmrc.mongo"
 
   val playVersion = "play-30"
-  val mongoVersion = "2.10.0"
-  val bootstrapVersion = "10.4.0"
+  val mongoVersion = "2.11.0"
+  val bootstrapVersion = "10.5.0"
   val mockitoScalaVersion = "3.2.18.0"
 
   val compile: Seq[ModuleID] = Seq(
@@ -23,7 +23,7 @@ object AppDependencies {
   def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
     hmrc                %% s"bootstrap-test-$playVersion"  % bootstrapVersion    % scope,
     "org.scalatestplus" %% "mockito-4-11"                  % mockitoScalaVersion % scope,
-    hmrc                %% "stub-data-generator"          % "1.5.0"                 % scope,
+    hmrc                %% "stub-data-generator"          % "1.6.0"                 % scope,
     "com.codacy"        %% "scalaj-http"                  % "2.5.0"          % scope,
     hmrcMongo           %% s"hmrc-mongo-test-$playVersion" % mongoVersion        % scope,
     "org.scalatestplus" %% "scalacheck-1-17"               % "3.2.18.0"          % scope
