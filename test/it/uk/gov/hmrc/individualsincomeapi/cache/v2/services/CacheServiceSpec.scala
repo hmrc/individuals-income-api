@@ -26,6 +26,7 @@ import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.services.v2.{CacheIdBase, CacheService}
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with OptionValues with IntegrationPatience {
@@ -40,7 +41,7 @@ class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
 
         val app = new GuiceApplicationBuilder().build()
 
-        val cacheId = TestCacheId("foo")
+        val cacheId = TestCacheId(UUID.randomUUID().toString)
 
         running(app) {
 
@@ -57,8 +58,8 @@ class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
 
         val app = new GuiceApplicationBuilder().build()
 
-        val cacheId1 = TestCacheId("foo")
-        val cacheId2 = TestCacheId("bar")
+        val cacheId1 = TestCacheId(UUID.randomUUID().toString)
+        val cacheId2 = TestCacheId(UUID.randomUUID().toString)
 
         running(app) {
 
@@ -84,7 +85,7 @@ class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
 
         val app = new GuiceApplicationBuilder().build()
 
-        val cacheId = TestCacheId("one")
+        val cacheId = TestCacheId(UUID.randomUUID().toString)
 
         running(app) {
 
@@ -101,15 +102,15 @@ class CacheServiceSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
 
         val app = new GuiceApplicationBuilder().build()
 
-        val cacheId1 = TestCacheId("one")
-        val cacheId2 = TestCacheId("two")
+        val cacheId1 = TestCacheId(UUID.randomUUID().toString)
+        val cacheId2 = TestCacheId(UUID.randomUUID().toString)
 
         running(app) {
 
           val svc = app.injector.instanceOf[CacheService]
 
           svc
-            .get(cacheId1, Future.successful(TestClass("foo")))
+            .get(cacheId1, Future.successful(TestClass("bar")))
             .futureValue mustEqual TestClass("bar")
           svc
             .get(cacheId1, Future.successful(TestClass("miss")))

@@ -22,8 +22,8 @@ import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
-import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService, SandboxCitizenMatchingService}
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.PRODUCTION
+import uk.gov.hmrc.individualsincomeapi.services.{CitizenMatchingService, LiveCitizenMatchingService}
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -52,17 +52,6 @@ abstract class RootController(citizenMatchingService: CitizenMatchingService, cc
       }
     }.recover(recoveryWithAudit(matchId.toString, "/individuals/income/"))
   }
-}
-
-@Singleton
-class SandboxRootController @Inject() (
-  val citizenMatchingService: SandboxCitizenMatchingService,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents,
-  implicit val auditHelper: AuditHelper
-)(implicit ec: ExecutionContext)
-    extends RootController(citizenMatchingService, cc) {
-  override val environment: String = SANDBOX
 }
 
 @Singleton

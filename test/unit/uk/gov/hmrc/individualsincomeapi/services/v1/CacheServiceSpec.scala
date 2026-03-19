@@ -19,6 +19,7 @@ package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{verify, verifyNoInteractions}
+import org.mongodb.scala.result.UpdateResult
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Format, Json}
@@ -57,6 +58,8 @@ class CacheServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
     "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
       `given`(mockClient.fetchAndGetEntry[TestClass](eqTo(cacheId.id))(using any()))
         .willReturn(Future.successful(None))
+      `given`(mockClient.cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(using any()))
+        .willReturn(Future.successful(mock[UpdateResult]))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verify(mockClient).cache[TestClass](eqTo(cacheId.id), eqTo(newValue))(using any())
