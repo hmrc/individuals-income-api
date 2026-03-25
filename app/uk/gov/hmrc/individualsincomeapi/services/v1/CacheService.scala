@@ -35,9 +35,8 @@ class CacheService @Inject() (shortLivedCache: ShortLivedCache, conf: CacheRepos
       case Some(value) =>
         Future.successful(value)
       case None =>
-        fallbackFunction map { result =>
-          shortLivedCache.cache(cacheId.id, result)
-          result
+        fallbackFunction flatMap { result =>
+          shortLivedCache.cache(cacheId.id, result).map(_ => result)
         }
     }
     else {

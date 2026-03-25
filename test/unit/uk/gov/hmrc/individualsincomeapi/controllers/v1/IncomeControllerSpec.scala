@@ -30,7 +30,8 @@ import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.domain.EmpRef
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, TooManyRequestException}
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.controllers.v1.{LiveIncomeController, SandboxIncomeController}
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.LiveIncomeController
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.sandbox.SandboxIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment.paymentJsonFormat

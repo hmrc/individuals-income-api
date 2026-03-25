@@ -25,17 +25,17 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.PRODUCTION
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.getClientIdHeader
-import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaIncomeService, SandboxSaIncomeService}
+import uk.gov.hmrc.individualsincomeapi.services.v1.{LiveSaIncomeService, SaIncomeService}
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: ControllerComponents)(implicit
+abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: ControllerComponents)(implicit
   ec: ExecutionContext,
   auditHelper: AuditHelper
 ) extends CommonController(cc) with PrivilegedAuthentication {
@@ -235,17 +235,6 @@ sealed abstract class SaIncomeController(saIncomeService: SaIncomeService, cc: C
         }
       }.recover(recoveryWithAudit(matchId.toString, selfLink.href))
   }
-}
-
-@Singleton
-class SandboxSaIncomeController @Inject() (
-  val saIncomeService: SandboxSaIncomeService,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents,
-  implicit val auditHelper: AuditHelper
-)(implicit ec: ExecutionContext)
-    extends SaIncomeController(saIncomeService, cc) {
-  override val environment: String = SANDBOX
 }
 
 @Singleton

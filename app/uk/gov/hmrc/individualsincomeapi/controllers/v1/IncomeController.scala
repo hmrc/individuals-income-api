@@ -23,8 +23,8 @@ import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
-import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.{PRODUCTION, SANDBOX}
-import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeService, SandboxIncomeService}
+import uk.gov.hmrc.individualsincomeapi.controllers.v1.Environment.PRODUCTION
+import uk.gov.hmrc.individualsincomeapi.services.v1.{IncomeService, LiveIncomeService}
 import uk.gov.hmrc.individualsincomeapi.util.Interval
 
 import java.util.UUID
@@ -57,15 +57,4 @@ class LiveIncomeController @Inject() (
 )(implicit ec: ExecutionContext)
     extends IncomeController(incomeService, cc) {
   override val environment: String = PRODUCTION
-}
-
-@Singleton
-class SandboxIncomeController @Inject() (
-  val incomeService: SandboxIncomeService,
-  val authConnector: AuthConnector,
-  cc: ControllerComponents,
-  implicit val auditHelper: AuditHelper
-)(implicit ec: ExecutionContext)
-    extends IncomeController(incomeService, cc) {
-  override val environment: String = SANDBOX
 }
