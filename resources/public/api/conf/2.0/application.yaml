@@ -398,7 +398,8 @@ paths:
                         href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-01-01&toDate=2020-03-01
                     paye:
                       income:
-                      - employerPayeReference: 345/34678
+                      - hmrcOfficeNumber: 345
+                        employerPayeReference: 345/34678
                         taxYear: 18-19
                         employee:
                           hasPartner: true
@@ -447,7 +448,8 @@ paths:
                           ytd2: 15579.18
                           ytd3: 110849.27
                           ytd4: 162081.23
-                      - employerPayeReference: 345/34678
+                      - hmrcOfficeNumber: 345
+                        employerPayeReference: 345/34678
                         taxYear: 19-20
                         employee:
                           hasPartner: true
@@ -501,7 +503,8 @@ paths:
                     href: /individuals/income/paye?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430&fromDate=2019-01-01&toDate=2020-03-01
                 paye:
                   income:
-                  - employerPayeReference: 345/34678
+                  - hmrcOfficeNumber: 345
+                    employerPayeReference: 345/34678
                     taxYear: 18-19
                     employee:
                       hasPartner: true
@@ -550,7 +553,8 @@ paths:
                       ytd2: 15579.18
                       ytd3: 110849.27
                       ytd4: 162081.23
-                  - employerPayeReference: 345/34678
+                  - hmrcOfficeNumber: 345
+                    employerPayeReference: 345/34678
                     taxYear: 19-20
                     employee:
                       hasPartner: true
@@ -2641,6 +2645,11 @@ components:
       - paymentDate
       type: object
       properties:
+        hmrcOfficeNumber:
+          pattern: ^[0-9]{3}$
+          type: string
+          description: The HMRC office number.
+          example: "345"
         employerPayeReference:
           pattern: ^[^ ].{0,9}$
           type: string

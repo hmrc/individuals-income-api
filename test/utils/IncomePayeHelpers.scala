@@ -55,7 +55,8 @@ trait IncomePayeHelpers {
       Some(createValidStatutoryPayToDate()),
       Some(createValidStudentLoan()),
       Some(createValidPostGradLoan()),
-      Some(createValidAdditionalFields())
+      Some(createValidAdditionalFields()),
+      Some("345")
     )
 
   private def createValidAdditionalFields() =

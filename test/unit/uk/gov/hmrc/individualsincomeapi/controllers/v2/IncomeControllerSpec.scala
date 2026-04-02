@@ -111,6 +111,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
            |  "paye":{
            |    "income":[
            |      {
+           |        "hmrcOfficeNumber":"345",
            |        "employerPayeReference":"345/34678",
            |        "taxYear":"18-19",
            |        "employee": {

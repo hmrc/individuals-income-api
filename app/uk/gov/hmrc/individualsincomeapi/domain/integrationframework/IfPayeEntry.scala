@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsincomeapi.domain.integrationframework
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads.{maxLength, minLength, pattern, verifying}
-import play.api.libs.json.{Format, JsPath, Reads}
+import play.api.libs.json.{Format, JsPath, JsString, OWrites, Reads}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPaye._
 import uk.gov.hmrc.individualsincomeapi.domain.v2.{Employee, Income, Payroll}
 
@@ -209,13 +209,15 @@ case class IfPayeEntry(
   statutoryPayYTD: Option[IfStatutoryPayYTD],
   studentLoan: Option[IfStudentLoan],
   postGradLoan: Option[IfPostGradLoan],
-  additionalFields: Option[IfAdditionalFields]
+  additionalFields: Option[IfAdditionalFields],
+  hmrcOfficeNumber: Option[String]
 )
 
 object IfPayeEntry {
 
   private val taxCodePattern = "^([1-9][0-9]{0,5}[LMNPTY])|(BR)|(0T)|(NT)|(D[0-8])|([K][1-9][0-9]{0,5})$".r
   private val paidHoursWorkPattern = "^[^ ].{0,34}$".r
+  private val hmrcOfficeNumberPattern = "^[0-9]{3}$".r
   private val employerPayeRefPattern = "^[^ ].{0,9}$".r
   private val paymentDatePattern =
     ("^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-](0[469]|11)" +
@@ -280,77 +282,167 @@ object IfPayeEntry {
     )(o => Tuple.fromProductTyped(o))
   )
 
-  implicit val payeEntryFormat: Format[IfPayeEntry] = Format(
-    (
-      (JsPath \ "taxCode").readNullable[String](using
-        minLength[String](2)
-          .keepAnd(
-            maxLength[String](7)
-              .keepAnd(pattern(taxCodePattern, "Invalid Tax Code"))
-          )
+  private val baseReads: Reads[IfPayeEntry] = (
+    (JsPath \ "taxCode").readNullable[String](using
+      minLength[String](2)
+        .keepAnd(
+          maxLength[String](7)
+            .keepAnd(pattern(taxCodePattern, "Invalid Tax Code"))
+        )
+    ) and
+      (JsPath \ "paidHoursWorked").readNullable[String](using
+        maxLength[String](35)
+          .keepAnd(pattern(paidHoursWorkPattern, "Invalid Paid Hours Work"))
       ) and
-        (JsPath \ "paidHoursWorked").readNullable[String](using
-          maxLength[String](35)
-            .keepAnd(pattern(paidHoursWorkPattern, "Invalid Paid Hours Work"))
-        ) and
-        (JsPath \ "taxablePayToDate").readNullable[Double](using verifying(positivePaymentAmountValidator)) and
-        (JsPath \ "totalTaxToDate").readNullable[Double](using verifying(paymentAmountValidator)) and
-        (JsPath \ "taxDeductedOrRefunded")
-          .readNullable[Double](using verifying(paymentAmountValidatorTaxDeductedOrRefunded)) and
-        (JsPath \ "grossEarningsForNICs").readNullable[IfGrossEarningsForNics] and
-        (JsPath \ "employerPayeRef").readNullable[String](using
-          maxLength[String](10)
-            .keepAnd(pattern(employerPayeRefPattern, "Invalid employer PAYE reference"))
-        ) and
-        (JsPath \ "paymentDate").readNullable[String](using pattern(paymentDatePattern, "Invalid Payment Date")) and
-        (JsPath \ "taxablePay").readNullable[Double](using verifying(paymentAmountValidator)) and
-        (JsPath \ "taxYear").readNullable[String](using pattern(payeTaxYearPattern, "Invalid Tax Year")) and
-        (JsPath \ "monthlyPeriodNumber").readNullable[String](using
-          pattern(monthlyPeriodNumberPattern, "Invalid Monthly Period Number")
-            .keepAnd(minLength[String](1))
-            .keepAnd(maxLength[String](2))
-        ) and
-        (JsPath \ "weeklyPeriodNumber").readNullable[String](using
-          pattern(weeklyPeriodNumberPattern, "Invalid Weekly Period Number")
-            .keepAnd(minLength[String](1))
-            .keepAnd(maxLength[String](2))
-        ) and
-        (JsPath \ "payFrequency").readNullable[String](using isInPayFrequency) and
-        (JsPath \ "dednsFromNetPay").readNullable[Double](using verifying(paymentAmountValidator)) and
-        (JsPath \ "totalEmployerNICs").readNullable[IfTotalEmployerNics] and
-        (JsPath \ "employeeNICs").readNullable[IfEmployeeNics] and
-        (JsPath \ "employeePensionContribs").readNullable[IfEmployeePensionContribs] and
-        (JsPath \ "benefits").readNullable[IfBenefits] and
-        (JsPath \ "statutoryPayYTD").readNullable[IfStatutoryPayYTD] and
-        (JsPath \ "studentLoan").readNullable[IfStudentLoan] and
-        (JsPath \ "postGradLoan").readNullable[IfPostGradLoan] and
-        JsPath.readNullable[IfAdditionalFields]
-    )(IfPayeEntry.apply),
+      (JsPath \ "taxablePayToDate").readNullable[Double](using verifying(positivePaymentAmountValidator)) and
+      (JsPath \ "totalTaxToDate").readNullable[Double](using verifying(paymentAmountValidator)) and
+      (JsPath \ "taxDeductedOrRefunded")
+        .readNullable[Double](using verifying(paymentAmountValidatorTaxDeductedOrRefunded)) and
+      (JsPath \ "grossEarningsForNICs").readNullable[IfGrossEarningsForNics] and
+      (JsPath \ "employerPayeRef").readNullable[String](using
+        maxLength[String](10)
+          .keepAnd(pattern(employerPayeRefPattern, "Invalid employer PAYE reference"))
+      ) and
+      (JsPath \ "paymentDate").readNullable[String](using pattern(paymentDatePattern, "Invalid Payment Date")) and
+      (JsPath \ "taxablePay").readNullable[Double](using verifying(paymentAmountValidator)) and
+      (JsPath \ "taxYear").readNullable[String](using pattern(payeTaxYearPattern, "Invalid Tax Year")) and
+      (JsPath \ "monthlyPeriodNumber").readNullable[String](using
+        pattern(monthlyPeriodNumberPattern, "Invalid Monthly Period Number")
+          .keepAnd(minLength[String](1))
+          .keepAnd(maxLength[String](2))
+      ) and
+      (JsPath \ "weeklyPeriodNumber").readNullable[String](using
+        pattern(weeklyPeriodNumberPattern, "Invalid Weekly Period Number")
+          .keepAnd(minLength[String](1))
+          .keepAnd(maxLength[String](2))
+      ) and
+      (JsPath \ "payFrequency").readNullable[String](using isInPayFrequency) and
+      (JsPath \ "dednsFromNetPay").readNullable[Double](using verifying(paymentAmountValidator)) and
+      (JsPath \ "totalEmployerNICs").readNullable[IfTotalEmployerNics] and
+      (JsPath \ "employeeNICs").readNullable[IfEmployeeNics] and
+      (JsPath \ "employeePensionContribs").readNullable[IfEmployeePensionContribs] and
+      (JsPath \ "benefits").readNullable[IfBenefits] and
+      (JsPath \ "statutoryPayYTD").readNullable[IfStatutoryPayYTD] and
+      (JsPath \ "studentLoan").readNullable[IfStudentLoan] and
+      (JsPath \ "postGradLoan").readNullable[IfPostGradLoan] and
+      JsPath.readNullable[IfAdditionalFields]
+  )(
     (
-      (JsPath \ "taxCode").writeNullable[String] and
-        (JsPath \ "paidHoursWorked").writeNullable[String] and
-        (JsPath \ "taxablePayToDate").writeNullable[Double] and
-        (JsPath \ "totalTaxToDate").writeNullable[Double] and
-        (JsPath \ "taxDeductedOrRefunded").writeNullable[Double] and
-        (JsPath \ "grossEarningsForNICs").writeNullable[IfGrossEarningsForNics] and
-        (JsPath \ "employerPayeRef").writeNullable[String] and
-        (JsPath \ "paymentDate").writeNullable[String] and
-        (JsPath \ "taxablePay").writeNullable[Double] and
-        (JsPath \ "taxYear").writeNullable[String] and
-        (JsPath \ "monthlyPeriodNumber").writeNullable[String] and
-        (JsPath \ "weeklyPeriodNumber").writeNullable[String] and
-        (JsPath \ "payFrequency").writeNullable[String] and
-        (JsPath \ "dednsFromNetPay").writeNullable[Double] and
-        (JsPath \ "totalEmployerNICs").writeNullable[IfTotalEmployerNics] and
-        (JsPath \ "employeeNICs").writeNullable[IfEmployeeNics] and
-        (JsPath \ "employeePensionContribs").writeNullable[IfEmployeePensionContribs] and
-        (JsPath \ "benefits").writeNullable[IfBenefits] and
-        (JsPath \ "statutoryPayYTD").writeNullable[IfStatutoryPayYTD] and
-        (JsPath \ "studentLoan").writeNullable[IfStudentLoan] and
-        (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan] and
-        JsPath.writeNullable[IfAdditionalFields]
-    )(o => Tuple.fromProductTyped(o))
+      taxCode,
+      paidHoursWorked,
+      taxablePayToDate,
+      totalTaxToDate,
+      taxDeductedOrRefunded,
+      grossEarningsForNics,
+      employerPayeRef,
+      paymentDate,
+      taxablePay,
+      taxYear,
+      monthlyPeriodNumber,
+      weeklyPeriodNumber,
+      payFrequency,
+      dednsFromNetPay,
+      totalEmployerNics,
+      employeeNics,
+      employeePensionContribs,
+      benefits,
+      statutoryPayYTD,
+      studentLoan,
+      postGradLoan,
+      additionalFields
+    ) =>
+      IfPayeEntry(
+        taxCode,
+        paidHoursWorked,
+        taxablePayToDate,
+        totalTaxToDate,
+        taxDeductedOrRefunded,
+        grossEarningsForNics,
+        employerPayeRef,
+        paymentDate,
+        taxablePay,
+        taxYear,
+        monthlyPeriodNumber,
+        weeklyPeriodNumber,
+        payFrequency,
+        dednsFromNetPay,
+        totalEmployerNics,
+        employeeNics,
+        employeePensionContribs,
+        benefits,
+        statutoryPayYTD,
+        studentLoan,
+        postGradLoan,
+        additionalFields,
+        hmrcOfficeNumber = None
+      )
   )
+
+  private val payeEntryReads: Reads[IfPayeEntry] = baseReads.flatMap { entry =>
+    (JsPath \ "hmrcOfficeNumber")
+      .readNullable[String](using pattern(hmrcOfficeNumberPattern, "Invalid HMRC office number"))
+      .map(v => entry.copy(hmrcOfficeNumber = v))
+  }
+
+  private val baseWrites: OWrites[IfPayeEntry] = (
+    (JsPath \ "taxCode").writeNullable[String] and
+      (JsPath \ "paidHoursWorked").writeNullable[String] and
+      (JsPath \ "taxablePayToDate").writeNullable[Double] and
+      (JsPath \ "totalTaxToDate").writeNullable[Double] and
+      (JsPath \ "taxDeductedOrRefunded").writeNullable[Double] and
+      (JsPath \ "grossEarningsForNICs").writeNullable[IfGrossEarningsForNics] and
+      (JsPath \ "employerPayeRef").writeNullable[String] and
+      (JsPath \ "paymentDate").writeNullable[String] and
+      (JsPath \ "taxablePay").writeNullable[Double] and
+      (JsPath \ "taxYear").writeNullable[String] and
+      (JsPath \ "monthlyPeriodNumber").writeNullable[String] and
+      (JsPath \ "weeklyPeriodNumber").writeNullable[String] and
+      (JsPath \ "payFrequency").writeNullable[String] and
+      (JsPath \ "dednsFromNetPay").writeNullable[Double] and
+      (JsPath \ "totalEmployerNICs").writeNullable[IfTotalEmployerNics] and
+      (JsPath \ "employeeNICs").writeNullable[IfEmployeeNics] and
+      (JsPath \ "employeePensionContribs").writeNullable[IfEmployeePensionContribs] and
+      (JsPath \ "benefits").writeNullable[IfBenefits] and
+      (JsPath \ "statutoryPayYTD").writeNullable[IfStatutoryPayYTD] and
+      (JsPath \ "studentLoan").writeNullable[IfStudentLoan] and
+      (JsPath \ "postGradLoan").writeNullable[IfPostGradLoan] and
+      JsPath.writeNullable[IfAdditionalFields]
+  )(o =>
+    (
+      o.taxCode,
+      o.paidHoursWorked,
+      o.taxablePayToDate,
+      o.totalTaxToDate,
+      o.taxDeductedOrRefunded,
+      o.grossEarningsForNics,
+      o.employerPayeRef,
+      o.paymentDate,
+      o.taxablePay,
+      o.taxYear,
+      o.monthlyPeriodNumber,
+      o.weeklyPeriodNumber,
+      o.payFrequency,
+      o.dednsFromNetPay,
+      o.totalEmployerNics,
+      o.employeeNics,
+      o.employeePensionContribs,
+      o.benefits,
+      o.statutoryPayYTD,
+      o.studentLoan,
+      o.postGradLoan,
+      o.additionalFields
+    )
+  )
+
+  private val payeEntryWrites: OWrites[IfPayeEntry] = OWrites[IfPayeEntry] { o =>
+    val base = baseWrites.writes(o)
+    o.hmrcOfficeNumber match {
+      case Some(v) => base + ("hmrcOfficeNumber" -> JsString(v))
+      case None    => base
+    }
+  }
+
+  implicit val payeEntryFormat: Format[IfPayeEntry] = Format(payeEntryReads, payeEntryWrites)
 
   private def toEmployee(additionalFields: Option[IfAdditionalFields]): Option[Employee] =
     additionalFields match {
@@ -380,6 +472,7 @@ object IfPayeEntry {
 
   def toIncome(paye: IfPayeEntry): Income =
     Income(
+      paye.hmrcOfficeNumber,
       paye.employerPayeRef,
       paye.taxYear,
       toEmployee(paye.additionalFields),
