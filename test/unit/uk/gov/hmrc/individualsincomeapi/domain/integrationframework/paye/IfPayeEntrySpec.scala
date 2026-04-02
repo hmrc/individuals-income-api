@@ -42,6 +42,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
           |    "inPayPeriod3":822317.49,
           |    "inPayPeriod4":818841.65
           |  },
+          |  "hmrcOfficeNumber":"345",
           |  "employerPayeRef":"345/34678",
           |  "paymentDate":"2006-02-27",
           |  "taxablePay":16533.95,
@@ -125,6 +126,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
           |    "inPayPeriod3":822317.49,
           |    "inPayPeriod4":818841.65
           |  },
+          |  "hmrcOfficeNumber":"345",
           |  "employerPayeRef":"345/34678",
           |  "paymentDate":"2006-02-27",
           |  "taxablePay":16533.95,
@@ -208,6 +210,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
           |    "inPayPeriod3":822317.49,
           |    "inPayPeriod4":818841.65
           |  },
+          |  "hmrcOfficeNumber":"345",
           |  "employerPayeRef":"345/34678",
           |  "paymentDate":"2006-02-27",
           |  "taxablePay":16533.95,
@@ -285,6 +288,11 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
       result.isError shouldBe true
     }
 
+    "Validate unsuccessfully when given invalid hmrcOfficeNumber" in {
+      val result = Json.toJson(createValidPayeEntry().copy(hmrcOfficeNumber = Some("12"))).validate[IfPayeEntry]
+      result.isError shouldBe true
+    }
+
     "Validate unsuccessfully when given invalid taxablePayToDate" in {
       val result = Json.toJson(createInvalidTaxPayableToDate()).validate[IfPayeEntry]
       result.isError shouldBe true
@@ -297,6 +305,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
       val expectedJson = Json.parse(
         """
           |[{
+          |    "hmrcOfficeNumber":"345",
           |    "employerPayeReference":"345/34678",
           |    "taxYear":"18-19",
           |    "employee":{
@@ -376,6 +385,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
       val expectedJson = Json.parse(
         """
           |[{
+          |    "hmrcOfficeNumber":"345",
           |    "employerPayeReference":"345/34678",
           |    "taxYear":"18-19",
           |    "payroll":{
@@ -497,6 +507,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
       val expectedJson = Json.parse(
         """
           |[{
+          |    "hmrcOfficeNumber":"345",
           |    "employerPayeReference":"345/34678",
           |    "taxYear":"18-19",
           |    "employee":{
@@ -569,6 +580,7 @@ class IfPayeEntrySpec extends AnyWordSpec with Matchers with IncomePayeHelpers {
       val expectedJson = Json.parse(
         """
           |[{
+          |    "hmrcOfficeNumber":"345",
           |    "employerPayeReference":"345/34678",
           |    "taxYear":"18-19",
           |    "payFrequency":"W4",

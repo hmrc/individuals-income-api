@@ -20,6 +20,7 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework._
 
 case class Income(
+  hmrcOfficeNumber: Option[String],
   employerPayeReference: Option[String],
   taxYear: Option[String],
   employee: Option[Employee],

@@ -37,7 +37,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
   val fields: String =
     "paye(dednsFromNetPay,employee(hasPartner),employeeNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3," +
       "inPayPeriod4,ytd1,ytd2,ytd3,ytd4),employeePensionContribs(notPaid,notPaidYTD,paid,paidYTD)," +
-      "employerPayeRef,grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),monthlyPeriodNumber," +
+      "employerPayeRef,grossEarningsForNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4),hmrcOfficeNumber,monthlyPeriodNumber," +
       "paidHoursWorked,payFrequency,paymentDate,payroll(id),statutoryPayYTD(adoption,maternity,parentalBereavement,paternity)," +
       "taxCode,taxDeductedOrRefunded,taxYear,taxablePay,taxablePayToDate," +
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
@@ -148,6 +148,7 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
                |      },
                |      "paymentDate" : "2006-02-27",
                |      "taxablePayToDate" : 19157.5,
+               |      "hmrcOfficeNumber" : "345",
                |      "employerPayeReference" : "345/34678",
                |      "paidHoursWorked" : "36",
                |      "employee" : {
