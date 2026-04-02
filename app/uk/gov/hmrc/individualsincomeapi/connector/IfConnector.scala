@@ -136,7 +136,7 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2,
         requestUrl,
         s"Error parsing IF response: ${validationError.errors}"
       )
-      Future.failed(new InternalServerException(s"Something went wrong: ${validationError.errors}"))
+      Future.failed(new InternalServerException(s"Something went wrong"))
 
     case UpstreamErrorResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
