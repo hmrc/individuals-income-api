@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.*
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesSAIncome
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
-import uk.gov.hmrc.individualsincomeapi.domain.v1._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.*
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
@@ -30,70 +31,86 @@ import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
 
 trait SaIncomeService {
-  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit hc: HeaderCarrier): Future[SaFootprint]
+  def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[SaFootprint]
 
   def fetchReturnsSummary(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaTaxReturnSummaries]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaTaxReturnSummaries(desSAIncome))
 
   def fetchTrustsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualTrustIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualTrustIncomes(desSAIncome))
 
   def fetchForeignIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualForeignIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualForeignIncomes(desSAIncome))
 
   def fetchPartnershipsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualPartnershipIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualPartnershipIncomes(desSAIncome))
 
   def fetchInterestsAndDividendsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualInterestAndDividendIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualInterestAndDividendIncomes(desSAIncome))
 
   def fetchUkPropertiesIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualUkPropertiesIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualUkPropertiesIncomes(desSAIncome))
 
   def fetchPensionsAndStateBenefitsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualPensionAndStateBenefitIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualPensionAndStateBenefitIncomes(desSAIncome))
 
   def fetchEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualEmployments]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualEmployments(desSAIncome))
 
   def fetchSelfEmploymentsIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualSelfEmployments]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualSelfEmployments(desSAIncome))
 
   def fetchAdditionalInformation(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualAdditionalInformations]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualAdditionalInformations(desSAIncome))
 
   def fetchOtherIncome(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaAnnualOtherIncomes]] =
     fetchSaIncomes(matchId, taxYearInterval)(desSAIncome => SaAnnualOtherIncomes(desSAIncome))
 
   def fetchSaIncomeSources(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[SaIncomeSources]] =
     fetchSaIncomes(matchId, taxYearInterval)(SaIncomeSources.apply)
 
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(transform: DesSAIncome => T)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[T]]
 }
 
@@ -102,7 +119,7 @@ class SandboxSaIncomeService extends SaIncomeService {
 
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(
     transform: DesSAIncome => T
-  )(implicit hc: HeaderCarrier): Future[Seq[T]] =
+  )(implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[T]] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) =>
         val selectedSaReturns = saIncomes.filter(s => s.isIn(taxYearInterval)).sortBy(_.taxYear.toInt).reverse
@@ -111,7 +128,8 @@ class SandboxSaIncomeService extends SaIncomeService {
     }
 
   override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[SaFootprint] =
     findByMatchId(matchId).map(_.saIncome) match {
       case Some(saIncomes) => successful(SaFootprint(saIncomes.filter(s => s.isIn(taxYearInterval))))
@@ -142,14 +160,15 @@ class LiveSaIncomeService @Inject() (
 
   protected def fetchSaIncomes[T](matchId: UUID, taxYearInterval: TaxYearInterval)(
     transform: DesSAIncome => T
-  )(implicit hc: HeaderCarrier): Future[Seq[T]] =
+  )(implicit hc: HeaderCarrier, request: RequestHeader): Future[Seq[T]] =
     for {
       ninoMatch    <- matchingConnector.resolve(matchId)
       desSaIncomes <- fetchSelfAssessmentIncome(ninoMatch.nino, taxYearInterval)
     } yield desSaIncomes.sortBy(_.taxYear.toInt).reverse map (r => transform(r))
 
   override def fetchSaFootprint(matchId: UUID, taxYearInterval: TaxYearInterval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[SaFootprint] =
     for {
       ninoMatch    <- matchingConnector.resolve(matchId)

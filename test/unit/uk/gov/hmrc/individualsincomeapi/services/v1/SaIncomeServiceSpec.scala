@@ -16,19 +16,21 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.RequestHeader
+import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.v1.{CacheRepositoryConfiguration, ShortLivedCache}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.*
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesSAIncome, DesSAReturn, SAIncome}
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.sandboxUtr
-import uk.gov.hmrc.individualsincomeapi.domain.v1._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.*
 import uk.gov.hmrc.individualsincomeapi.services.v1.{CacheService, LiveSaIncomeService, SaCacheId, SandboxSaIncomeService}
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
@@ -939,6 +941,7 @@ class SaIncomeServiceSpec extends TestSupport with MockitoSugar with ScalaFuture
 
   trait Setup extends TestData {
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val rd: RequestHeader = FakeRequest()
     val matchingConnector = mock[IndividualsMatchingApiConnector]
     val desConnector = mock[DesConnector]
     val mockCache = mock[ShortLivedCache]

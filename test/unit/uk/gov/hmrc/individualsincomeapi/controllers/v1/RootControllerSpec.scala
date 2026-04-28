@@ -24,7 +24,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.{AnyContentAsEmpty, RequestHeader, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.domain.Nino
@@ -60,7 +60,9 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
   "sandbox match citizen function" should {
 
     "return 200 (OK) for a valid matchId" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
+      `given`(
+        mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .willReturn(successful(matchedCitizen))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -86,7 +88,9 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "return 400 (Not Found) for an invalid matchId" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
+      `given`(
+        mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .willReturn(failed(new MatchNotFoundException))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -97,7 +101,9 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "return 500 (Internal Server Error) for an invalid matchId" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
+      `given`(
+        mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .willReturn(failed(new Exception()))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
@@ -110,7 +116,9 @@ class RootControllerSpec extends SpecBase with MockitoSugar with ScalaFutures {
     }
 
     "not require bearer token authentication" in new Setup {
-      `given`(mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier]))
+      `given`(
+        mockSandboxCitizenMatchingService.matchCitizen(refEq(matchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .willReturn(successful(matchedCitizen))
 
       val result: Result = await(sandboxController.root(matchId)(fakeRequest))
