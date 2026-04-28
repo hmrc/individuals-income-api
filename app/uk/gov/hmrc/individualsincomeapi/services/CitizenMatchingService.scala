@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.services
 
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.connector.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
@@ -27,12 +28,12 @@ import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 trait CitizenMatchingService {
-  def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen]
+  def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier, request: RequestHeader): Future[MatchedCitizen]
 }
 
 @Singleton
 class SandboxCitizenMatchingService extends CitizenMatchingService {
-  override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier, request: RequestHeader): Future[MatchedCitizen] =
     SandboxIncomeData.matchedCitizen(matchId) match {
       case Some(matchedCitizen) => successful(matchedCitizen)
       case None                 => failed(new MatchNotFoundException)
@@ -42,6 +43,6 @@ class SandboxCitizenMatchingService extends CitizenMatchingService {
 @Singleton
 class LiveCitizenMatchingService @Inject() (individualsMatchingApiConnector: IndividualsMatchingApiConnector)
     extends CitizenMatchingService {
-  override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  override def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier, request: RequestHeader): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)
 }
