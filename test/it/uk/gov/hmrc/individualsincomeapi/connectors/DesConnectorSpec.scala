@@ -17,19 +17,22 @@
 package it.uk.gov.hmrc.individualsincomeapi.connectors
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.*
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.RequestHeader
+import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.{Nino, SaUtr}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.DesConnector
-import uk.gov.hmrc.individualsincomeapi.domain._
-import uk.gov.hmrc.individualsincomeapi.domain.des._
+import uk.gov.hmrc.individualsincomeapi.domain.*
+import uk.gov.hmrc.individualsincomeapi.domain.des.*
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.TestSupport
 
@@ -59,6 +62,7 @@ class DesConnectorSpec
 
   trait Setup {
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val rd: RequestHeader = FakeRequest()
 
     val underTest: DesConnector = fakeApplication().injector.instanceOf[DesConnector]
   }
@@ -271,5 +275,23 @@ class DesConnectorSpec
         await(underTest.fetchSelfAssessmentIncome(nino, interval))
       }
     }
+
+    "extractCorrelationId return header when CorrelationId is present" in new Setup {
+
+      val request = FakeRequest().withHeaders("X-Correlation-ID" -> "188e9400-b636-4a3b-80ba-230a8c72b92a")
+
+      val result: Seq[(String, String)] = underTest.extractCorrelationId(request)
+
+      result mustBe Seq("X-Correlation-ID" -> "188e9400-b636-4a3b-80ba-230a8c72b92a")
+    }
+
+    "extractCorrelationId return empty Seq when CorrelationId is missing" in new Setup {
+      val request = FakeRequest()
+
+      val result: Seq[(String, String)] = underTest.extractCorrelationId(request)
+
+      result mustBe Seq.empty
+    }
+
   }
 }

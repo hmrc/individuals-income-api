@@ -22,10 +22,19 @@ import play.api.test.Helpers.OK
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.{sandboxMatchId, sandboxUtr}
 
+import java.time.LocalDate
+
 class SandboxSaIncomeControllerSpec extends BaseSpec {
 
-  val fromTaxYr = "2019-20"
-  val toTaxYr = "2020-21"
+  private val fromYear = LocalDate.now.getYear - 2
+  private val toYear = LocalDate.now.getYear - 1
+
+  private def yearRange(r: Int) = (r + 1) % 100
+  val fromTaxYr = s"$fromYear-${yearRange(fromYear)}"
+  val toTaxYr = s"$toYear-${yearRange(toYear)}"
+
+  val taxYearPrevious = s"$fromYear-${yearRange(fromYear)}"
+  val taxYearCurrent = s"$toYear-${yearRange(toYear)}"
 
   Feature("Sandbox individual income") {
 
@@ -43,49 +52,73 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
       Json.parse(response.body) shouldBe
         Json.parse(s"""
              {
-               "_links": {
-                 "self": {"href": "/individuals/income/sa?$requestParameters"},
-                 "additionalInformation": {"href": "/individuals/income/sa/additional-information?$requestParameters"},
-                 "employments": {"href": "/individuals/income/sa/employments?$requestParameters"},
-                 "foreign": {"href": "/individuals/income/sa/foreign?$requestParameters"},
-                 "interestsAndDividends": {"href": "/individuals/income/sa/interests-and-dividends?$requestParameters"},
-                 "other": {"href": "/individuals/income/sa/other?$requestParameters"},
-                 "partnerships": {"href": "/individuals/income/sa/partnerships?$requestParameters"},
-                 "pensionsAndStateBenefits": {"href": "/individuals/income/sa/pensions-and-state-benefits?$requestParameters"},
-                 "selfEmployments": {"href": "/individuals/income/sa/self-employments?$requestParameters"},
-                 "summary": {"href": "/individuals/income/sa/summary?$requestParameters"},
-                 "trusts": {"href": "/individuals/income/sa/trusts?$requestParameters"},
-                 "ukProperties": {"href": "/individuals/income/sa/uk-properties?$requestParameters"}
-               },
-               "selfAssessment": {
-                 "registrations": [
-                   {
-                     "utr": "$sandboxUtr",
-                     "registrationDate": "2015-01-06"
-                   }
-                 ],
-                 "taxReturns": [
-                   {
-                     "taxYear": "2020-21",
-                     "submissions": [
-                       {
-                         "utr": "$sandboxUtr",
-                         "receivedDate": "2019-10-06"
-                       }
-                     ]
-                   },
-                   {
-                     "taxYear": "2019-20",
-                     "submissions": [
-                       {
-                         "utr": "$sandboxUtr",
-                         "receivedDate": "2017-06-06"
-                       }
-                     ]
-                   }
-                 ]
-               }
-             }
+        "_links": {
+          "pensionsAndStateBenefits": {
+            "href": "/individuals/income/sa/pensions-and-state-benefits?$requestParameters"
+          },
+          "self": {
+            "href": "/individuals/income/sa?$requestParameters"
+          },
+          "partnerships": {
+            "href": "/individuals/income/sa/partnerships?$requestParameters"
+          },
+          "ukProperties": {
+            "href": "/individuals/income/sa/uk-properties?$requestParameters"
+          },
+          "selfEmployments": {
+            "href": "/individuals/income/sa/self-employments?$requestParameters"
+          },
+          "foreign": {
+            "href": "/individuals/income/sa/foreign?$requestParameters"
+          },
+          "interestsAndDividends": {
+            "href": "/individuals/income/sa/interests-and-dividends?$requestParameters"
+          },
+          "employments": {
+            "href": "/individuals/income/sa/employments?$requestParameters"
+          },
+          "additionalInformation": {
+            "href": "/individuals/income/sa/additional-information?$requestParameters"
+          },
+          "trusts": {
+            "href": "/individuals/income/sa/trusts?$requestParameters"
+          },
+          "other": {
+            "href": "/individuals/income/sa/other?$requestParameters"
+          },
+          "summary": {
+            "href": "/individuals/income/sa/summary?$requestParameters"
+          }
+        },
+        "selfAssessment": {
+          "registrations": [
+            {
+              "utr": "2432552635",
+              "registrationDate": "2015-01-06"
+            }
+          ],
+          "taxReturns": [
+            {
+              "taxYear": "2025-26",
+              "submissions": [
+                {
+                  "utr": "2432552635",
+                  "receivedDate": "2024-10-06"
+                }
+              ]
+            },
+            {
+              "taxYear": "2024-25",
+              "submissions": [
+                {
+                  "utr": "2432552635",
+                  "receivedDate": "2017-06-06"
+                }
+              ]
+            }
+          ]
+        }
+      }
            """)
     }
 
@@ -108,7 +141,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "employments": [
                        {
                          "utr": "$sandboxUtr",
@@ -117,7 +150,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "employments": [
                        {
                          "utr": "$sandboxUtr",
@@ -152,7 +185,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "selfEmployments": [
                        {
                          "utr": "$sandboxUtr",
@@ -161,7 +194,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "selfEmployments": [
                        {
                           "utr": "$sandboxUtr",
@@ -194,7 +227,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "summary": [
                        {
                          "utr": "$sandboxUtr",
@@ -203,7 +236,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "summary": [
                        {
                           "utr": "$sandboxUtr",
@@ -235,7 +268,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "trusts": [
                        {
                          "utr": "$sandboxUtr",
@@ -244,7 +277,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "trusts": [
                        {
                           "utr": "$sandboxUtr",
@@ -276,7 +309,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "foreign": [
                        {
                          "utr": "$sandboxUtr",
@@ -285,7 +318,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "foreign": [
                        {
                           "utr": "$sandboxUtr",
@@ -318,7 +351,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "partnerships": [
                        {
                          "utr": "$sandboxUtr",
@@ -327,7 +360,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "partnerships": [
                        {
                           "utr": "$sandboxUtr",
@@ -360,7 +393,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "pensionsAndStateBenefits": [
                        {
                          "utr": "$sandboxUtr",
@@ -369,7 +402,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "pensionsAndStateBenefits": [
                        {
                           "utr": "$sandboxUtr",
@@ -402,7 +435,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "interestsAndDividends": [
                        {
                          "utr": "$sandboxUtr",
@@ -413,7 +446,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "interestsAndDividends": [
                        {
                           "utr": "$sandboxUtr",
@@ -447,7 +480,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "ukProperties": [
                        {
                          "utr": "$sandboxUtr",
@@ -456,7 +489,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "ukProperties": [
                        {
                           "utr": "$sandboxUtr",
@@ -489,7 +522,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "additionalInformation": [
                        {
                          "utr": "$sandboxUtr",
@@ -499,7 +532,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "additionalInformation": [
                        {
                           "utr": "$sandboxUtr",
@@ -532,7 +565,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                "selfAssessment": {
                  "taxReturns": [
                    {
-                     "taxYear": "2020-21",
+                     "taxYear": "$taxYearCurrent",
                      "other": [
                        {
                          "utr": "$sandboxUtr",
@@ -541,7 +574,7 @@ class SandboxSaIncomeControllerSpec extends BaseSpec {
                      ]
                    },
                    {
-                     "taxYear": "2019-20",
+                     "taxYear": "$taxYearPrevious",
                      "other": [
                        {
                           "utr": "$sandboxUtr",

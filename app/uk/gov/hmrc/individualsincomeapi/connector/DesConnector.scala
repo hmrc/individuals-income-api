@@ -18,13 +18,14 @@ package uk.gov.hmrc.individualsincomeapi.connector
 
 import play.api.Logging
 import play.api.libs.json.Reads
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, StringContextOps, TooManyRequestException, UpstreamErrorResponse}
-import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.*
 import uk.gov.hmrc.individualsincomeapi.domain.des.{DesEmployment, DesEmployments, DesSAIncome}
-import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters.*
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.CLIENT_ID_HEADER
 import uk.gov.hmrc.individualsincomeapi.util.Interval
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -41,6 +42,13 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
   private lazy val desBearerToken = servicesConfig.getString("microservice.services.des.authorization-token")
   private lazy val desEnvironment = servicesConfig.getString("microservice.services.des.environment")
 
+  val extractCorrelationId: RequestHeader => Seq[(String, String)] =
+    req =>
+      req.headers
+        .get("X-Correlation-ID")
+        .map(id => Seq("X-Correlation-ID" -> id))
+        .getOrElse(Seq.empty)
+
   private def setHeaders() = Seq(
     HeaderNames.authorisation -> s"Bearer $desBearerToken",
     "Environment"             -> desEnvironment,
@@ -49,6 +57,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
 
   def fetchEmployments(nino: Nino, interval: Interval)(implicit
     hc: HeaderCarrier,
+    request: RequestHeader,
     ec: ExecutionContext
   ): Future[Seq[DesEmployment]] = {
     val fromDate = interval.fromDate.toLocalDate
@@ -59,7 +68,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
     recover[DesEmployment](
       http
         .get(url"$employmentsUrl")
-        .transform(_.addHttpHeaders(setHeaders()*))
+        .transform(_.addHttpHeaders(setHeaders() ++ extractCorrelationId(request)*))
         .execute[DesEmployments]
         .map(_.employments)
     )
@@ -67,6 +76,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
 
   def fetchSelfAssessmentIncome(nino: Nino, taxYearInterval: TaxYearInterval)(implicit
     hc: HeaderCarrier,
+    request: RequestHeader,
     ec: ExecutionContext
   ): Future[Seq[DesSAIncome]] = {
 
@@ -81,7 +91,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2
     recover[DesSAIncome](
       http
         .get(url"$saIncomeUrl")
-        .transform(_.addHttpHeaders(setHeaders() :+ ("OriginatorId" -> originator)*))
+        .transform(_.addHttpHeaders(setHeaders() ++ extractCorrelationId(request) :+ ("OriginatorId" -> originator)*))
         .execute[Seq[DesSAIncome]]
     )
   }

@@ -18,6 +18,8 @@ package unit.uk.gov.hmrc.individualsincomeapi.services.v1
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.RequestHeader
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
@@ -30,16 +32,19 @@ import java.util.UUID
 class CitizenMatchingServiceSpec extends TestSupport with MockitoSugar with ScalaFutures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val rd: RequestHeader = FakeRequest()
   val sandboxCitizenMatchingService = new SandboxCitizenMatchingService
   val matchedCitizen = MatchedCitizen(sandboxMatchId, sandboxNino)
 
   "sandboxCitizenMatching service match citizen function" should {
     "return a matchedCitizen for a valid matchId" in {
-      await(sandboxCitizenMatchingService.matchCitizen(sandboxMatchId)(using hc)) shouldBe matchedCitizen
+      await(sandboxCitizenMatchingService.matchCitizen(sandboxMatchId)(using hc, rd)) shouldBe matchedCitizen
     }
 
     "throw exception for an invalid matchId" in {
-      intercept[MatchNotFoundException](await(sandboxCitizenMatchingService.matchCitizen(UUID.randomUUID())(using hc)))
+      intercept[MatchNotFoundException](
+        await(sandboxCitizenMatchingService.matchCitizen(UUID.randomUUID())(using hc, rd))
+      )
     }
   }
 }
