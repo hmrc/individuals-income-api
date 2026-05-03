@@ -17,7 +17,7 @@
 package component.uk.gov.hmrc.individualsincomeapi
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.BaseSpec
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
 import scalaj.http.Http
@@ -125,9 +125,9 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
     }
 
     Scenario("toTaxYear defaults to the current tax year when it is not provided") {
-
+      val fromTaxYear = TaxYear.fromEndYear(today.getYear).formattedTaxYear
       When("I request individual income for the existing matchId without a toTaxYear")
-      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=2020-21")
+      val response = Http(s"$serviceUrl/sandbox/sa?matchId=$sandboxMatchId&fromTaxYear=$fromTaxYear")
         .headers(requestHeaders(acceptHeaderP1))
         .asString
 
@@ -136,7 +136,7 @@ class TaxYearIntervalValidationSpec extends BaseSpec {
 
       And("The response contains the self-assessment for the period")
       (Json.parse(response.body) \ "selfAssessment" \ "taxReturns" \\ "taxYear")
-        .map(_.as[String]) shouldBe Seq("2020-21")
+        .map(_.as[String]) shouldBe Seq("2025-26")
     }
   }
 }

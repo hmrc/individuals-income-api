@@ -23,9 +23,9 @@ import org.mockito.Mockito.{verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.libs.json.Json.parse
-import play.api.mvc.Result
-import play.api.test.Helpers._
-import play.api.test._
+import play.api.mvc.{RequestHeader, Result}
+import play.api.test.Helpers.*
+import play.api.test.*
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
@@ -55,6 +55,7 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
 
     `given`(mockAuthConnector.authorise(any(), refEq(EmptyRetrieval))(using any(), any())).willReturn(successful(()))
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val rd: RequestHeader = FakeRequest()
   }
 
   "Live match citizen controller match citizen function" should {
@@ -62,7 +63,9 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     val randomMatchId = UUID.randomUUID()
 
     "return a 404 (not found) when a match id does not match live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier]))
+      when(
+        mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .thenReturn(failed(new MatchNotFoundException))
 
       val eventualResult: Future[Result] = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
@@ -77,7 +80,9 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return a 200 (ok) when a match id matches live data" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier]))
+      when(
+        mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .thenReturn(successful(MatchedCitizen(randomMatchId, Nino("AB123456C"))))
 
       val eventualResult: Future[Result] = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
@@ -119,7 +124,9 @@ class LiveRootControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "return a 500 (Internal Server Error)" in new Setup {
-      when(mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier]))
+      when(
+        mockLiveCitizenMatchingService.matchCitizen(refEq(randomMatchId))(using any[HeaderCarrier], any[RequestHeader])
+      )
         .thenReturn(failed(new Exception()))
 
       val eventualResult: Future[Result] = liveMatchCitizenController.root(randomMatchId).apply(FakeRequest())
