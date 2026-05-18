@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.services.v1
 
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.connector.{DesConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.des.DesEmployments
-import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters._
+import uk.gov.hmrc.individualsincomeapi.domain.v1.JsonFormatters.*
 import uk.gov.hmrc.individualsincomeapi.domain.v1.Payment
 import uk.gov.hmrc.individualsincomeapi.domain.v1.SandboxIncomeData.findByMatchId
 import uk.gov.hmrc.individualsincomeapi.util.Interval
@@ -34,7 +35,10 @@ import scala.concurrent.{ExecutionContext, Future}
 trait IncomeService {
   implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ `isBefore` _)
 
-  def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit hc: HeaderCarrier): Future[Seq[Payment]]
+  def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader
+  ): Future[Seq[Payment]]
 }
 
 @Singleton
@@ -47,7 +51,8 @@ class LiveIncomeService @Inject() (
     extends IncomeService {
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[Payment]] =
     for {
       ninoMatch <- matchingConnector.resolve(matchId)
@@ -75,7 +80,8 @@ class SandboxIncomeService extends IncomeService {
   }
 
   override def fetchIncomeByMatchId(matchId: UUID, interval: Interval)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RequestHeader
   ): Future[Seq[Payment]] =
     findByMatchId(matchId).map(_.income) match {
       case Some(payments) =>

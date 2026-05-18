@@ -30,8 +30,12 @@ import java.util.UUID
 class LiveSaIncomeControllerSpec extends BaseSpec {
   private val matchId = UUID.randomUUID().toString
   private val nino = Nino("AA100009B")
-  private val fromTaxYear = TaxYear("2019-20")
-  private val toTaxYear = TaxYear("2021-22")
+  private val fromYear = LocalDate.now.getYear - 6
+  private val toYear = LocalDate.now.getYear - 4
+  private def yearRange(r: Int) = (r + 1) % 100
+  private val fromTaxYear = TaxYear(s"$fromYear-${yearRange(fromYear)}")
+  private val toTaxYear = TaxYear(s"$toYear-${yearRange(toYear)}")
+
   private val desIncomes = Seq(
     DesSAIncome(
       taxYear = "2019",
@@ -150,7 +154,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec {
     }
 
     Scenario("The self assessment data source is rate limited") {
-      val toTaxYear = TaxYear("2019-20")
+      val toTaxYear = TaxYear(s"$fromYear-${yearRange(fromYear)}") // TaxYear("2020-21")//
 
       Given("A privileged Auth bearer token with scope read:individuals-income-sa")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, "read:individuals-income-sa")
