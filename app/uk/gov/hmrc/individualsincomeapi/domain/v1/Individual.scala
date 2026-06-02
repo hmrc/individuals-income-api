@@ -49,6 +49,7 @@ object Payment {
 }
 
 object SandboxIncomeData {
+  private val year = LocalDate.now.getYear
 
   def findByMatchId(matchId: UUID): Option[Individual] = individuals.find(_.matchId == matchId)
 
@@ -76,17 +77,17 @@ object SandboxIncomeData {
     "Joseph",
     parse("1960-01-15"),
     Seq(
-      Payment(1000.50, parse("2019-01-28"), Some(acmeEmployerReference), monthPayNumber = Some(10)),
-      Payment(1000.50, parse("2019-02-28"), Some(acmeEmployerReference), monthPayNumber = Some(11)),
-      Payment(1000.50, parse("2019-03-28"), Some(acmeEmployerReference), monthPayNumber = Some(12)),
-      Payment(1000.25, parse("2019-04-28"), Some(acmeEmployerReference), monthPayNumber = Some(1)),
-      Payment(1000.25, parse("2019-05-28"), Some(acmeEmployerReference), monthPayNumber = Some(2)),
-      Payment(500.25, parse("2020-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
-      Payment(500.25, parse("2020-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))
+      Payment(1000.50, parse(s"${year - 2}-01-28"), Some(acmeEmployerReference), monthPayNumber = Some(10)),
+      Payment(1000.50, parse(s"${year - 2}-02-28"), Some(acmeEmployerReference), monthPayNumber = Some(11)),
+      Payment(1000.50, parse(s"${year - 2}-03-28"), Some(acmeEmployerReference), monthPayNumber = Some(12)),
+      Payment(1000.25, parse(s"${year - 2}-04-28"), Some(acmeEmployerReference), monthPayNumber = Some(1)),
+      Payment(1000.25, parse(s"${year - 2}-05-28"), Some(acmeEmployerReference), monthPayNumber = Some(2)),
+      Payment(500.25, parse(s"${year - 1}-02-09"), Some(disneyEmployerReference), weekPayNumber = Some(45)),
+      Payment(500.25, parse(s"${year - 1}-02-16"), Some(disneyEmployerReference), weekPayNumber = Some(46))
     ),
     Seq(
       DesSAIncome(
-        "2020",
+        s"${year - 1}",
         Seq(
           DesSAReturn(
             caseStartDate = Some(parse("2015-01-06")),
@@ -117,7 +118,7 @@ object SandboxIncomeData {
           )
         )
       ),
-      DesSAIncome("2021", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse("2019-10-06")), sandboxUtr)))
+      DesSAIncome(s"$year", Seq(DesSAReturn(Some(parse("2015-01-06")), Some(parse(s"${year - 2}-10-06")), sandboxUtr)))
     )
   )
 }

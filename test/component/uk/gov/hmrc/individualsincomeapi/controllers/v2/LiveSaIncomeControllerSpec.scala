@@ -18,23 +18,29 @@ package component.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import component.uk.gov.hmrc.individualsincomeapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import scalaj.http.Http
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSa
 import utils.IncomeSaHelpers
 
+import java.time.LocalDate
 import java.util.UUID
 
 class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
   val matchId: String = UUID.randomUUID().toString
-  val fromTaxYear = "2020"
-  val toTaxYear = "2021"
+
+  private val fromYear = LocalDate.now.getYear - 6
+  private val toYear = LocalDate.now.getYear - 4
+  private def yearRange(r: Int) = (r + 1) % 100
+
+  val fromTaxYear: String = s"${fromYear + 1}" 
+  val toTaxYear = s"$toYear" 
 
   val nino = "CS700100A"
 
-  val fromTaxYr = "2019-20"
-  val toTaxYr = "2020-21"
+  val fromTaxYr = s"$fromYear-${yearRange(fromYear)}"
+  val toTaxYr = s"${fromYear + 1}-${yearRange(fromYear + 1)}"
 
   val incomeSaSingle = IfSa(Seq(createValidSaTaxYearEntry()))
 
@@ -568,7 +574,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment self employments returns no root data") {
 
-      val toTaxYear = "2021"
+      // val toTaxYear = s"$toTaxYear"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, selfAssessmentScopes)
 
@@ -1863,7 +1869,6 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
     Scenario("Fetch Self Assessment additional information returns no root data") {
 
-      val toTaxYear = "2021"
       Given("A privileged Auth bearer token with the required scopes")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, additionalInformationScopes)
 
@@ -2162,7 +2167,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
 
       When("I request the resources")
       val response =
-        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2019-20&toTaxYear=2020-21")
+        Http(s"$serviceUrl/sa/further-details?matchId=$matchId&fromTaxYear=2020-21&toTaxYear=2021-22")
           .headers(headers)
           .asString
 
@@ -2174,7 +2179,7 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
             s"""{
                |  "_links" : {
                |    "self" : {
-               |      "href" : "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2019-20&toTaxYear=2020-21"
+               |      "href" : "/individuals/income/sa/further-details?matchId=$matchId&fromTaxYear=2020-21&toTaxYear=2021-22"
                |    }
                |  },
                |  "selfAssessment" : {

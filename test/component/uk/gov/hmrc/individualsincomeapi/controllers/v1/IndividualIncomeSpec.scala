@@ -175,6 +175,9 @@ class IndividualIncomeSpec extends BaseSpec {
   Feature("Sandbox individual income") {
 
     Scenario("Valid request to the sandbox implementation") {
+      val currentYear = LocalDate.now.getYear
+      val fromDate = s"${currentYear -2}-04-01"
+      val toDate = s"${currentYear -1}-01-01"
 
       When("I request individual income for the sandbox matchId")
       val response = Http(s"$serviceUrl/sandbox/paye?matchId=$sandboxMatchId&fromDate=$fromDate&toDate=$toDate")
@@ -195,13 +198,13 @@ class IndividualIncomeSpec extends BaseSpec {
                  "income": [
                    {
                      "taxablePayment": 1000.25,
-                     "paymentDate": "2019-05-28",
+                     "paymentDate": "${currentYear -2}-05-28",
                      "employerPayeReference": "123/AI45678",
                      "monthPayNumber": 2
                    },
                    {
                      "taxablePayment": 1000.25,
-                     "paymentDate": "2019-04-28",
+                     "paymentDate": "${currentYear -2}-04-28",
                      "employerPayeReference": "123/AI45678",
                      "monthPayNumber": 1
                    }

@@ -16,22 +16,23 @@
 
 package unit.uk.gov.hmrc.individualsincomeapi.services.v2
 
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.BDDMockito.`given`
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
+import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsincomeapi.cache.v2.CacheRepositoryConfiguration
 import uk.gov.hmrc.individualsincomeapi.connector.{IfConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsincomeapi.domain._
+import uk.gov.hmrc.individualsincomeapi.domain.*
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfPayeEntry
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income
-import uk.gov.hmrc.individualsincomeapi.services.v2._
+import uk.gov.hmrc.individualsincomeapi.services.v2.*
 import unit.uk.gov.hmrc.individualsincomeapi.util.TestDates
 import utils.{IncomePayeHelpers, SpecBase}
 
@@ -46,6 +47,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
   trait Setup {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val rd: RequestHeader = FakeRequest()
 
     val config = mock[CacheRepositoryConfiguration]
 
@@ -93,7 +95,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(successful(ifPaye))
 
       val result =
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, FakeRequest()))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, rd))
 
       result shouldBe (ifPaye map IfPayeEntry.toIncome)
     }
@@ -168,7 +170,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(successful(ifPaye))
 
       val result =
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, FakeRequest()))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, rd))
 
       result shouldBe List(
         Income(
@@ -237,7 +239,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(successful(Seq.empty))
 
       val result =
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, FakeRequest()))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, rd))
 
       result shouldBe List.empty
     }
@@ -249,7 +251,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
       `given`(mockMatchingConnector.resolve(matchedCitizen.matchId)).willThrow(new MatchNotFoundException)
 
       intercept[MatchNotFoundException] {
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, FakeRequest()))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, rd))
       }
     }
 
@@ -293,7 +295,7 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
         .willReturn(successful(ifPaye))
 
       val result =
-        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, FakeRequest()))
+        await(liveIncomeService.fetchIncomeByMatchId(matchedCitizen.matchId, interval, scopes)(using hc, rd))
       result shouldBe (ifPaye map IfPayeEntry.toIncome)
 
       verify(mockIfConnector, times(2))
@@ -319,7 +321,8 @@ class IncomeServiceSpec extends SpecBase with MockitoSugar with ScalaFutures wit
           Future.successful(paye.asInstanceOf[T])
       }
 
-      `given`(mockMatching.resolve(eqTo(matchedCitizen.matchId))(using any())).willReturn(successful(matchedCitizen))
+      `given`(mockMatching.resolve(eqTo(matchedCitizen.matchId))(using any(), any()))
+        .willReturn(successful(matchedCitizen))
 
       val testService = new IncomeService(mockMatching, mockIf, 1, stubCache, scopesService, scopesHelper)
 
