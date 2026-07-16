@@ -16,14 +16,15 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import play.api.hal.Hal.state
 import play.api.hal.*
+import play.api.hal.Hal.state
 import play.api.libs.json.Json
 import play.api.libs.json.Json.obj
 import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.config.AppConfig
 import uk.gov.hmrc.individualsincomeapi.domain.TaxYearInterval
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{getClientIdHeader, maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{SaIncomeService, ScopesHelper, ScopesService}
@@ -39,7 +40,7 @@ class SaIncomeController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
   implicit val auditHelper: AuditHelper
-)(implicit val ec: ExecutionContext)
+)(implicit val ec: ExecutionContext, appConfig: AppConfig)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   override implicit def hc(implicit rh: RequestHeader): HeaderCarrier = super.hc.withExtraHeaders(getClientIdHeader(rh))

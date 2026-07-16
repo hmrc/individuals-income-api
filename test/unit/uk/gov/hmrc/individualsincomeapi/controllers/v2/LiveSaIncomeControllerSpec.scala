@@ -17,11 +17,11 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
 import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.*
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.FakeRequest
@@ -30,9 +30,10 @@ import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.config.AppConfig
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.SaIncomeController
 import uk.gov.hmrc.individualsincomeapi.domain.integrationframework.IfSaEntry
-import uk.gov.hmrc.individualsincomeapi.domain.v2._
+import uk.gov.hmrc.individualsincomeapi.domain.v2.*
 import uk.gov.hmrc.individualsincomeapi.domain.{MatchNotFoundException, TaxYear, TaxYearInterval}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{SaIncomeService, ScopesHelper, ScopesService}
@@ -56,6 +57,7 @@ class LiveSaIncomeControllerSpec
     val mockLiveCitizenMatchingService: LiveCitizenMatchingService = mock[LiveCitizenMatchingService]
 
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
+    lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -80,7 +82,7 @@ class LiveSaIncomeControllerSpec
         mockAuthConnector,
         controllerComponent,
         mockAuditHelper
-      )
+      )(using ec, appConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 

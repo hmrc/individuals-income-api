@@ -17,25 +17,27 @@
 package unit.uk.gov.hmrc.individualsincomeapi.controllers.v2
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.*
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, RequestHeader, Result}
-import play.api.test._
+import play.api.test.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.config.AppConfig
 import uk.gov.hmrc.individualsincomeapi.controllers.v2.RootController
 import uk.gov.hmrc.individualsincomeapi.domain.MatchNotFoundException
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesHelper, ScopesService}
 import utils.{AuthHelper, SpecBase}
+
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,6 +55,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
+    lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
     lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
     lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -69,7 +72,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       mockAuthConnector,
       mockAuditHelper,
       controllerComponent
-    )
+    )(using ec, appConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 

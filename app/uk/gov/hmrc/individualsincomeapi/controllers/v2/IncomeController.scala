@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import play.api.hal.Hal.state
 import play.api.hal.*
+import play.api.hal.Hal.state
 import play.api.libs.json.Json
 import play.api.libs.json.Json.{obj, toJson}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.config.AppConfig
 import uk.gov.hmrc.individualsincomeapi.domain.v2.Income.incomeJsonFormat
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsincomeapi.services.v2.{IncomeService, ScopesService}
@@ -38,7 +39,7 @@ class IncomeController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
   implicit val auditHelper: AuditHelper
-)(implicit val ec: ExecutionContext)
+)(implicit val ec: ExecutionContext, appConfig: AppConfig)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async { implicit request =>

@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
-import play.api.libs.json.Json
 import play.api.hal.*
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsincomeapi.audit.v2.AuditHelper
+import uk.gov.hmrc.individualsincomeapi.config.AppConfig
 import uk.gov.hmrc.individualsincomeapi.domain.v1.MatchedCitizen
 import uk.gov.hmrc.individualsincomeapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsincomeapi.services.LiveCitizenMatchingService
@@ -37,7 +38,7 @@ class RootController @Inject() (
   val authConnector: AuthConnector,
   implicit val auditHelper: AuditHelper,
   cc: ControllerComponents
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: String): Action[AnyContent] = Action.async { implicit request =>
