@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.mockito.Mockito.{times, verify, verifyNoInteractions}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.{Environment, Mode}
 import play.api.http.Status.*
 import play.api.libs.json.*
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, RequestHeader, Result}
@@ -65,15 +66,6 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
     val nino: Nino = Nino("NA000799C")
     val matchedCitizen: MatchedCitizen = MatchedCitizen(matchId, nino)
 
-    val liveRootController = new RootController(
-      mockLiveCitizenMatchingService,
-      scopeService,
-      scopesHelper,
-      mockAuthConnector,
-      mockAuditHelper,
-      controllerComponent
-    )(using ec, appConfig)
-
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     when(mockAuthConnector.authorise(any(), eqTo(Retrievals.allEnrolments))(using any(), any()))
@@ -81,12 +73,38 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         Future.successful(Enrolments(Set(Enrolment("test-scope"), Enrolment("test-scope-1"))))
       )
   }
+  
+  trait NonLocalSetup extends Setup {
+    implicit val env: Environment = Environment.simple(mode = Mode.Prod)
+    val liveRootController = new RootController(
+      mockLiveCitizenMatchingService,
+      scopeService,
+      scopesHelper,
+      mockAuthConnector,
+      mockAuditHelper,
+      controllerComponent
+    )(using ec, appConfig, env)
+
+  }
+  
+  trait LocalSetup extends Setup {
+    implicit val envLocal: Environment = Environment.simple(mode = Mode.Dev)
+    val liveRootController = new RootController(
+      mockLiveCitizenMatchingService,
+      scopeService,
+      scopesHelper,
+      mockAuthConnector,
+      mockAuditHelper,
+      controllerComponent
+    )(using ec, appConfig, envLocal)
+
+  }
 
   "Live match citizen controller match citizen function" should {
 
     val randomMatchId = UUID.randomUUID()
 
-    "return a 404 when a match id does not match live data" in new Setup {
+    "return a 404 when a match id does not match live data" in new NonLocalSetup {
       when(
         mockLiveCitizenMatchingService.matchCitizen(eqTo(randomMatchId))(using any[HeaderCarrier], any[RequestHeader])
       )
@@ -106,7 +124,38 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
-    "return a 200 when a match id matches live data" in new Setup {
+    "return a 200 when a match id matches live data" in new NonLocalSetup {
+
+      when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(using any[HeaderCarrier], any[RequestHeader]))
+        .thenReturn(Future.successful(matchedCitizen))
+
+      val result: Result =
+        await(liveRootController.root(matchId.toString).apply(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe
+        Json.parse(s"""{
+                      |  "_links": {
+                      |    "sa": {
+                      |      "href": "/individuals/income/sa?matchId=$matchId{&fromTaxYear,toTaxYear}",
+                      |      "title": "Get an individual's income sa data"
+                      |    },
+                      |    "paye": {
+                      |      "href": "/individuals/income/paye?matchId=$matchId{&fromDate,toDate}",
+                      |      "title": "Get an individual's income paye data"
+                      |    },
+                      |    "self": {
+                      |      "href": "/individuals/income/?matchId=$matchId"
+                      |    }
+                      |  }
+                      |}""".stripMargin)
+
+      verify(liveRootController.auditHelper, times(1))
+        .auditApiResponse(any(), any(), any(), any(), any(), any())(using any())
+    }
+    
+    "Local setup return a 200 when a match id matches live data" in new LocalSetup {
 
       when(mockLiveCitizenMatchingService.matchCitizen(eqTo(matchId))(using any[HeaderCarrier], any[RequestHeader]))
         .thenReturn(Future.successful(matchedCitizen))
@@ -137,7 +186,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         .auditApiResponse(any(), any(), any(), any(), any(), any())(using any())
     }
 
-    "fail with AuthorizedException when the bearer token does not have valid scopes" in new Setup {
+    "fail with AuthorizedException when the bearer token does not have valid scopes" in new NonLocalSetup {
 
       when(mockAuthConnector.authorise(any(), eqTo(Retrievals.allEnrolments))(using any(), any()))
         .thenReturn(Future.failed(InsufficientEnrolments()))
@@ -156,7 +205,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
         .auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
-    "returns bad request with correct message when missing CorrelationId" in new Setup {
+    "returns bad request with correct message when missing CorrelationId" in new NonLocalSetup {
 
       override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -178,7 +227,7 @@ class LiveRootControllerSpec extends SpecBase with AuthHelper with MockitoSugar 
       verify(liveRootController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
-    "throws an exception when malformed CorrelationId" in new Setup {
+    "throws an exception when malformed CorrelationId" in new NonLocalSetup {
       override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest().withHeaders("CorrelationId" -> "test")
 

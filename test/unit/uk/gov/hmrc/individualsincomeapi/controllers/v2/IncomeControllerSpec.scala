@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.{any, eq as eqTo, *}
 import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.{Environment, Mode}
 import play.api.http.Status.*
 import play.api.libs.json.*
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
@@ -78,15 +79,6 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     val ifPaye = Seq(createValidPayeEntry())
 
-    val incomeController =
-      new IncomeController(
-        mockLiveIncomeService,
-        scopeService,
-        mockAuthConnector,
-        controllerComponent,
-        mockAuditHelper
-      )(using ec, appConfig)
-
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     `given`(
@@ -95,11 +87,35 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       .willReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
   }
 
+  trait NonLocalSetup extends Setup {
+    implicit val env: Environment = Environment.simple(mode = Mode.Prod)
+    val incomeController =
+      new IncomeController(
+        mockLiveIncomeService,
+        scopeService,
+        mockAuthConnector,
+        controllerComponent,
+        mockAuditHelper
+      )(using ec, appConfig, env)
+  }
+
+  trait LocalSetup extends Setup {
+    implicit val envLocal: Environment = Environment.simple(mode = Mode.Dev)
+    val incomeController =
+      new IncomeController(
+        mockLiveIncomeService,
+        scopeService,
+        mockAuthConnector,
+        controllerComponent,
+        mockAuditHelper
+      )(using ec, appConfig, envLocal)
+  }
+
   def externalServices: Seq[String] = Seq("Stub")
 
   "Income controller income function" should {
 
-    "return 200 when matching succeeds and service returns income" in new Setup {
+    "return 200 when matching succeeds and service returns income" in new NonLocalSetup {
 
       `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
@@ -189,7 +205,97 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     }
 
-    "return 200 when matching succeeds and service returns no income" in new Setup {
+    "Local setup return 200 when matching succeeds and service returns income" in new LocalSetup {
+
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
+        .willReturn(successful(ifPaye map IfPayeEntry.toIncome))
+
+      val result =
+        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links":{
+           |    "self":{
+           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
+           |    }
+           |  },
+           |  "paye":{
+           |    "income":[
+           |      {
+           |        "hmrcOfficeNumber":"345",
+           |        "employerPayeReference":"345/34678",
+           |        "taxYear":"18-19",
+           |        "employee": {
+           |          "hasPartner": false
+           |         },
+           |         "payroll": {
+           |           "id": "yxz8Lt5?/`/>6]5b+7%>o-y4~W5suW"
+           |        },
+           |        "payFrequency":"W4",
+           |        "monthPayNumber": 3,
+           |        "weekPayNumber": 2,
+           |        "paymentDate":"2006-02-27",
+           |        "paidHoursWorked":"36",
+           |        "taxCode":"K971",
+           |        "taxablePay":16533.95,
+           |        "taxablePayToDate":19157.5,
+           |        "totalTaxToDate":3095.89,
+           |        "taxDeductedOrRefunded":159228.49,
+           |        "dednsFromNetPay":198035.8,
+           |        "employeePensionContribs":{
+           |          "paidYTD":169731.51,
+           |          "notPaidYTD":173987.07,
+           |          "paid":822317.49,
+           |          "notPaid":818841.65
+           |        },
+           |        "statutoryPayYTD":{
+           |          "maternity":15797.45,
+           |          "paternity":13170.69,
+           |          "adoption":16193.76,
+           |          "parentalBereavement":30846.56
+           |        },
+           |        "grossEarningsForNics":{
+           |          "inPayPeriod1":169731.51,
+           |          "inPayPeriod2":173987.07,
+           |          "inPayPeriod3":822317.49,
+           |          "inPayPeriod4":818841.65
+           |        },
+           |        "totalEmployerNics":{
+           |          "inPayPeriod1":15797.45,
+           |          "inPayPeriod2":13170.69,
+           |          "inPayPeriod3":16193.76,
+           |          "inPayPeriod4":30846.56,
+           |          "ytd1":10633.5,
+           |          "ytd2":15579.18,
+           |          "ytd3":110849.27,
+           |          "ytd4":162081.23
+           |        },
+           |        "employeeNics":{
+           |          "inPayPeriod1":15797.45,
+           |          "inPayPeriod2":13170.69,
+           |          "inPayPeriod3":16193.76,
+           |          "inPayPeriod4":30846.56,
+           |          "ytd1":10633.5,
+           |          "ytd2":15579.18,
+           |          "ytd3":110849.27,
+           |          "ytd4":162081.23
+           |        }
+           |      }
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(using
+        any()
+      )
+
+    }
+
+    "return 200 when matching succeeds and service returns no income" in new NonLocalSetup {
 
       `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
@@ -218,7 +324,36 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       )
     }
 
-    "return 200 with correct self link response when toDate is not provided in the request" in new Setup {
+    "Local setup return 200 when matching succeeds and service returns no income" in new LocalSetup {
+
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
+        .willReturn(successful(Seq.empty))
+
+      val result =
+        await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links":{
+           |    "self":{
+           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
+           |    }
+           |  },
+           |  "paye":{
+           |    "income":[
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(using
+        any()
+      )
+    }
+
+    "return 200 with correct self link response when toDate is not provided in the request" in new NonLocalSetup {
 
       val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
@@ -250,7 +385,39 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       )
     }
 
-    "return 404 for an invalid matchId" in new Setup {
+    "Local setup return 200 with correct self link response when toDate is not provided in the request" in new LocalSetup {
+
+      val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest("GET", s"/individuals/income/paye?matchId=$matchId&fromDate=$fromDateString")
+
+      `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
+        .willReturn(successful(Seq.empty))
+
+      val result =
+        await(incomeController.income(matchId.toString, interval)(fakeRequest.withHeaders(sampleCorrelationIdHeader)))
+
+      status(result) shouldBe OK
+
+      jsonBodyOf(result) shouldBe Json.parse(
+        s"""{
+           |  "_links":{
+           |    "self":{
+           |      "href":"/individuals/income/paye?matchId=$matchId&fromDate=2017-03-02"
+           |    }
+           |  },
+           |  "paye":{
+           |    "income":[
+           |    ]
+           |  }
+           |}""".stripMargin
+      )
+
+      verify(incomeController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any(), any())(using
+        any()
+      )
+    }
+
+    "return 404 for an invalid matchId" in new NonLocalSetup {
 
       `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
@@ -264,7 +431,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
 
     }
 
-    "returns bad request with correct message when missing CorrelationId Header" in new Setup {
+    "returns bad request with correct message when missing CorrelationId Header" in new NonLocalSetup {
       `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
 
@@ -283,7 +450,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       verify(incomeController.auditHelper, times(1)).auditApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
-    "return bad request with correct message when CorrelationId Header is malformed" in new Setup {
+    "return bad request with correct message when CorrelationId Header is malformed" in new NonLocalSetup {
       `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(successful(Seq.empty))
 

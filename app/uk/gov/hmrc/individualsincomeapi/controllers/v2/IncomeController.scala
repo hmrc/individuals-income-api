@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsincomeapi.controllers.v2
 
+import play.api.Environment
 import play.api.hal.*
 import play.api.hal.Hal.state
 import play.api.libs.json.Json
@@ -39,7 +40,7 @@ class IncomeController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
   implicit val auditHelper: AuditHelper
-)(implicit val ec: ExecutionContext, appConfig: AppConfig)
+)(implicit val ec: ExecutionContext, appConfig: AppConfig, environment: Environment)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def income(matchId: String, interval: Interval): Action[AnyContent] = Action.async { implicit request =>
