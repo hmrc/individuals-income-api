@@ -24,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.{Environment, Mode}
 import play.api.http.Status.*
 import play.api.libs.json.*
-import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
@@ -422,7 +422,7 @@ class IncomeControllerSpec extends SpecBase with AuthHelper with MockitoSugar wi
       `given`(mockLiveIncomeService.fetchIncomeByMatchId(eqTo(matchId), eqTo(interval), any())(using any(), any()))
         .willReturn(failed(new MatchNotFoundException()))
 
-      val result =
+      val result: Result =
         await(incomeController.income(matchId.toString, interval)(FakeRequest().withHeaders(sampleCorrelationIdHeader)))
 
       status(result) shouldBe NOT_FOUND

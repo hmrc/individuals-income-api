@@ -40,7 +40,8 @@ class LiveRootControllerSpec extends BaseSpec {
     "read:individuals-income-lsani-c3",
     "read:individuals-income-nictsejo-c4",
     "read:individuals-income-scts",
-    "read:individuals-income-lad4"
+    "read:individuals-income-lad4",
+    "read:individuals-income-dfe"
   ).sorted
 
   Feature("Root (hateoas) entry point is accessible") {
