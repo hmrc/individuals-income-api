@@ -21,6 +21,10 @@ Unit, integration and component tests can be run with the following:
 
     sbt test it:test component:test
 
+### Running locally for performance tests
+
+     sbt run -Dconfig.resource=application.local.conf
+
 ### License
 
 This code is open source software licensed under

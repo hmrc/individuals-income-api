@@ -34,8 +34,8 @@ class LiveSaIncomeControllerSpec extends BaseSpec with IncomeSaHelpers {
   private val toYear = LocalDate.now.getYear - 4
   private def yearRange(r: Int) = (r + 1) % 100
 
-  val fromTaxYear: String = s"${fromYear + 1}" 
-  val toTaxYear = s"$toYear" 
+  val fromTaxYear: String = s"${fromYear + 1}"
+  val toTaxYear = s"$toYear"
 
   val nino = "CS700100A"
 
