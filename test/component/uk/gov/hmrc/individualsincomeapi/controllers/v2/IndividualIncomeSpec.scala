@@ -56,7 +56,8 @@ class IndividualIncomeSpec extends CommonControllerSpec with IncomePayeHelpers {
     "read:individuals-income-lsani-c3",
     "read:individuals-income-nictsejo-c4",
     "read:individuals-income-scts",
-    "read:individuals-income-lad4"
+    "read:individuals-income-lad4",
+    "read:individuals-income-dfe"
   ).sorted
 
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"

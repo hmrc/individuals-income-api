@@ -76,6 +76,8 @@ class IfQueriesSpec extends BaseSpec {
       "totalEmployerNICs(inPayPeriod1,inPayPeriod2,inPayPeriod3,inPayPeriod4,ytd1,ytd2,ytd3,ytd4)," +
       "totalTaxToDate,weeklyPeriodNumber)"
 
+    val res9 = "paye(employerPayeRef,paymentDate)"
+
     Scenario("For read:individuals-income-nictsejo-c4") {
       val queryString = helper.getQueryStringFor(Seq("read:individuals-income-nictsejo-c4"), List("paye"))
       queryString shouldBe res1
@@ -134,6 +136,11 @@ class IfQueriesSpec extends BaseSpec {
     Scenario("For read:individuals-income-lad4") {
       val queryString = helper.getQueryStringFor(Seq("read:individuals-income-lad4"), List("paye"))
       queryString shouldBe res4
+    }
+
+    Scenario("For read:individuals-income-dfe") {
+      val queryString = helper.getQueryStringFor(Seq("read:individuals-income-dfe"), List("paye"))
+      queryString shouldBe res9
     }
   }
 
